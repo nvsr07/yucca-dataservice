@@ -3,6 +3,7 @@ package it.csi.smartdata.odata.datadiscovery;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.edm.EdmMultiplicity;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.EdmTargetPath;
@@ -47,7 +48,7 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 	private static final String ROLE_1_2 = "Dataset_Fields";
 
 	private static final String ASSOCIATION_SET = "Fields_Datasets";
-
+	static Logger log = Logger.getLogger(SmartDataDiscoveryEdmProvider.class);
 	@Override
 	public List<Schema> getSchemas() throws ODataException {
 		List<Schema> schemas = new ArrayList<Schema>();
@@ -159,14 +160,14 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		CustomizableFeedMappings cfeed = new CustomizableFeedMappings();
 		cfeed.setFcTargetPath(EdmTargetPath.SYNDICATION_TITLE);
 
-		propertiesSmartObject.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)).setCustomizableFeedMappings(cfeed));
-
-		propertiesSmartObject.add(new SimpleProperty().setName("tenant").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)).setCustomizableFeedMappings(cfeed));
+		
+		propertiesSmartObject.add(new SimpleProperty().setName("tenantCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("dataDomain").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("licence").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("fps").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
 		
-		propertiesSmartObject.add(new SimpleProperty().setName("name").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("datasetName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("visibility").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("registrationDate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));		
 		propertiesSmartObject.add(new SimpleProperty().setName("startIngestionDate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
