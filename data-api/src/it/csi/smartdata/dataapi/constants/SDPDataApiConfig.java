@@ -78,6 +78,10 @@ public class SDPDataApiConfig {
 		
 		params.put("SDP_MAX_DOCS_PER_PAGE", rb.getString("SDP_MAX_DOCS_PER_PAGE"));
 		
+		params.put("SDP_MONGO_CFG_DEFAULT_USER", rb.getString("SDP_MONGO_CFG_DEFAULT_USER"));
+		params.put("SDP_MONGO_CFG_DEFAULT_PWD", rb.getString("SDP_MONGO_CFG_DEFAULT_PWD"));
+		
+		
 		
 		
 	}
@@ -152,5 +156,15 @@ public class SDPDataApiConfig {
     public String getMongoDefaultHost() {
 		return params.get("SDP_MONGO_CFG_DEFAULT_HOST");
     }
+    public String getMongoDefaultUser() {
+		return params.get("SDP_MONGO_CFG_DEFAULT_USER");
+    }
+    public String getMongoDefaultPassword() {
+		return params.get("SDP_MONGO_CFG_DEFAULT_PWD");
+    }
+    
+    
+  
+    
 	
 }

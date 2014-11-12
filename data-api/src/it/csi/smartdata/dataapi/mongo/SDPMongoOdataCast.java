@@ -443,11 +443,11 @@ public class SDPMongoOdataCast {
 		try {
 			log.info("[SDPMongoOdataCast::getMeasureType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
-			measureProps.add(new SimpleProperty().setName("stream").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			//measureProps.add(new ComplexProperty().setName("values").setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES)));
-			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTime).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 //			measureProps.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 			

@@ -109,6 +109,16 @@
 			</build>
 		</profile>
 		<profile>
+			<id>integ</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>resources/integ</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
 			<id>prod</id>
 			<build>
 				<resources>

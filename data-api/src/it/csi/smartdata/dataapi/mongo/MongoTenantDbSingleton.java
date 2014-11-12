@@ -3,6 +3,7 @@ package it.csi.smartdata.dataapi.mongo;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.mongo.dto.DbConfDto;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -12,6 +13,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 public class MongoTenantDbSingleton {
 	
@@ -57,9 +60,21 @@ public class MongoTenantDbSingleton {
 	
 	private MongoTenantDbSingleton() throws Exception{
 		try {
-			MongoClient mongoClient = new MongoClient(
-					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT), 
-					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
+//			MongoClient mongoClient = new MongoClient(
+//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT), 
+//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
+			ServerAddress serverAddr=new ServerAddress(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT),SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
+			MongoClient mongoClient = null;
+			if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
+					SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
+				MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+						"admin", 
+						SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
+				mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
+			} else {
+				mongoClient = new MongoClient(serverAddr);
+			}			
+			
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
 

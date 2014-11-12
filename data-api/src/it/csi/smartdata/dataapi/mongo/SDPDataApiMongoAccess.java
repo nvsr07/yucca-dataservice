@@ -5,6 +5,7 @@ import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.dto.DbConfDto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,8 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 public class SDPDataApiMongoAccess {
 
@@ -46,6 +49,25 @@ public class SDPDataApiMongoAccess {
 	}
 
 
+	
+	private MongoClient getMongoClient (String host,int port) throws Exception{
+		ServerAddress serverAddr=new ServerAddress(host,port);
+		MongoClient mongoClient = null;
+		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
+				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
+			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+					"admin", 
+					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
+			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
+		} else {
+			mongoClient = new MongoClient(serverAddr);
+		}
+		return mongoClient;
+		
+	}
+
+
+
 	public ArrayList<DBObject> initConfDbObject(String codiceApi) {
 		try {
 			log.info("[SDPDataApiMongoAccess::initConfDbObject] BEGIN");
@@ -56,17 +78,22 @@ public class SDPDataApiMongoAccess {
 			if (null==configObject || !codiceApi.equals(this.codiceApi)) {
 				this.codiceApi=codiceApi;
 				configObject=new ArrayList<DBObject>();
-				MongoClient mongoClient = new MongoClient(
-						SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
-						SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
+//				MongoClient mongoClient = new MongoClient(
+//						SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
+//						SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
+
+				MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
+						SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));				
+				
 				DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_API));
 				DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_API));
 
 //				BasicDBObject query = new BasicDBObject("configData.codiceApi",codiceApi);
-				BasicDBObject query = new BasicDBObject("apiName",codiceApi);
+				BasicDBObject query = new BasicDBObject("apiCode",codiceApi);
 
 				log.debug("[SDPDataApiMongoAccess::initConfDbObject] API query--> "+query);
 				DBCursor cursor = coll.find(query);
+				//DBCursor cursor = coll.find();
 				try {
 					while (cursor.hasNext()) {
 
@@ -126,9 +153,14 @@ public class SDPDataApiMongoAccess {
 			BasicDBObject query =null;
 			DBCursor cursor=null;
 
-			MongoClient mongoClient = new MongoClient(
-					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
-					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+//			MongoClient mongoClient = new MongoClient(
+//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+			
+			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));				
+			
+			
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 
@@ -197,14 +229,19 @@ public class SDPDataApiMongoAccess {
 
 
 
-			MongoClient mongoClient = new MongoClient(
-					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
-					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
+//			MongoClient mongoClient = new MongoClient(
+//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
+//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
+			
+			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
+					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));				
+			
+			
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_API));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_API));
 
 //			BasicDBObject query = new BasicDBObject("configData.codiceApi",codiceApi);
-			BasicDBObject query = new BasicDBObject("apiName",codiceApi);
+			BasicDBObject query = new BasicDBObject("apiCode",codiceApi);
 
 
 
@@ -316,7 +353,9 @@ public class SDPDataApiMongoAccess {
 				//DBObject clause = new BasicDBObject("configData.tenant", codiceTenant).append("streams.stream.codiceStream", stream).append("streams.stream.codiceVirtualEntity",sensore).append("configData.type", "stream");
 
 				//DBObject clause = new BasicDBObject("configData.idDataset", idDataset);
-				DBObject clause = new BasicDBObject("idDataset", new Integer(idDataset));
+				//DBObject clause = new BasicDBObject("idDataset", new Integer(idDataset));
+				DBObject clause = new BasicDBObject("idDataset", new Integer(new Double(idDataset).intValue()));
+				
 				queryStreams.add(clause);
 
 			}
@@ -385,9 +424,12 @@ public class SDPDataApiMongoAccess {
 			//			MongoClient mongoClient = new MongoClient("tst-sdnet-bgslave1.sdp.csi.it", 27017);
 			//			DB db = mongoClient.getDB("smartlab");
 			//			DBCollection coll = db.getCollection("configCollection01");
-			MongoClient mongoClient = new MongoClient(
-					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
-					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+//			MongoClient mongoClient = new MongoClient(
+//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));				
+			
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 
@@ -495,7 +537,10 @@ public class SDPDataApiMongoAccess {
 
 
 
-			MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
+			//MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
+			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+			
+			
 			DB db = mongoClient.getDB(dbcfg);
 
 
@@ -503,7 +548,7 @@ public class SDPDataApiMongoAccess {
 			BasicDBList queryTot=new BasicDBList();
 
 			//queryTot.add( new BasicDBObject("idDataset",idDataset));
-			queryTot.add( new BasicDBObject("idDataset",new Integer(idDataset)));
+			queryTot.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
 
 
 			//BasicDBObject query = new BasicDBObject("idDataset",idDataset);
@@ -545,12 +590,13 @@ public class SDPDataApiMongoAccess {
 					misura.put("internalId",  internalID);
 
 					if (DATA_TYPE_MEASURE.equals(datatType)) {
-						String streamId=obj.get("stream").toString();
+						String streamId=obj.get("streamCode").toString();
 						String sensorId=obj.get("sensor").toString();
 						String timestmp=obj.get("time").toString();
-						misura.put("stream", streamId);
+						misura.put("streamCode", streamId);
 						misura.put("sensor", sensorId);
-						misura.put("time",  timestmp);
+						//misura.put("time",  timestmp);
+						misura.put("time",  obj.get("time"));
 						if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 //						if (null!= current ) misura.put("current",  Integer.parseInt(current));
 					}					

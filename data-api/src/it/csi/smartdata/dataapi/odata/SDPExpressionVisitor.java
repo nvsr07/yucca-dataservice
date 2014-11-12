@@ -336,6 +336,9 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 				Date data = dateFormat.parse(paramEdmLiteral.getLiteral());
 
 				data.setTime(data.getTime()-data.getTimezoneOffset()*60*1000);
+				
+				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
+				
 				return data;
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
@@ -488,7 +491,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".nomeStream" ,"streams.stream.nomeStream");
 
 		//MISURE - non serve ma per tenere traccia ...
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".stream" ,"stream");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".streamCode" ,"streamCode");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".sensor" ,"sensor");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"_id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time");
