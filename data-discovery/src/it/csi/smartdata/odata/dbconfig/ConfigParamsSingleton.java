@@ -20,6 +20,9 @@ public class ConfigParamsSingleton {
 		params.put("MONGO_COLLECTION_STREAM", rb.getString("MONGO_COLLECTION_STREAM"));
 		params.put("MONGO_API_ADDRESS", rb.getString("MONGO_API_ADDRESS"));
 		params.put("MONGO_STREAM_TOPIC", rb.getString("MONGO_STREAM_TOPIC"));
+		params.put("MONGO_USERNAME", rb.getString("MONGO_USERNAME"));
+		params.put("MONGO_PASSWORD", rb.getString("MONGO_PASSWORD"));
+		params.put("MONGO_DB_AUTH", rb.getString("MONGO_DB_AUTH"));
 		
 	}
 	

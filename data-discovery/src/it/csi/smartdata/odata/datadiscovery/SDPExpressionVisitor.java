@@ -503,23 +503,24 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"_id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time");
 
-		//DATASET
+		//DATASET XXX qui aggiornare la mappatura dei campi
 
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".idDataset" ,"configData.idDataset");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tenant" ,"configData.tenant");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".dataDomain" ,"dataset.dataDomain");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".licence" ,"dataset.licence");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".fps" ,"dataset.fps");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tags" ,"dataset.tags.tagCode");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".measureUnit" ,"dataset.fields.measureUnit");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".idDataset" ,"idDataset");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tenantCode" ,"configData.tenantCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".datasetStatus" ,"configData.datasetStatus");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".dataDomain" ,"info.dataDomain");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".licence" ,"info.licence");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".fps" ,"info.fps");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tagCode" ,"info.tags.tagCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".measureUnit" ,"info.fields.measureUnit");
 
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".name" ,"dataset.name");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".visibility" ,"dataset.visibility");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".registrationDate" ,"dataset.registrationDate");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".startIngestionDate" ,"dataset.startIngestionDate");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".endIngestionDate" ,"dataset.endIngestionDate");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".importFileType" ,"dataset.importFileType");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".datasetStatus" ,"dataset.datasetStatus");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".datasetName" ,"info.datasetName");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".visibility" ,"info.visibility");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".registrationDate" ,"info.registrationDate");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".startIngestionDate" ,"info.startIngestionDate");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".endIngestionDate" ,"info.endIngestionDate");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".importFileType" ,"info.importFileType");
+		
 	}
 
 	private Object getValue (CommonExpression ce) {

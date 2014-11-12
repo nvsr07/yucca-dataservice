@@ -31,7 +31,7 @@ import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
 
 import com.mongodb.BasicDBObject;
 public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
-	static Logger log = Logger.getLogger(SmartDataServiceDiscoveryFactory.class);
+	static Logger log = Logger.getLogger(SmartDataDiscoverySingleProcessor.class);
 
 	@Override
 	public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo, final String contentType) 
@@ -84,7 +84,7 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 
 			if (ENTITY_SET_NAME_FIELDS.equals(entitySet.getName())) {
 
-				String datasetKey = getStringKeyValue(uriInfo.getKeyPredicates().get(0));
+				Integer datasetKey = getIntegerKeyValue(uriInfo.getKeyPredicates().get(0));
 
 				MongoDbStore mongoAccess=new MongoDbStore();
 				List<Map<String,Object>> allDatasets=mongoAccess.getDatasetFields(datasetKey);
@@ -135,5 +135,10 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 		EdmProperty property = key.getProperty();
 		EdmSimpleType type = (EdmSimpleType) property.getType();
 		return type.valueOfString(key.getLiteral(), EdmLiteralKind.DEFAULT, property.getFacets(), String.class);
+	}
+	private Integer getIntegerKeyValue(final KeyPredicate key) throws ODataException {
+		EdmProperty property = key.getProperty();
+		EdmSimpleType type = (EdmSimpleType) property.getType();
+		return type.valueOfString(key.getLiteral(), EdmLiteralKind.DEFAULT, property.getFacets(), Integer.class);
 	}
 }
