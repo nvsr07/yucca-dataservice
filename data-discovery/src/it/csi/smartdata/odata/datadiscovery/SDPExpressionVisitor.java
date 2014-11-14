@@ -30,16 +30,14 @@ import org.apache.olingo.odata2.api.uri.expression.SortOrder;
 import org.apache.olingo.odata2.api.uri.expression.UnaryExpression;
 import org.apache.olingo.odata2.api.uri.expression.UnaryOperator;
 import org.apache.olingo.odata2.core.edm.Uint7;
-import org.joda.time.DateTime;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.QueryBuilder;
 
 public class SDPExpressionVisitor implements ExpressionVisitor {
-	static Logger log = Logger.getLogger(SmartDataDiscoveryEdmProvider.class);
-
+	static Logger log = Logger.getLogger(SDPExpressionVisitor.class.getPackage().getName());
+	
 	private String entitySetName=null;
 
 	public String getEntitySetName() {
@@ -71,24 +69,22 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		String sqlOperator = "";
 		//BasicDBObject clause=null;
 
-		getValue(paramBinaryExpression.getLeftOperand());
-		getValue(paramBinaryExpression.getRightOperand());
 
 		DBObject clause=null;
-		String left=null;
-		String right=null;
-		if (paramObject1 == null) {
-			left=paramBinaryExpression.getLeftOperand().getUriLiteral();
-			if (left.startsWith("'")) left=left.substring(1);
-			if (left.endsWith("'")) left=left.substring(0, left.length()-1);
-			left=getFullFielName(left);
-		}
-		if (paramObject2 == null) {
-			right=paramBinaryExpression.getRightOperand().getUriLiteral();
-			if (right.startsWith("'")) right=right.substring(1);
-			if (right.endsWith("'")) right=right.substring(0, right.length()-1);
-			right=getFullFielName(right);
-		}
+//		String left=null;
+//		String right=null;
+//		if (paramObject1 == null) {
+//			left=paramBinaryExpression.getLeftOperand().getUriLiteral();
+//			if (left.startsWith("'")) left=left.substring(1);
+//			if (left.endsWith("'")) left=left.substring(0, left.length()-1);
+//			left=getFullFielName(left);
+//		}
+//		if (paramObject2 == null) {
+//			right=paramBinaryExpression.getRightOperand().getUriLiteral();
+//			if (right.startsWith("'")) right=right.substring(1);
+//			if (right.endsWith("'")) right=right.substring(0, right.length()-1);
+//			right=getFullFielName(right);
+//		}
 
 
 		BasicDBList lista=new BasicDBList();
@@ -258,12 +254,6 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			sqlOperator = ">";
 			if (paramBinaryExpression.getLeftOperand() instanceof PropertyExpression && paramBinaryExpression.getRightOperand() instanceof LiteralExpression) {
 				clause = new BasicDBObject(paramObject1.toString(),new BasicDBObject("$gt",paramObject2));
-
-				if (paramObject2 instanceof Date ) {
-					DBObject querydue = QueryBuilder.start().put(paramObject1.toString()).greaterThan(paramObject2).get();					
-				}
-
-
 			} else if (paramBinaryExpression.getLeftOperand() instanceof  LiteralExpression && paramBinaryExpression.getRightOperand() instanceof PropertyExpression) {
 				clause = new BasicDBObject(paramObject2.toString(),new BasicDBObject("$le",paramObject1));
 			}  
@@ -323,7 +313,8 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			return ret;
 		} else if(EdmSimpleTypeKind.Decimal.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
 			//float??
-			Object ret = new Float(paramEdmLiteral.getLiteral());
+			Object ret = new Double(paramEdmLiteral.getLiteral());
+			//Object ret = new Float(paramEdmLiteral.getLiteral());
 			return ret;
 		} else if(EdmSimpleTypeKind.Int32.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
@@ -343,21 +334,25 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 				Date data = dateFormat.parse(paramEdmLiteral.getLiteral());
 
-				DateTime jodaDatetime=new DateTime(data); 
-				Object ret = jodaDatetime.toDateTimeISO();
-
-				return ret;
+				data.setTime(data.getTime()-data.getTimezoneOffset()*60*1000);
+				
+				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
+				
+				return data;
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
 			}
 		} else if(Uint7.getInstance().equals(paramEdmLiteral.getType())) {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
 			return ret;
+		} else if(org.apache.olingo.odata2.core.edm.Bit.getInstance().equals(paramEdmLiteral.getType())) {
+			Object ret = new Integer(paramEdmLiteral.getLiteral());
+			return ret;
 		}
+		
 
 
 
-		//TODO mettere date 
 		out.append("visitLiteral ").append(paramLiteralExpression.getUriLiteral()).append("--"+paramEdmLiteral.getType()+"\n");
 		return null;
 	}
@@ -486,9 +481,6 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		else return fieldNameInput;
 	}
 
-	//	static final String ENTITY_SET_NAME_SMARTOBJECT = "SmartObjects";
-	//	static final String ENTITY_SET_NAME_STREAMS = "Streams";
-	//	static final String ENTITY_SET_NAME_MEASURES = "Measures";
 
 	private static Map<String,String> fieldAppendMap;
 	static {
@@ -498,10 +490,11 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".nomeStream" ,"streams.stream.nomeStream");
 
 		//MISURE - non serve ma per tenere traccia ...
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".stream" ,"stream");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".streamCode" ,"streamCode");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".sensor" ,"sensor");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"_id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time");
+
 
 		//DATASET XXX qui aggiornare la mappatura dei campi
 
@@ -523,8 +516,4 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		
 	}
 
-	private Object getValue (CommonExpression ce) {
-		System.out.println(ce.getEdmType());
-		return null;
-	}
 }

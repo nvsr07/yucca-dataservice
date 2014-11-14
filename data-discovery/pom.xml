@@ -26,8 +26,8 @@
 				<version>2.3</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-<!-- 					<outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
-					<warName>DataDiscovery</warName>
+					<outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory>
+					<warName>datadiscovery</warName>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
@@ -108,6 +108,16 @@
 				<resources>
 					<resource>
 						<directory>resources/prod</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>integ</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>resources/integ</directory>
 					</resource>
 				</resources>
 			</build>
