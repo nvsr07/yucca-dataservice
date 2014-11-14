@@ -51,18 +51,21 @@ public class SDPDataApiMongoAccess {
 
 	
 	private MongoClient getMongoClient (String host,int port) throws Exception{
-		ServerAddress serverAddr=new ServerAddress(host,port);
-		MongoClient mongoClient = null;
-		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
-				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
-			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
-					"admin", 
-					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
-			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
-		} else {
-			mongoClient = new MongoClient(serverAddr);
-		}
-		return mongoClient;
+//		ServerAddress serverAddr=new ServerAddress(host,port);
+//		MongoClient mongoClient = null;
+//		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
+//				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
+//			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+//					"admin", 
+//					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
+//			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
+//		} else {
+//			mongoClient = new MongoClient(serverAddr);
+//		}
+//		return mongoClient;
+		
+		
+		return MongoTenantDbSingleton.getInstance().getMongoClient(host, port);
 		
 	}
 

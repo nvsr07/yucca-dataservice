@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-org.jboss.ide.eclipse.as.core.singledeployable.deployableList=target/DataApi.war\ntarget/DataApi.war\n
+org.jboss.ide.eclipse.as.core.singledeployable.deployableList=target/datamanagementapi-0.0.1-SNAPSHOT.war\ntarget/DataApi.war\n

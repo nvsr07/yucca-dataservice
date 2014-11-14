@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -30,6 +29,7 @@ public class MongoTenantDbSingleton {
 
 	
 	private HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
+	private HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 		
 
 	
@@ -123,6 +123,7 @@ public class MongoTenantDbSingleton {
 					params.put(tenant+"__"+DB_MESURES_TRASH, measureDbTrahs);
 					params.put(tenant+"__"+DB_DATA, dataDb);
 					params.put(tenant+"__"+DB_DATA_TRASH, dataDbTrash);
+					mongoConnection.put(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT)+"___"+SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT), mongoClient);
 					
 				}				
 			} finally {
@@ -139,6 +140,26 @@ public class MongoTenantDbSingleton {
 	
 	public DbConfDto getDataDbConfiguration(String dbType,String tenantCode) {
 		return params.get(tenantCode+"__"+dbType);
+	}
+	
+	public MongoClient getMongoClient(String host, int port) throws Exception{
+		MongoClient ret=mongoConnection.get(host+"___"+port);
+		if (ret!=null) return ret;
+		ServerAddress serverAddr=new ServerAddress(host,port);
+		MongoClient mongoClient = null;
+		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
+				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
+			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+					"admin", 
+					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
+			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
+		} else {
+			mongoClient = new MongoClient(serverAddr);
+		}
+		mongoConnection.put(host+"___"+port, mongoClient);
+		return mongoClient;
+		
+		
 	}
 	
 }

@@ -38,7 +38,7 @@ import com.mongodb.DBObject;
 
 public class SDPExpressionVisitor implements ExpressionVisitor {
 	static Logger log = Logger.getLogger(SDPExpressionVisitor.class.getPackage().getName());
-	
+
 	private String entitySetName=null;
 
 	public String getEntitySetName() {
@@ -72,20 +72,20 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 
 
 		DBObject clause=null;
-//		String left=null;
-//		String right=null;
-//		if (paramObject1 == null) {
-//			left=paramBinaryExpression.getLeftOperand().getUriLiteral();
-//			if (left.startsWith("'")) left=left.substring(1);
-//			if (left.endsWith("'")) left=left.substring(0, left.length()-1);
-//			left=getFullFielName(left);
-//		}
-//		if (paramObject2 == null) {
-//			right=paramBinaryExpression.getRightOperand().getUriLiteral();
-//			if (right.startsWith("'")) right=right.substring(1);
-//			if (right.endsWith("'")) right=right.substring(0, right.length()-1);
-//			right=getFullFielName(right);
-//		}
+		//		String left=null;
+		//		String right=null;
+		//		if (paramObject1 == null) {
+		//			left=paramBinaryExpression.getLeftOperand().getUriLiteral();
+		//			if (left.startsWith("'")) left=left.substring(1);
+		//			if (left.endsWith("'")) left=left.substring(0, left.length()-1);
+		//			left=getFullFielName(left);
+		//		}
+		//		if (paramObject2 == null) {
+		//			right=paramBinaryExpression.getRightOperand().getUriLiteral();
+		//			if (right.startsWith("'")) right=right.substring(1);
+		//			if (right.endsWith("'")) right=right.substring(0, right.length()-1);
+		//			right=getFullFielName(right);
+		//		}
 
 
 		BasicDBList lista=new BasicDBList();
@@ -332,13 +332,34 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			return ret;
 		} else if(EdmSimpleTypeKind.DateTime.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
 			try {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-				Date data = dateFormat.parse(paramEdmLiteral.getLiteral());
+
+				Date data =null;
+				SimpleDateFormat dateFormatA = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+				SimpleDateFormat dateFormatB = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				SimpleDateFormat dateFormatC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				SimpleDateFormat dateFormatD = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+
+				try  {
+					data = dateFormatA.parse(paramEdmLiteral.getLiteral());
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatB.parse(paramEdmLiteral.getLiteral());
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatC.parse(paramEdmLiteral.getLiteral());
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatD.parse(paramEdmLiteral.getLiteral());
+				} catch (Exception e) {}
+
+
+
 
 				data.setTime(data.getTime()-data.getTimezoneOffset()*60*1000);
-				
+
 				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
-				
+
 				return data;
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
@@ -350,7 +371,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
 			return ret;
 		}
-		
+
 
 
 
