@@ -84,7 +84,7 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 
 			if (ENTITY_SET_NAME_FIELDS.equals(entitySet.getName())) {
 
-				Integer datasetKey = getIntegerKeyValue(uriInfo.getKeyPredicates().get(0));
+				Long datasetKey = getLongKeyValue(uriInfo.getKeyPredicates().get(0));
 
 				MongoDbStore mongoAccess=new MongoDbStore();
 				List<Map<String,Object>> allDatasets=mongoAccess.getDatasetFields(datasetKey);
@@ -106,7 +106,7 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 			if (ENTITY_SET_NAME_DATASETS.equals(entitySet.getName())) {
 
 				MongoDbStore mongoAccess=new MongoDbStore();
-				String idDataset = getStringKeyValue(uriInfo.getKeyPredicates().get(0));
+				Long idDataset = getLongKeyValue(uriInfo.getKeyPredicates().get(0));
 				Map<String,Object> dataset=mongoAccess.getDataset(idDataset);
 
 				if (dataset != null) {
@@ -136,9 +136,9 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 		EdmSimpleType type = (EdmSimpleType) property.getType();
 		return type.valueOfString(key.getLiteral(), EdmLiteralKind.DEFAULT, property.getFacets(), String.class);
 	}
-	private Integer getIntegerKeyValue(final KeyPredicate key) throws ODataException {
+	private Long getLongKeyValue(final KeyPredicate key) throws ODataException {
 		EdmProperty property = key.getProperty();
 		EdmSimpleType type = (EdmSimpleType) property.getType();
-		return type.valueOfString(key.getLiteral(), EdmLiteralKind.DEFAULT, property.getFacets(), Integer.class);
+		return type.valueOfString(key.getLiteral(), EdmLiteralKind.DEFAULT, property.getFacets(), Long.class);
 	}
 }

@@ -25,14 +25,14 @@ import com.mongodb.ServerAddress;
 public class MongoDbStore {
 	MongoClient mongoClient;
 	Map<String,String> mongoParams = null;
-//	MongoCredential credential=null;
+	//	MongoCredential credential=null;
 	private Logger logger = Logger.getLogger(MongoDbStore.class);
 	public MongoDbStore(){
 		mongoParams = ConfigParamsSingleton.getInstance().getParams();
-//		credential = MongoCredential.createMongoCRCredential(mongoParams.get("MONGO_USERNAME"), mongoParams.get("MONGO_DB_AUTH"), mongoParams.get("MONGO_PASSWORD").toCharArray());
+		//		credential = MongoCredential.createMongoCRCredential(mongoParams.get("MONGO_USERNAME"), mongoParams.get("MONGO_DB_AUTH"), mongoParams.get("MONGO_PASSWORD").toCharArray());
 
 		try {
-//			ServerAddress serverAdd = new ServerAddress(mongoParams.get("MONGO_HOST"), Integer.parseInt(mongoParams.get("MONGO_PORT")));
+			//			ServerAddress serverAdd = new ServerAddress(mongoParams.get("MONGO_HOST"), Integer.parseInt(mongoParams.get("MONGO_PORT")));
 			mongoClient = MongoSingleton.getMongoClient();
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
@@ -45,7 +45,7 @@ public class MongoDbStore {
 	}
 
 
-	public Map<String, Object> getDataset(String idDataset) {
+	public Map<String, Object> getDataset(Long idDataset) {
 
 
 		Map<String,Object> ret = new HashMap<String,Object>();
@@ -62,8 +62,8 @@ public class MongoDbStore {
 
 
 		if (found != null) {
-			Integer id = found.get("idDataset") == null ? null :((Number)found.get("idDataset")).intValue();
-			Integer datasetVersion = found.get("datasetVersion") == null ? null :((Number)found.get("datasetVersion")).intValue();
+			Long id = found.get("idDataset") == null ? null :((Number)found.get("idDataset")).longValue();
+			Long datasetVersion = found.get("datasetVersion") == null ? null :((Number)found.get("datasetVersion")).longValue();
 			DBObject configData = (DBObject) found.get("configData");
 			String tenant=configData.get("tenantCode").toString();
 			String datasetStatus=(String)configData.get("datasetStatus");
@@ -73,7 +73,7 @@ public class MongoDbStore {
 
 			String licence=(String)info.get("licence");
 			String dataDomain=(String)info.get("dataDomain");
-			Double fps=((Number) info.get("fps")).doubleValue();
+			Double fps = info.get("fps") ==null ? null : ((Number)info.get("fps")).doubleValue();
 
 			String datasetName = (String)info.get("datasetName");
 			String visibility=(String)info.get("visibility");
@@ -89,20 +89,25 @@ public class MongoDbStore {
 
 			for (int i =0;i<fieldsList.size();i++){
 				DBObject measure = (DBObject) fieldsList.get(i);
-				fieldsBuilder.append(measure.get("measureUnit").toString());
-				fieldsBuilder.append(",");
+				String mis = measure.get("measureUnit") == null ? null : measure.get("measureUnit").toString();
+				if(mis!=null){
+					fieldsBuilder.append(mis);
+					fieldsBuilder.append(",");
+				}
 			}
 			String unitaMisura=fieldsBuilder.toString();
 			StringBuilder tagsBuilder = new StringBuilder();
 			BasicDBList  tagsList = (BasicDBList) info.get("tags");
 
-			for (int i =0;i<tagsList.size();i++){
-				DBObject tagObj = (DBObject) tagsList.get(i);
-				tagsBuilder.append(tagObj.get("tagCode").toString());
-				tagsBuilder.append(",");
+			String tags=null;
+			if(tagsList!=null){
+				for (int i =0;i<tagsList.size();i++){
+					DBObject tagObj = (DBObject) tagsList.get(i);
+					tagsBuilder.append(tagObj.get("tagCode").toString());
+					tagsBuilder.append(",");
+				}
+				tags = tagsBuilder.toString();
 			}
-			String tags = tagsBuilder.toString();
-
 			Map<String,Object> cur = new HashMap<String, Object>();
 			cur.put("idDataset", id);
 			cur.put("tenant", tenant);
@@ -189,8 +194,8 @@ public class MongoDbStore {
 
 			DBObject obj=cursor.next();
 
-			Integer id = obj.get("idDataset") == null ? null :((Number)obj.get("idDataset")).intValue();
-			Integer datasetVersion = obj.get("datasetVersion") == null ? null :((Number)obj.get("datasetVersion")).intValue();
+			Long id = obj.get("idDataset") == null ? null :((Number)obj.get("idDataset")).longValue();
+			Long datasetVersion = obj.get("datasetVersion") == null ? null :((Number)obj.get("datasetVersion")).longValue();
 
 			DBObject configData = (DBObject) obj.get("configData");
 			String tenant=configData.get("tenantCode").toString();
@@ -201,7 +206,7 @@ public class MongoDbStore {
 
 			String licence=(String)info.get("licence");
 			String dataDomain=(String)info.get("dataDomain");
-			Double fps = ((Number)info.get("fps")).doubleValue();
+			Double fps = info.get("fps") ==null ? null : ((Number)info.get("fps")).doubleValue();
 
 			String datasetName = (String)info.get("datasetName");
 			String visibility=(String)info.get("visibility");
@@ -217,20 +222,25 @@ public class MongoDbStore {
 
 			for (int i =0;i<fieldsList.size();i++){
 				DBObject measure = (DBObject) fieldsList.get(i);
-				fieldsBuilder.append(measure.get("measureUnit").toString());
-				fieldsBuilder.append(",");
+				String mis = measure.get("measureUnit") == null ? null : measure.get("measureUnit").toString();
+				if(mis!=null){
+					fieldsBuilder.append(mis);
+					fieldsBuilder.append(",");
+				}
 			}
 			String unitaMisura=fieldsBuilder.toString();
 			StringBuilder tagsBuilder = new StringBuilder();
+
 			BasicDBList  tagsList = (BasicDBList) info.get("tags");
-
-			for (int i =0;i<tagsList.size();i++){
-				DBObject tagObj = (DBObject) tagsList.get(i);
-				tagsBuilder.append(tagObj.get("tagCode").toString());
-				tagsBuilder.append(",");
+			String tags=null;
+			if(tagsList!=null){
+				for (int i =0;i<tagsList.size();i++){
+					DBObject tagObj = (DBObject) tagsList.get(i);
+					tagsBuilder.append(tagObj.get("tagCode").toString());
+					tagsBuilder.append(",");
+				}
+				tags = tagsBuilder.toString();
 			}
-			String tags = tagsBuilder.toString();
-
 			Map<String,Object> cur = new HashMap<String, Object>();
 			cur.put("idDataset", id);
 			cur.put("tenant", tenant);
@@ -298,7 +308,7 @@ public class MongoDbStore {
 	}
 
 
-	public List<Map<String, Object>> getDatasetFields(Integer datasetKey) {
+	public List<Map<String, Object>> getDatasetFields(Long datasetKey) {
 
 		List<Map<String,Object>> ret = new ArrayList<Map<String,Object>>();
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
@@ -325,6 +335,7 @@ public class MongoDbStore {
 				String dataType = (String)measure.get("dataType");
 				Integer sourceColumn = measure.get("sourceColumn") == null ? null : ((Number) measure.get("sourceColumn")).intValue();
 				Integer isKey = measure.get("isKey") == null ? null :  ((Number)measure.get("isKey")).intValue();
+
 				String measureUnit = (String)measure.get("measureUnit");
 
 				Map<String,Object> cur = new HashMap<String, Object>();

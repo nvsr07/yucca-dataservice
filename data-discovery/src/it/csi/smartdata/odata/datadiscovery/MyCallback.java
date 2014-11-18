@@ -70,7 +70,7 @@ public class MyCallback implements /*OnWriteEntryContent,*/ OnWriteFeedContent {
             .build();
 
         Map<String, Object> keys = context.extractKeyFromEntryData();
-        Integer datasetId =  (Integer) keys.get("idDataset");
+        Long datasetId =  (Long) keys.get("idDataset");
         result.setFeedData(dataStore.getDatasetFields(datasetId));
         result.setInlineProperties(inlineProperties);
       }
