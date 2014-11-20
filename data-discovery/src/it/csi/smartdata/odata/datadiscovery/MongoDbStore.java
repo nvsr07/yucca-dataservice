@@ -110,7 +110,7 @@ public class MongoDbStore {
 			}
 			Map<String,Object> cur = new HashMap<String, Object>();
 			cur.put("idDataset", id);
-			cur.put("tenant", tenant);
+			cur.put("tenantCode", tenant);
 			cur.put("dataDomain", dataDomain);
 			cur.put("licence", licence);
 			cur.put("fps", fps);
@@ -243,7 +243,7 @@ public class MongoDbStore {
 			}
 			Map<String,Object> cur = new HashMap<String, Object>();
 			cur.put("idDataset", id);
-			cur.put("tenant", tenant);
+			cur.put("tenantCode", tenant);
 			cur.put("dataDomain", dataDomain);
 			cur.put("licence", licence);
 			cur.put("fps", fps);
