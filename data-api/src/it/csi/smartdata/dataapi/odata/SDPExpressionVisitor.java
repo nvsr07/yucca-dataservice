@@ -294,12 +294,30 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			OrderByExpression paramOrderByExpression, String paramString,
 			List<Object> paramList) {
 		out.append("visitOrderByExpression\n");
+		
+		BasicDBList ret=new BasicDBList();
+		for (int i =0;paramList!=null && i<paramList.size() ; i++) {
+			if (paramList.get(i) instanceof BasicDBObject) {
+				ret.add(paramList.get(i));
+			}
+		}
+		if (ret.size()>0) return ret;
 		return null;
 	}
 
 	@Override
 	public Object visitOrder(OrderExpression paramOrderExpression,
 			Object paramObject, SortOrder paramSortOrder) {
+		
+		
+		if (paramObject instanceof String ) {
+			String val= getFullFielName ((String)paramObject);
+			int order=-99;
+			if (paramSortOrder.compareTo(SortOrder.asc)==0)  order= 1;
+			if (paramSortOrder.compareTo(SortOrder.desc)==0)  order= 1;
+			return new BasicDBObject(val, order);
+		}  
+		
 		out.append("visitOrder\n");
 		return null;
 	}
