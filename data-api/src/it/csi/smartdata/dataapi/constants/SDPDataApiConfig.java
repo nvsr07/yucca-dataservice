@@ -77,6 +77,10 @@ public class SDPDataApiConfig {
 		
 		
 		params.put("SDP_MAX_DOCS_PER_PAGE", rb.getString("SDP_MAX_DOCS_PER_PAGE"));
+		params.put("SDP_MAX_SKIP_PAGE", rb.getString("SDP_MAX_SKIP_PAGE"));
+		
+		
+		
 		
 		params.put("SDP_MONGO_CFG_DEFAULT_USER", rb.getString("SDP_MONGO_CFG_DEFAULT_USER"));
 		params.put("SDP_MONGO_CFG_DEFAULT_PWD", rb.getString("SDP_MONGO_CFG_DEFAULT_PWD"));
@@ -92,6 +96,13 @@ public class SDPDataApiConfig {
 		return Integer.parseInt(params.get("SDP_MAX_DOCS_PER_PAGE"));
 		
 	}
+
+	public int getMaxSkipPages() {
+		
+		return Integer.parseInt(params.get("SDP_MAX_SKIP_PAGE"));
+		
+	}
+	
 	
 	public String getWebFilterPattern() {
 		return params.get("SDP_WEB_FILTER_PATTERN");

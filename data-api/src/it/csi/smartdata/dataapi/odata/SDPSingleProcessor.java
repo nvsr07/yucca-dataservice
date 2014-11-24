@@ -3,11 +3,11 @@ package it.csi.smartdata.dataapi.odata;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.SDPMongoOdataCast;
+import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
 import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -71,6 +71,10 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		//controlli ... sollevo eccezione quando:
 		// top valorizzato e > di maxsize
 		// top non valorizzato e size > max
+		
+		
+		
+		
 		if(top!=null && top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+endindex,Locale.UK);
 		if(top==null && resultSize>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())  throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+endindex,Locale.UK);
 
@@ -118,6 +122,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			startindex=startindex+skip.intValue();
 		}
 		
+		if(skip!=null && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max page = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
 		
 
 		//controlli ... sollevo eccezione quando:
@@ -148,11 +153,26 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 
 
-		int [] ret = new int[] {startindex,endindex}; 
+		int [] ret = new int[] {startindex,endindex, ((top!=null) ? top.intValue() : -1 ) , ((skip!=null) ? skip.intValue() : -1 ) }; 
 		return ret; 
 
 	}	
 
+	
+	private int [] checkSkipTop(Integer skip,Integer top) throws Exception{
+		
+		if (skip==null) skip=new Integer(-1);
+		if (top==null) top= new Integer(-1);
+		if(skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+		if(top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+		
+
+
+		int [] ret = new int[] { skip.intValue() ,top.intValue() }; 
+		return ret; 
+
+	}		
+	
 
 	@Override
 	public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo,final String contentType) throws ODataException {
@@ -187,30 +207,35 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName())) {
 
+					
+					
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType().getNamespace();
-					List<Map<String, Object>> misure= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),null,userQuery);
-
-
-					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), misure.size());
-					int startindex=limiti[0];
-					int endindex=limiti[1];
-
-					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-					for (int i=startindex;i<endindex;i++) {
-						misureNew.add(misure.get(i));
-					}
+					
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int skip=skiptop[0];
+					int top=skiptop[1];
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,skip,top);
+					
+//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), misure.size());
+//					int startindex=limiti[0];
+//					int endindex=limiti[1];
+//
+//
+//					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+//					for (int i=startindex;i<endindex;i++) {
+//						misureNew.add(misure.get(i));
+//					}
 
 
 
 					ODataResponse ret= EntityProvider.writeFeed (
 							contentType,
 							entitySet,
-							misureNew,
+							dataRes.getDati(),
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
-									.inlineCount(misure.size())
+									.inlineCount(dataRes.getTotalCount())
 									.build());
 
 					return ret;
@@ -218,17 +243,23 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).equals(entitySet.getName())) {
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).getEntityType().getNamespace();
 
-					List<Map<String, Object>> misure= new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),null,userQuery);
+					
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					
+					
+					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),null,userQuery,
+							skiptop[0],
+							skiptop[1]);
 
-					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), misure.size());
-					int startindex=limiti[0];
-					int endindex=limiti[1];
-
-					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-					for (int i=startindex;i<endindex;i++) {
-						misureNew.add(misure.get(i));
-					}
+//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), misure.size());
+//					int startindex=limiti[0];
+//					int endindex=limiti[1];
+//
+//					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+//					for (int i=startindex;i<endindex;i++) {
+//						misureNew.add(misure.get(i));
+//					}
 
 
 
@@ -236,11 +267,11 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					ODataResponse ret= EntityProvider.writeFeed(
 							contentType,
 							entitySet,
-							misureNew,
+							dataRes.getDati(),
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
-									.inlineCount(misure.size())
+									.inlineCount(dataRes.getTotalCount())
 									.build());
 
 					return ret;
@@ -399,11 +430,11 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
-					List<Map<String, Object>> misure= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),id,null);
+					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),id,null,-1,-1);
 
 
-					Map<String, Object> data = misure.get(0);
+					Map<String, Object> data = dataRes.getDati().get(0);
 
 					if (data != null) {
 						URI serviceRoot = getContext().getPathInfo()
@@ -419,11 +450,11 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
-					List<Map<String, Object>> misure= new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),id,null);
+					SDPDataResult dataRes  = new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),id,null,-1,-1);
 
 
-					Map<String, Object> data = misure.get(0);
+					Map<String, Object> data = dataRes.getDati().get(0);
 
 					if (data != null) {
 						URI serviceRoot = getContext().getPathInfo()

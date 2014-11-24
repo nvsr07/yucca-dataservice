@@ -2,7 +2,7 @@ package it.csi.smartdata.dataapi.mongo;
 
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
-import it.csi.smartdata.dataapi.odata.SDPEdmProvider;
+import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -447,9 +447,10 @@ public class SDPMongoOdataCast {
 			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			//measureProps.add(new ComplexProperty().setName("values").setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES)));
-			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTime).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 //			measureProps.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			
 			List<Property> componentProp= getDatasetField(eleCapmpi);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
@@ -669,7 +670,9 @@ public class SDPMongoOdataCast {
 	 * @param internalId
 	 * @return
 	 */
-	public List<Map<String, Object>> getMeasuresPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery) throws Exception{
+	public SDPDataResult getMeasuresPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,
+			int skip,
+			int limit) throws Exception{
 		try {
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
@@ -680,22 +683,25 @@ public class SDPMongoOdataCast {
 
 			initDbObject(codiceApi);
 			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
-
+			int totCnt=0;
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
 
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
-				List<Map<String, Object>> misureCur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery);
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+						,skip,limit);
+				List<Map<String, Object>> misureCur = cur.getDati();
+				
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
 					ret.add(misureCur.get(k));
 				}
-
+				totCnt+=cur.getTotalCount();
 
 			}
 
-			return ret;
+			return new SDPDataResult(ret,totCnt);
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
 			throw e;
@@ -707,7 +713,9 @@ public class SDPMongoOdataCast {
 
 
 
-	public List<Map<String, Object>> getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery) throws Exception{
+	public SDPDataResult getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,
+			int skip,
+			int limit) throws Exception{
 		try {
 			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] codiceApi="+codiceApi);
@@ -720,20 +728,23 @@ public class SDPMongoOdataCast {
 			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
+			int totCnt=0;
 
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
-				List<Map<String, Object>> misureCur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery);
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+						,skip,limit);
+				List<Map<String, Object>> misureCur = cur.getDati();
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
 					ret.add(misureCur.get(k));
 				}
-
+				totCnt+=cur.getTotalCount();
 
 			}
 
-			return ret;
+			return new SDPDataResult(ret,totCnt);
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] " + e);
 			throw e;

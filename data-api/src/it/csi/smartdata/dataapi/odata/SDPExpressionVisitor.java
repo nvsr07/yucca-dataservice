@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -361,6 +362,74 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
 
 				return data;
+				
+			} catch (Exception e) {
+				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
+			}
+		} else if(EdmSimpleTypeKind.DateTimeOffset.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
+			try {
+				String dataStrIn=paramEdmLiteral.getLiteral();
+				
+				String dataStr=dataStrIn;
+				if (dataStrIn.length()==29 || dataStrIn.length()==25) {
+					String dataPrima=dataStrIn.substring(0,dataStrIn.length()-5);
+					String timeZ=dataStrIn.substring(dataStrIn.length()-5);
+					timeZ=timeZ.replace(":", "");
+					dataStr=dataPrima+timeZ;
+				}
+				
+				
+				Date data =null;
+				SimpleDateFormat dateFormatA = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+				SimpleDateFormat dateFormatB = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				SimpleDateFormat dateFormatC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+				SimpleDateFormat dateFormatD = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+				SimpleDateFormat dateFormatE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				SimpleDateFormat dateFormatF = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+				SimpleDateFormat dateFormatG = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+				SimpleDateFormat dateFormatH = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
+
+				
+				try  {
+					data = dateFormatE.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatF.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatG.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatH.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data =  dateFormatA.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatB.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatC.parse(dataStr);
+				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatD.parse(dataStr);
+				} catch (Exception e) {}
+
+//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//				System.out.println("---------------      "+data.getTimezoneOffset());
+//				System.out.println("---------------      |"+dateFormat.format(data)+"|");
+//				SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+//				System.out.println("---------------      |"+dateFormat2.format(data)+"|");
+
+
+
+				//data.setTime(data.getTime()-data.getTimezoneOffset()*60*1000);
+
+				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
+
+				return data;
+				
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
 			}
