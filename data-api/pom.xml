@@ -27,6 +27,9 @@
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
 <!-- 					<outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
+<!--  <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
+
+
 					<warName>DataApi</warName>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
@@ -104,6 +107,16 @@
 				<resources>
 					<resource>
 						<directory>resources/dev</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>test</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>resources/test</directory>
 					</resource>
 				</resources>
 			</build>
