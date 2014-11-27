@@ -64,6 +64,7 @@ public class MongoDbStore {
 		if (found != null) {
 			Long id = found.get("idDataset") == null ? null :((Number)found.get("idDataset")).longValue();
 			Long datasetVersion = found.get("datasetVersion") == null ? null :((Number)found.get("datasetVersion")).longValue();
+			String datasetCode =(String)found.get("datasetCode") ;
 			DBObject configData = (DBObject) found.get("configData");
 			String tenant=configData.get("tenantCode").toString();
 			String datasetStatus=(String)configData.get("datasetStatus");
@@ -73,6 +74,7 @@ public class MongoDbStore {
 
 			String licence=(String)info.get("licence");
 			String dataDomain=(String)info.get("dataDomain");
+			String description = (String)info.get("description");
 			Double fps = info.get("fps") ==null ? null : ((Number)info.get("fps")).doubleValue();
 
 			String datasetName = (String)info.get("datasetName");
@@ -113,6 +115,8 @@ public class MongoDbStore {
 			cur.put("tenantCode", tenant);
 			cur.put("dataDomain", dataDomain);
 			cur.put("licence", licence);
+			cur.put("description", description);
+			
 			cur.put("fps", fps);
 
 			cur.put("measureUnit", unitaMisura);
@@ -139,8 +143,8 @@ public class MongoDbStore {
 			cur.put("API",apibuilder.toString());
 
 			BasicDBObject findstream = new BasicDBObject();
-			findapi.append("configData.idDataset", id);
-			findapi.append("configData.datasetVersion", datasetVersion);
+			findstream.append("configData.idDataset", id);
+			findstream.append("configData.datasetVersion", datasetVersion);
 			DBCursor streams = collstream.find(findstream);
 
 
@@ -160,7 +164,17 @@ public class MongoDbStore {
 				if(streams.hasNext())
 					streambuilder.append(",");
 			}
+			
+			
+			String download = mongoParams.get("MONGO_DOWNLOAD_ADDRESS")+"/"+tenant+"/"+datasetCode+"/csv";
+			
+			
 			cur.put("STREAM",streambuilder.toString() );
+			
+			
+			
+			
+			cur.put("download", download);
 
 			cur.put("datasetName", datasetName);
 			cur.put("visibility", visibility);
@@ -196,7 +210,7 @@ public class MongoDbStore {
 
 			Long id = obj.get("idDataset") == null ? null :((Number)obj.get("idDataset")).longValue();
 			Long datasetVersion = obj.get("datasetVersion") == null ? null :((Number)obj.get("datasetVersion")).longValue();
-
+			String datasetCode =(String)obj.get("datasetCode") ;
 			DBObject configData = (DBObject) obj.get("configData");
 			String tenant=configData.get("tenantCode").toString();
 			String datasetStatus=(String)configData.get("datasetStatus");
@@ -206,6 +220,7 @@ public class MongoDbStore {
 
 			String licence=(String)info.get("licence");
 			String dataDomain=(String)info.get("dataDomain");
+			String description = (String)info.get("description");
 			Double fps = info.get("fps") ==null ? null : ((Number)info.get("fps")).doubleValue();
 
 			String datasetName = (String)info.get("datasetName");
@@ -246,6 +261,7 @@ public class MongoDbStore {
 			cur.put("tenantCode", tenant);
 			cur.put("dataDomain", dataDomain);
 			cur.put("licence", licence);
+			cur.put("description", description);
 			cur.put("fps", fps);
 
 			cur.put("measureUnit", unitaMisura);
@@ -271,8 +287,8 @@ public class MongoDbStore {
 			cur.put("API",apibuilder.toString());
 
 			BasicDBObject findstream = new BasicDBObject();
-			findapi.append("configData.idDataset", id);
-			findapi.append("configData.datasetVersion", datasetVersion);
+			findstream.append("configData.idDataset", id);
+			findstream.append("configData.datasetVersion", datasetVersion);
 			DBCursor streams = collstream.find(findstream);
 
 
@@ -292,7 +308,13 @@ public class MongoDbStore {
 				streambuilder.append(",");
 			}
 			cur.put("STREAM",streambuilder.toString() );
+			
+			
+			
+			String download = mongoParams.get("MONGO_DOWNLOAD_ADDRESS")+"/"+tenant+"/"+datasetCode+"/csv";
 
+			cur.put("download", download);
+			
 			cur.put("datasetName", datasetName);
 			cur.put("visibility", visibility);
 			cur.put("registrationDate", registrationDate);

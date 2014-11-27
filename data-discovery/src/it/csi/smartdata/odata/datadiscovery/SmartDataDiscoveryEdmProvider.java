@@ -167,6 +167,8 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("licence").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("fps").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
 		
+		propertiesSmartObject.add(new SimpleProperty().setName("description").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("download").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("datasetName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("visibility").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("registrationDate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));		
