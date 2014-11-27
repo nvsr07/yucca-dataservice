@@ -47,24 +47,24 @@ public class SDPDataApiMongoAccess {
 	}
 
 
-	
+
 	private MongoClient getMongoClient (String host,int port) throws Exception{
-//		ServerAddress serverAddr=new ServerAddress(host,port);
-//		MongoClient mongoClient = null;
-//		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
-//				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
-//			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
-//					"admin", 
-//					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
-//			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
-//		} else {
-//			mongoClient = new MongoClient(serverAddr);
-//		}
-//		return mongoClient;
-		
-		
+		//		ServerAddress serverAddr=new ServerAddress(host,port);
+		//		MongoClient mongoClient = null;
+		//		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
+		//				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
+		//			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+		//					"admin", 
+		//					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
+		//			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
+		//		} else {
+		//			mongoClient = new MongoClient(serverAddr);
+		//		}
+		//		return mongoClient;
+
+
 		return MongoTenantDbSingleton.getInstance().getMongoClient(host, port);
-		
+
 	}
 
 
@@ -79,17 +79,17 @@ public class SDPDataApiMongoAccess {
 			if (null==configObject || !codiceApi.equals(this.codiceApi)) {
 				this.codiceApi=codiceApi;
 				configObject=new ArrayList<DBObject>();
-//				MongoClient mongoClient = new MongoClient(
-//						SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
-//						SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
+				//				MongoClient mongoClient = new MongoClient(
+				//						SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
+				//						SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
 
 				MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
 						SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));				
-				
+
 				DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_API));
 				DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_API));
 
-//				BasicDBObject query = new BasicDBObject("configData.codiceApi",codiceApi);
+				//				BasicDBObject query = new BasicDBObject("configData.codiceApi",codiceApi);
 				BasicDBObject query = new BasicDBObject("apiCode",codiceApi);
 
 				log.debug("[SDPDataApiMongoAccess::initConfDbObject] API query--> "+query);
@@ -135,7 +135,7 @@ public class SDPDataApiMongoAccess {
 			log.error("[SDPDataApiMongoAccess::initConfDbObject] INGORED" +e);
 		} finally {
 			log.info("[SDPDataApiMongoAccess::initConfDbObject] END");
-			
+
 		}
 
 		return this.configObject;
@@ -146,22 +146,22 @@ public class SDPDataApiMongoAccess {
 		List<Property> compPropsTot=new ArrayList<Property>();
 		BasicDBList ret2=new BasicDBList();
 		try {
-			
+
 			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] BEGIN");
 			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] queryStreams="+queryStreams);
-			
-			
+
+
 			BasicDBObject query =null;
 			DBCursor cursor=null;
 
-//			MongoClient mongoClient = new MongoClient(
-//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
-//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
-			
+			//			MongoClient mongoClient = new MongoClient(
+			//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+			//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+
 			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
 					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));				
-			
-			
+
+
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 
@@ -175,15 +175,15 @@ public class SDPDataApiMongoAccess {
 				BasicDBList campiDbList=null;
 				while (cursor.hasNext()) {
 					DBObject obj=cursor.next();
-//					Object eleCapmpi=((BasicDBObject)obj.get("dataset")).get("fields");				
+					//					Object eleCapmpi=((BasicDBObject)obj.get("dataset")).get("fields");				
 					Object eleCapmpi=((BasicDBObject)obj.get("info")).get("fields");				
-					
+
 					campiDbList= getDatasetFiledsDbList(eleCapmpi);
-					
+
 					log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] current dataset="+obj);
 					log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] current dataset campiDbList="+campiDbList);
-					
-					
+
+
 					for (int k=0;k<campiDbList.size();k++) {
 						boolean present=false;
 						compProps=getDatasetFiledsOdataPros(campiDbList.get(k));
@@ -194,7 +194,7 @@ public class SDPDataApiMongoAccess {
 						if (!present) {
 							compPropsTot.add(compProps.get(0));
 							log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString]        filed added="+campiDbList.get(k));
-							
+
 							ret2.add(campiDbList.get(k));
 						}
 					}
@@ -203,7 +203,7 @@ public class SDPDataApiMongoAccess {
 				}
 
 
-				
+
 			}finally {
 				cursor.close();
 			}
@@ -215,7 +215,7 @@ public class SDPDataApiMongoAccess {
 
 		} finally {
 			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] END");
-			
+
 		}
 		return ret2;
 
@@ -230,18 +230,18 @@ public class SDPDataApiMongoAccess {
 
 
 
-//			MongoClient mongoClient = new MongoClient(
-//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
-//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
-			
+			//			MongoClient mongoClient = new MongoClient(
+			//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
+			//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));
+
 			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_API), 
 					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_API));				
-			
-			
+
+
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_API));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_API));
 
-//			BasicDBObject query = new BasicDBObject("configData.codiceApi",codiceApi);
+			//			BasicDBObject query = new BasicDBObject("configData.codiceApi",codiceApi);
 			BasicDBObject query = new BasicDBObject("apiCode",codiceApi);
 
 
@@ -356,7 +356,7 @@ public class SDPDataApiMongoAccess {
 				//DBObject clause = new BasicDBObject("configData.idDataset", idDataset);
 				//DBObject clause = new BasicDBObject("idDataset", new Integer(idDataset));
 				DBObject clause = new BasicDBObject("idDataset", new Integer(new Double(idDataset).intValue()));
-				
+
 				queryStreams.add(clause);
 
 			}
@@ -425,12 +425,12 @@ public class SDPDataApiMongoAccess {
 			//			MongoClient mongoClient = new MongoClient("tst-sdnet-bgslave1.sdp.csi.it", 27017);
 			//			DB db = mongoClient.getDB("smartlab");
 			//			DBCollection coll = db.getCollection("configCollection01");
-//			MongoClient mongoClient = new MongoClient(
-//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
-//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+			//			MongoClient mongoClient = new MongoClient(
+			//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+			//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
 					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));				
-			
+
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
 
@@ -544,8 +544,8 @@ public class SDPDataApiMongoAccess {
 
 			//MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
 			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
-			
-			
+
+
 			DB db = mongoClient.getDB(dbcfg);
 
 
@@ -579,7 +579,7 @@ public class SDPDataApiMongoAccess {
 			//cursor = collMisure.find(query);
 
 			cnt = collMisure.find(query).count();
-			
+
 			if (skip<0) skip=0;
 			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
 			cursor = collMisure.find(query).skip(skip).limit(limit);
@@ -591,7 +591,7 @@ public class SDPDataApiMongoAccess {
 					DBObject obj=cursor.next();
 					String internalID=obj.get("_id").toString();
 					String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
-//					String current=takeNvlValues(obj.get("current"));
+					//					String current=takeNvlValues(obj.get("current"));
 
 
 
@@ -605,27 +605,27 @@ public class SDPDataApiMongoAccess {
 						misura.put("streamCode", streamId);
 						misura.put("sensor", sensorId);
 						//misura.put("time",  timestmp);
-						
+
 						Object objTimestamp=obj.get("time");
-//						if (objTimestamp instanceof Date) {
-//							Date dataTimestamp=(Date)objTimestamp;
-//							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//							System.out.println("---------------      "+dataTimestamp.getTimezoneOffset());
-//							System.out.println("---------------      "+obj.get("time").toString());
-//							System.out.println("---------------      |"+dateFormat.format(dataTimestamp)+"|");
-//							SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-//							System.out.println("---------------      |"+dateFormat2.format(dataTimestamp)+"|");
-//							
-//							
-//							
-//							Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-//						} else {
-//							misura.put("time",  obj.get("time"));
-//						}
+						//						if (objTimestamp instanceof Date) {
+						//							Date dataTimestamp=(Date)objTimestamp;
+						//							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+						//							System.out.println("---------------      "+dataTimestamp.getTimezoneOffset());
+						//							System.out.println("---------------      "+obj.get("time").toString());
+						//							System.out.println("---------------      |"+dateFormat.format(dataTimestamp)+"|");
+						//							SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+						//							System.out.println("---------------      |"+dateFormat2.format(dataTimestamp)+"|");
+						//							
+						//							
+						//							
+						//							Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+						//						} else {
+						//							misura.put("time",  obj.get("time"));
+						//						}
 						misura.put("time",  obj.get("time"));
 
-						
-//						if (null!= current ) misura.put("current",  Integer.parseInt(current));
+
+						//						if (null!= current ) misura.put("current",  Integer.parseInt(current));
 						String iddataset=takeNvlValues(obj.get("idDataset"));
 						if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					}					
@@ -636,36 +636,38 @@ public class SDPDataApiMongoAccess {
 
 						String chiave=compPropsTot.get(i).getName();
 						if (obj.keySet().contains(chiave)) {
-							String  valore=obj.get(chiave).toString();
-							if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
-								misura.put(chiave, Boolean.valueOf(valore));
-							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
-								misura.put(chiave, valore);
-							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
-								misura.put(chiave, Integer.parseInt(valore));
-							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
-								misura.put(chiave, Long.parseLong(valore));
-							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
-								misura.put(chiave, Double.parseDouble(valore));
-							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
-								//Sun Oct 19 07:01:17 CET 1969
-								//EEE MMM dd HH:mm:ss zzz yyyy
-								Object dataObj=obj.get(chiave);
-								
-								//System.out.println("------------------------------"+dataObj.getClass().getName());
-								
-								misura.put(chiave, dataObj);
+							String  valore=takeNvlValues(obj.get(chiave));
+							if (null!=valore) {
+								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
+									misura.put(chiave, Boolean.valueOf(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
+									misura.put(chiave, valore);
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
+									misura.put(chiave, Integer.parseInt(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
+									misura.put(chiave, Long.parseLong(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
+									misura.put(chiave, Double.parseDouble(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
+									//Sun Oct 19 07:01:17 CET 1969
+									//EEE MMM dd HH:mm:ss zzz yyyy
+									Object dataObj=obj.get(chiave);
+
+									//System.out.println("------------------------------"+dataObj.getClass().getName());
+
+									misura.put(chiave, dataObj);
 
 
-//																 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//															     Date data = dateFormat.parse(valore);								
-//																	misura.put(chiave, data);
-								
-								
-							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
-								//comppnenti.put(chiave, Float.parseFloat(valore));
-								misura.put(chiave, Double.parseDouble(valore));
+									//																 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+									//															     Date data = dateFormat.parse(valore);								
+									//																	misura.put(chiave, data);
 
+
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
+									//comppnenti.put(chiave, Float.parseFloat(valore));
+									misura.put(chiave, Double.parseDouble(valore));
+
+								}
 							}
 						}
 					}					
