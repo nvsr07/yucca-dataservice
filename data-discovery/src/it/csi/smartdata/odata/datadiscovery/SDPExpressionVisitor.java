@@ -502,7 +502,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tenantCode" ,"configData.tenantCode");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".datasetStatus" ,"configData.datasetStatus");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".dataDomain" ,"info.dataDomain");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".licence" ,"info.licence");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".license" ,"info.license");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".fps" ,"info.fps");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tags" ,"info.tags.tagCode");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".measureUnit" ,"info.fields.measureUnit");

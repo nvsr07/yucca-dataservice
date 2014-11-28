@@ -111,7 +111,7 @@ public class MongoDbStore {
 
 		DBObject info = (DBObject) datasetFound.get("info");
 
-		String licence=(String)info.get("licence");
+		String license=(String)info.get("license");
 		String dataDomain=(String)info.get("dataDomain");
 		String description = (String)info.get("description");
 		Double fps = info.get("fps") ==null ? null : ((Number)info.get("fps")).doubleValue();
@@ -159,7 +159,7 @@ public class MongoDbStore {
 		cur.put("idDataset", id);
 		cur.put("tenantCode", tenant);
 		cur.put("dataDomain", dataDomain);
-		cur.put("licence", licence);
+		cur.put("license", license);
 		cur.put("description", description);
 		
 		cur.put("fps", fps);
