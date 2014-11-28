@@ -123,7 +123,9 @@ public class MongoDbStore {
 		String endIngestionDate=(String)info.get("endIngestionDate");
 		String importFileType=(String)info.get("importFileType");
 
-
+		String disclaimer = (String)info.get("disclaimer");
+		String copyright = (String)info.get("copyright");
+		
 
 		StringBuilder fieldsBuilder = new StringBuilder();
 		BasicDBList fieldsList = (BasicDBList) info.get("fields");
@@ -227,6 +229,13 @@ public class MongoDbStore {
 		cur.put("endIngestionDate", endIngestionDate);
 		cur.put("importFileType", importFileType);
 		cur.put("datasetStatus", datasetStatus);
+
+		cur.put("datasetVersion", (datasetVersion==null)?null:datasetVersion.toString());
+		cur.put("datasetCode", datasetCode);
+		cur.put("disclaimer", disclaimer);
+		cur.put("copyright", copyright);
+
+		
 		return cur;
 	}
 

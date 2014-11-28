@@ -184,6 +184,11 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("API").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("STREAM").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
+		propertiesSmartObject.add(new SimpleProperty().setName("datasetCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("disclaimer").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("copyright").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+
 		
 		
 		//Keys
