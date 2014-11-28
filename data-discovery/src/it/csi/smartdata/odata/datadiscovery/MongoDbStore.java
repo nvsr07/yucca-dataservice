@@ -199,9 +199,9 @@ public class MongoDbStore {
 			DBObject streamsObj = (DBObject) nx.get("streams");
 			DBObject stream = (DBObject) streamsObj.get("stream");
 			streambuilder.append(mongoParams.get("MONGO_STREAM_TOPIC"));
-			streambuilder.append("/");					
+			streambuilder.append("/output.");					
 			streambuilder.append(config.get("tenantCode"));
-			streambuilder.append("/");
+			streambuilder.append(".");
 			streambuilder.append(stream.get("virtualEntityCode"));
 			streambuilder.append("_");
 			streambuilder.append(nx.get("streamCode"));
