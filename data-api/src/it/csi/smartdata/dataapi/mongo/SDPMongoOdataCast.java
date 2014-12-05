@@ -397,6 +397,7 @@ public class SDPMongoOdataCast {
 			dataAttributes.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			dataAttributes.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 //			dataAttributes.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			
 			
 			
@@ -443,14 +444,21 @@ public class SDPMongoOdataCast {
 		try {
 			log.info("[SDPMongoOdataCast::getMeasureType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
-			measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
-			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			
+			// SPOSTATI IN CFGd
+			//measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			//measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			//measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
+
+			
 			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
-			//measureProps.add(new ComplexProperty().setName("values").setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES)));
-			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
-//			measureProps.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+			/* VECCHI eliminati */
+			//measureProps.add(new ComplexProperty().setName("values").setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES)));
+			//measureProps.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+
 			
 			List<Property> componentProp= getDatasetField(eleCapmpi);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
@@ -670,7 +678,7 @@ public class SDPMongoOdataCast {
 	 * @param internalId
 	 * @return
 	 */
-	public SDPDataResult getMeasuresPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,
+	public SDPDataResult getMeasuresPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
 			int skip,
 			int limit) throws Exception{
 		try {
@@ -691,7 +699,7 @@ public class SDPMongoOdataCast {
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
 				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
-						,skip,limit);
+						,userOrderBy,skip,limit);
 				List<Map<String, Object>> misureCur = cur.getDati();
 				
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
@@ -713,7 +721,7 @@ public class SDPMongoOdataCast {
 
 
 
-	public SDPDataResult getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,
+	public SDPDataResult getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
 			int skip,
 			int limit) throws Exception{
 		try {
@@ -735,7 +743,7 @@ public class SDPMongoOdataCast {
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
 				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
-						,skip,limit);
+						,userOrderBy,skip,limit);
 				List<Map<String, Object>> misureCur = cur.getDati();
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
 					ret.add(misureCur.get(k));

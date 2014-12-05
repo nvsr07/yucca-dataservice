@@ -8,7 +8,8 @@ import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,18 +22,19 @@ import org.apache.olingo.odata2.api.edm.EdmSimpleType;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties.ODataEntityProviderPropertiesBuilder;
-import org.apache.olingo.odata2.api.exception.MessageReference;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.exception.ODataNotFoundException;
 import org.apache.olingo.odata2.api.exception.ODataNotImplementedException;
 import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
+import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
+import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.expression.FilterExpression;
 import org.apache.olingo.odata2.api.uri.expression.OrderByExpression;
-import org.apache.olingo.odata2.api.uri.expression.OrderExpression;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
+import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
 
 public class SDPSingleProcessor extends ODataSingleProcessor {
 	static Logger log = Logger.getLogger(SDPSingleProcessor.class.getPackage().getName());
@@ -65,7 +67,6 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 	private int [] checkPagesData_old(Integer skip,Integer top, int resultSize) throws Exception{
 		int startindex=0;
 		int endindex=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
-
 
 		log.info("[SDPSingleProcessor::checkPagesData] skipParameter="+skip);
 		log.info("[SDPSingleProcessor::checkPagesData] topParameter="+top);
@@ -176,6 +177,14 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 	}		
 	
+	@Override
+	public ODataResponse readEntitySimpleProperty(final GetSimplePropertyUriInfo uriInfo,final String contentType) throws ODataException {
+		throw new ODataNotImplementedException();
+	}
+	@Override
+	public ODataResponse readEntitySimplePropertyValue(final GetSimplePropertyUriInfo uriInfo,final String contentType) throws ODataException {
+		throw new ODataNotImplementedException();
+	}
 
 	@Override
 	public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo,final String contentType) throws ODataException {
@@ -192,26 +201,27 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			} catch (Exception e) {}
 			log.info("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
 			EdmEntitySet entitySet;
+			ExpandSelectTreeNode expandSelectTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
 
 			if (uriInfo.getNavigationSegments().size() == 0) {
 				entitySet = uriInfo.getStartEntitySet();
 
 				Object userQuery=null;
-
+				Object orderQuery=null;
 				FilterExpression fe = uriInfo.getFilter();
-				//OrderByExpression oe=uriInfo.getOrderBy();
+				OrderByExpression oe=uriInfo.getOrderBy();
 				if (fe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
 					userQuery = fe.accept(ev);
 					log.info("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
 				}
-//				if (oe != null) {
-//					SDPExpressionVisitor ev = new SDPExpressionVisitor();
-//					ev.setEntitySetName(entitySet.getName());
-//					Object orderQuery=oe.accept(ev);
-//					log.info("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
-//				}
+				if (oe != null) {
+					SDPExpressionVisitor ev = new SDPExpressionVisitor();
+					ev.setEntitySetName(entitySet.getName());
+					orderQuery=oe.accept(ev);
+					log.info("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
+				}
 				log.info("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
 
 
@@ -224,28 +234,32 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 					int skip=skiptop[0];
 					int top=skiptop[1];
-					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,skip,top);
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
+			
 					
-//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), misure.size());
-//					int startindex=limiti[0];
-//					int endindex=limiti[1];
-//
-//
-//					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-//					for (int i=startindex;i<endindex;i++) {
-//						misureNew.add(misure.get(i));
-//					}
+					
+					
+					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
+					int startindex=limiti[0];
+					int endindex=limiti[1];
+
+
+					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+					for (int i=startindex;i<endindex;i++) {
+						misureNew.add(dataRes.getDati().get(i));
+					}
 
 
 
 					ODataResponse ret= EntityProvider.writeFeed (
 							contentType,
 							entitySet,
-							dataRes.getDati(),
+							misureNew,
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(dataRes.getTotalCount())
+									.expandSelectTree(expandSelectTreeNode)
 									.build());
 
 					return ret;
@@ -258,31 +272,32 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					
 					
 					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),null,userQuery,
+							uriInfo.getEntityContainer(),null,userQuery,orderQuery,
 							skiptop[0],
 							skiptop[1]);
 
-//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), misure.size());
-//					int startindex=limiti[0];
-//					int endindex=limiti[1];
-//
-//					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-//					for (int i=startindex;i<endindex;i++) {
-//						misureNew.add(misure.get(i));
-//					}
+					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
+					int startindex=limiti[0];
+					int endindex=limiti[1];
 
+					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+					for (int i=startindex;i<endindex;i++) {
+						misureNew.add(dataRes.getDati().get(i));
+					}
 
-
-
+					
+					
 					ODataResponse ret= EntityProvider.writeFeed(
 							contentType,
 							entitySet,
-							dataRes.getDati(),
+							misureNew,
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(dataRes.getTotalCount())
-									.build());
+									.expandSelectTree(expandSelectTreeNode)
+									.build()
+									);
 
 					return ret;
 
@@ -418,7 +433,6 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 	@Override
 	public ODataResponse readEntity(final GetEntityUriInfo uriInfo,final String contentType) throws ODataException {
 
-
 		try {
 			log.info("[SDPSingleProcessor::readEntity] BEGIN");
 			log.info("[SDPSingleProcessor::readEntity] uriInfo="+uriInfo);
@@ -430,6 +444,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				newUri=new URI(this.baseUrl);
 			} catch (Exception e) {}
 			log.info("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
+			ExpandSelectTreeNode expandSelectTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
 
 			if (uriInfo.getNavigationSegments().size() == 0) {
 				EdmEntitySet entitySet = uriInfo.getStartEntitySet();
@@ -441,7 +456,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
 					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),id,null,-1,-1);
+							uriInfo.getEntityContainer(),id,null,null,-1,-1);
 
 
 					//Map<String, Object> data = dataRes.getDati().get(0);
@@ -455,7 +470,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 								.serviceRoot(newUri);
 
 						return EntityProvider.writeEntry(contentType, entitySet,
-								data, propertiesBuilder.build());
+								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
 					} else {
 						throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
 					}
@@ -465,7 +480,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
 					SDPDataResult dataRes  = new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),id,null,-1,-1);
+							uriInfo.getEntityContainer(),id,null,null,-1,-1);
 
 
 					Map<String, Object> data = ( dataRes.getDati()!= null && dataRes.getDati().size()>0 ) ? dataRes.getDati().get(0) : null ;
@@ -477,7 +492,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 								.serviceRoot(newUri);
 
 						return EntityProvider.writeEntry(contentType, entitySet,
-								data, propertiesBuilder.build());
+								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
 					} else {
 						throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
 					}

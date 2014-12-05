@@ -469,7 +469,7 @@ public class SDPDataApiMongoAccess {
 
 	//TODO ... rinominare 
 	//TODO gestire eccezioni
-	public SDPDataResult getMeasuresPerStream(String codiceTenant, String nameSpace, EdmEntityContainer entityContainer,DBObject streamMetadata,String internalId,String datatType,Object userQuery,
+	public SDPDataResult getMeasuresPerStream(String codiceTenant, String nameSpace, EdmEntityContainer entityContainer,DBObject streamMetadata,String internalId,String datatType,Object userQuery, Object userOrderBy,
 			int skip,
 			int limit
 			) {
@@ -477,6 +477,7 @@ public class SDPDataApiMongoAccess {
 		//		String sensore=null;
 		//		String stream=null;
 		String idDataset=null;
+		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 		int cnt = -1;
 		try {
@@ -498,6 +499,7 @@ public class SDPDataApiMongoAccess {
 			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
 			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
+			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
 			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
 
 			if (null==collection || collection.trim().length()<=0) {
@@ -555,6 +557,9 @@ public class SDPDataApiMongoAccess {
 			//queryTot.add( new BasicDBObject("idDataset",idDataset));
 			queryTot.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
 
+			queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
+			
+			
 
 			//BasicDBObject query = new BasicDBObject("idDataset",idDataset);
 			if (null!=internalId) {
@@ -582,7 +587,15 @@ public class SDPDataApiMongoAccess {
 
 			if (skip<0) skip=0;
 			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
-			cursor = collMisure.find(query).skip(skip).limit(limit);
+			
+			
+			// per ordinamento su max 
+			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
+			skip=0;
+			
+			
+			if (null!=userOrderBy) cursor = collMisure.find(query).skip(skip).limit(limit).sort((BasicDBList)userOrderBy);
+			else cursor = collMisure.find(query).skip(skip).limit(limit);
 			try {
 				while (cursor.hasNext()) {
 
@@ -598,44 +611,24 @@ public class SDPDataApiMongoAccess {
 					Map<String, Object> misura = new HashMap<String, Object>();
 					misura.put("internalId",  internalID);
 
-					if (DATA_TYPE_MEASURE.equals(datatType)) {
-						String streamId=obj.get("streamCode").toString();
-						String sensorId=obj.get("sensor").toString();
-						String timestmp=obj.get("time").toString();
-						misura.put("streamCode", streamId);
-						misura.put("sensor", sensorId);
-						//misura.put("time",  timestmp);
+//					if (DATA_TYPE_MEASURE.equals(datatType)) {
+//						String streamId=obj.get("streamCode").toString();
+//						String sensorId=obj.get("sensor").toString();
+//						misura.put("streamCode", streamId);
+//						misura.put("sensor", sensorId);
+//						misura.put("time",  obj.get("time"));
+//					}					
 
-						Object objTimestamp=obj.get("time");
-						//						if (objTimestamp instanceof Date) {
-						//							Date dataTimestamp=(Date)objTimestamp;
-						//							SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-						//							System.out.println("---------------      "+dataTimestamp.getTimezoneOffset());
-						//							System.out.println("---------------      "+obj.get("time").toString());
-						//							System.out.println("---------------      |"+dateFormat.format(dataTimestamp)+"|");
-						//							SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-						//							System.out.println("---------------      |"+dateFormat2.format(dataTimestamp)+"|");
-						//							
-						//							
-						//							
-						//							Calendar cal= Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-						//						} else {
-						//							misura.put("time",  obj.get("time"));
-						//						}
-						misura.put("time",  obj.get("time"));
-
-
-						//						if (null!= current ) misura.put("current",  Integer.parseInt(current));
-						String iddataset=takeNvlValues(obj.get("idDataset"));
-						if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
-					}					
+					
+					String iddataset=takeNvlValues(obj.get("idDataset"));
+					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 
 
 					for (int i=0;i<compPropsTot.size();i++) {
 
 						String chiave=compPropsTot.get(i).getName();
-						if (obj.keySet().contains(chiave)) {
+						if (obj.keySet().contains(chiave) ) {
 							String  valore=takeNvlValues(obj.get(chiave));
 							if (null!=valore) {
 								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
@@ -648,6 +641,9 @@ public class SDPDataApiMongoAccess {
 									misura.put(chiave, Long.parseLong(valore));
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
 									misura.put(chiave, Double.parseDouble(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+									Object dataObj=obj.get(chiave);
+									misura.put(chiave, dataObj);
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
 									//Sun Oct 19 07:01:17 CET 1969
 									//EEE MMM dd HH:mm:ss zzz yyyy

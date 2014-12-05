@@ -49,7 +49,6 @@ public interface SDPDataApiConstants {
 	public static final String ROLE_STREAM_MEASURE="Stream_Measure";
 	
 	
-	
 	public static final String SDPCONFIG_CONSTANTS_TYPE_API="api";
 	public static final String SDPCONFIG_CONSTANTS_TYPE_STREAM="stream";
 	public static final String SDPCONFIG_CONSTANTS_TYPE_DATASET="stream";
@@ -71,12 +70,17 @@ public interface SDPDataApiConstants {
 		put("long"    ,EdmSimpleTypeKind.Int64);
 		put("Double"  ,EdmSimpleTypeKind.Double);
 		put("double"  ,EdmSimpleTypeKind.Double);
-		put("Data"    ,EdmSimpleTypeKind.DateTime);
-		put("data"    ,EdmSimpleTypeKind.DateTime);
-		put("Date"    ,EdmSimpleTypeKind.DateTime);
-		put("date"    ,EdmSimpleTypeKind.DateTime);
-		put("Time"    ,EdmSimpleTypeKind.DateTime);
-		put("time"    ,EdmSimpleTypeKind.DateTime);
+		put("Data"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("data"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("Date"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("date"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("DatetimeOffset"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("datetimeoffset"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("DateTime"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("datetime"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("dateTime"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("Time"    ,EdmSimpleTypeKind.DateTimeOffset);
+		put("time"    ,EdmSimpleTypeKind.DateTimeOffset);
 //		put("Float"    ,EdmSimpleTypeKind.Decimal);
 //		put("float"    ,EdmSimpleTypeKind.Decimal);
 		put("Float"    ,EdmSimpleTypeKind.Double);

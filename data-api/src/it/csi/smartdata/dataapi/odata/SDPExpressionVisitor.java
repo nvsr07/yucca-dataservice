@@ -312,9 +312,9 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		
 		if (paramObject instanceof String ) {
 			String val= getFullFielName ((String)paramObject);
-			int order=-99;
+			int order=1;
 			if (paramSortOrder.compareTo(SortOrder.asc)==0)  order= 1;
-			if (paramSortOrder.compareTo(SortOrder.desc)==0)  order= 1;
+			if (paramSortOrder.compareTo(SortOrder.desc)==0)  order= -1;
 			return new BasicDBObject(val, order);
 		}  
 		
@@ -514,12 +514,26 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		//		}
 
 
-
+		Pattern regex=null;
 
 		switch (paramMethodOperator) {
+		case STARTSWITH:
+			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+			regex = Pattern.compile("^"+(String)paramList.get(1)+".*");
+			clause = new BasicDBObject();
+			if (forceToFalse) clause.put(paramList.get(0).toString(), new BasicDBObject("$not",regex));
+			else clause.put(paramList.get(0).toString(), regex);
+			break;
+		case ENDSWITH:
+			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+			regex = Pattern.compile((String)paramList.get(1)+"$");
+			clause = new BasicDBObject();
+			if (forceToFalse) clause.put(paramList.get(0).toString(), new BasicDBObject("$not",regex));
+			else clause.put(paramList.get(0).toString(), regex);
+			break;
 		case SUBSTRINGOF:
 			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			Pattern regex = Pattern.compile((String)paramList.get(0));
+			regex = Pattern.compile((String)paramList.get(0));
 			clause = new BasicDBObject();
 			if (forceToFalse) clause.put(paramList.get(1).toString(), new BasicDBObject("$not",regex));
 			else clause.put(paramList.get(1).toString(), regex);
@@ -543,6 +557,12 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 
 
 		switch (paramMethodOperator) {
+		case ENDSWITH:
+			clause=(BasicDBObject)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
+			break;
+		case STARTSWITH:
+			clause=(BasicDBObject)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
+			break;
 		case SUBSTRINGOF:
 			clause=(BasicDBObject)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
 			break;
