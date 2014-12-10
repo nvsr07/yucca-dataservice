@@ -517,21 +517,21 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		switch (paramMethodOperator) {
 		case STARTSWITH:
 			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			regex = Pattern.compile("^"+(String)paramList.get(1)+".*");
+			regex = Pattern.compile("(?i)^"+(String)paramList.get(1)+".*");
 			clause = new BasicDBObject();
 			if (forceToFalse) clause.put(paramList.get(0).toString(), new BasicDBObject("$not",regex));
 			else clause.put(paramList.get(0).toString(), regex);
 			break;
 		case ENDSWITH:
 			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			regex = Pattern.compile((String)paramList.get(1)+"$");
+			regex = Pattern.compile("(?i)"+(String)paramList.get(1)+"$");
 			clause = new BasicDBObject();
 			if (forceToFalse) clause.put(paramList.get(0).toString(), new BasicDBObject("$not",regex));
 			else clause.put(paramList.get(0).toString(), regex);
 			break;
 		case SUBSTRINGOF:
 			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			regex = Pattern.compile((String)paramList.get(0));
+			regex = Pattern.compile("(?i)"+(String)paramList.get(0));
 			clause = new BasicDBObject();
 			if (forceToFalse) clause.put(paramList.get(1).toString(), new BasicDBObject("$not",regex));
 			else clause.put(paramList.get(1).toString(), regex);
