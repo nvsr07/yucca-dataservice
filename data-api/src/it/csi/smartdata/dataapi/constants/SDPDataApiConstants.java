@@ -38,6 +38,7 @@ public interface SDPDataApiConstants {
 	public static final String ENTITY_NAME_SMARTOBJECT = "SmartObject";
 	public static final String ENTITY_NAME_STREAMS = "Stream";
 	public static final String ENTITY_NAME_MEASURES = "Measure";
+	public static final String ENTITY_NAME_MEASURES_STATS = "MeasureStats";
 //	public static final String ENTITY_NAME_MEASUREVALUES = "MeasureValue";
 //	public static final String ENTITY_NAME_MEASURECOMPONENTS = "MeasureCopmponent";
 

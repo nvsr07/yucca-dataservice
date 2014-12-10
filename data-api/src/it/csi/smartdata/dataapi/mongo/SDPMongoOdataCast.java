@@ -446,9 +446,9 @@ public class SDPMongoOdataCast {
 			List<Property> measureProps=new ArrayList<Property>();
 			
 			// SPOSTATI IN CFGd
-			//measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
-			//measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
-			//measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
 
 			
 			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
@@ -490,7 +490,38 @@ public class SDPMongoOdataCast {
 
 
 
+	private EntityType getMeasureStatsType (String nameSpace,Object eleCapmpi) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getMeasureStatsType] BEGIN");
+			List<Property> measureProps=new ArrayList<Property>();
 
+			
+			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+			
+			List<Property> componentProp= getDatasetField(eleCapmpi);
+			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
+				measureProps.add(componentProp.get(i));
+			}
+			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
+
+
+
+
+			keyPropertiesMeasure.add(new PropertyRef().setName("internalId"));
+			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
+			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS)
+					.setProperties(measureProps).setKey(keyMeasure);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getMeasureStatsType] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getMeasureStatsType] END");
+
+		}			
+	}
 
 
 

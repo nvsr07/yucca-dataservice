@@ -611,13 +611,13 @@ public class SDPDataApiMongoAccess {
 					Map<String, Object> misura = new HashMap<String, Object>();
 					misura.put("internalId",  internalID);
 
-//					if (DATA_TYPE_MEASURE.equals(datatType)) {
-//						String streamId=obj.get("streamCode").toString();
-//						String sensorId=obj.get("sensor").toString();
-//						misura.put("streamCode", streamId);
-//						misura.put("sensor", sensorId);
-//						misura.put("time",  obj.get("time"));
-//					}					
+					if (DATA_TYPE_MEASURE.equals(datatType)) {
+						String streamId=obj.get("streamCode").toString();
+						String sensorId=obj.get("sensor").toString();
+						misura.put("streamCode", streamId);
+						misura.put("sensor", sensorId);
+						misura.put("time",  obj.get("time"));
+					}					
 
 					
 					String iddataset=takeNvlValues(obj.get("idDataset"));
