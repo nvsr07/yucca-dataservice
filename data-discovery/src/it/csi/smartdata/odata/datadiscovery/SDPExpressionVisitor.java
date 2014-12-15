@@ -622,7 +622,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"_id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time");
 
-		//METADATA - Dataset
+		//DB_SUPPORT - METADATA
 
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".idDataset" ,"idDataset");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tenantCode" ,"configData.tenantCode");
@@ -640,9 +640,26 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".endIngestionDate" ,"info.endIngestionDate");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".importFileType" ,"info.importFileType");
 
-
+		//DB_SUPPORT - SENSOR 
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".IdStream" ,"idStream");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".IdSensor" ,"streams.stream.idVirtualEntity");
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".IdDataset" ,"configData.idDataset");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".DatasetVersion" ,"configData.datasetVersion");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".TenantCode" ,"configData.tenantCode");
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".StreamCode" ,"streamCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".StreamName" ,"streamName");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".SensorDescription" ,"streams.stream.virtualEntityDescription");
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Name" ,"streams.stream.virtualEntityName");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Type" ,"streams.stream.virtualEntityType");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Category" ,"streams.stream.virtualEntityCategory");
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Latitude" ,"streams.stream.virtualEntityPositions.position.lat");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Longitude" ,"streams.stream.virtualEntityPositions.position.lon");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Elevation" ,"streams.stream.virtualEntityPositions.position.elevation");
 	}
-
-
 
 }

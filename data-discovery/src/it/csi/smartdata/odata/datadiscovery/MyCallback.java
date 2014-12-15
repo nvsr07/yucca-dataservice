@@ -8,8 +8,11 @@ import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmNavigationProperty;
 import org.apache.olingo.odata2.api.ep.EntityProviderException;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
+import org.apache.olingo.odata2.api.ep.callback.OnWriteEntryContent;
 import org.apache.olingo.odata2.api.ep.callback.OnWriteFeedContent;
 import org.apache.olingo.odata2.api.ep.callback.WriteCallbackContext;
+import org.apache.olingo.odata2.api.ep.callback.WriteEntryCallbackContext;
+import org.apache.olingo.odata2.api.ep.callback.WriteEntryCallbackResult;
 import org.apache.olingo.odata2.api.ep.callback.WriteFeedCallbackContext;
 import org.apache.olingo.odata2.api.ep.callback.WriteFeedCallbackResult;
 import org.apache.olingo.odata2.api.exception.ODataApplicationException;
@@ -17,12 +20,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_DATASETS;
+import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_NAME_DATASET;
 import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_FIELDS;
+import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_NAME_STREAM;
+import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_STREAMS;
 
 /**
  * 
  */
-public class MyCallback implements /*OnWriteEntryContent,*/ OnWriteFeedContent {
+public class MyCallback implements OnWriteEntryContent, OnWriteFeedContent {
   private static final Logger LOG = LoggerFactory.getLogger(MyCallback.class);
   
    private final MongoDbStore dataStore;
@@ -33,11 +39,32 @@ public class MyCallback implements /*OnWriteEntryContent,*/ OnWriteFeedContent {
     this.serviceRoot = serviceRoot;
   }
 
-//  @Override
-//  public WriteEntryCallbackResult retrieveEntryResult(WriteEntryCallbackContext context) throws ODataApplicationException {
-//    WriteEntryCallbackResult result = new WriteEntryCallbackResult();
-//    
-//    try {
+  @Override
+  public WriteEntryCallbackResult retrieveEntryResult(WriteEntryCallbackContext context) throws ODataApplicationException {
+    WriteEntryCallbackResult result = new WriteEntryCallbackResult();
+    
+    try {
+    	if(isNavigationFromTo(context, ENTITY_SET_NAME_DATASETS, ENTITY_NAME_STREAM)) {
+            EntityProviderWriteProperties inlineProperties = EntityProviderWriteProperties.serviceRoot(serviceRoot)
+                .expandSelectTree(context.getCurrentExpandSelectTreeNode())
+//                .selfLink(context.getSelfLink())
+                .build();
+
+            Map<String, Object> keys = context.extractKeyFromEntryData();
+            Long datasetId =  (Long) keys.get("idDataset");
+            result.setEntryData(dataStore.getDatasetSensor(datasetId));
+            result.setInlineProperties(inlineProperties);
+          }else if(isNavigationFromTo(context,ENTITY_SET_NAME_STREAMS, ENTITY_NAME_DATASET )) {
+              EntityProviderWriteProperties inlineProperties = EntityProviderWriteProperties.serviceRoot(serviceRoot)
+                      .expandSelectTree(context.getCurrentExpandSelectTreeNode())
+//                      .selfLink(context.getSelfLink())
+                      .build();
+
+                  Map<String, Object> keys = context.extractKeyFromEntryData();
+                  Integer idStream =  (Integer) keys.get("IdStream");
+                  result.setEntryData(dataStore.getDatasetFromStream(idStream));
+                  result.setInlineProperties(inlineProperties);
+          }
 //      if (isNavigationFromTo(context, ENTITY_SET_NAME_CARS, ENTITY_NAME_MANUFACTURER)) {
 //        EntityProviderWriteProperties inlineProperties = EntityProviderWriteProperties.serviceRoot(serviceRoot)
 //            .expandSelectTree(context.getCurrentExpandSelectTreeNode())
@@ -48,16 +75,16 @@ public class MyCallback implements /*OnWriteEntryContent,*/ OnWriteFeedContent {
 //        result.setEntryData(dataStore.getManufacturerFor(carId));
 //        result.setInlineProperties(inlineProperties);
 //      }
-//    } catch (EdmException e) {
-//      // TODO: should be handled and not only logged
-//      LOG.error("Error in $expand handling.", e);
-//    } catch (EntityProviderException e) {
-//      // TODO: should be handled and not only logged
-//      LOG.error("Error in $expand handling.", e);
-//    }
-//    
-//    return result;
-//  }
+    } catch (EdmException e) {
+      // TODO: should be handled and not only logged
+      LOG.error("Error in $expand handling.", e);
+    } catch (EntityProviderException e) {
+      // TODO: should be handled and not only logged
+      LOG.error("Error in $expand handling.", e);
+    }
+    
+    return result;
+  }
 
   @Override
   public WriteFeedCallbackResult retrieveFeedResult(WriteFeedCallbackContext context) throws ODataApplicationException {
@@ -74,6 +101,17 @@ public class MyCallback implements /*OnWriteEntryContent,*/ OnWriteFeedContent {
         result.setFeedData(dataStore.getDatasetFields(datasetId));
         result.setInlineProperties(inlineProperties);
       }
+//      else   if(isNavigationFromTo(context, ENTITY_SET_NAME_DATASETS, ENTITY_NAME_SENSOR)) {
+//          EntityProviderWriteProperties inlineProperties = EntityProviderWriteProperties.serviceRoot(serviceRoot)
+//              .expandSelectTree(context.getCurrentExpandSelectTreeNode())
+//              .selfLink(context.getSelfLink())
+//              .build();
+//
+//          Map<String, Object> keys = context.extractKeyFromEntryData();
+//          Long datasetId =  (Long) keys.get("idDataset");
+//          result.setFeedData(dataStore.getDatasetSensor(datasetId));
+//          result.setInlineProperties(inlineProperties);
+//        }
     } catch (EdmException e) {
       // TODO: should be handled and not only logged
       LOG.error("Error in $expand handling.", e);

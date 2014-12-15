@@ -35,19 +35,26 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 
 	static final String ENTITY_SET_NAME_DATASETS = "Datasets";
 	static final String ENTITY_SET_NAME_FIELDS = "Fields";
+	static final String ENTITY_SET_NAME_STREAMS = "Streams";
 
 	static final String ENTITY_NAME_DATASET = "Dataset";
 	static final String ENTITY_NAME_FIELD = "Field";
+	static final String ENTITY_NAME_STREAM = "Stream";
 
 	private static final FullQualifiedName ENTITY_TYPE_1_1 = new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_DATASET);
 	private static final FullQualifiedName ENTITY_TYPE_1_2 = new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_FIELD);
+	private static final FullQualifiedName ENTITY_TYPE_1_3 = new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_STREAM);
 
 	private static final FullQualifiedName ASSOCIATION_FIELD_DATASET = new FullQualifiedName(NAMESPACE_DISCOVERY,"Field_Dataset_Dataset_Fields");
+	private static final FullQualifiedName ASSOCIATION_STREAM_DATASET = new FullQualifiedName(NAMESPACE_DISCOVERY,"Stream_Dataset_Dataset_Stream");
 
 	private static final String ROLE_1_1 = "Field_Dataset";
 	private static final String ROLE_1_2 = "Dataset_Fields";
+	private static final String ROLE_1_3 = "Dataset_Stream";
+	private static final String ROLE_1_4 = "Stream_Dataset";
 
 	private static final String ASSOCIATION_SET = "Fields_Datasets";
+	private static final String ASSOCIATION_STREAM_SET = "Streams_Datasets";
 	static Logger log = Logger.getLogger(SmartDataDiscoveryEdmProvider.class);
 	@Override
 	public List<Schema> getSchemas() throws ODataException {
@@ -58,6 +65,7 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 
 		List<EntityType> entityTypes = new ArrayList<EntityType>();
 		entityTypes.add(getEntityType(new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_DATASET)));
+		entityTypes.add(getEntityType(new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_STREAM)));
 		schema.setEntityTypes(entityTypes);
 
 		//	    List<ComplexType> complexTypes = new ArrayList<ComplexType>();
@@ -66,6 +74,7 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 
 		List<Association> associations = new ArrayList<Association>();
 		associations.add(getAssociation(ASSOCIATION_FIELD_DATASET));
+		associations.add(getAssociation(ASSOCIATION_STREAM_DATASET));
 		schema.setAssociations(associations);
 
 		List<EntityContainer> entityContainers = new ArrayList<EntityContainer>();
@@ -78,6 +87,8 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 
 		List<AssociationSet> associationSets = new ArrayList<AssociationSet>();
 		associationSets.add(getAssociationSet(SMART_ENTITY_CONTAINER, ASSOCIATION_FIELD_DATASET, ENTITY_SET_NAME_DATASETS, ROLE_1_2));
+		associationSets.add(getAssociationSet(SMART_ENTITY_CONTAINER, ASSOCIATION_STREAM_DATASET, ENTITY_SET_NAME_DATASETS, ROLE_1_3));
+//		associationSets.add(getAssociationSet(SMART_ENTITY_CONTAINER, ASSOCIATION_STREAM_DATASET, ENTITY_SET_NAME_DATASETS, ROLE_1_4));
 		entityContainer.setAssociationSets(associationSets);
 
 		//	    List<FunctionImport> functionImports = new ArrayList<FunctionImport>();
@@ -100,6 +111,8 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 				ret=getDataSetType();
 			}else if (ENTITY_NAME_FIELD.equals(edmFQName.getName())) {
 				ret=getFieldType();
+			}else if (ENTITY_NAME_STREAM.equals(edmFQName.getName())) {
+				ret=getStreamType();
 			}
 		}
 		return ret;
@@ -112,41 +125,53 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 				return new EntitySet().setName(name).setEntityType(new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_DATASET));
 			}else if (ENTITY_SET_NAME_FIELDS.equals(name)) {
 				return new EntitySet().setName(name).setEntityType(new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_FIELD));
+			} else if (ENTITY_SET_NAME_STREAMS.equals(name)) {
+				return new EntitySet().setName(name).setEntityType(new FullQualifiedName(NAMESPACE_DISCOVERY, ENTITY_NAME_STREAM));
 			} 
 		}
 		return null;
 	}
-	
-	 @Override
-	  public Association getAssociation(final FullQualifiedName edmFQName) throws ODataException {
-	    if (NAMESPACE_DISCOVERY.equals(edmFQName.getNamespace())) {
-	      if (ASSOCIATION_FIELD_DATASET.getName().equals(edmFQName.getName())) {
-	        return new Association().setName(ASSOCIATION_FIELD_DATASET.getName())
-	            .setEnd1(
-	                new AssociationEnd().setType(ENTITY_TYPE_1_1).setRole(ROLE_1_2).setMultiplicity(EdmMultiplicity.ONE))
-	            .setEnd2(
-	                new AssociationEnd().setType(ENTITY_TYPE_1_2).setRole(ROLE_1_1).setMultiplicity(EdmMultiplicity.MANY));
-	      }
-	    }
-	    return null;
-	  }
 
+	@Override
+	public Association getAssociation(final FullQualifiedName edmFQName) throws ODataException {
+		if (NAMESPACE_DISCOVERY.equals(edmFQName.getNamespace())) {
+			if (ASSOCIATION_FIELD_DATASET.getName().equals(edmFQName.getName())) {
+				return new Association().setName(ASSOCIATION_FIELD_DATASET.getName())
+						.setEnd1(
+								new AssociationEnd().setType(ENTITY_TYPE_1_1).setRole(ROLE_1_2).setMultiplicity(EdmMultiplicity.ONE))
+								.setEnd2(
+										new AssociationEnd().setType(ENTITY_TYPE_1_2).setRole(ROLE_1_1).setMultiplicity(EdmMultiplicity.MANY));
+			}else if(ASSOCIATION_STREAM_DATASET.getName().equals(edmFQName.getName())) {
+				return new Association().setName(ASSOCIATION_STREAM_DATASET.getName())
+						.setEnd1(
+								new AssociationEnd().setType(ENTITY_TYPE_1_1).setRole(ROLE_1_3).setMultiplicity(EdmMultiplicity.ONE))
+								.setEnd2(
+										new AssociationEnd().setType(ENTITY_TYPE_1_3).setRole(ROLE_1_4).setMultiplicity(EdmMultiplicity.ONE));
 
-	 @Override
-	  public AssociationSet getAssociationSet(final String entityContainer, final FullQualifiedName association,
-	      final String sourceEntitySetName, final String sourceEntitySetRole) throws ODataException {
-	    if (SMART_ENTITY_CONTAINER.equals(entityContainer)) {
-	      if (ASSOCIATION_FIELD_DATASET.equals(association)) {
-	        return new AssociationSet().setName(ASSOCIATION_SET)
-	            .setAssociation(ASSOCIATION_FIELD_DATASET)
-	            .setEnd1(new AssociationSetEnd().setRole(ROLE_1_2).setEntitySet(ENTITY_SET_NAME_DATASETS))
-	            .setEnd2(new AssociationSetEnd().setRole(ROLE_1_1).setEntitySet(ENTITY_SET_NAME_FIELDS));
-	      }
-	    }
-	    return null;
-	  }
-	 
-	 
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public AssociationSet getAssociationSet(final String entityContainer, final FullQualifiedName association,
+			final String sourceEntitySetName, final String sourceEntitySetRole) throws ODataException {
+		if (SMART_ENTITY_CONTAINER.equals(entityContainer)) {
+			if (ASSOCIATION_FIELD_DATASET.equals(association)) {
+				return new AssociationSet().setName(ASSOCIATION_SET)
+						.setAssociation(ASSOCIATION_FIELD_DATASET)
+						.setEnd1(new AssociationSetEnd().setRole(ROLE_1_2).setEntitySet(ENTITY_SET_NAME_DATASETS))
+						.setEnd2(new AssociationSetEnd().setRole(ROLE_1_1).setEntitySet(ENTITY_SET_NAME_FIELDS));
+			}else if (ASSOCIATION_STREAM_DATASET.equals(association)) {
+				return new AssociationSet().setName(ASSOCIATION_STREAM_SET)
+						.setAssociation(ASSOCIATION_STREAM_DATASET)
+						.setEnd1(new AssociationSetEnd().setRole(ROLE_1_3).setEntitySet(ENTITY_SET_NAME_DATASETS))
+						.setEnd2(new AssociationSetEnd().setRole(ROLE_1_4).setEntitySet(ENTITY_SET_NAME_STREAMS));
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public EntityContainerInfo getEntityContainerInfo(final String name) throws ODataException {
 		if (name == null || SMART_ENTITY_CONTAINER.equals(name)) {
@@ -161,12 +186,12 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		cfeed.setFcTargetPath(EdmTargetPath.SYNDICATION_TITLE);
 
 		propertiesSmartObject.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)).setCustomizableFeedMappings(cfeed));
-		
+
 		propertiesSmartObject.add(new SimpleProperty().setName("tenantCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("dataDomain").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("license").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("fps").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
-		
+
 		propertiesSmartObject.add(new SimpleProperty().setName("description").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("download").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("datasetName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
@@ -176,8 +201,7 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("endIngestionDate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("importFileType").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));		
 		propertiesSmartObject.add(new SimpleProperty().setName("datasetStatus").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-				
-				
+
 		propertiesSmartObject.add(new SimpleProperty().setName("measureUnit").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("tags").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
@@ -189,8 +213,8 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("disclaimer").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("copyright").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
-		
-		
+
+
 		//Keys
 		List<PropertyRef> keyPropertiesSmartObject = new ArrayList<PropertyRef>();
 		keyPropertiesSmartObject.add(new PropertyRef().setName("idDataset"));
@@ -200,6 +224,8 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
 		navigationProperties.add(new NavigationProperty().setName("Fields")
 				.setRelationship(ASSOCIATION_FIELD_DATASET).setFromRole(ROLE_1_2).setToRole(ROLE_1_1));
+		navigationProperties.add(new NavigationProperty().setName("Stream")
+				.setRelationship(ASSOCIATION_STREAM_DATASET).setFromRole(ROLE_1_3).setToRole(ROLE_1_4));
 
 		return new EntityType().setName(ENTITY_NAME_DATASET)
 				.setProperties(propertiesSmartObject)
@@ -218,16 +244,54 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("isKey").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("measureUnit").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
-		
+
 		//FIXME FIX LINk of Field Entities
 		//Keys
 		List<PropertyRef> keyPropertiesSmartObject = new ArrayList<PropertyRef>();
 		keyPropertiesSmartObject.add(new PropertyRef().setName("fieldName"));
 		Key keySmartObject = new Key().setKeys(keyPropertiesSmartObject);
 
-		return new EntityType().setName(ENTITY_NAME_DATASET)
+		return new EntityType().setName(ENTITY_NAME_FIELD)
 				.setProperties(propertiesSmartObject)
 				.setKey(keySmartObject);
+	}
+	private EntityType getStreamType() {
+		List<Property> propertiesSmartObject = new ArrayList<Property>();
+		CustomizableFeedMappings cfeed = new CustomizableFeedMappings();
+		cfeed.setFcTargetPath(EdmTargetPath.SYNDICATION_TITLE);
+
+		propertiesSmartObject.add(new SimpleProperty().setName("IdStream").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)).setCustomizableFeedMappings(cfeed));
+		propertiesSmartObject.add(new SimpleProperty().setName("IdSensor").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+		propertiesSmartObject.add(new SimpleProperty().setName("IdDataset").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+		propertiesSmartObject.add(new SimpleProperty().setName("DatasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+		propertiesSmartObject.add(new SimpleProperty().setName("TenantCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+
+		propertiesSmartObject.add(new SimpleProperty().setName("StreamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("StreamName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("StreamDescription").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+
+		propertiesSmartObject.add(new SimpleProperty().setName("Name").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("Type").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("Category").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+
+		propertiesSmartObject.add(new SimpleProperty().setName("Latitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("Longitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("Elevation").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+
+		List<PropertyRef> keyPropertiesSmartObject = new ArrayList<PropertyRef>();
+		keyPropertiesSmartObject.add(new PropertyRef().setName("IdStream"));
+		Key keySmartObject = new Key().setKeys(keyPropertiesSmartObject);
+
+
+		// Navigation Properties
+		List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
+		navigationProperties.add(new NavigationProperty().setName("Dataset")
+				.setRelationship(ASSOCIATION_STREAM_DATASET).setFromRole(ROLE_1_4).setToRole(ROLE_1_3));
+
+
+		return new EntityType().setName(ENTITY_NAME_STREAM)
+				.setProperties(propertiesSmartObject)
+				.setKey(keySmartObject).setNavigationProperties(navigationProperties);
 	}
 
 }
