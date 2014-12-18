@@ -260,26 +260,28 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		CustomizableFeedMappings cfeed = new CustomizableFeedMappings();
 		cfeed.setFcTargetPath(EdmTargetPath.SYNDICATION_TITLE);
 
-		propertiesSmartObject.add(new SimpleProperty().setName("IdStream").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)).setCustomizableFeedMappings(cfeed));
-		propertiesSmartObject.add(new SimpleProperty().setName("IdSensor").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
-		propertiesSmartObject.add(new SimpleProperty().setName("IdDataset").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
-		propertiesSmartObject.add(new SimpleProperty().setName("DatasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
-		propertiesSmartObject.add(new SimpleProperty().setName("TenantCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("idStream").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)).setCustomizableFeedMappings(cfeed));
+		propertiesSmartObject.add(new SimpleProperty().setName("idSensor").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+		propertiesSmartObject.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+		propertiesSmartObject.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
+		propertiesSmartObject.add(new SimpleProperty().setName("tenantCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("visibility").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		
+		propertiesSmartObject.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("streamName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("streamDescription").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		
+		propertiesSmartObject.add(new SimpleProperty().setName("smartOCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("smartOName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("smartOType").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("smartOCategory").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
-		propertiesSmartObject.add(new SimpleProperty().setName("StreamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-		propertiesSmartObject.add(new SimpleProperty().setName("StreamName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-		propertiesSmartObject.add(new SimpleProperty().setName("StreamDescription").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-
-		propertiesSmartObject.add(new SimpleProperty().setName("Name").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-		propertiesSmartObject.add(new SimpleProperty().setName("Type").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-		propertiesSmartObject.add(new SimpleProperty().setName("Category").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
-
-		propertiesSmartObject.add(new SimpleProperty().setName("Latitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
-		propertiesSmartObject.add(new SimpleProperty().setName("Longitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
-		propertiesSmartObject.add(new SimpleProperty().setName("Elevation").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("latitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("longitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("elevation").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
 
 		List<PropertyRef> keyPropertiesSmartObject = new ArrayList<PropertyRef>();
-		keyPropertiesSmartObject.add(new PropertyRef().setName("IdStream"));
+		keyPropertiesSmartObject.add(new PropertyRef().setName("idStream"));
 		Key keySmartObject = new Key().setKeys(keyPropertiesSmartObject);
 
 

@@ -642,24 +642,26 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 
 		//DB_SUPPORT - SENSOR 
 		
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".IdStream" ,"idStream");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".IdSensor" ,"streams.stream.idVirtualEntity");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".idStream" ,"idStream");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".idSensor" ,"streams.stream.idVirtualEntity");
 		
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".IdDataset" ,"configData.idDataset");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".DatasetVersion" ,"configData.datasetVersion");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".TenantCode" ,"configData.tenantCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".idDataset" ,"configData.idDataset");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".datasetVersion" ,"configData.datasetVersion");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".tenantCode" ,"configData.tenantCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".visibility" ,"streams.stream.visibility");
 		
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".StreamCode" ,"streamCode");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".StreamName" ,"streamName");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".SensorDescription" ,"streams.stream.virtualEntityDescription");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".streamCode" ,"streamCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".streamName" ,"streamName");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".sensorDescription" ,"streams.stream.virtualEntityDescription");
 		
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Name" ,"streams.stream.virtualEntityName");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Type" ,"streams.stream.virtualEntityType");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Category" ,"streams.stream.virtualEntityCategory");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".smartOCode" ,"streams.stream.virtualEntityCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".smartOName" ,"streams.stream.virtualEntityName");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".smartOType" ,"streams.stream.virtualEntityType");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".smartOCategory" ,"streams.stream.virtualEntityCategory");
 		
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Latitude" ,"streams.stream.virtualEntityPositions.position.lat");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Longitude" ,"streams.stream.virtualEntityPositions.position.lon");
-		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".Elevation" ,"streams.stream.virtualEntityPositions.position.elevation");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".latitude" ,"streams.stream.virtualEntityPositions.position.lat");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".longitude" ,"streams.stream.virtualEntityPositions.position.lon");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".elevation" ,"streams.stream.virtualEntityPositions.position.elevation");
 	}
 
 }

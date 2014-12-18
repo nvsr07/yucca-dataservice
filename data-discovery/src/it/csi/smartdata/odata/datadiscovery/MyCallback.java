@@ -61,7 +61,7 @@ public class MyCallback implements OnWriteEntryContent, OnWriteFeedContent {
                       .build();
 
                   Map<String, Object> keys = context.extractKeyFromEntryData();
-                  Integer idStream =  (Integer) keys.get("IdStream");
+                  Integer idStream =  (Integer) keys.get("idStream");
                   result.setEntryData(dataStore.getDatasetFromStream(idStream));
                   result.setInlineProperties(inlineProperties);
           }

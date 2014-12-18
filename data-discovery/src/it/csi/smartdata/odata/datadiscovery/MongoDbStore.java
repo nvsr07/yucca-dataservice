@@ -183,38 +183,41 @@ public class MongoDbStore {
 			Integer datasetVersion =(Integer)configData.get("datasetVersion");
 			String tenantCode =(String)configData.get("tenantCode");
 
-
+			
+			String code =(String)stream.get("virtualEntityCode");
 			String name =(String)stream.get("virtualEntityName");
 			String type =(String)stream.get("virtualEntityType");
 			String category =(String)stream.get("virtualEntityCategory");
+			String visibility =(String)stream.get("visibility");
 
+			cur.put("idStream", IdStream);
+			cur.put("idSensor", IdSensor);
+			cur.put("idDataset", idDataset);
+			cur.put("datasetVersion", datasetVersion);
+			cur.put("tenantCode", tenantCode);
+			cur.put("visibility", visibility);
 
-			cur.put("IdStream", IdStream);
-			cur.put("IdSensor", IdSensor);
-			cur.put("IdDataset", idDataset);
-			cur.put("DatasetVersion", datasetVersion);
-			cur.put("TenantCode", tenantCode);
+			cur.put("streamCode", streamCode);
+			cur.put("streamName", streamName);
+			cur.put("streamDescription", streamDescription);
 
-			cur.put("StreamCode", streamCode);
-			cur.put("StreamName", streamName);
-			cur.put("StreamDescription", streamDescription);
-
+			cur.put("smartOName", name);
+			cur.put("smartOCode", code);
+			cur.put("smartOType", type);
+			cur.put("smartOCategory",category );
 
 			DBObject vePos = (DBObject) stream.get("virtualEntityPositions");
 
 
-
-			cur.put("Name", name);
-			cur.put("Type", type);
-			cur.put("Category",category );
+			
 			//FIXME return all the positions if required
 			if(vePos!=null){
 				BasicDBList pos = (BasicDBList) vePos.get("position");
 				if(pos!=null && pos.size()>0){
 					DBObject veSingPos = (DBObject) pos.get(0);
-					cur.put("Latitude", veSingPos.get("lat"));
-					cur.put("Longitude", veSingPos.get("lon"));
-					cur.put("Elevation", veSingPos.get("elevation"));
+					cur.put("latitude", veSingPos.get("lat"));
+					cur.put("longitude", veSingPos.get("lon"));
+					cur.put("elevation", veSingPos.get("elevation"));
 				}
 			}
 		}
