@@ -88,6 +88,10 @@ public interface SDPDataApiConstants {
 		put("float"    ,EdmSimpleTypeKind.Double);
 
 
+		put("longitude"    ,EdmSimpleTypeKind.Double);
+		put("latitude"    ,EdmSimpleTypeKind.Double);
+		
+		
 	}};
 
 	
