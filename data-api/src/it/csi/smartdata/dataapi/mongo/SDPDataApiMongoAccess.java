@@ -580,7 +580,7 @@ public class SDPDataApiMongoAccess {
 
 			BasicDBObject query = new BasicDBObject("$and", queryTot);
 
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query ="+queryTot);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query ="+query);
 			//cursor = collMisure.find(query);
 
 			cnt = collMisure.find(query).count();

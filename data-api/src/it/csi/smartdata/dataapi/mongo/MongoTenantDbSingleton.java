@@ -3,9 +3,11 @@ package it.csi.smartdata.dataapi.mongo;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.mongo.dto.DbConfDto;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -63,16 +65,26 @@ public class MongoTenantDbSingleton {
 //			MongoClient mongoClient = new MongoClient(
 //					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT), 
 //					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
-			ServerAddress serverAddr=new ServerAddress(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT),SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
+			
+			
+			String host=SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT);
+			StringTokenizer st=new StringTokenizer(host,";",false);
+			ArrayList<ServerAddress> arrServerAddr=new ArrayList<ServerAddress>();
+			while (st.hasMoreTokens()) {
+				String hostnew=st.nextToken();
+				ServerAddress serverAddr=new ServerAddress(hostnew,SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
+				arrServerAddr.add(serverAddr);
+			}
+			
 			MongoClient mongoClient = null;
 			if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
 					SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
 				MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
 						"admin", 
 						SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
-				mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
+				mongoClient = new MongoClient(arrServerAddr,Arrays.asList(credential));
 			} else {
-				mongoClient = new MongoClient(serverAddr);
+				mongoClient = new MongoClient(arrServerAddr);
 			}			
 			
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
@@ -145,6 +157,36 @@ public class MongoTenantDbSingleton {
 	public MongoClient getMongoClient(String host, int port) throws Exception{
 		MongoClient ret=mongoConnection.get(host+"___"+port);
 		if (ret!=null) return ret;
+		if (host.indexOf(";")==-1) return  getMongoClientold(host, port);
+		StringTokenizer st= new StringTokenizer(host,";",false);
+		ArrayList<ServerAddress> arrServerAddr=new ArrayList<ServerAddress>();
+		while (st.hasMoreTokens()) {
+			String newHost=st.nextToken();
+			ServerAddress serverAddr=new ServerAddress(newHost,port);
+			arrServerAddr.add(serverAddr);
+		}
+		
+		
+		
+		MongoClient mongoClient = null;
+		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
+				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
+			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+					"admin", 
+					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
+			mongoClient = new MongoClient(arrServerAddr,Arrays.asList(credential));
+		} else {
+			mongoClient = new MongoClient(arrServerAddr);
+		}
+		mongoConnection.put(host+"___"+port, mongoClient);
+		return mongoClient;
+		
+		
+	}
+	
+	public MongoClient getMongoClientold(String host, int port) throws Exception{
+		MongoClient ret=mongoConnection.get(host+"___"+port);
+		if (ret!=null) return ret;
 		ServerAddress serverAddr=new ServerAddress(host,port);
 		MongoClient mongoClient = null;
 		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
@@ -160,6 +202,7 @@ public class MongoTenantDbSingleton {
 		return mongoClient;
 		
 		
-	}
+	}	
+	
 	
 }
