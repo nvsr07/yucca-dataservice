@@ -48,6 +48,7 @@ public class MongoDbStore {
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
 
 		DBObject searchById = new BasicDBObject("idDataset", idDataset);
+		searchById.put("configData.current", 1);
 		DBObject found = colldataset.findOne(searchById);
 
 		if (found != null) {
@@ -68,6 +69,7 @@ public class MongoDbStore {
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
 
 		BasicDBObject query = (BasicDBObject) userQuery;
+		query.put("configData.current", 1);
 		DBCursor cursor = coll.find(query);
 
 		while (cursor.hasNext()) {
@@ -93,6 +95,7 @@ public class MongoDbStore {
 
 		BasicDBObject query = new BasicDBObject();
 		query.append("idDataset", datasetKey);
+		query.put("configData.current", 1);
 		DBCursor cursor = coll.find(query);
 
 		while (cursor.hasNext()) {
@@ -130,20 +133,49 @@ public class MongoDbStore {
 	public Map<String, Object> getDatasetSensor(Long datasetId) {
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
+		DBCollection colldataset = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
+
+
+
+		DBObject searchActive = new BasicDBObject("idDataset",datasetId);
+		searchActive.put("configData.current", 1);
+		DBObject existingDatasetOfStream = colldataset.findOne(searchActive);
+		if(existingDatasetOfStream==null)
+			return null;
 
 		DBObject searchById = new BasicDBObject("configData.idDataset", datasetId);
+
+		searchById.put("configData.datasetVersion", existingDatasetOfStream.get("datasetVersion"));
+
 		DBObject found = collstream.findOne(searchById);
 
 		return extractDataFromStream(found);
 	}
 
-
 	public Map<String, Object> getStream(Long idStream) {
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
+		DBCollection colldataset = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
 
 		DBObject searchById = new BasicDBObject("idStream", idStream);
 		DBObject found = collstream.findOne(searchById);
+
+		//we have to find the stream with the version that has an dataset current : 1 
+
+
+		
+		DBObject configData = (DBObject) found.get("configData");
+
+
+		DBObject searchActive = new BasicDBObject("idDataset",configData.get("idDataset"));
+		searchActive.put("configData.current", 1);
+		DBObject existingDatasetOfStream = colldataset.findOne(searchActive);
+		if(existingDatasetOfStream==null)
+			return null;
+
+		searchById = new BasicDBObject("idStream", idStream);
+		searchById.put("configData.datasetVersion", existingDatasetOfStream.get("datasetVersion"));
+		found = collstream.findOne(searchById);
 
 		return extractDataFromStream(found);
 	}
@@ -152,15 +184,25 @@ public class MongoDbStore {
 		List<Map<String,Object>> ret = new ArrayList<Map<String,Object>>();
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
+		DBCollection colldataset = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
 
 		BasicDBObject query = (BasicDBObject) userQuery;
 		DBCursor cursor = collstream.find(query);
 
 		while (cursor.hasNext()) {
 			DBObject found=cursor.next();
-			Map<String, Object> cur = extractDataFromStream(found);
-			if(cur != null)
-				ret.add(cur);
+
+			//if stream with that id and version has an active (current:1) dataset document
+			DBObject configData = (DBObject) found.get("configData");
+			DBObject searchActive = new BasicDBObject("idDataset",configData.get("idDataset"));
+			searchActive.put("datasetVersion", configData.get("datasetVersion"));
+			searchActive.put("configData.current", 1);
+			DBObject existingDatasetOfStream = colldataset.findOne(searchActive);
+			if(existingDatasetOfStream!=null){
+				Map<String, Object> cur = extractDataFromStream(found);
+				if(cur != null)
+					ret.add(cur);
+			}
 		}
 		return ret;
 	}
@@ -183,7 +225,7 @@ public class MongoDbStore {
 			Integer datasetVersion =(Integer)configData.get("datasetVersion");
 			String tenantCode =(String)configData.get("tenantCode");
 
-			
+
 			String code =(String)stream.get("virtualEntityCode");
 			String name =(String)stream.get("virtualEntityName");
 			String type =(String)stream.get("virtualEntityType");
@@ -209,7 +251,7 @@ public class MongoDbStore {
 			DBObject vePos = (DBObject) stream.get("virtualEntityPositions");
 
 
-			
+
 			//FIXME return all the positions if required
 			if(vePos!=null){
 				BasicDBList pos = (BasicDBList) vePos.get("position");
@@ -389,7 +431,7 @@ public class MongoDbStore {
 		DBObject found = collstream.findOne(searchById);
 
 		if(found!=null){
-			
+
 			DBObject configData= (DBObject) found.get("configData");
 			DBObject searchDatasetById = new BasicDBObject("idDataset", configData.get("idDataset"));
 			searchDatasetById.put("configData.current", 1);
