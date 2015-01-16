@@ -1,5 +1,7 @@
 package it.csi.smartdata.dataapi.constants;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ public interface SDPDataApiConstants {
 	public static final String ENTITY_SET_NAME_SMARTOBJECT = "SmartObjects";
 	public static final String ENTITY_SET_NAME_STREAMS = "Streams";
 	public static final String ENTITY_SET_NAME_MEASURES = "Measures";
+	public static final String ENTITY_SET_NAME_MEASURES_STATS = "MeasuresStats";
 
 
 	public static final String SMART_ENTITY_CONTAINER="SmartDataEntityContainer";
@@ -38,7 +41,7 @@ public interface SDPDataApiConstants {
 	public static final String ENTITY_NAME_SMARTOBJECT = "SmartObject";
 	public static final String ENTITY_NAME_STREAMS = "Stream";
 	public static final String ENTITY_NAME_MEASURES = "Measure";
-	public static final String ENTITY_NAME_MEASURES_STATS = "MeasureStats";
+	public static final String ENTITY_NAME_MEASURES_STATS = "MeasureStat";
 //	public static final String ENTITY_NAME_MEASUREVALUES = "MeasureValue";
 //	public static final String ENTITY_NAME_MEASURECOMPONENTS = "MeasureCopmponent";
 
@@ -93,6 +96,17 @@ public interface SDPDataApiConstants {
 		
 		
 	}};
+	
+	
+	public static final ArrayList<String> SDP_STATISTICS_OPERATIONS = new ArrayList<String>(Arrays.asList(
+			"avg",
+			"min",
+			"max",
+			"first",
+			"last",
+			"sum"
+			)); 
+	
 
 	
 	

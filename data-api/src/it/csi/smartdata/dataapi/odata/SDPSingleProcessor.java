@@ -16,6 +16,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.commons.InlineCount;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
+import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmLiteralKind;
 import org.apache.olingo.odata2.api.edm.EdmProperty;
 import org.apache.olingo.odata2.api.edm.EdmSimpleType;
@@ -35,6 +36,7 @@ import org.apache.olingo.odata2.api.uri.expression.OrderByExpression;
 import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
+import org.apache.olingo.odata2.core.uri.expression.FilterParserImpl;
 
 public class SDPSingleProcessor extends ODataSingleProcessor {
 	static Logger log = Logger.getLogger(SDPSingleProcessor.class.getPackage().getName());
@@ -223,9 +225,57 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					log.info("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 				}
 				log.info("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
+				
+				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).equals(entitySet.getName())) {
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).getEntityType().getNamespace();
+					String timeGroupByParam=uriInfo.getCustomQueryOptions().get("timeGroupBy");
+					String timeGroupOperatorsParam=uriInfo.getCustomQueryOptions().get("timeGroupOperators");
+					
+					String timeGroupFilter=uriInfo.getCustomQueryOptions().get("timeGroupFilter");
+					Object userSourceEntityQuery=null;
+					if (null!=timeGroupFilter && timeGroupFilter.trim().length()>0) {
+						EdmEntityType measureType=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType();
+						FilterExpression feStats=new FilterParserImpl(measureType).parseFilterString(timeGroupFilter, true);
+						if (feStats != null) {
+							SDPExpressionVisitor ev = new SDPExpressionVisitor();
+							ev.setEntitySetName(entitySet.getName());
+							userSourceEntityQuery = feStats.accept(ev);
+							log.info("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
+						}
+					}
+					
+					
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int skip=skiptop[0];
+					int top=skiptop[1];
+					
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userSourceEntityQuery,orderQuery,-1,-1,
+							timeGroupByParam,timeGroupOperatorsParam,userQuery);
+					
+					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
+					int startindex=limiti[0];
+					int endindex=limiti[1];
+					
+					
+					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+					for (int i=startindex;i<endindex;i++) {
+						misureNew.add(dataRes.getDati().get(i));
+					}
+					
+					ODataResponse ret= EntityProvider.writeFeed (
+							contentType,
+							entitySet,
+							misureNew,
+							EntityProviderWriteProperties.serviceRoot(
+									newUri)
+									.inlineCountType(InlineCount.ALLPAGES)
+									.inlineCount(dataRes.getTotalCount())
+									.expandSelectTree(expandSelectTreeNode)
+									.build());
 
-
-				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName())) {
+					return ret;
+					
+				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName())) {
 
 					
 					

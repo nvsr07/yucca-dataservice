@@ -34,7 +34,6 @@ public class SDPServiceFactory extends ODataServiceFactory {
 
 
 
-
 			String resto=uri.substring(root.length());
 
 

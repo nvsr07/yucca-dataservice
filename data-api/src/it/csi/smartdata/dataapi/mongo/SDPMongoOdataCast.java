@@ -89,7 +89,10 @@ public class SDPMongoOdataCast {
 						//				} else if (SDPDataApiConstants.ENTITY_NAME_MEASURECOMPONENTS.equals(edmFQName.getName())) {
 						//					Object eleCapmpi=obj.get("mergedComponents");
 						//					//ret= getMeasureComponentType (nameSpace,eleCapmpi);
-					} 
+					} else if (SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS.equals(edmFQName.getName())) {
+						Object eleCapmpi=obj.get("mergedComponents");
+						ret= getMeasureStatsType(nameSpace,eleCapmpi);
+					}
 				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
 					if (SDPDataApiConstants.ENTITY_NAME_UPLOADDATA.equals(edmFQName.getName())) {
 						Object eleCapmpi=obj.get("mergedComponents");
@@ -213,11 +216,12 @@ public class SDPMongoOdataCast {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS));						
 						} else if (SDPDataApiConstants.ENTITY_SET_NAME_MEASURES.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES));						
-
+						} else if (SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS.equals(name)) {
+							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS));						
 						} if (SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SMARTOBJECT));						
-
-						}  
+							
+						}
 					} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) ) {
 						if (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA));
@@ -247,6 +251,21 @@ public class SDPMongoOdataCast {
 
 	}
 
+	
+	private ArrayList<String> getEntitysetsNamesStats() {
+//		Object eleCapmpi=obj.get("mergedComponents");
+//		BasicDBList lista=null;
+//		if (eleCapmpi instanceof BasicDBList) {
+//			lista=(BasicDBList)eleCapmpi;
+//		} else {
+//			lista=new BasicDBList();
+//			lista.add(eleCapmpi);
+//		}
+//		for (int j=0;j<lista.size();j++) {
+//			
+//		}	
+		return null;
+	}
 
 	public AssociationSet getAssociationSet(final String entityContainer, final FullQualifiedName association,
 			final String sourceEntitySetName, final String sourceEntitySetRole,String codiceApi) throws ODataException {
@@ -496,21 +515,39 @@ public class SDPMongoOdataCast {
 			List<Property> measureProps=new ArrayList<Property>();
 
 			
-			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
-			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
-			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+//			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+//			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+//			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
-			
+			measureProps.add(new SimpleProperty().setName("year").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("month").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("dayofmonth").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+
 			List<Property> componentProp= getDatasetField(eleCapmpi);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
-				measureProps.add(componentProp.get(i));
+				
+				SimpleProperty curProp=new SimpleProperty()
+				.setName( ((SimpleProperty)componentProp.get(i)).getName()+"_sts")
+				.setType(((SimpleProperty)componentProp.get(i)).getType())
+				.setFacets(new Facets().setNullable(true));
+				
+				measureProps.add(curProp);
 			}
 			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
+			
+			
+			
+			measureProps.add(new SimpleProperty().setName("count").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 
 
 
-			keyPropertiesMeasure.add(new PropertyRef().setName("internalId"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("year"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("month"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("dayofmonth"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("hour"));
 			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
 			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS)
 					.setProperties(measureProps).setKey(keyMeasure);
@@ -553,6 +590,11 @@ public class SDPMongoOdataCast {
 					//				entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SMARTOBJECT),codiceApi));
 					//				entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS),codiceApi));
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES),codiceApi));
+					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS),codiceApi));
+					
+					
+					
+					
 					//			    entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES),codiceApi));
 					//			    entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURECOMPONENTS),codiceApi));
 					schema.setEntityTypes(entityTypes);
@@ -579,6 +621,10 @@ public class SDPMongoOdataCast {
 
 					List<EntitySet> entitySets = new ArrayList<EntitySet>();
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_MEASURES,codiceApi));
+
+					
+					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS,codiceApi));
+
 					//entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT,codiceApi));
 					//entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_STREAMS,codiceApi));
 					entityContainer.setEntitySets(entitySets);
@@ -726,7 +772,6 @@ public class SDPMongoOdataCast {
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
 
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
-				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
 				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
@@ -749,6 +794,49 @@ public class SDPMongoOdataCast {
 
 		}			
 	}	
+	
+	public SDPDataResult getMeasuresStatsPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
+			int skip,
+			int limit,
+			String timeGroupByParam,
+			String timeGroupOperatorsParam,
+			Object groupOutQuery) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace="+nameSpace);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer="+entityContainer);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] internalId="+internalId);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] userQuery="+userQuery);
+
+			initDbObject(codiceApi);
+			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
+			int totCnt=0;
+			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
+
+			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
+				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
+				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
+				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
+				List<Map<String, Object>> misureCur = cur.getDati();
+				
+				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
+					ret.add(misureCur.get(k));
+				}
+				totCnt+=cur.getTotalCount();
+
+			}
+
+			return new SDPDataResult(ret,totCnt);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] END");
+
+		}			
+	}		
 
 
 
