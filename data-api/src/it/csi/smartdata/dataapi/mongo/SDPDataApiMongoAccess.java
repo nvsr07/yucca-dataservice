@@ -862,12 +862,12 @@ public class SDPDataApiMongoAccess {
 			
 			if ("year".equals(timeGroupByParam)) {
 				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
+			} else if ("month_year".equals(timeGroupByParam)) {
+				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
+				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
 			} else if ("dayofmonth_month_year".equals(timeGroupByParam)) {
 				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
 				groupFiledsId.put("dayofmonth", new BasicDBObject("$dayOfMonth","$time"));
-				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
-			} else if ("month_year".equals(timeGroupByParam)) {
-				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
 				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
 			} else if ("hour_dayofmonth_month_year".equals(timeGroupByParam)) {
 				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
