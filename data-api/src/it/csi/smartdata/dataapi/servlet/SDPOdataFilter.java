@@ -50,14 +50,50 @@ public class SDPOdataFilter implements Filter{
 
 
 				String prima=requestURI.substring(0,requestURI.indexOf(webFilterPattern));
-				String dopo=requestURI.substring(requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)+1);
-
-
+				String dopo="";
+				
 				String codiceApi=requestURI.substring(prima.length()+webFilterPattern.length());
 
+				
+				int indicea=requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
+				int indiceb=requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
 
-				if (dopo.length()>0) codiceApi=codiceApi.substring(0, codiceApi.indexOf(dopo)-1);
-				else codiceApi=codiceApi.substring(0, codiceApi.length()-1);
+				if (indicea>0 || indiceb>0 ) {
+					indicea=indicea>0 ? indicea : 1000000;
+					indiceb=indiceb>0 ? indiceb : 1000000;
+					int indice= indicea<indiceb ?indicea : indiceb;
+					if (indicea<indiceb) {
+						dopo=requestURI.substring(indice+1);
+						if (dopo.length()>0) codiceApi=codiceApi.substring(0, codiceApi.indexOf(dopo)-1);
+						else codiceApi=codiceApi.substring(0, codiceApi.length()-1);
+					} else {
+						dopo=requestURI.substring(indice);
+						if (dopo.length()>0) codiceApi=codiceApi.substring(0, codiceApi.indexOf(dopo));
+						
+					}
+				} else {
+					//codiceApi=codiceApi.substring(0, codiceApi.length()-1);
+				}
+				
+//				if (indice>0 && indice>requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)) 
+//					indice=requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
+//				if (indice>0 && indice>requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)) 
+//					indice=requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
+
+				
+				
+				
+//				if (requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)>0) {
+//					dopo=requestURI.substring(requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)+1);
+//				}
+//						
+//						requestURI.substring(requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)+1);
+
+
+
+
+				//if (dopo.length()>0) codiceApi=codiceApi.substring(0, codiceApi.indexOf(dopo)-1);
+				//else codiceApi=codiceApi.substring(0, codiceApi.length()-1);
 				String newURI=webServletUrl+dopo+"?codiceApi="+codiceApi;
 
 
