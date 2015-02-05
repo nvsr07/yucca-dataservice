@@ -22,6 +22,8 @@ import com.mongodb.MongoClient;
 public class MongoDbStore {
 	MongoClient mongoClient;
 	Map<String,String> mongoParams = null;
+
+	Integer MAX_RECORDS = 50;
 	//	MongoCredential credential=null;
 	private Logger logger = Logger.getLogger(MongoDbStore.class);
 	public MongoDbStore(){
@@ -78,8 +80,10 @@ public class MongoDbStore {
 
 			Map<String, Object> cur = extractOdataPropertyFromMongo(collapi,
 					collstream, found);
-
-			ret.add(cur);
+			if(ret.size()<MAX_RECORDS){
+				ret.add(cur);
+			}else 
+				break;
 		}
 
 		return ret;
@@ -163,7 +167,7 @@ public class MongoDbStore {
 		//we have to find the stream with the version that has an dataset current : 1 
 
 
-		
+
 		DBObject configData = (DBObject) found.get("configData");
 
 
@@ -200,8 +204,13 @@ public class MongoDbStore {
 			DBObject existingDatasetOfStream = colldataset.findOne(searchActive);
 			if(existingDatasetOfStream!=null){
 				Map<String, Object> cur = extractDataFromStream(found);
-				if(cur != null)
-					ret.add(cur);
+				if(cur != null){
+					if(ret.size()<MAX_RECORDS){
+						ret.add(cur);
+					}else {
+						break;
+					}
+				}
 			}
 		}
 		return ret;
