@@ -350,31 +350,25 @@ public class MongoDbStore {
 		cur.put("measureUnit", unitaMisura);
 		cur.put("tags",tags );
 
-		BasicDBObject findapi = new BasicDBObject();
-		findapi.append("dataset.idDataset", id);
-		findapi.append("dataset.datasetVersion", datasetVersion);
+//		BasicDBObject findapi = new BasicDBObject();
+//		findapi.append("dataset.idDataset", id);
+//		findapi.append("dataset.datasetVersion", datasetVersion);
 
-		DBCursor apis = collapi.find(findapi);
 
 
 		StringBuilder apibuilder = new StringBuilder(); 
-		while(apis.hasNext()){
-			DBObject parent = apis.next();
 			//				DBObject config = (DBObject) parent.get("configData");
 			apibuilder.append(mongoParams.get("MONGO_API_ADDRESS"));
-			apibuilder.append("/");					
-			apibuilder.append(parent.get("apiCode"));
-			apibuilder.append("/$metadata");					
-			if(apis.hasNext())
-				apibuilder.append(",");
-		}
-
-		cur.put("API",apibuilder.toString());
+			apibuilder.append("name="+datasetCode);
+			apibuilder.append("_odata");	
+			apibuilder.append("&version=1.0&provider=admin");					
+	
+			cur.put("API",apibuilder.toString());
 
 		BasicDBObject findstream = new BasicDBObject();
 		findstream.append("configData.idDataset", id);
 		findstream.append("configData.datasetVersion", datasetVersion);
-		DBCursor streams = collstream.find(findstream);
+		DBObject streams = collstream.findOne(findstream);
 
 
 		StringBuilder streambuilder = new StringBuilder(); 
@@ -382,8 +376,8 @@ public class MongoDbStore {
 
 
 
-		while(streams.hasNext()){
-			DBObject nx = streams.next();
+		if(streams != null ){
+			DBObject nx = streams;
 
 			DBObject config = (DBObject) nx.get("configData");
 			DBObject streamsObj = (DBObject) nx.get("streams");
@@ -391,15 +385,14 @@ public class MongoDbStore {
 
 
 
-			streambuilder.append(mongoParams.get("MONGO_STREAM_TOPIC"));
-			streambuilder.append("/output.");					
-			streambuilder.append(config.get("tenantCode"));
+			streambuilder.append(mongoParams.get("MONGO_API_ADDRESS"));
+			streambuilder.append("name="+config.get("tenantCode"));
 			streambuilder.append(".");
 			streambuilder.append(stream.get("virtualEntityCode"));
 			streambuilder.append("_");
 			streambuilder.append(nx.get("streamCode"));
-			if(streams.hasNext())
-				streambuilder.append(",");
+			streambuilder.append("_stream");
+			streambuilder.append("&version=1.0&provider=admin");	
 		}
 
 		String download = mongoParams.get("MONGO_DOWNLOAD_ADDRESS")+"/"+tenant+"/"+datasetCode+"/csv";
