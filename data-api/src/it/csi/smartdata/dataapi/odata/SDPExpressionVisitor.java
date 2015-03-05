@@ -457,8 +457,17 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		} else if(org.apache.olingo.odata2.core.edm.Bit.getInstance().equals(paramEdmLiteral.getType())) {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
 			return ret;
+		} else if(EdmSimpleTypeKind.Byte.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
+			Object ret = new Integer(paramEdmLiteral.getLiteral());
+			return ret;
+		} else if(EdmSimpleTypeKind.SByte.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
+			Object ret = new Integer(paramEdmLiteral.getLiteral());
+			return ret;
+		} else if(EdmSimpleTypeKind.Single.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
+			Object ret = new Integer(paramEdmLiteral.getLiteral());
+			return ret;
 		}
-
+		
 
 
 
