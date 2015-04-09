@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:esb="http:///org/wso2/developerstudio/eclipse/gmf/esb" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_PmOnkN62EeSnP4Zyd9A4AQ" type="Esb" name="api_YuccaDataInsertApi.esb_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_RlFg8N62EeSnP4Zyd9A4AQ" type="2001">
+    <children xmi:type="notation:DecorationNode" xmi:id="_RlTjYN62EeSnP4Zyd9A4AQ" type="7001">
+      <children xmi:type="notation:Shape" xmi:id="_SsjfUN62EeSnP4Zyd9A4AQ" type="3668" fontName="Segoe UI">
+        <children xmi:type="notation:BasicCompartment" xmi:id="_SskGYN62EeSnP4Zyd9A4AQ" type="7044">
+          <children xmi:type="notation:Node" xmi:id="_St-boN62EeSnP4Zyd9A4AQ" type="3669">
+            <styles xmi:type="notation:DescriptionStyle" xmi:id="_St-bod62EeSnP4Zyd9A4AQ"/>
+            <styles xmi:type="notation:FontStyle" xmi:id="_St-bot62EeSnP4Zyd9A4AQ" fontName="Segoe UI"/>
+            <styles xmi:type="notation:LineStyle" xmi:id="_St-bo962EeSnP4Zyd9A4AQ"/>
+            <element xmi:type="esb:APIResource" href="api_YuccaDataInsertApi.esb#//@server/@children.0/@resources.0"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_St-bpN62EeSnP4Zyd9A4AQ" width="300" height="400"/>
+          </children>
+        </children>
+        <element xmi:type="esb:SynapseAPI" href="api_YuccaDataInsertApi.esb#//@server/@children.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_SsjfUd62EeSnP4Zyd9A4AQ" width="40000" height="45000"/>
+      </children>
+    </children>
+    <styles xmi:type="notation:DescriptionStyle" xmi:id="_RlFg8d62EeSnP4Zyd9A4AQ"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_RlFg8t62EeSnP4Zyd9A4AQ" fontName="Segoe UI"/>
+    <styles xmi:type="notation:LineStyle" xmi:id="_RlFg8962EeSnP4Zyd9A4AQ"/>
+    <element xmi:type="esb:EsbServer" href="api_YuccaDataInsertApi.esb#//@server"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_RlFg9N62EeSnP4Zyd9A4AQ"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_PmOnkd62EeSnP4Zyd9A4AQ"/>
+  <element xmi:type="esb:EsbDiagram" href="api_YuccaDataInsertApi.esb#/"/>
+</notation:Diagram>

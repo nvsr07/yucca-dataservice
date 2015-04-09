@@ -1,0 +1,34 @@
+<api xmlns="http://ws.apache.org/ns/synapse" context="/wso005/stream" name="YuccaDataInsertApi">
+<resource methods="POST" uri-template="/input/{codTenant}">
+<inSequence>
+            <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
+            <property name="codiceTenant" expression="get-property('uri.var.codTenant')" scope="default" type="STRING"/>
+            <log level="full">
+                <property name="step" value="API_DataInsert_InsertRequesta BEGIN"/>
+            </log>
+            <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
+
+            <payloadFactory media-type="xml">
+                <format>
+                    <dat:insertApi xmlns:dat="http://datainsert.yucca.csi.org">
+                    <dat:jsonData>$1</dat:jsonData>
+                    <dat:codTenant>$2</dat:codTenant>
+                    </dat:insertApi>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('bodyStream')"/>
+                    <arg evaluator="xml" expression="get-property('codiceTenant')"/>
+                </args>
+            </payloadFactory>
+
+            <log level="full">
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD"/>
+            </log>
+            <send/> 
+</inSequence>
+<outSequence>
+</outSequence>
+<faultSequence>
+</faultSequence>
+</resource>
+</api>
