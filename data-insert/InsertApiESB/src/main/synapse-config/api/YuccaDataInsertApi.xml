@@ -3,8 +3,10 @@
 <inSequence>
             <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
             <property name="codiceTenant" expression="get-property('uri.var.codTenant')" scope="default" type="STRING"/>
+            <property name="JSONPayload" expression="json-eval($.)" scope="default" type="STRING"/>
             <log level="full">
                 <property name="step" value="API_DataInsert_InsertRequesta BEGIN"/>
+                <property name="JSONPayloadPRP" expression="get-property('JSONPayload')"/>
             </log>
             <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
 
@@ -16,18 +18,49 @@
                 <script language="js"><![CDATA[
                     var symbol = mc.getPayloadJSON().toString();
                     var aaa=symbol.toString();
+                    var pl_string = mc.getProperty("JSONPayload");
+                    var plDue=pl_string;
                     mc.setPayloadXML(
                        <dat:insertApi xmlns:dat="http://datainsert.yucca.csi.org">
-                                <dat:jsonData>{aaa.toString()}</dat:jsonData>
+                                <dat:jsonData>{aaa}</dat:jsonData>
+                                <dat:jsonDataDue>{pl_string}</dat:jsonDataDue>
+                                <dat:jsonDataTre>{plDue}</dat:jsonDataTre>
                          
                         </dat:insertApi>);
                 ]]></script>
 
 
 
+
+
+
             <log level="full">
-                <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD"/>
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD JS "/>
             </log>
+            
+
+            <payloadFactory media-type="xml">
+                <format>
+     <dat:insertApi xmlns:dat="http://datainsert.yucca.csi.org">
+         <dat:codTenant>$1</dat:codTenant>
+         <dat:jsonData>$2
+		</dat:jsonData>         
+        </dat:insertApi> 
+         
+                         </format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('codiceTenant')"/>
+                    <arg evaluator="xml" expression="get-property('JSONPayload')"/>
+                </args>
+            </payloadFactory>
+
+
+            <log level="full">
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD med "/>
+            </log>
+            
+           
+            
             <send/> 
 </inSequence>
 <outSequence>
