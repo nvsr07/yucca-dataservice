@@ -8,9 +8,11 @@ import java.util.Iterator;
 import net.minidev.json.JSONObject;
 
 import org.csi.yucca.datainsert.dto.DatasetBulkInsert;
+import org.csi.yucca.datainsert.dto.DbConfDto;
 import org.csi.yucca.datainsert.dto.FieldsMongoDto;
 import org.csi.yucca.datainsert.dto.MongoStreamInfo;
 import org.csi.yucca.datainsert.exception.InsertApiBaseException;
+import org.csi.yucca.datainsert.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.datainsert.mongo.SDPInsertApiMongoDataAccess;
 
 import com.jayway.jsonpath.JsonPath;
@@ -64,6 +66,8 @@ public class InsertApiLogic {
 				System.out.println("righeinserite-->"+righeinserite);
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
+				curBulkToIns.setGlobalReqId(idRequest);
+				
 				datiToIns.put(key, curBulkToIns);
 			} catch (Exception e) {
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INS);
@@ -260,6 +264,79 @@ public class InsertApiLogic {
 		ret.setRowsToInsert(rigadains);
 		return ret;
 
+	}	
+	
+	
+	public void copyData(String tenantCode,String globlalRequestId) throws Exception {
+		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
+		boolean startCopy= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_START_COPY,DatasetBulkInsert.STATUS_END_INS) ;
+		if (startCopy==false) throw new Exception("richiesta non trovata o in stato non corretto");
+		System.out.println("global request status setted --> "+startCopy);
+
+		ArrayList<DatasetBulkInsert> datiRibalta= mongoAccess.getElencoRichiesteByGlobRequestId(globlalRequestId);
+		if (null==datiRibalta || datiRibalta.size()<=0)  throw new Exception("nessun blocco da elaborare per la richiesta "+globlalRequestId);
+
+		System.out.println("start Copy elaboration number of block to process --> "+datiRibalta.size());
+
+		
+		boolean allOk=true;
+		for (int i = 0; i<datiRibalta.size();i++) {
+			
+			boolean curblockOk=true;
+			System.out.println("**** Start Elaboration block: "+i);
+			System.out.println("               datasetId:"+datiRibalta.get(i).getIdDataset());
+			System.out.println("               datasetVersion:"+datiRibalta.get(i).getDatasetVersion());
+			System.out.println("               requestId:"+datiRibalta.get(i).getRequestId());
+			System.out.println("               numberofDocs:"+datiRibalta.get(i).getNumRowToInsFromJson());
+			System.out.println("               startstatus:"+datiRibalta.get(i).getStatus());
+			if (!DatasetBulkInsert.STATUS_END_INS.equals(datiRibalta.get(i).getStatus())) {
+				System.out.println("               ERROR:incorrect status");
+				allOk=false;
+			} else {
+				curblockOk= copyBlock(datiRibalta.get(i),globlalRequestId,tenantCode);
+			}
+			System.out.println("end copy block --> " +curblockOk);
+			
+			if(!curblockOk) allOk=false;
+			
+		}
+
+
+		boolean fineOp=false;
+		if (allOk)
+			fineOp= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_END_COPY,DatasetBulkInsert.STATUS_START_COPY) ;
+		else 
+			fineOp= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_KO_COPY,DatasetBulkInsert.STATUS_START_COPY) ;
+
+
+
+	}
+	private static boolean copyBlock(DatasetBulkInsert blockInfo,String globlalRequestId,String tenantCode) throws Exception {
+		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
+		//TODO okkio... .ragioniamo solo 
+		DbConfDto dbConfgi= SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(SDPInsertApiMongoConnectionSingleton.DB_MESURES, tenantCode);
+
+		try {
+
+			boolean startCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_START_COPY,blockInfo.getRequestId()) ;
+			if (!startCopyExecuted) throw new Exception("error in setting start copy for blocrk "+blockInfo.getRequestId());
+
+
+			int documnetsCopied=mongoAccess.copyRecords(tenantCode, globlalRequestId, blockInfo, dbConfgi);
+
+			if (documnetsCopied!=blockInfo.getNumRowToInsFromJson()) {
+				boolean KoCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_KO_COPY,blockInfo.getRequestId()) ;
+				if (!KoCopyExecuted) throw new Exception("error in setting ko copy for blocrk "+blockInfo.getRequestId());
+				return  false;
+			} else {
+				boolean endtCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_END_COPY,blockInfo.getRequestId()) ;
+				if (!endtCopyExecuted) throw new Exception("error in setting end copy for blocrk "+blockInfo.getRequestId());
+			}
+			return true;
+		} catch (Exception e ) {
+			e.printStackTrace();
+			return false;
+		}
 	}	
 	
 }

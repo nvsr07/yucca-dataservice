@@ -4,6 +4,14 @@ import java.util.ArrayList;
 
 public class DatasetBulkInsert {
 
+	private String globalReqId=null;
+	
+	public String getGlobalReqId() {
+		return globalReqId;
+	}
+	public void setGlobalReqId(String globalReqId) {
+		this.globalReqId = globalReqId;
+	}
 	public static final String STATUS_SYNTAX_CHECKED="validate";
 	public static final String STATUS_START_INS="start_ins";
 	public static final String STATUS_END_INS="end_ins";

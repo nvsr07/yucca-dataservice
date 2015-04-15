@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<esb:EsbDiagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:esb="http:///org/wso2/developerstudio/eclipse/gmf/esb">
+  <server type="TEMPLATE">
+    <children xsi:type="esb:Template" name="YuccaDataservice_IsertApiErrorTMPL">
+      <child xsi:type="esb:Sequences" name="YuccaDataservice_IsertApiErrorTMPL">
+        <outputConnector>
+          <outgoingLink target="//@server/@children.0/@child/@mediatorFlow/@children.0/@inputConnector"/>
+        </outputConnector>
+        <inputConnector incomingLinks="//@server/@children.0/@child/@mediatorFlow/@children.2/@outputConnector/@outgoingLink"/>
+        <mediatorFlow>
+          <children xsi:type="esb:PropertyMediator" propertyName="showJson" propertyDataType="BOOLEAN" valueType="EXPRESSION">
+            <inputConnector incomingLinks="//@server/@children.0/@child/@outputConnector/@outgoingLink"/>
+            <outputConnector>
+              <outgoingLink target="//@server/@children.0/@child/@mediatorFlow/@children.1/@inputConnector"/>
+            </outputConnector>
+            <valueExpression propertyValue="$func:show_json" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+          </children>
+          <children xsi:type="esb:FilterMediator" regex="true">
+            <inputConnector incomingLinks="//@server/@children.0/@child/@mediatorFlow/@children.0/@outputConnector/@outgoingLink"/>
+            <outputConnector>
+              <outgoingLink target="//@server/@children.0/@child/@mediatorFlow/@children.2/@inputConnector"/>
+            </outputConnector>
+            <passOutputConnector>
+              <outgoingLink target="//@server/@children.0/@child/@mediatorFlow/@children.1/@filterContainer/@passContainer/@mediatorFlow/@children.0/@inputConnector"/>
+            </passOutputConnector>
+            <failOutputConnector>
+              <outgoingLink target="//@server/@children.0/@child/@mediatorFlow/@children.1/@filterContainer/@failContainer/@mediatorFlow/@children.0/@inputConnector"/>
+            </failOutputConnector>
+            <xpath prettyName="Filter Source XPath" propertyName="filterSourceXpath" propertyValue="/default/xpath" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+            <source propertyValue="get-property('showJson')" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+            <filterContainer>
+              <passContainer>
+                <mediatorFlow>
+                  <children xsi:type="esb:PropertyMediator" propertyName="messaggio" valueType="EXPRESSION">
+                    <inputConnector incomingLinks="//@server/@children.0/@child/@mediatorFlow/@children.1/@passOutputConnector/@outgoingLink"/>
+                    <outputConnector/>
+                    <valueExpression propertyValue="$body/jsonObject" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+                  </children>
+                </mediatorFlow>
+              </passContainer>
+              <failContainer>
+                <mediatorFlow>
+                  <children xsi:type="esb:PropertyMediator" propertyName="messaggio" valueLiteral="">
+                    <inputConnector incomingLinks="//@server/@children.0/@child/@mediatorFlow/@children.1/@failOutputConnector/@outgoingLink"/>
+                    <outputConnector/>
+                    <valueExpression prettyName="Property Expression" propertyName="expression" propertyValue="/default/expression" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+                  </children>
+                </mediatorFlow>
+              </failContainer>
+            </filterContainer>
+          </children>
+          <children xsi:type="esb:PayloadFactoryMediator" description="MessageError" format="&lt;jsonObject>&lt;error_name>$1&lt;/error_name>&lt;error_code>$2&lt;/error_code>&lt;output/>&lt;message>$3&lt;/message>&lt;/jsonObject>">
+            <formatKey prettyName="Sequence Key" keyName="Sequence Key" keyValue="/default/key" filters="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+            <args argumentType="Expression">
+              <argumentExpression propertyValue="$func:error_name" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C770800000010000000027400036E733274001D687474703A2F2F6F72672E6170616368652E73796E617073652F7873647400026E7371007E000378"/>
+            </args>
+            <args argumentType="Expression">
+              <argumentExpression propertyValue="$func:error_code" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C770800000010000000027400036E733274001D687474703A2F2F6F72672E6170616368652E73796E617073652F7873647400026E7371007E000378"/>
+            </args>
+            <args argumentType="Expression">
+              <argumentExpression propertyValue="get-property('messaggio')" namespaces="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F4000000000000C770800000010000000027400036E733274001D687474703A2F2F6F72672E6170616368652E73796E617073652F7873647400026E7371007E000378"/>
+            </args>
+            <inputConnector incomingLinks="//@server/@children.0/@child/@mediatorFlow/@children.1/@outputConnector/@outgoingLink"/>
+            <outputConnector>
+              <outgoingLink target="//@server/@children.0/@child/@inputConnector"/>
+            </outputConnector>
+          </children>
+        </mediatorFlow>
+        <onError prettyName="OnError sequence Key" keyName="OnError sequence Key" filters="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
+      </child>
+      <parameters name="error_name"/>
+      <parameters name="error_code"/>
+      <parameters name="show_json"/>
+    </children>
+  </server>
+</esb:EsbDiagram>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><resource name="XSLTInsertApiRemoveNameSpaces.xslt" isCollection="false" path="/_system/config/xsl//InsertApiREG/XSLTInsertApiRemoveNameSpaces.xslt" registryUrl="https://localhost:9443/registry" md5="27dfa8d646421ef6760133675c1caac5">
+    <mediaType>application/xslt+xml</mediaType>
+    <version>1844</version>
+    <creator>admin</creator>
+    <createdTime>1429022478116</createdTime>
+    <lastUpdater>admin</lastUpdater>
+    <lastModified>1429022478117</lastModified>
+    <registryState>1</registryState>
+    <description/>
+</resource>

@@ -1,5 +1,6 @@
 package org.csi.yucca.datainsert.exception;
 
+
 public class InsertApiBaseException extends Exception{
 
 	
@@ -34,6 +35,22 @@ public class InsertApiBaseException extends Exception{
 		else if (ERROR_CODE_INPUT_DUPLICATE.equals(errorCode)) return "Input validation failed: duplicate input block ";
 		else if (ERROR_CODE_INPUT_INVALID_DATA_VALUE.equals(errorCode)) return "Invalid data value ";
 		else return "unknown error";
+	}
+
+	public String getErrorName() {
+		return errorName;
+	}
+
+	public void setErrorName(String errorName) {
+		this.errorName = errorName;
+	}
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
 	}
 
 	public InsertApiBaseException(String errorCode, Throwable cause, String additionalMessage) {

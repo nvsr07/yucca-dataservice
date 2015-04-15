@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:esb="http:///org/wso2/developerstudio/eclipse/gmf/esb" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_VIc50ONzEeSYWe2Gu-2HAw" type="Esb" name="template_YuccaDataservice_IsertApiErrorTMPL.esb_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_VhGqYONzEeSYWe2Gu-2HAw" type="2001">
+    <children xmi:type="notation:DecorationNode" xmi:id="_VhGqZeNzEeSYWe2Gu-2HAw" type="7001">
+      <children xmi:type="notation:Shape" xmi:id="_kymCAON0EeSYWe2Gu-2HAw" type="3664" fontName="Segoe UI">
+        <children xmi:type="notation:DecorationNode" xmi:id="_kympEON0EeSYWe2Gu-2HAw" type="7043">
+          <children xmi:type="notation:Node" xmi:id="_kyxBION0EeSYWe2Gu-2HAw" type="3665">
+            <children xmi:type="notation:Node" xmi:id="_kyy2UON0EeSYWe2Gu-2HAw" type="3615">
+              <children xmi:type="notation:DecorationNode" xmi:id="_kyy2VeN0EeSYWe2Gu-2HAw" type="7035">
+                <children xmi:type="notation:Node" xmi:id="_kzYsMON0EeSYWe2Gu-2HAw" type="3492">
+                  <children xmi:type="notation:DecorationNode" xmi:id="_kzZTQON0EeSYWe2Gu-2HAw" type="5167"/>
+                  <children xmi:type="notation:Node" xmi:id="_k0NLkON0EeSYWe2Gu-2HAw" type="3033">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k0NLkeN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k0NLkuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k0NLk-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:PropertyMediatorInputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.0/@inputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k0NLlON0EeSYWe2Gu-2HAw" x="-6" y="-5"/>
+                  </children>
+                  <children xmi:type="notation:Node" xmi:id="_k0NyoON0EeSYWe2Gu-2HAw" type="3034">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k0NyoeN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k0NyouN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k0Nyo-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:PropertyMediatorOutputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.0/@outputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k0NypON0EeSYWe2Gu-2HAw" x="-11" y="-9"/>
+                  </children>
+                  <styles xmi:type="notation:DescriptionStyle" xmi:id="_kzYsMeN0EeSYWe2Gu-2HAw"/>
+                  <styles xmi:type="notation:FontStyle" xmi:id="_kzYsMuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                  <styles xmi:type="notation:LineStyle" xmi:id="_kzYsM-N0EeSYWe2Gu-2HAw"/>
+                  <element xmi:type="esb:PropertyMediator" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.0"/>
+                  <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kzYsNON0EeSYWe2Gu-2HAw" x="25" y="109" width="77" height="75"/>
+                </children>
+                <children xmi:type="notation:Node" xmi:id="_k1EHMON0EeSYWe2Gu-2HAw" type="3494">
+                  <children xmi:type="notation:DecorationNode" xmi:id="_k1EHNeN0EeSYWe2Gu-2HAw" type="5129"/>
+                  <children xmi:type="notation:Node" xmi:id="_k1lEkON0EeSYWe2Gu-2HAw" type="3010">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k1lEkeN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k1lEkuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k1lEk-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:FilterMediatorInputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@inputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k1lElON0EeSYWe2Gu-2HAw" x="-6" y="-5"/>
+                  </children>
+                  <children xmi:type="notation:Node" xmi:id="_k1lroON0EeSYWe2Gu-2HAw" type="3534">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k1lroeN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k1lrouN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k1lro-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:FilterMediatorOutputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@outputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k1lrpON0EeSYWe2Gu-2HAw"/>
+                  </children>
+                  <children xmi:type="notation:Node" xmi:id="_k1mSsON0EeSYWe2Gu-2HAw" type="3011">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k1mSseN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k1mSsuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k1mSs-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:FilterMediatorPassOutputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@passOutputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k1mStON0EeSYWe2Gu-2HAw" x="81" y="-29"/>
+                  </children>
+                  <children xmi:type="notation:Node" xmi:id="_k1mSteN0EeSYWe2Gu-2HAw" type="3012">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k1mStuN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k1mSt-N0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k1mSuON0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:FilterMediatorFailOutputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@failOutputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k1mSueN0EeSYWe2Gu-2HAw" x="81" y="11"/>
+                  </children>
+                  <children xmi:type="notation:Node" xmi:id="_k1m5wON0EeSYWe2Gu-2HAw" type="3531">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k1m5weN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k1m5wuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k1m5w-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:FilterContainer" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@filterContainer"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k1m5xON0EeSYWe2Gu-2HAw"/>
+                  </children>
+                  <styles xmi:type="notation:DescriptionStyle" xmi:id="_k1EHMeN0EeSYWe2Gu-2HAw"/>
+                  <styles xmi:type="notation:FontStyle" xmi:id="_k1EHMuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                  <styles xmi:type="notation:LineStyle" xmi:id="_k1EHM-N0EeSYWe2Gu-2HAw"/>
+                  <element xmi:type="esb:FilterMediator" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1"/>
+                  <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k1EHNON0EeSYWe2Gu-2HAw" x="142" y="109" width="170" height="100"/>
+                </children>
+                <children xmi:type="notation:Node" xmi:id="_k4kuMON0EeSYWe2Gu-2HAw" type="3597">
+                  <children xmi:type="notation:DecorationNode" xmi:id="_k4lVQON0EeSYWe2Gu-2HAw" type="5191"/>
+                  <children xmi:type="notation:Node" xmi:id="_k4oYkON0EeSYWe2Gu-2HAw" type="3598">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k4oYkeN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k4oYkuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k4oYk-N0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:PayloadFactoryMediatorInputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.2/@inputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k4oYlON0EeSYWe2Gu-2HAw" x="-6" y="-5"/>
+                  </children>
+                  <children xmi:type="notation:Node" xmi:id="_k4oYleN0EeSYWe2Gu-2HAw" type="3599">
+                    <styles xmi:type="notation:DescriptionStyle" xmi:id="_k4oYluN0EeSYWe2Gu-2HAw"/>
+                    <styles xmi:type="notation:FontStyle" xmi:id="_k4oYl-N0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                    <styles xmi:type="notation:LineStyle" xmi:id="_k4oYmON0EeSYWe2Gu-2HAw"/>
+                    <element xmi:type="esb:PayloadFactoryMediatorOutputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.2/@outputConnector"/>
+                    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k4o_oON0EeSYWe2Gu-2HAw" x="-11" y="-9"/>
+                  </children>
+                  <styles xmi:type="notation:DescriptionStyle" xmi:id="_k4kuMeN0EeSYWe2Gu-2HAw"/>
+                  <styles xmi:type="notation:FontStyle" xmi:id="_k4kuMuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+                  <styles xmi:type="notation:LineStyle" xmi:id="_k4kuM-N0EeSYWe2Gu-2HAw"/>
+                  <element xmi:type="esb:PayloadFactoryMediator" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.2"/>
+                  <layoutConstraint xmi:type="notation:Bounds" xmi:id="_k4kuNON0EeSYWe2Gu-2HAw" x="374" y="109" width="77" height="75"/>
+                </children>
+                <styles xmi:type="notation:TitleStyle" xmi:id="_kyy2VuN0EeSYWe2Gu-2HAw" showTitle="true"/>
+              </children>
+              <styles xmi:type="notation:DescriptionStyle" xmi:id="_kyy2UeN0EeSYWe2Gu-2HAw"/>
+              <styles xmi:type="notation:FontStyle" xmi:id="_kyy2UuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+              <styles xmi:type="notation:LineStyle" xmi:id="_kyy2U-N0EeSYWe2Gu-2HAw"/>
+              <element xmi:type="esb:MediatorFlow" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kyy2VON0EeSYWe2Gu-2HAw"/>
+            </children>
+            <children xmi:type="notation:Node" xmi:id="_kyzdYON0EeSYWe2Gu-2HAw" type="3616">
+              <styles xmi:type="notation:DescriptionStyle" xmi:id="_kyzdYeN0EeSYWe2Gu-2HAw"/>
+              <styles xmi:type="notation:FontStyle" xmi:id="_kyzdYuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+              <styles xmi:type="notation:LineStyle" xmi:id="_kyzdY-N0EeSYWe2Gu-2HAw"/>
+              <element xmi:type="esb:SequencesInputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@inputConnector"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kyzdZON0EeSYWe2Gu-2HAw" x="-11" y="-9"/>
+            </children>
+            <children xmi:type="notation:Node" xmi:id="_kyzdZeN0EeSYWe2Gu-2HAw" type="3617">
+              <styles xmi:type="notation:DescriptionStyle" xmi:id="_kyzdZuN0EeSYWe2Gu-2HAw"/>
+              <styles xmi:type="notation:FontStyle" xmi:id="_kyzdZ-N0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+              <styles xmi:type="notation:LineStyle" xmi:id="_kyzdaON0EeSYWe2Gu-2HAw"/>
+              <element xmi:type="esb:SequencesOutputConnector" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@outputConnector"/>
+              <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kyzdaeN0EeSYWe2Gu-2HAw" x="-11" y="-9"/>
+            </children>
+            <styles xmi:type="notation:DescriptionStyle" xmi:id="_kyxBIeN0EeSYWe2Gu-2HAw"/>
+            <styles xmi:type="notation:FontStyle" xmi:id="_kyxBIuN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+            <styles xmi:type="notation:LineStyle" xmi:id="_kyxBI-N0EeSYWe2Gu-2HAw"/>
+            <element xmi:type="esb:Sequences" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kyxBJON0EeSYWe2Gu-2HAw" width="195" height="125"/>
+          </children>
+        </children>
+        <element xmi:type="esb:Template" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_kymCAeN0EeSYWe2Gu-2HAw" width="30000" height="30000"/>
+      </children>
+    </children>
+    <styles xmi:type="notation:DescriptionStyle" xmi:id="_VhGqYeNzEeSYWe2Gu-2HAw"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_VhGqYuNzEeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <styles xmi:type="notation:LineStyle" xmi:id="_VhGqY-NzEeSYWe2Gu-2HAw"/>
+    <element xmi:type="esb:EsbServer" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_VhGqZONzEeSYWe2Gu-2HAw"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_VIc50eNzEeSYWe2Gu-2HAw"/>
+  <element xmi:type="esb:EsbDiagram" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#/"/>
+  <edges xmi:type="notation:Connector" xmi:id="_k5c38ON0EeSYWe2Gu-2HAw" type="4001" source="_k1mSteN0EeSYWe2Gu-2HAw" target="_k3cFwON0EeSYWe2Gu-2HAw" roundedBendpointsRadius="5" routing="Rectilinear">
+    <styles xmi:type="notation:FontStyle" xmi:id="_k5c38eN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <element xmi:type="esb:EsbLink" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@failOutputConnector/@outgoingLink"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_k5c38uN0EeSYWe2Gu-2HAw" points="[11, 1, -163, -30]$[168, 29, -6, -2]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_k5la0ON0EeSYWe2Gu-2HAw" type="4001" source="_k1mSsON0EeSYWe2Gu-2HAw" target="_k4EX4ON0EeSYWe2Gu-2HAw" roundedBendpointsRadius="5" routing="Rectilinear">
+    <styles xmi:type="notation:FontStyle" xmi:id="_k5la0eN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <element xmi:type="esb:EsbLink" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@passOutputConnector/@outgoingLink"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_k5la0uN0EeSYWe2Gu-2HAw" points="[11, 1, -163, -30]$[168, 29, -6, -2]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_k5rhcON0EeSYWe2Gu-2HAw" type="4001" source="_kyzdZeN0EeSYWe2Gu-2HAw" target="_k0NLkON0EeSYWe2Gu-2HAw" roundedBendpointsRadius="5" routing="Rectilinear">
+    <styles xmi:type="notation:FontStyle" xmi:id="_k5rhceN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <element xmi:type="esb:EsbLink" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@outputConnector/@outgoingLink"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_k5rhcuN0EeSYWe2Gu-2HAw" points="[10, 9, -96, -83]$[100, 86, -6, -6]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_k5yPION0EeSYWe2Gu-2HAw" type="4001" source="_k0NyoON0EeSYWe2Gu-2HAw" target="_k1lEkON0EeSYWe2Gu-2HAw" roundedBendpointsRadius="5" routing="Rectilinear">
+    <styles xmi:type="notation:FontStyle" xmi:id="_k5yPIeN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <element xmi:type="esb:EsbLink" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.0/@outputConnector/@outgoingLink"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_k5yPIuN0EeSYWe2Gu-2HAw" points="[-11, 1, 66, -12]$[-71, 11, 6, -2]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_k54VwON0EeSYWe2Gu-2HAw" type="4001" source="_k1lroON0EeSYWe2Gu-2HAw" target="_k4oYkON0EeSYWe2Gu-2HAw" roundedBendpointsRadius="5" routing="Rectilinear">
+    <styles xmi:type="notation:FontStyle" xmi:id="_k54VweN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <element xmi:type="esb:EsbLink" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.1/@outputConnector/@outgoingLink"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_k54VwuN0EeSYWe2Gu-2HAw" points="[-11, -1, 163, 12]$[-168, -13, 6, 0]"/>
+  </edges>
+  <edges xmi:type="notation:Connector" xmi:id="_k5-cYON0EeSYWe2Gu-2HAw" type="4001" source="_k4oYleN0EeSYWe2Gu-2HAw" target="_kyzdYON0EeSYWe2Gu-2HAw" roundedBendpointsRadius="5" routing="Rectilinear">
+    <styles xmi:type="notation:FontStyle" xmi:id="_k5-cYeN0EeSYWe2Gu-2HAw" fontName="Segoe UI"/>
+    <element xmi:type="esb:EsbLink" href="template_YuccaDataservice_IsertApiErrorTMPL.esb#//@server/@children.0/@child/@mediatorFlow/@children.2/@outputConnector/@outgoingLink"/>
+    <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_k5-cYuN0EeSYWe2Gu-2HAw" points="[1, -9, -11, 83]$[10, -83, -2, 9]"/>
+  </edges>
+</notation:Diagram>
