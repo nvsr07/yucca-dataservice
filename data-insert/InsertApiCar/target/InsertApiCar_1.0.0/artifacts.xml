@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<artifacts>
-    <artifact name="InsertApiCar" version="1.0.0" type="carbon/application">
-        <dependency artifact="XSLTINsertAPi" version="1.0.0" include="true" serverRole="EnterpriseServiceBus"/>
-        <dependency artifact="YuccaDataservice_IsertApiErrorTMPL" version="1.0.0" include="true" serverRole="EnterpriseServiceBus"/>
-        <dependency artifact="YuccaDataInsertApi" version="1.0.0" include="true" serverRole="EnterpriseServiceBus"/>
-        <dependency artifact="InsertApiAxis" version="1.0.0" include="true" serverRole="ApplicationServer"/>
-    </artifact>
-</artifacts>

@@ -38,9 +38,15 @@ public class DatasetBulkInsert {
 	private String stream=null;
 	private String sensor=null;
 	private String status=null;
+	private String datasetCode=null;
 	
 	
-	
+	public String getDatasetCode() {
+		return datasetCode;
+	}
+	public void setDatasetCode(String datasetCode) {
+		this.datasetCode = datasetCode;
+	}
 	public int getNumRowToInsFromJson() {
 		return numRowToInsFromJson;
 	}

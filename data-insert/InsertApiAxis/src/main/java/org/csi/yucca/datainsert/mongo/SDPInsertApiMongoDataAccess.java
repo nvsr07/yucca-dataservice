@@ -11,6 +11,7 @@ import org.csi.yucca.datainsert.constants.SDPInsertApiConfig;
 import org.csi.yucca.datainsert.dto.DatasetBulkInsert;
 import org.csi.yucca.datainsert.dto.DbConfDto;
 import org.csi.yucca.datainsert.dto.FieldsMongoDto;
+import org.csi.yucca.datainsert.dto.MongoDatasetInfo;
 import org.csi.yucca.datainsert.dto.MongoStreamInfo;
 import org.csi.yucca.datainsert.util.JSONCallbackTimeZone;
 
@@ -361,6 +362,49 @@ public class SDPInsertApiMongoDataAccess {
 	}
 	
 	
+	public MongoStreamInfo getStreamInfoForDataset (String tenant,long idDataset,long datasetVersion) {
+		MongoStreamInfo ret=null;
+		DBCursor  cursor=null;
+		try {
+			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STREAM);
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STREAM));
+			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STREAM));
+			BasicDBList queryTot=new BasicDBList();
+			queryTot.add( new BasicDBObject("configData.tenantCode",tenant));
+			queryTot.add( new BasicDBObject("configData.idDataset",new Long (idDataset)));
+			queryTot.add( new BasicDBObject("configData.datasetVersion",new Long (datasetVersion)));
+			
+			BasicDBObject query = new BasicDBObject("$and", queryTot);
+
+			cursor = coll.find(query);
+			if (cursor.hasNext()) {
+				DBObject obj=cursor.next();
+				String streamCode=takeNvlValues(obj.get("streamCode"));
+				
+				
+				String sensore=takeNvlValues((DBObject)((DBObject)((DBObject)obj.get("streams")).get("stream")).get("virtualEntityCode"));
+				
+				ret=new MongoStreamInfo();
+				ret.setSensorCode(sensore);
+				ret.setDatasetId(idDataset);
+				ret.setDatasetVersion(datasetVersion);
+				ret.setStreamCode(streamCode);
+				
+			}
+
+			
+			
+		} catch (Exception e) {
+			//TODO
+		} finally {
+			try {
+				cursor.close();
+			} catch (Exception e ) {}
+		}
+		return ret;
+		
+	}
+	
 	public ArrayList<MongoStreamInfo> getStreamInfo (String tenant,String streamApplication, String sensor) {
 		ArrayList<MongoStreamInfo> ret=null;
 		DBCursor  cursor=null;
@@ -404,6 +448,58 @@ public class SDPInsertApiMongoDataAccess {
 		return ret;
 	}
 
+	
+	
+	public MongoDatasetInfo getInfoDataset(String datasetCode,long datasetVersion) throws Exception {
+		DBCursor  cursor=null;
+		MongoDatasetInfo ret=null;
+		try {
+			BasicDBList curDataset = new BasicDBList();
+			curDataset.add(new BasicDBObject("datasetCode",datasetCode ));
+			if (datasetVersion==-1) {
+				curDataset.add(new BasicDBObject("configData.current",new Long(1) ));
+				
+			} else {
+				curDataset.add(new BasicDBObject("datasetVersion",new Long(datasetVersion) ));
+			}
+			BasicDBObject query = new BasicDBObject("$or", curDataset);	
+			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+			cursor = coll.find(query);			
+			if (cursor.hasNext()) {
+				DBObject obj=cursor.next();
+				String datasetDatasetVersion=takeNvlValues(obj.get("datasetVersion"));
+				String datasetDatasetId=takeNvlValues(obj.get("idDataset"));
+				
+				BasicDBObject configData=(BasicDBObject)obj.get("configData");
+				
+				String type=takeNvlValues(configData.get("type"));
+				String subtype=takeNvlValues(configData.get("subtype"));
+				String tenanTcode=takeNvlValues(configData.get("tenantCode"));
+				ArrayList<FieldsMongoDto> campi=getCampiFromDbObject(obj);
+				
+				ret = new MongoDatasetInfo();
+				ret.setCampi(campi);
+				ret.setDatasetId(Long.parseLong(datasetDatasetId));
+				ret.setDatasetVersion(Long.parseLong(datasetDatasetVersion));
+				ret.setDatasetType(type);
+				ret.setDatasetSubType(subtype);
+				ret.setTenantcode(tenanTcode);
+				
+			}
+			 
+
+		} catch (Exception e) {
+			//TODO
+		} finally {
+			try {
+				cursor.close();
+			} catch (Exception e ) {}
+		}
+		return ret;
+			
+	}
 
 	public ArrayList<FieldsMongoDto> getCampiDataSet(ArrayList<MongoStreamInfo> elencoStream, long datasetVersion) throws Exception {
 		ArrayList<FieldsMongoDto> ret=null;
@@ -435,44 +531,46 @@ public class SDPInsertApiMongoDataAccess {
 				if (datasetVersion==-1 && Integer.parseInt(isCurrent)==1) trovato= true;
 				if (trovato) {
 
-					Object eleCapmpi=((BasicDBObject)obj.get("info")).get("fields");
-
-					BasicDBList lista=null;
-					if (eleCapmpi instanceof BasicDBList) {
-						lista=(BasicDBList)eleCapmpi;
-					} else {
-						lista=new BasicDBList();
-						lista.add(eleCapmpi);
-					}
-
-					for (int i=0;i<lista.size();i++) {
-						DBObject elemento=(DBObject)lista.get(i);
-						Set<String> chiavi= elemento.keySet();
-						String propName=null;
-						String porpType=null;
-						Iterator<String> itcomp=chiavi.iterator();
-						while (itcomp.hasNext()) {
-							String chiaveCur=itcomp.next();
-							String valor=takeNvlValues(elemento.get(chiaveCur));
-
-							if (chiaveCur.equals("fieldName")) propName=valor;
-							if (chiaveCur.equals("dataType")) porpType=valor;
-
-
-						}
-						campiMongo.put(propName, new FieldsMongoDto(propName, porpType));
-						if (null==ret) ret = new ArrayList<FieldsMongoDto>(); 
-							ret.add(new FieldsMongoDto(propName, porpType,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					}
-					ret.add(new FieldsMongoDto("c1", FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c2", FieldsMongoDto.DATA_TYPE_DATETIME,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c3", FieldsMongoDto.DATA_TYPE_DOUBLE,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c4", FieldsMongoDto.DATA_TYPE_FLOAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c5", FieldsMongoDto.DATA_TYPE_INT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c6", FieldsMongoDto.DATA_TYPE_LAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c7", FieldsMongoDto.DATA_TYPE_LON,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c8", FieldsMongoDto.DATA_TYPE_LONG,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-					ret.add(new FieldsMongoDto("c9", FieldsMongoDto.DATA_TYPE_STRING,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+					ret = getCampiFromDbObject(obj);
+					
+//					Object eleCapmpi=((BasicDBObject)obj.get("info")).get("fields");
+//
+//					BasicDBList lista=null;
+//					if (eleCapmpi instanceof BasicDBList) {
+//						lista=(BasicDBList)eleCapmpi;
+//					} else {
+//						lista=new BasicDBList();
+//						lista.add(eleCapmpi);
+//					}
+//
+//					for (int i=0;i<lista.size();i++) {
+//						DBObject elemento=(DBObject)lista.get(i);
+//						Set<String> chiavi= elemento.keySet();
+//						String propName=null;
+//						String porpType=null;
+//						Iterator<String> itcomp=chiavi.iterator();
+//						while (itcomp.hasNext()) {
+//							String chiaveCur=itcomp.next();
+//							String valor=takeNvlValues(elemento.get(chiaveCur));
+//
+//							if (chiaveCur.equals("fieldName")) propName=valor;
+//							if (chiaveCur.equals("dataType")) porpType=valor;
+//
+//
+//						}
+//						campiMongo.put(propName, new FieldsMongoDto(propName, porpType));
+//						if (null==ret) ret = new ArrayList<FieldsMongoDto>(); 
+//							ret.add(new FieldsMongoDto(propName, porpType,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					}
+//					ret.add(new FieldsMongoDto("c1", FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c2", FieldsMongoDto.DATA_TYPE_DATETIME,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c3", FieldsMongoDto.DATA_TYPE_DOUBLE,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c4", FieldsMongoDto.DATA_TYPE_FLOAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c5", FieldsMongoDto.DATA_TYPE_INT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c6", FieldsMongoDto.DATA_TYPE_LAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c7", FieldsMongoDto.DATA_TYPE_LON,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c8", FieldsMongoDto.DATA_TYPE_LONG,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//					ret.add(new FieldsMongoDto("c9", FieldsMongoDto.DATA_TYPE_STRING,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
 					
 
 
@@ -489,5 +587,53 @@ public class SDPInsertApiMongoDataAccess {
 		}
 		return ret;
 
-	}	
+	}
+	
+	private ArrayList<FieldsMongoDto> getCampiFromDbObject(DBObject obj) throws Exception {
+		String datasetDatasetVersion=takeNvlValues(obj.get("datasetVersion"));
+		String datasetDatasetId=takeNvlValues(obj.get("idDataset"));
+		ArrayList<FieldsMongoDto> ret=null;
+		Object eleCapmpi=((BasicDBObject)obj.get("info")).get("fields");
+
+		BasicDBList lista=null;
+		if (eleCapmpi instanceof BasicDBList) {
+			lista=(BasicDBList)eleCapmpi;
+		} else {
+			lista=new BasicDBList();
+			lista.add(eleCapmpi);
+		}
+
+		for (int i=0;i<lista.size();i++) {
+			DBObject elemento=(DBObject)lista.get(i);
+			Set<String> chiavi= elemento.keySet();
+			String propName=null;
+			String porpType=null;
+			Iterator<String> itcomp=chiavi.iterator();
+			while (itcomp.hasNext()) {
+				String chiaveCur=itcomp.next();
+				String valor=takeNvlValues(elemento.get(chiaveCur));
+
+				if (chiaveCur.equals("fieldName")) propName=valor;
+				if (chiaveCur.equals("dataType")) porpType=valor;
+
+
+			}
+			
+			if (null==ret) ret = new ArrayList<FieldsMongoDto>(); 
+				ret.add(new FieldsMongoDto(propName, porpType,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		}
+		ret.add(new FieldsMongoDto("c1", FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c2", FieldsMongoDto.DATA_TYPE_DATETIME,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c3", FieldsMongoDto.DATA_TYPE_DOUBLE,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c4", FieldsMongoDto.DATA_TYPE_FLOAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c5", FieldsMongoDto.DATA_TYPE_INT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c6", FieldsMongoDto.DATA_TYPE_LAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c7", FieldsMongoDto.DATA_TYPE_LON,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c8", FieldsMongoDto.DATA_TYPE_LONG,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+		ret.add(new FieldsMongoDto("c9", FieldsMongoDto.DATA_TYPE_STRING,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+
+		
+		return ret;
+	}
+	
 }
