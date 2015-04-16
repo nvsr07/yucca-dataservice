@@ -22,4 +22,11 @@
       </plugin>
     </plugins>
   </build>
+  <modules>
+    <module>InsertApiAxis</module>
+    <module>InsertApiESB</module>
+    <module>InsertApiREG</module>
+    <module>InsertApiCar</module>
+  </modules>  
+  
 </project>

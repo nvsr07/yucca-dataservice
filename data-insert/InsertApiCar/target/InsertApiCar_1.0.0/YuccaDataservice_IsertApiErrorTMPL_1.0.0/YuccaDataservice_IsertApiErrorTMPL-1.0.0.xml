@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template xmlns="http://ws.apache.org/ns/synapse" name="YuccaDataservice_IsertApiErrorTMPL">
+    <parameter name="error_name"/>
+    <parameter name="error_code"/>
+    <parameter name="show_json"/>
+    <sequence>
+        <property name="showJson" expression="$func:show_json" scope="default" type="BOOLEAN"/>
+        <filter source="get-property('showJson')" regex="true">
+            <then>
+                <property name="messaggio" expression="$body/jsonObject" scope="default" type="STRING"/>
+            </then>
+            <else>
+                <property name="messaggio" value="" scope="default" type="STRING"/>
+            </else>
+        </filter>
+        <payloadFactory media-type="xml" description="MessageError">
+            <format>
+                <jsonObject xmlns="">
+                    <error_name>$1</error_name>
+                    <error_code>$2</error_code>
+                    <output/>
+                    <message>$3</message>
+                </jsonObject>
+            </format>
+            <args>
+                <arg xmlns:ns2="http://org.apache.synapse/xsd" xmlns:ns="http://org.apache.synapse/xsd" evaluator="xml" expression="$func:error_name"/>
+                <arg xmlns:ns2="http://org.apache.synapse/xsd" xmlns:ns="http://org.apache.synapse/xsd" evaluator="xml" expression="$func:error_code"/>
+                <arg xmlns:ns2="http://org.apache.synapse/xsd" xmlns:ns="http://org.apache.synapse/xsd" evaluator="xml" expression="get-property('messaggio')"/>
+            </args>
+        </payloadFactory>
+    </sequence>
+</template>

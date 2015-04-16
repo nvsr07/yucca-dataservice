@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><artifacts>
-    <artifact name="YuccaDataInsertApi" groupId="org.csi.yucca.datainsert..InsertApiESB.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+    <artifact name="YuccaDataInsertApi" groupId="org.csi.yucca.datainsert.InsertApiESB.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
         <file>src/main/synapse-config/api/YuccaDataInsertApi.xml</file>
     </artifact>
-    <artifact name="YuccaDataservice_IsertApiErrorTMPL" groupId="org.csi.yucca.datainsert..InsertApiESB.template" version="1.0.0" type="synapse/sequenceTemplate" serverRole="EnterpriseServiceBus">
+    <artifact name="YuccaDataservice_IsertApiErrorTMPL" groupId="org.csi.yucca.datainsert.InsertApiESB.template" version="1.0.0" type="synapse/sequenceTemplate" serverRole="EnterpriseServiceBus">
         <file>src/main/synapse-config/templates/YuccaDataservice_IsertApiErrorTMPL.xml</file>
     </artifact>
 </artifacts>
