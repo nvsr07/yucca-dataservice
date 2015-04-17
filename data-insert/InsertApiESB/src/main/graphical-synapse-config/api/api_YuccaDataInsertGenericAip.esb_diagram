@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:esb="http:///org/wso2/developerstudio/eclipse/gmf/esb" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_lf8JgOTPEeSXyeuclMbP-w" type="Esb" name="api_YuccaDataInsertGenericAip.esb_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_mO3sEOTPEeSXyeuclMbP-w" type="2001">
+    <children xmi:type="notation:DecorationNode" xmi:id="_mO6IUOTPEeSXyeuclMbP-w" type="7001">
+      <children xmi:type="notation:Shape" xmi:id="_mgYS0OTPEeSXyeuclMbP-w" type="3668" fontName="Segoe UI">
+        <children xmi:type="notation:BasicCompartment" xmi:id="_mgY54OTPEeSXyeuclMbP-w" type="7044">
+          <children xmi:type="notation:Node" xmi:id="_mgoxgOTPEeSXyeuclMbP-w" type="3669">
+            <styles xmi:type="notation:DescriptionStyle" xmi:id="_mgoxgeTPEeSXyeuclMbP-w"/>
+            <styles xmi:type="notation:FontStyle" xmi:id="_mgoxguTPEeSXyeuclMbP-w" fontName="Segoe UI"/>
+            <styles xmi:type="notation:LineStyle" xmi:id="_mgoxg-TPEeSXyeuclMbP-w"/>
+            <element xmi:type="esb:APIResource" href="api_YuccaDataInsertGenericAip.esb#//@server/@children.0/@resources.0"/>
+            <layoutConstraint xmi:type="notation:Bounds" xmi:id="_mgoxhOTPEeSXyeuclMbP-w" width="300" height="400"/>
+          </children>
+        </children>
+        <element xmi:type="esb:SynapseAPI" href="api_YuccaDataInsertGenericAip.esb#//@server/@children.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_mgYS0eTPEeSXyeuclMbP-w" width="40000" height="45000"/>
+      </children>
+    </children>
+    <styles xmi:type="notation:DescriptionStyle" xmi:id="_mO3sEeTPEeSXyeuclMbP-w"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_mO3sEuTPEeSXyeuclMbP-w" fontName="Segoe UI"/>
+    <styles xmi:type="notation:LineStyle" xmi:id="_mO3sE-TPEeSXyeuclMbP-w"/>
+    <element xmi:type="esb:EsbServer" href="api_YuccaDataInsertGenericAip.esb#//@server"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_mO3sFOTPEeSXyeuclMbP-w"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_lf8JgeTPEeSXyeuclMbP-w"/>
+  <element xmi:type="esb:EsbDiagram" href="api_YuccaDataInsertGenericAip.esb#/"/>
+</notation:Diagram>

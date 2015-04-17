@@ -382,7 +382,7 @@ public class SDPInsertApiMongoDataAccess {
 				String streamCode=takeNvlValues(obj.get("streamCode"));
 				
 				
-				String sensore=takeNvlValues((DBObject)((DBObject)((DBObject)obj.get("streams")).get("stream")).get("virtualEntityCode"));
+				String sensore=takeNvlValues(((DBObject)((DBObject)(DBObject)obj.get("streams")).get("stream")).get("virtualEntityCode"));
 				
 				ret=new MongoStreamInfo();
 				ret.setSensorCode(sensore);
@@ -462,7 +462,7 @@ public class SDPInsertApiMongoDataAccess {
 			} else {
 				curDataset.add(new BasicDBObject("datasetVersion",new Long(datasetVersion) ));
 			}
-			BasicDBObject query = new BasicDBObject("$or", curDataset);	
+			BasicDBObject query = new BasicDBObject("$and", curDataset);	
 			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
 			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
@@ -622,15 +622,15 @@ public class SDPInsertApiMongoDataAccess {
 			if (null==ret) ret = new ArrayList<FieldsMongoDto>(); 
 				ret.add(new FieldsMongoDto(propName, porpType,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
 		}
-		ret.add(new FieldsMongoDto("c1", FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c2", FieldsMongoDto.DATA_TYPE_DATETIME,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c3", FieldsMongoDto.DATA_TYPE_DOUBLE,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c4", FieldsMongoDto.DATA_TYPE_FLOAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c5", FieldsMongoDto.DATA_TYPE_INT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c6", FieldsMongoDto.DATA_TYPE_LAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c7", FieldsMongoDto.DATA_TYPE_LON,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c8", FieldsMongoDto.DATA_TYPE_LONG,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-		ret.add(new FieldsMongoDto("c9", FieldsMongoDto.DATA_TYPE_STRING,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c1", FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c2", FieldsMongoDto.DATA_TYPE_DATETIME,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c3", FieldsMongoDto.DATA_TYPE_DOUBLE,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c4", FieldsMongoDto.DATA_TYPE_FLOAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c5", FieldsMongoDto.DATA_TYPE_INT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c6", FieldsMongoDto.DATA_TYPE_LAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c7", FieldsMongoDto.DATA_TYPE_LON,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c8", FieldsMongoDto.DATA_TYPE_LONG,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
+//		ret.add(new FieldsMongoDto("c9", FieldsMongoDto.DATA_TYPE_STRING,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
 
 		
 		return ret;

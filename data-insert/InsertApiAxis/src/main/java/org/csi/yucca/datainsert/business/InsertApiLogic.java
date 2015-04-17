@@ -98,16 +98,20 @@ public class InsertApiLogic {
 		int reqVersion=-1;
 		while (i<100000 && !endArray) {
 			try {
+				
+				System.out.println(" **** parseJsonInputDataset -- BEGIN ");
+				
 				ooo = JsonPath.read(jsonInput, "$["+i+"]");
 				if (null==ooo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DATA_NOTARRAY);
 				String datasetCode=(String)ooo.get("datasetCode");
 
 
 				// recuepro info dataset inclusi i campi
-				datasetVersion=JsonPath.read(jsonInput, "$.datasetVersion");
+				//datasetVersion=JsonPath.read(jsonInput, "$.datasetVersion");
+				datasetVersion=(Integer)ooo.get("$.datasetVersion");
 				reqVersion=(datasetVersion==null ? -1 : datasetVersion.intValue());
 				infoDataset=mongoAccess.getInfoDataset(datasetCode, reqVersion);
-
+				
 
 				String insStrConst="";
 				insStrConst+= "  idDataset : "+infoDataset.getDatasetId();
@@ -171,8 +175,19 @@ public class InsertApiLogic {
 
 				//				i++;
 			} catch (PathNotFoundException e) {
+				System.out.println(" **** parseJsonInputDataset -- PathNotFoundException "+e);
 				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) endArray=true;
-			}		
+				else throw e;
+			} catch (Exception ex) {
+				System.out.println(" **** parseJsonInputDataset -- ERROR "+ex);
+				i++;
+				endArray=true;
+				ex.printStackTrace();
+				throw ex;
+			} finally {
+				System.out.println(" **** parseJsonInputDataset -- END ");
+				
+			}
 		}
 		return ret;
 
@@ -220,6 +235,7 @@ public class InsertApiLogic {
 				i++;
 			} catch (PathNotFoundException e) {
 				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) endArray=true;
+				else throw e;
 			}		
 		}
 		return ret;
@@ -497,8 +513,27 @@ public class InsertApiLogic {
 	private static boolean copyBlock(DatasetBulkInsert blockInfo,String globlalRequestId,String tenantCode) throws Exception {
 		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
 		//TODO okkio... .ragioniamo solo 
-		DbConfDto dbConfgi= SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(SDPInsertApiMongoConnectionSingleton.DB_MESURES, tenantCode);
+		
+		MongoDatasetInfo infoDataset = null;
+		
+		try {
+			infoDataset=mongoAccess.getInfoDataset(blockInfo.getDatasetCode(), blockInfo.getDatasetVersion());
+		} catch (Exception e ) {
+			
+		}
+		
+		DbConfDto dbConfgi= null;
+		if (null != infoDataset && "bulkDataset".equals(infoDataset.getDatasetSubType())) {
+			dbConfgi= SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(SDPInsertApiMongoConnectionSingleton.DB_DATA, tenantCode);	
+			
+		} else {
+			dbConfgi= SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(SDPInsertApiMongoConnectionSingleton.DB_MESURES, tenantCode);	
+		}
 
+		
+		System.out.println("COPY DBTARGET-->"+ dbConfgi.getDataBase());
+		System.out.println("COPY COLLECTION-->"+ dbConfgi.getCollection());
+		
 		try {
 
 			boolean startCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_START_COPY,blockInfo.getRequestId()) ;

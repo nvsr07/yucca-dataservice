@@ -9,7 +9,8 @@
   <name>InsertApiESB_module</name>
   <description>InsertApiESB_module</description>
   <modules>
-    <module>artifacts\api\YuccaDataInsertApi</module>
     <module>artifacts\template\YuccaDataservice_IsertApiErrorTMPL</module>
+    <module>artifacts\api\YuccaDataInsertApi</module>
+    <module>artifacts\api\YuccaDataInsertGenericAip</module>
   </modules>
 </project>
