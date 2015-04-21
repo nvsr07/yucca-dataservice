@@ -632,6 +632,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".fps" ,"info.fps");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tags" ,"info.tags.tagCode");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".measureUnit" ,"info.fields.measureUnit");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".tenantsharing" ,"info.tenantssharing.tenantsharing.tenantCode");
 
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".datasetName" ,"info.datasetName");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_DATASETS+".visibility" ,"info.visibility");

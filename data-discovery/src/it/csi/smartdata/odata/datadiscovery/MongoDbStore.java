@@ -295,6 +295,7 @@ public class MongoDbStore {
 		String datasetName = (String)info.get("datasetName");
 		String visibility=(String)info.get("visibility");
 		String registrationDate=(String)info.get("registrationDate");
+		
 		String startIngestionDate=(String)info.get("startIngestionDate");
 		String endIngestionDate=(String)info.get("endIngestionDate");
 		String importFileType=(String)info.get("importFileType");
@@ -332,12 +333,27 @@ public class MongoDbStore {
 			tags = tagsBuilder.toString();
 		}
 
-
-
+		DBObject tenantssharingDB = (DBObject) info.get("tenantssharing");
+		
+		
+		StringBuilder tenantsBuilder = new StringBuilder();
+		BasicDBList  tenantsList = (BasicDBList) tenantssharingDB.get("tenantsharing");
+		String tenantsharing=null;
+		prefix = "";
+		if(tenantsList!=null){
+			for (int i =0;i<tenantsList.size();i++){
+				DBObject tenantsObj = (DBObject) tenantsList.get(i);
+				tenantsBuilder.append(prefix);
+				prefix = ",";
+				tenantsBuilder.append(tenantsObj.get("tenantCode").toString());
+			}
+			tenantsharing = tenantsBuilder.toString();
+		}
 
 		Map<String,Object> cur = new HashMap<String, Object>();
 		cur.put("idDataset", id);
 		cur.put("tenantCode", tenant);
+		cur.put("tenantsharing", tenantsharing);
 		cur.put("dataDomain", dataDomain);
 		cur.put("license", license);
 		cur.put("description", description);
