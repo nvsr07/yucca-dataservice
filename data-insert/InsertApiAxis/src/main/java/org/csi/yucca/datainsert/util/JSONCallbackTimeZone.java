@@ -155,14 +155,14 @@ public class JSONCallbackTimeZone extends BasicBSONCallback {
 	    	SimpleDateFormat format = new SimpleDateFormat(_secDateFormat_TZ);
             format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 
-	    	System.out.println(format.format(parseDate(dataStr)));
-	    	System.out.println(format.format(parseDate(dataStr1)));
-	    	System.out.println(format.format(parseDate(dataStr2)));
-	    	System.out.println(format.format(parseDate(dataStr3)));
-	    	System.out.println(format.format(parseDate(dataStr4)));
-	    	System.out.println(format.format(parseDate(dataStr5)));
-	    	System.out.println(format.format(parseDate(dataStr6)));
-	    	System.out.println(format.format(parseDate(dataStr7)));
+//	    	System.out.println(format.format(parseDate(dataStr)));
+//	    	System.out.println(format.format(parseDate(dataStr1)));
+//	    	System.out.println(format.format(parseDate(dataStr2)));
+//	    	System.out.println(format.format(parseDate(dataStr3)));
+//	    	System.out.println(format.format(parseDate(dataStr4)));
+//	    	System.out.println(format.format(parseDate(dataStr5)));
+//	    	System.out.println(format.format(parseDate(dataStr6)));
+//	    	System.out.println(format.format(parseDate(dataStr7)));
 	    	 
 		}
 	    

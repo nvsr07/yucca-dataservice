@@ -34,9 +34,8 @@
 				scope="default" type="STRING" />
 			<property name="JSONPayload" expression="json-eval($.)"
 				scope="default" type="STRING" />
-			<log level="full">
+			<log level="custom">
 				<property name="step" value="API_DataInsertGeneric_InsertRequesta BEGIN" />
-				<property name="JSONPayloadPRP" expression="get-property('JSONPayload')" />
 			</log>
 			<property name="bodyStream" expression="$body" scope="default"
 				type="STRING" />
@@ -44,7 +43,7 @@
 
 
 
-			<log level="full">
+			<log level="custom">
 				<property name="step"
 					value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD JS " />
 			</log>
@@ -70,7 +69,7 @@
 				</args>
 			</payloadFactory>
 
-			<log level="full">
+			<log level="custom">
 				<property name="step"
 					value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD med " />
 				<property name="aaaaaaa" expression="get-property('REST_URL_POSTFIX')" />
@@ -95,14 +94,14 @@
 				scope="default" type="STRING" />
 
 			<callout
-				serviceURL="https://int-sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi"
+				serviceURL="https://sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi"
 				action="insertApiDataset">
 				<source xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 					xmlns:org="http://org.csi.yucca" xpath="$body/child::*" />
 				<target xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
 					xmlns:org="http://org.csi.yucca" xpath="$body/child::*" />
 			</callout>
-			<log level="full">
+			<log level="custom">
 				<property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO CALLOUT" />
 			</log>
 
@@ -110,7 +109,7 @@
 			<xslt xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope"
 				key="conf:xsl/XSLTInsertApiRemoveNameSpaces.xslt" source="$body" />
 
-			<log level="full">
+			<log level="custom">
 				<property name="step"
 					value="API_DataInsertGeneric_InsertRequesta DOPO trasformazione XSLT" />
 			</log>
@@ -195,7 +194,7 @@
 				</args>
 			</payloadFactory>
 
-			<log level="full">
+			<log level="custom">
 				<property name="step"
 					value="API_DataInsertGeneric_InsertRequesta PRIMA DI COPY" />
 			</log>
@@ -207,7 +206,7 @@
 			<clone continueParent="true" sequential="true">
 				<target>
 					<sequence>
-						<log level="full">
+						<log level="custom">
 							<property name="step"
 								value="API_DataInsertGeneric_InsertRequesta PRIMA DI COPY dentro clone" />
 						</log>
@@ -215,7 +214,7 @@
 						<send>
 							<endpoint>
 								<address
-									uri="https://int-sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi"
+									uri="https://sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi"
 									format="soap11" />
 							</endpoint>
 						</send>
@@ -253,7 +252,7 @@
 		</outSequence>
 		<faultSequence>
 
-			<log level="full">
+			<log level="custom">
 				<property name="ERROR_MESSAGE" expression="get-property('ERROR_MESSAGE')" />
 				<property name="ERROR_CODE" expression="get-property('ERROR_CODE')" />
 				<property name="ERROR_DETAIL" expression="get-property('ERROR_DETAIL')" />

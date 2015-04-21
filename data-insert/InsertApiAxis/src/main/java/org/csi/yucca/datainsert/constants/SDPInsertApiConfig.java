@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class SDPInsertApiConfig {
+	
+	public static final int MAX_DOCUMENTS_IN_REQUEST=10000;
+	
 	public static final String MONGO_DB_CFG_TENANT="MONGO_DB_CFG_TENANT";
 	public static final String MONGO_DB_CFG_METADATA="MONGO_DB_CFG_METADATA";
 	public static final String MONGO_DB_CFG_STREAM="MONGO_DB_CFG_STREAM";

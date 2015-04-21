@@ -88,6 +88,14 @@ public class SDPInsertApiMongoDataAccess {
 				doc.append("idDataset", dati.getIdDataset());
 				doc.append("datasetVersion", dati.getDatasetVersion());
 				doc.append("numDocuments", dati.getNumRowToInsFromJson());
+
+				
+				doc.append("stream", dati.getStream());
+				doc.append("datasetCode", dati.getDatasetCode());
+				doc.append("sensor", dati.getSensor());
+				
+				
+				
 				arrDocs.add(doc);
 			}
 			BasicDBObject obj=new BasicDBObject();
@@ -95,7 +103,7 @@ public class SDPInsertApiMongoDataAccess {
 			obj.append("globStatus", "start_ins");
 			obj.put("richieste", arrDocs);
 			WriteResult res = coll.insert(obj);
-			System.out.println(res.getN()+"---->"+res);
+			//System.out.println(res.getN()+"---->"+res);
 		} catch (Exception e ) {
 			throw e;
 		}
@@ -132,8 +140,10 @@ public class SDPInsertApiMongoDataAccess {
 			}
 			cursor.close();
 			
-			System.out.println("copy bulk ready ... idRequest="+blockInfo.getRequestId()+"   countExpected="+blockInfo.getNumRowToInsFromJson()+ "     documents in bulkoperation="+count);
+			//System.out.println("copy bulk ready ... idRequest="+blockInfo.getRequestId()+"   countExpected="+blockInfo.getNumRowToInsFromJson()+ "     documents in bulkoperation="+count);
 
+			
+			//TODO
 			if (count!=blockInfo.getNumRowToInsFromJson()) System.out.println("TODO ... gestire conteggi sbagliati");
 			
 			result = builder.execute();
@@ -181,12 +191,19 @@ public class SDPInsertApiMongoDataAccess {
 				doc.append("idDataset", dati.getIdDataset());
 				doc.append("datasetVersion", dati.getDatasetVersion());
 				doc.append("numDocuments", dati.getNumRowToInsFromJson());
+				
+
+				doc.append("stream", dati.getStream());
+				doc.append("datasetCode", dati.getDatasetCode());
+				doc.append("sensor", dati.getSensor());
+
+				
 				arrDocs.add(doc);
 			}
 			obj.append("globStatus", newStatus);
 			obj.put("richieste", arrDocs);
 			WriteResult res = coll.insert(obj);
-			System.out.println(res.getN()+"---->"+res);
+			//System.out.println(res.getN()+"---->"+res);
 			//if (res.getN()<1) return false;
 		} catch (Exception e ) {
 			throw e;
@@ -211,7 +228,7 @@ public class SDPInsertApiMongoDataAccess {
 			
 			doc.append("$set",new BasicDBObject("globStatus", stato));
 			WriteResult res = coll.update(searchQuery,doc);
-			System.out.println(res.getN());
+			//System.out.println(res.getN());
 			if (res.getN()<1) return false;
 		} catch (Exception e ) {
 			throw e;
@@ -245,6 +262,16 @@ public class SDPInsertApiMongoDataAccess {
 				cur.setRequestId(curReq.getString("idRequest"));
 				cur.setNumRowToInsFromJson(curReq.getInt("numDocuments"));
 				cur.setStatus(curReq.getString("status"));
+
+				
+				
+				cur.setStream(curReq.getString("stream"));
+				cur.setDatasetCode(curReq.getString("datasetCode"));
+				cur.setSensor(curReq.getString("sensor"));
+				
+
+				
+				
 				ret.add(cur);
 			}
 			
@@ -301,7 +328,7 @@ public class SDPInsertApiMongoDataAccess {
 			
 			
 			WriteResult res = coll.update(searchQuery,docOrig);
-			System.out.println(res.getN());
+			//System.out.println(res.getN());
 			if (res.getN()<1) return false;
 		} catch (Exception e ) {
 			throw e;
@@ -328,7 +355,7 @@ public class SDPInsertApiMongoDataAccess {
 			
 			doc.append("$set",new BasicDBObject("status", dati.getStatus()));
 			WriteResult res = coll.update(searchQuery,doc);
-			System.out.println(res.getN());
+			//System.out.println(res.getN());
 			if (res.getN()<1) return false;
 		} catch (Exception e ) {
 			throw e;
@@ -341,14 +368,14 @@ public class SDPInsertApiMongoDataAccess {
 		DBObject dbObject = null;
 		BulkWriteResult result=null;
 		try {
-			System.out.println("###########################################");
+			//System.out.println("###########################################");
 			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
 			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
 			BulkWriteOperation builder = coll.initializeOrderedBulkOperation();
 			for (int i = 0; i<dati.getRowsToInsert().size(); i++) {
 				riga="{idRequest:\""+dati.getRequestId()+"\" , "+dati.getRowsToInsert().get(i)+"}";
-				System.out.println(riga);
+				//System.out.println(riga);
 				builder.insert((DBObject) JSON.parse(riga,new JSONCallbackTimeZone()));
 			}
 			
@@ -450,7 +477,7 @@ public class SDPInsertApiMongoDataAccess {
 
 	
 	
-	public MongoDatasetInfo getInfoDataset(String datasetCode,long datasetVersion) throws Exception {
+	public MongoDatasetInfo getInfoDataset(String datasetCode,long datasetVersion,String codiceTenant) throws Exception {
 		DBCursor  cursor=null;
 		MongoDatasetInfo ret=null;
 		try {
@@ -462,6 +489,10 @@ public class SDPInsertApiMongoDataAccess {
 			} else {
 				curDataset.add(new BasicDBObject("datasetVersion",new Long(datasetVersion) ));
 			}
+			curDataset.add(new BasicDBObject("configData.tenantCode",codiceTenant ));
+			
+			
+			
 			BasicDBObject query = new BasicDBObject("$and", curDataset);	
 			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
