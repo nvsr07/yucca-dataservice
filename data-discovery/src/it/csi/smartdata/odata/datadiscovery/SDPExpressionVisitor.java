@@ -649,6 +649,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".idDataset" ,"configData.idDataset");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".datasetVersion" ,"configData.datasetVersion");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".tenantCode" ,"configData.tenantCode");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".tenantsharing" ,"streams.stream.tenantssharing.tenantsharing.tenantCode");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".visibility" ,"streams.stream.visibility");
 		
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".streamCode" ,"streamCode");

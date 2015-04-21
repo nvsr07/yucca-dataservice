@@ -267,6 +267,7 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(false)));
 		propertiesSmartObject.add(new SimpleProperty().setName("tenantCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("visibility").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("tenantsharing").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		
 		propertiesSmartObject.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("streamName").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));

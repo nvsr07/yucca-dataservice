@@ -295,7 +295,7 @@ public class MongoDbStore {
 		String datasetName = (String)info.get("datasetName");
 		String visibility=(String)info.get("visibility");
 		String registrationDate=(String)info.get("registrationDate");
-		
+
 		String startIngestionDate=(String)info.get("startIngestionDate");
 		String endIngestionDate=(String)info.get("endIngestionDate");
 		String importFileType=(String)info.get("importFileType");
@@ -333,22 +333,25 @@ public class MongoDbStore {
 			tags = tagsBuilder.toString();
 		}
 
-		DBObject tenantssharingDB = (DBObject) info.get("tenantssharing");
-		
-		
-		StringBuilder tenantsBuilder = new StringBuilder();
-		BasicDBList  tenantsList = (BasicDBList) tenantssharingDB.get("tenantsharing");
 		String tenantsharing=null;
-		prefix = "";
-		if(tenantsList!=null){
-			for (int i =0;i<tenantsList.size();i++){
-				DBObject tenantsObj = (DBObject) tenantsList.get(i);
-				tenantsBuilder.append(prefix);
-				prefix = ",";
-				tenantsBuilder.append(tenantsObj.get("tenantCode").toString());
-			}
-			tenantsharing = tenantsBuilder.toString();
-		}
+		/*
+		 *  if you want to return all the tenants that a dataset is shared with decomment this code ;
+		 */
+//	DBObject tenantssharingDB = (DBObject) info.get("tenantssharing");
+//		StringBuilder tenantsBuilder = new StringBuilder();
+//		if(tenantssharingDB!=null){
+//			BasicDBList  tenantsList = (BasicDBList) tenantssharingDB.get("tenantsharing");
+//			prefix = "";
+//			if(tenantsList!=null){
+//				for (int i =0;i<tenantsList.size();i++){
+//					DBObject tenantsObj = (DBObject) tenantsList.get(i);
+//					tenantsBuilder.append(prefix);
+//					prefix = ",";
+//					tenantsBuilder.append(tenantsObj.get("tenantCode").toString());
+//				}
+//				tenantsharing = tenantsBuilder.toString();
+//			}
+//		}
 
 		Map<String,Object> cur = new HashMap<String, Object>();
 		cur.put("idDataset", id);
@@ -360,26 +363,23 @@ public class MongoDbStore {
 
 		cur.put("fps", fps);
 
-
-
-
 		cur.put("measureUnit", unitaMisura);
 		cur.put("tags",tags );
 
-//		BasicDBObject findapi = new BasicDBObject();
-//		findapi.append("dataset.idDataset", id);
-//		findapi.append("dataset.datasetVersion", datasetVersion);
+		//		BasicDBObject findapi = new BasicDBObject();
+		//		findapi.append("dataset.idDataset", id);
+		//		findapi.append("dataset.datasetVersion", datasetVersion);
 
 
 
 		StringBuilder apibuilder = new StringBuilder(); 
-			//				DBObject config = (DBObject) parent.get("configData");
-			apibuilder.append(mongoParams.get("MONGO_API_ADDRESS"));
-			apibuilder.append("name="+datasetCode);
-			apibuilder.append("_odata");	
-			apibuilder.append("&version=1.0&provider=admin");					
-	
-			cur.put("API",apibuilder.toString());
+		//				DBObject config = (DBObject) parent.get("configData");
+		apibuilder.append(mongoParams.get("MONGO_API_ADDRESS"));
+		apibuilder.append("name="+datasetCode);
+		apibuilder.append("_odata");	
+		apibuilder.append("&version=1.0&provider=admin");					
+
+		cur.put("API",apibuilder.toString());
 
 		BasicDBObject findstream = new BasicDBObject();
 		findstream.append("configData.idDataset", id);
