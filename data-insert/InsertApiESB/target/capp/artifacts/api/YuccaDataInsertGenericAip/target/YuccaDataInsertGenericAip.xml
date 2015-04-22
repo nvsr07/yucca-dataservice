@@ -270,7 +270,7 @@
 	</resource>
 	<handlers>
 		<handler class="org.csi.yucca.realtime.authhandler.ISAuthenticationHandler">
-			<property name="isServerUrl" value="https://int-sso.smartdatanet.it" />
+			<property name="isServerUrl" value="https://sso.smartdatanet.it" />
 			<property name="isAdminPassword" value="***REMOVED***" />
 			<property name="isAdminUsername" value="admin" />
 		</handler>
