@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.net.UnknownHostException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -19,12 +20,21 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils;
 import org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils;
+import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
+import org.csi.yucca.dataservice.ingest.mongo.singleton.Config;
+
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.MongoClient;
 
 
 
 
 @Path("/")
 public class BinaryService {
+	
+	private final String MEDIA = "media";
 
 	@GET
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -43,8 +53,20 @@ public class BinaryService {
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Path("/binary/{tenant}/{pathFile}")
-	public Response uploadFile(@Multipart("upfile") Attachment attachment,@PathParam("tenant") String tenantCode,@PathParam("pathFile") String pathFile)
-	{	
+	public Response uploadFile(@Multipart("upfile") Attachment attachment,@PathParam("tenant") String tenantCode,@PathParam("pathFile") String pathFile) throws NumberFormatException, UnknownHostException
+	{
+		
+		System.out.println("ini Mongo");
+		MongoClient mongo = MongoSingleton.getMongoClient();
+		String DB_tenant = "DB_csi";
+		DB db = mongo.getDB(DB_tenant);
+		DBCollection col = db.getCollection(MEDIA);
+		BasicDBObject newObj = new BasicDBObject();
+		newObj.put("tenant", tenantCode);
+		newObj.put("codiceFile", pathFile);
+		col.insert(newObj);
+		System.out.println("finish mongo");
+		
 		System.out.println("The filePath for upload: "+pathFile);
 		String uri  = HdfsFSUtils.writeFile(tenantCode,"/svil-tenant/tnt-csi/temp/"+pathFile,attachment.getObject(InputStream.class));
 		System.out.println("uri: "+uri);
