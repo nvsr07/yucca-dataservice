@@ -45,6 +45,30 @@
           </projectnatures>
         </configuration>
       </plugin>
+ 	  <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>${project.build.directory}/**/*.xml</include>
+          </includes>
+          <excludes>
+            <exclude>${project.build.directory}/**/pom.xml</exclude>
+          </excludes>
+          <tokenValueMap>${basedir}/src/main/resources/${profilo}.properties</tokenValueMap>
+          <regex>false</regex>
+          <escape>true</escape>
+        </configuration>
+      </plugin>      
       <plugin>
         <groupId>org.wso2.maven</groupId>
         <artifactId>wso2-esb-template-plugin</artifactId>
@@ -111,4 +135,19 @@
     <maven.test.skip>false</maven.test.skip>
     <CApp.type>bpel/workflow=zip,lib/registry/filter=jar,webapp/jaxws=war,lib/library/bundle=jar,service/dataservice=dbs,synapse/local-entry=xml,synapse/proxy-service=xml,carbon/application=car,registry/resource=zip,lib/dataservice/validator=jar,synapse/endpoint=xml,web/application=war,lib/carbon/ui=jar,service/axis2=aar,synapse/sequence=xml,synapse/configuration=xml,wso2/gadget=dar,lib/registry/handlers=jar,lib/synapse/mediator=jar,synapse/task=xml,synapse/api=xml,synapse/template=xml,synapse/message-store=xml,synapse/message-processors=xml</CApp.type>
   </properties>
+  <profiles>
+    <!-- Development environment @ my laptop -->
+    <profile>
+      <id>prod</id>
+      <properties>
+        <profilo>prod</profilo>
+      </properties>
+    </profile>  
+    <profile>
+      <id>integ</id>
+      <properties>
+        <profilo>integ</profilo>
+      </properties>
+    </profile>  
+ </profiles>
 </project>
