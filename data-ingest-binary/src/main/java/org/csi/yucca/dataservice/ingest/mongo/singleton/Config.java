@@ -26,8 +26,9 @@ public class Config {
 	public static final String HTTP_OK = "HTTP_OK";
 	public static final String RESPONSE_OK = "RESPONSE_OK";
 	public static final String STORE_API_ADDRESS = "STORE_API_ADDRESS";
+	public static final String HDFS_ROOT_DIR = "HDFS_ROOT_DIR";
+	public static final String HDFS_USERNAME = "HDFS_USERNAME";
 	
-
 	private static Map<String, String> params = null;
 	private static Config instance = null;
 
@@ -54,6 +55,8 @@ public class Config {
 		params.put(HTTP_OK, rb.getString(HTTP_OK));
 		params.put(RESPONSE_OK, rb.getString(RESPONSE_OK));
 		params.put(STORE_API_ADDRESS, rb.getString(STORE_API_ADDRESS));
+		params.put(HDFS_ROOT_DIR, rb.getString(HDFS_ROOT_DIR));
+		params.put(HDFS_USERNAME, rb.getString(HDFS_USERNAME));
 		
 		
 		ResourceBundle rbSecret = ResourceBundle.getBundle("SDPDataApiSecret");
@@ -106,7 +109,6 @@ public class Config {
 		return params.get(MONGO_COLLECTION_SUPPORT_STATISTICS);
 	}
 	
-
 	public String getCollectionTenantData() {
 		return params.get(MONGO_COLLECTION_TENANT_DATA);
 	}
@@ -126,6 +128,7 @@ public class Config {
 	public String getBaseApiUrl() {
 		return params.get(BASE_API_URL);
 	}
+	
 	public String getDammiInfo() {
 		return params.get(DAMMI_INFO);
 	}
@@ -141,9 +144,16 @@ public class Config {
 	public String getResponseOk() {
 		return params.get(RESPONSE_OK);
 	}
+	
 	public String getStoreApiAddress() {
 		return params.get(STORE_API_ADDRESS);
 	}
 	
-
+	public static String getHdfsRootDir() {
+		return params.get(HDFS_ROOT_DIR);
+	}
+	
+	public static String getHdfsUsername() {
+		return params.get(HDFS_USERNAME);
+	}
 }
