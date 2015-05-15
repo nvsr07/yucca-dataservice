@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api xmlns="http://ws.apache.org/ns/synapse" name="YuccaDownloadFile" context="/wso005/api/download/binary">
-    <resource methods="GET" uri-template="/{tenant}/{file}">
+    <resource methods="GET">
         <inSequence>
             <send>
                 <endpoint>
