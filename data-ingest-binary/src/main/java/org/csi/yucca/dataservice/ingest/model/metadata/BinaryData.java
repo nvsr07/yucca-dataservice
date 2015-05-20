@@ -1,9 +1,9 @@
 package org.csi.yucca.dataservice.ingest.model.metadata;
 
+import java.util.Date;
 import org.csi.yucca.dataservice.ingest.util.json.JSonHelper;
-import org.joda.time.DateTime;
-
 import com.google.gson.Gson;
+import com.mongodb.DBObject;
 
 public class BinaryData extends AbstractEntity {
 
@@ -16,7 +16,7 @@ public class BinaryData extends AbstractEntity {
 
 
 	private String id;
-	
+
 	private String tenantBinary;
 	private String filenameBinary;
 	private String idBinary;
@@ -24,11 +24,12 @@ public class BinaryData extends AbstractEntity {
 	private String contentTypeBinary;
 	private String aliasNameBinary;
 	private String pathHdfsBinary;
-	private DateTime insertDateBinary;
-	private DateTime lastUpdateDateBinary;
+	private Date insertDateBinary;
+	private Date lastUpdateDateBinary;
 	private Long idDataset;
 	private String dataSetCode;
-	private Integer dataSetVersion;
+	private Integer datasetVersion;
+	private String metadataBinary;
 
 	public static BinaryData fromJson(String json) {
 		Gson gson = JSonHelper.getInstance();
@@ -38,89 +39,137 @@ public class BinaryData extends AbstractEntity {
 	public BinaryData() {
 	}
 
+	public BinaryData(DBObject obj) {
+		
+		this.setTenantBinary((String) obj.get("tenantBinary"));
+		this.setFilenameBinary((String) obj.get("filenameBinary"));
+		this.setIdBinary((String) obj.get("idBinary"));
+		this.setSizeBinary((Long) obj.get("sizeBinary"));
+		this.setContentTypeBinary((String) obj.get("contentTypeBinary"));
+		this.setAliasNameBinary((String) obj.get("aliasNameBinary"));
+		this.setPathHdfsBinary((String) obj.get("pathHdfsBinary"));
+		
+		this.setInsertDateBinary((Date) obj.get("insertDateBinary"));
+		this.setLastUpdateDateBinary((Date) obj.get("lastUpdateDateBinary"));
+		
+		this.setIdDataset((Long) obj.get("idDataset"));
+		this.setDatasetVersion((Integer) obj.get("datasetVersion"));
+	}
+
 	public String toJson() {
 		Gson gson = JSonHelper.getInstance();
 		return gson.toJson(this);
 	}
-
-	/*
-	public void generateCode() {
-		String code = null;
-
-		// "ds_debsStream_123", // per Stream "ds"_<streamCode>_<idDataset>, per
-		// Bulk NoSpec(Max12(Trim(<info.datasetName>)))_<idDataset>
-		if (idDataset != null) { // trim del nome senza caratteri speciali, max
-									// 12 _ idDataset
-
-			String prefix = "";
-			if (getConfigData() != null && CONFIG_DATA_SUBTYPE_STREAM_DATASET.equals(getConfigData().getSubtype()))
-				prefix = "ds_";
-			else if (getConfigData() != null && CONFIG_DATA_SUBTYPE_BINARY_DATASET.equals(getConfigData().getSubtype()))
-				prefix = "bn_";
-
-			String datasetNameSafe = "";
-			if (getInfo() != null)
-				datasetNameSafe = Util.safeSubstring(Util.cleanStringCamelCase(getInfo().getDatasetName()), 12);
-
-			code = prefix + datasetNameSafe + "_" + idDataset;
-
-		}
-		setDatasetCode(code);
-	}
-
-	public void generateNameSpace() {
-		if (idDataset != null && getConfigData() != null) {
-			String nameSpace = Constants.API_NAMESPACE_BASE + "." + getConfigData().getTenantCode() + "." + getDatasetCode();
-			getConfigData().setEntityNameSpace(nameSpace);
-		}
-	}
 	
-	
-	public static Metadata createBinaryMetadata(Metadata parentMetadata){
-		Metadata binaryMetadata = new Metadata();
-		binaryMetadata.setDatasetVersion(1);
-		
-		Info binaryMetadataInfo = new Info();
-		Field[] binaryFields = binaryDatasetBaseFields();
-		binaryMetadataInfo.setDatasetName(parentMetadata.getInfo().getDatasetName());
-		binaryMetadataInfo.setFields(binaryFields);
-		binaryMetadata.setInfo(binaryMetadataInfo);
-
-		ConfigData binaryMetadataConfigData = new ConfigData();
-		binaryMetadataConfigData.setArchive(parentMetadata.getConfigData().getArchive());
-		binaryMetadataConfigData.setCollection(parentMetadata.getConfigData().getCollection());
-		binaryMetadataConfigData.setCurrent(parentMetadata.getConfigData().getCurrent());
-		binaryMetadataConfigData.setDatabase(parentMetadata.getConfigData().getDatabase());
-		binaryMetadataConfigData.setDatasetStatus(parentMetadata.getConfigData().getDatasetStatus());
-		binaryMetadataConfigData.setEntityNameSpace(parentMetadata.getConfigData().getEntityNameSpace());
-		binaryMetadataConfigData.setIdTenant(parentMetadata.getConfigData().getIdTenant());
-		binaryMetadataConfigData.setTenantCode(parentMetadata.getConfigData().getTenantCode());
-		binaryMetadataConfigData.setType(Metadata.CONFIG_DATA_TYPE_DATASET);
-		binaryMetadataConfigData.setSubtype(Metadata.CONFIG_DATA_SUBTYPE_BINARY_DATASET);
-				
-		binaryMetadata.setConfigData(binaryMetadataConfigData);
-		
-		return binaryMetadata;
+	public String getId() {
+		return id;
 	}
-	
-	public static Field[] binaryDatasetBaseFields(){
-		Field fileNameField = new  Field();
-		fileNameField.setDataType("string");
-		fileNameField.setFieldName("fileName");
-		fileNameField.setFieldAlias("File Name");
 
-		Field fileTypeField = new  Field();
-		fileTypeField.setDataType("string");
-		fileTypeField.setFieldName("fileType");
-		fileTypeField.setFieldAlias("File Type");
-
-		Field contentTypeField = new  Field();
-		contentTypeField.setDataType("string");
-		contentTypeField.setFieldName("contentType ");
-		contentTypeField.setFieldAlias("Content Type");
-
-		
-		return new Field[]{fileNameField, fileTypeField, contentTypeField};
+	public void setId(String id) {
+		this.id = id;
 	}
-	*/
+
+	public String getTenantBinary() {
+		return tenantBinary;
+	}
+
+	public void setTenantBinary(String tenantBinary) {
+		this.tenantBinary = tenantBinary;
+	}
+
+	public String getFilenameBinary() {
+		return filenameBinary;
+	}
+
+	public void setFilenameBinary(String filenameBinary) {
+		this.filenameBinary = filenameBinary;
+	}
+
+	public String getIdBinary() {
+		return idBinary;
+	}
+
+	public void setIdBinary(String idBinary) {
+		this.idBinary = idBinary;
+	}
+
+	public Long getSizeBinary() {
+		return sizeBinary;
+	}
+
+	public void setSizeBinary(Long sizeBinary) {
+		this.sizeBinary = sizeBinary;
+	}
+
+	public String getContentTypeBinary() {
+		return contentTypeBinary;
+	}
+
+	public void setContentTypeBinary(String contentTypeBinary) {
+		this.contentTypeBinary = contentTypeBinary;
+	}
+
+	public String getAliasNameBinary() {
+		return aliasNameBinary;
+	}
+
+	public void setAliasNameBinary(String aliasNameBinary) {
+		this.aliasNameBinary = aliasNameBinary;
+	}
+
+	public String getPathHdfsBinary() {
+		return pathHdfsBinary;
+	}
+
+	public void setPathHdfsBinary(String pathHdfsBinary) {
+		this.pathHdfsBinary = pathHdfsBinary;
+	}
+
+	public Date getInsertDateBinary() {
+		return insertDateBinary;
+	}
+
+	public void setInsertDateBinary(Date insertDateBinary) {
+		this.insertDateBinary = insertDateBinary;
+	}
+
+	public Date getLastUpdateDateBinary() {
+		return lastUpdateDateBinary;
+	}
+
+	public void setLastUpdateDateBinary(Date lastUpdateDateBinary) {
+		this.lastUpdateDateBinary = lastUpdateDateBinary;
+	}
+
+	public Long getIdDataset() {
+		return idDataset;
+	}
+
+	public void setIdDataset(Long idDataset) {
+		this.idDataset = idDataset;
+	}
+
+	public String getDataSetCode() {
+		return dataSetCode;
+	}
+
+	public void setDataSetCode(String dataSetCode) {
+		this.dataSetCode = dataSetCode;
+	}
+
+	public Integer getDatasetVersion() {
+		return datasetVersion;
+	}
+
+	public void setDatasetVersion(Integer datasetVersion) {
+		this.datasetVersion = datasetVersion;
+	}
+
+	public String getMetadataBinary() {
+		return metadataBinary;
+	}
+
+	public void setMetadataBinary(String metadataBinary) {
+		this.metadataBinary = metadataBinary;
+	}
 }
