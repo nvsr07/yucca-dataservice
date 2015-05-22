@@ -5,4 +5,7 @@
     <artifact name="YuccaUploadFile" groupId="org.csi.yucca.dataservice.BinaryApiESB.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
         <file>src/main/synapse-config/api/YuccaUploadFile.xml</file>
     </artifact>
+    <artifact name="YuccaUpdateFile" groupId="org.csi.yucca.dataservice.BinaryApiESB.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/api/YuccaUpdateFile.xml</file>
+    </artifact>
 </artifacts>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api xmlns="http://ws.apache.org/ns/synapse" name="YuccaUpdateFile" context="/wso005/api/metadata/binary">
+    <resource methods="PUT">
+        <inSequence>
+            <send>
+                <endpoint>
+                    <address uri="http://localhost:9768/data-ingest-binary/services/binary_service/binary/"/>
+                </endpoint>
+            </send>
+        </inSequence>
+        <outSequence>
+            <send/>
+        </outSequence>
+        <faultSequence/>
+    </resource>
+</api>
