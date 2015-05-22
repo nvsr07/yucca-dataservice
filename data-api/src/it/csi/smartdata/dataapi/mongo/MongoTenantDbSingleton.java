@@ -24,6 +24,10 @@ public class MongoTenantDbSingleton {
 	public static final String DB_MESURES_TRASH="DBMEASURES_TRASH";
 	public static final String DB_DATA_TRASH="DBDATA_TRASH";
 	
+	
+	public static final String DB_MEDIA="DBMEDIA";
+	
+	
 	public static MongoTenantDbSingleton instance=null;
 	private static int anno_init = 0;
 	private static int mese_init = 0;
@@ -124,6 +128,13 @@ public class MongoTenantDbSingleton {
 					measureDb.setPort(SDPDataApiConfig.getInstance().getMongoDefaultPort());
 
 					
+					DbConfDto mediaDb=new DbConfDto();
+					mediaDb.setHost(SDPDataApiConfig.getInstance().getMongoDefaultHost());
+					mediaDb.setDataBase(takeNvlValues( obj.get("mediaCollectionDb")));
+					mediaDb.setCollection(takeNvlValues( obj.get("mediaCollectionName")));
+					mediaDb.setPort(SDPDataApiConfig.getInstance().getMongoDefaultPort());
+					
+					
 					DbConfDto dataDb=new DbConfDto();
 					dataDb.setHost(SDPDataApiConfig.getInstance().getMongoDefaultHost());
 					dataDb.setDataBase(takeNvlValues( obj.get("dataCollectionDb")));
@@ -131,10 +142,13 @@ public class MongoTenantDbSingleton {
 					dataDb.setPort(SDPDataApiConfig.getInstance().getMongoDefaultPort());
 					
 					
+					
+					
 					params.put(tenant+"__"+DB_MESURES, measureDb);
 					params.put(tenant+"__"+DB_MESURES_TRASH, measureDbTrahs);
 					params.put(tenant+"__"+DB_DATA, dataDb);
 					params.put(tenant+"__"+DB_DATA_TRASH, dataDbTrash);
+					params.put(tenant+"__"+DB_MEDIA, mediaDb);
 					mongoConnection.put(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT)+"___"+SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT), mongoClient);
 					
 				}				

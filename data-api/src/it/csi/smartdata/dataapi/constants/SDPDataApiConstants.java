@@ -25,6 +25,18 @@ public interface SDPDataApiConstants {
 	public static final String ENTITY_SET_NAME_UPLOADDATA = "DataEntities";
 	
 	
+	//BINARY - 1.2
+	public static final String ENTITY_SET_NAME_BINARY = "Binaries";
+	public static final String ENTITY_NAME_BINARY = "Binary";
+	public static final String COMPLEX_TYPE_BINARYREF = "BinaryRef";
+	public static final String ASSOCIATION_NAME_DATASETUPLOAD_BINARY ="DataEntity_Binary_Binary_DataEntity";
+	public static final String ASSOCIATION_SET_DATASETUPLOAD_BINARY = "DataEntities_Binaries";
+
+	public static final String ROLE_DATASETUPLOAD_BINARY="DataEntity_Binary";
+	public static final String ROLE_BINARY_DATASETUPLOAD="Binary_DataEntity";
+	
+	
+	
 	
 	public static final String ENTITY_SET_NAME_SMARTOBJECT = "SmartObjects";
 	public static final String ENTITY_SET_NAME_STREAMS = "Streams";
@@ -52,10 +64,9 @@ public interface SDPDataApiConstants {
 	public static final String ROLE_MEASURE_STREAM="Measure_Stream";
 	public static final String ROLE_STREAM_MEASURE="Stream_Measure";
 	
-	
 	public static final String SDPCONFIG_CONSTANTS_TYPE_API="api";
 	public static final String SDPCONFIG_CONSTANTS_TYPE_STREAM="stream";
-	public static final String SDPCONFIG_CONSTANTS_TYPE_DATASET="stream";
+	public static final String SDPCONFIG_CONSTANTS_TYPE_DATASET="dataset";
 	
 	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM="apiMultiStream";
 	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK="apiMultiBulk";
@@ -93,6 +104,11 @@ public interface SDPDataApiConstants {
 
 		put("longitude"    ,EdmSimpleTypeKind.Double);
 		put("latitude"    ,EdmSimpleTypeKind.Double);
+		
+		
+		//1.2 binary
+		put("binary"    ,EdmSimpleTypeKind.Binary);
+		
 		
 		
 	}};

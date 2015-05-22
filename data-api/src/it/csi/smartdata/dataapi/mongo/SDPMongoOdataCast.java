@@ -16,10 +16,13 @@ import org.apache.olingo.odata2.api.edm.EdmMultiplicity;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.EdmTargetPath;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
+import org.apache.olingo.odata2.api.edm.provider.AnnotationAttribute;
+import org.apache.olingo.odata2.api.edm.provider.AnnotationElement;
 import org.apache.olingo.odata2.api.edm.provider.Association;
 import org.apache.olingo.odata2.api.edm.provider.AssociationEnd;
 import org.apache.olingo.odata2.api.edm.provider.AssociationSet;
 import org.apache.olingo.odata2.api.edm.provider.AssociationSetEnd;
+import org.apache.olingo.odata2.api.edm.provider.ComplexProperty;
 import org.apache.olingo.odata2.api.edm.provider.ComplexType;
 import org.apache.olingo.odata2.api.edm.provider.CustomizableFeedMappings;
 import org.apache.olingo.odata2.api.edm.provider.EntityContainer;
@@ -101,6 +104,13 @@ public class SDPMongoOdataCast {
 						Object eleCapmpi=obj.get("mergedComponents");
 						ret=getUploadDataType(nameSpace,eleCapmpi,true);			
 					}  
+
+					//1.2 binary
+					else if (SDPDataApiConstants.ENTITY_NAME_BINARY.equals(edmFQName.getName())) {
+						Object eleCapmpi=obj.get("mergedComponents");
+						ret=getBinaryDataType(nameSpace,eleCapmpi,true);			
+					} 					
+
 				}
 
 			}
@@ -136,6 +146,11 @@ public class SDPMongoOdataCast {
 				//
 				//				} 
 				//
+			} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) && nameSpace.equals(edmFQName.getNamespace())) {
+				
+		        List<Property> properties = new ArrayList<Property>();
+		        properties.add(new SimpleProperty().setName("idBinary").setType(EdmSimpleTypeKind.String));
+		        return new ComplexType().setName(SDPDataApiConstants.COMPLEX_TYPE_BINARYREF).setProperties(properties);
 			}
 
 		}
@@ -162,7 +177,7 @@ public class SDPMongoOdataCast {
 							.setEnd1(
 									new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES)).setRole(SDPDataApiConstants.ROLE_MEASURE_STREAM).setMultiplicity(EdmMultiplicity.MANY))
 									.setEnd2(
-											new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS)).setRole(SDPDataApiConstants.ROLE_STREAM_MEASURE).setMultiplicity(EdmMultiplicity.ONE))
+											new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS)).setRole(SDPDataApiConstants.ROLE_STREAM_MEASURE).setMultiplicity(EdmMultiplicity.MANY))
 											;						
 				}
 			} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
@@ -171,10 +186,29 @@ public class SDPMongoOdataCast {
 							.setEnd1(
 									new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES)).setRole(SDPDataApiConstants.ROLE_MEASURE_STREAM).setMultiplicity(EdmMultiplicity.MANY))
 									.setEnd2(
-											new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS)).setRole(SDPDataApiConstants.ROLE_STREAM_MEASURE).setMultiplicity(EdmMultiplicity.ONE))
+											new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS)).setRole(SDPDataApiConstants.ROLE_STREAM_MEASURE).setMultiplicity(EdmMultiplicity.MANY))
 											;						
 				}
-			}  
+			}
+
+
+			//1.2 binary
+			else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
+				if (SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY.equals(edmFQName.getName())) {
+					return new Association().setName(SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)
+							.setEnd1(
+									new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA)).setRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setMultiplicity(EdmMultiplicity.MANY))
+									.setEnd2(
+											new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_BINARY)).setRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD).setMultiplicity(EdmMultiplicity.MANY))
+											;						
+//					return new Association().setName(SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)
+//							.setEnd1(
+//									new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA)).setRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD).setMultiplicity(EdmMultiplicity.MANY))
+//									.setEnd2(
+//											new AssociationEnd().setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_BINARY)).setRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setMultiplicity(EdmMultiplicity.ONE))
+//											;						
+				}
+			}			
 		}		  
 
 		return null;
@@ -220,12 +254,17 @@ public class SDPMongoOdataCast {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS));						
 						} if (SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SMARTOBJECT));						
-							
 						}
 					} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) ) {
 						if (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA));
 						}
+
+						//1.2 binary
+						else if (SDPDataApiConstants.ENTITY_SET_NAME_BINARY.equals(name)) {
+							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_BINARY));
+						} 
+
 
 					}
 
@@ -251,6 +290,21 @@ public class SDPMongoOdataCast {
 
 	}
 
+<<<<<<< HEAD
+
+	private ArrayList<String> getEntitysetsNamesStats() {
+		//		Object eleCapmpi=obj.get("mergedComponents");
+		//		BasicDBList lista=null;
+		//		if (eleCapmpi instanceof BasicDBList) {
+		//			lista=(BasicDBList)eleCapmpi;
+		//		} else {
+		//			lista=new BasicDBList();
+		//			lista.add(eleCapmpi);
+		//		}
+		//		for (int j=0;j<lista.size();j++) {
+		//			
+		//		}	
+=======
 	
 	private ArrayList<String> getEntitysetsNamesStats() {
 //		Object eleCapmpi=obj.get("mergedComponents");
@@ -264,6 +318,7 @@ public class SDPMongoOdataCast {
 //		for (int j=0;j<lista.size();j++) {
 //			
 //		}	
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 		return null;
 	}
 
@@ -293,6 +348,20 @@ public class SDPMongoOdataCast {
 							.setEnd1(new AssociationSetEnd().setRole(SDPDataApiConstants.ROLE_STREAM_MEASURE).setEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS));						
 
 				}  
+
+
+				//1.2 binary
+				else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) && nameSpace.equals(association.getNamespace())) {
+					return  new AssociationSet().setName(SDPDataApiConstants.ASSOCIATION_SET_DATASETUPLOAD_BINARY)
+							.setAssociation(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY))
+							.setEnd1(new AssociationSetEnd().setRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA))
+							.setEnd2(new AssociationSetEnd().setRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD).setEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY));						
+//					return  new AssociationSet().setName(SDPDataApiConstants.ASSOCIATION_SET_DATASETUPLOAD_BINARY)
+//							.setAssociation(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY))
+//							.setEnd1(new AssociationSetEnd().setRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY))
+//							.setEnd2(new AssociationSetEnd().setRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD).setEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA));						
+
+				}
 
 
 			}
@@ -406,6 +475,74 @@ public class SDPMongoOdataCast {
 
 
 
+	//1.2 binary
+	private EntityType getBinaryDataType (String nameSpace,Object eleCapmpi,boolean historical) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getBinaryDataType] BEGIN");
+			log.info("[SDPMongoOdataCast::getBinaryDataType] nameSpace="+nameSpace);
+			log.info("[SDPMongoOdataCast::getBinaryDataType] historical="+historical);
+			List<Property> dataAttributes=new ArrayList<Property>();
+
+			dataAttributes.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			dataAttributes.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			//			dataAttributes.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+
+			
+			
+			
+			dataAttributes.add(new SimpleProperty().setName("idBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			dataAttributes.add(new SimpleProperty().setName("filenameBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("aliasNameBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("sizeBinary").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+//			dataAttributes.add(new SimpleProperty().setName("insertDateBinary").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(true)));
+//			dataAttributes.add(new SimpleProperty().setName("lastUpdateDateBinary").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("contentTypeBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+			//dataAttributes.add(new SimpleProperty().setName("pathHdfsBinary ").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("urlDownloadBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("metadataBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+
+			
+
+			//			if(historical) {
+			//				dataAttributes.add(new SimpleProperty().setName("startdate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			//				dataAttributes.add(new SimpleProperty().setName("enddate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			//				dataAttributes.add(new SimpleProperty().setName("parentObjId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			//
+			//			}
+			//			List<Property> componentProp= getDatasetField(eleCapmpi);
+			//			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
+			//				dataAttributes.add(componentProp.get(i));
+			//			}
+			List<PropertyRef> keyPropertiesDataAttributes = new ArrayList<PropertyRef>();
+
+
+
+
+			keyPropertiesDataAttributes.add(new PropertyRef().setName("internalId"));
+			Key keyMeasure = new Key().setKeys(keyPropertiesDataAttributes);
+
+			List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
+			navigationProperties = new ArrayList<NavigationProperty>();
+			//		return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_MEASURES)
+			//				.setProperties(measureProps).setKey(keyMeasure).setNavigationProperties(navigationProperties);	
+
+			navigationProperties.add(new NavigationProperty().setName(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA)
+					.setRelationship(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)).setFromRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD).setToRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY));
+
+			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_BINARY)
+					.setProperties(dataAttributes).setKey(keyMeasure);
+
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getBinaryDataType] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getBinaryDataType] END");
+
+		}			
+	}		
+
 	private EntityType getUploadDataType (String nameSpace,Object eleCapmpi,boolean historical) throws Exception{
 		try {
 			log.info("[SDPMongoOdataCast::getUploadDataType] BEGIN");
@@ -415,18 +552,26 @@ public class SDPMongoOdataCast {
 
 			dataAttributes.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			dataAttributes.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+<<<<<<< HEAD
+			//			dataAttributes.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			dataAttributes.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+
+
+=======
 //			dataAttributes.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 			dataAttributes.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			
 			
 			
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			if(historical) {
 				dataAttributes.add(new SimpleProperty().setName("startdate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 				dataAttributes.add(new SimpleProperty().setName("enddate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 				dataAttributes.add(new SimpleProperty().setName("parentObjId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 
 			}
-			List<Property> componentProp= getDatasetField(eleCapmpi);
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				dataAttributes.add(componentProp.get(i));
 			}
@@ -437,14 +582,41 @@ public class SDPMongoOdataCast {
 
 			keyPropertiesDataAttributes.add(new PropertyRef().setName("internalId"));
 			Key keyMeasure = new Key().setKeys(keyPropertiesDataAttributes);
+
+
+			//1.2 binary
+			List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
+			navigationProperties = new ArrayList<NavigationProperty>();
+
+
+			
+//			navigationProperties.add(new NavigationProperty().setName(SDPDataApiConstants.ENTITY_SET_NAME_BINARY)
+//					.setRelationship(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)).setFromRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setToRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD)
+//	
+//					
+//					);
+			navigationProperties.add(new NavigationProperty().setName(SDPDataApiConstants.ENTITY_SET_NAME_BINARY)
+					.setRelationship(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)).setFromRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setToRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD));
+
+
 			if(historical) {
 				return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_UPLOADDATA_HISTORY)
-						.setProperties(dataAttributes).setKey(keyMeasure);
+						.setProperties(dataAttributes).setKey(keyMeasure).setNavigationProperties(navigationProperties);
 
 			} else {
 				return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_UPLOADDATA)
-						.setProperties(dataAttributes).setKey(keyMeasure);
+						.setProperties(dataAttributes).setKey(keyMeasure).setNavigationProperties(navigationProperties);
 			}
+
+
+			//			if(historical) {
+			//				return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_UPLOADDATA_HISTORY)
+			//						.setProperties(dataAttributes).setKey(keyMeasure);
+			//
+			//			} else {
+			//				return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_UPLOADDATA)
+			//						.setProperties(dataAttributes).setKey(keyMeasure);
+			//			}
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getUploadDataType] " + e);
 			throw e;
@@ -463,13 +635,21 @@ public class SDPMongoOdataCast {
 		try {
 			log.info("[SDPMongoOdataCast::getMeasureType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
+<<<<<<< HEAD
+
+=======
 			
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			// SPOSTATI IN CFGd
 			measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
 
+<<<<<<< HEAD
+
+=======
 			
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
@@ -478,8 +658,13 @@ public class SDPMongoOdataCast {
 			//measureProps.add(new ComplexProperty().setName("values").setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES)));
 			//measureProps.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 
+<<<<<<< HEAD
+
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
+=======
 			
 			List<Property> componentProp= getDatasetField(eleCapmpi);
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				measureProps.add(componentProp.get(i));
 			}
@@ -514,6 +699,33 @@ public class SDPMongoOdataCast {
 			log.info("[SDPMongoOdataCast::getMeasureStatsType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
 
+<<<<<<< HEAD
+
+			//			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			//			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			//			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+			measureProps.add(new SimpleProperty().setName("year").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("month").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("dayofmonth").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
+			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
+
+				SimpleProperty curProp=new SimpleProperty()
+				.setName( ((SimpleProperty)componentProp.get(i)).getName()+"_sts")
+				.setType(((SimpleProperty)componentProp.get(i)).getType())
+				.setFacets(new Facets().setNullable(true));
+
+				measureProps.add(curProp);
+			}
+			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
+
+
+
+=======
 			
 //			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 //			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
@@ -539,6 +751,7 @@ public class SDPMongoOdataCast {
 			
 			
 			
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			measureProps.add(new SimpleProperty().setName("count").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 
@@ -577,6 +790,18 @@ public class SDPMongoOdataCast {
 				String nameSpace=((DBObject)obj.get("configData")).get("entityNameSpace").toString();
 				String subType=((DBObject)obj.get("configData")).get("subtype").toString();
 				String entContainerDB=SDPDataApiConstants.SMART_ENTITY_CONTAINER+"_"+nameSpace.replace('.', '_');
+
+
+
+				//1.2 binary
+				String binaryIdDataset=null;
+				try {
+					binaryIdDataset=takeNvlValues(    ((DBObject)(((DBObject)obj.get("configData")).get("info"))).get("binaryIdDataset"));
+				} catch (Exception e) {
+					binaryIdDataset=null;
+				}
+
+
 				//entContainerDB=SMART_ENTITY_CONTAINER;
 
 				Schema schema = new Schema();
@@ -591,10 +816,17 @@ public class SDPMongoOdataCast {
 					//				entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS),codiceApi));
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES),codiceApi));
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS),codiceApi));
+<<<<<<< HEAD
+
+
+
+
+=======
 					
 					
 					
 					
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					//			    entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES),codiceApi));
 					//			    entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURECOMPONENTS),codiceApi));
 					schema.setEntityTypes(entityTypes);
@@ -622,7 +854,11 @@ public class SDPMongoOdataCast {
 					List<EntitySet> entitySets = new ArrayList<EntitySet>();
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_MEASURES,codiceApi));
 
+<<<<<<< HEAD
+
+=======
 					
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS,codiceApi));
 
 					//entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT,codiceApi));
@@ -652,6 +888,12 @@ public class SDPMongoOdataCast {
 					//TODO bulk or 
 					List<EntityType> entityTypes = new ArrayList<EntityType>();
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA),codiceApi));
+
+					//1.2 binary
+					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_BINARY),codiceApi));
+
+
+
 					//entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA_HISTORY),codiceApi));
 					schema.setEntityTypes(entityTypes);
 
@@ -661,10 +903,35 @@ public class SDPMongoOdataCast {
 
 					List<EntitySet> entitySets = new ArrayList<EntitySet>();
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA,codiceApi));
+
+					//1.2 binary
+					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_BINARY,codiceApi));
+
+
 					entityContainer.setEntitySets(entitySets);
 
 					entityContainers.add(entityContainer);
+
+					//1.2 binary
+					List<Association> associations = new ArrayList<Association>();
+					associations.add(getAssociation(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY),codiceApi));
+					schema.setAssociations(associations);
+					
+				    List<ComplexType> complexTypes = new ArrayList<ComplexType>();
+				    complexTypes.add(getComplexType(new FullQualifiedName(nameSpace, SDPDataApiConstants.COMPLEX_TYPE_BINARYREF),codiceApi));
+				    schema.setComplexTypes(complexTypes);
+
+					
+
+					//1.2 binary
+					List<AssociationSet> associationSets = new ArrayList<AssociationSet>();
+					associationSets.add(getAssociationSet(entContainerDB, new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_SET_DATASETUPLOAD_BINARY),
+							SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA, SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY,codiceApi));
+					entityContainer.setAssociationSets(associationSets);					
+
 					schema.setEntityContainers(entityContainers);
+
+
 
 
 					schemas.add(schema);
@@ -695,7 +962,7 @@ public class SDPMongoOdataCast {
 	}
 
 
-	private List<Property> getDatasetField(Object eleCapmpi) throws Exception{
+	private List<Property> getDatasetField(Object eleCapmpi,String nameSpace) throws Exception{
 		try {
 			log.info("[SDPMongoOdataCast::getDatasetField] BEGIN");
 
@@ -731,7 +998,13 @@ public class SDPMongoOdataCast {
 
 
 				}
-				propOut.add(new SimpleProperty().setName(propName).setType(SDPDataApiConstants.SDP_DATATYPE_MAP.get(porpType)).setFacets(new Facets().setNullable(true)));
+				if (SDPDataApiConstants.SDP_DATATYPE_MAP.get(porpType).equals(EdmSimpleTypeKind.Binary)) {
+					propOut.add(new ComplexProperty().setName(propName).setType(new FullQualifiedName(nameSpace,SDPDataApiConstants.COMPLEX_TYPE_BINARYREF)).setFacets(new Facets().setNullable(true)));
+					
+				} else {
+					propOut.add(new SimpleProperty().setName(propName).setType(SDPDataApiConstants.SDP_DATATYPE_MAP.get(porpType)).setFacets(new Facets().setNullable(true)));
+					
+				}
 			}
 
 			return propOut;
@@ -777,7 +1050,11 @@ public class SDPMongoOdataCast {
 				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
 						,userOrderBy,skip,limit);
 				List<Map<String, Object>> misureCur = cur.getDati();
+<<<<<<< HEAD
+
+=======
 				
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
 					ret.add(misureCur.get(k));
 				}
@@ -838,8 +1115,54 @@ public class SDPMongoOdataCast {
 		}			
 	}		
 
+	public SDPDataResult getMeasuresStatsPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
+			int skip,
+			int limit,
+			String timeGroupByParam,
+			String timeGroupOperatorsParam,
+			Object groupOutQuery) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace="+nameSpace);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer="+entityContainer);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] internalId="+internalId);
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] userQuery="+userQuery);
+
+			initDbObject(codiceApi);
+			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
+			int totCnt=0;
+			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
+
+			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
+				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
+				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
+				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
+				List<Map<String, Object>> misureCur = cur.getDati();
+
+				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
+					ret.add(misureCur.get(k));
+				}
+				totCnt+=cur.getTotalCount();
+
+			}
+
+			return new SDPDataResult(ret,totCnt);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getMeasuresPerApi] END");
+
+		}			
+	}		
 
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 	public SDPDataResult getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
 			int skip,
 			int limit) throws Exception{
@@ -882,9 +1205,91 @@ public class SDPMongoOdataCast {
 	}	
 
 
+	public SDPDataResult getBynaryPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
+			ArrayList<String> elencoIdBinary,
+			int skip,
+			int limit) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] codiceApi="+codiceApi);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] nameSpace="+nameSpace);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] entityContainer="+entityContainer);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] internalId="+internalId);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] userQuery="+userQuery);
+
+			initDbObject(codiceApi);
+			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
+
+			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
+			int totCnt=0;
+
+			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
+				//TODO log a debug
+				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
+				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
+				SDPDataResult cur=mongoDataAccess.getBinary(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+						,userOrderBy,elencoIdBinary,codiceApi,skip,limit);
+				List<Map<String, Object>> misureCur = cur.getDati();
+				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
+					ret.add(misureCur.get(k));
+				}
+				totCnt+=cur.getTotalCount();
+
+			}
+
+			return new SDPDataResult(ret,totCnt);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getBynaryPerDataset] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] END");
+
+		}		
+	}	
 
 
 
+	public SDPDataResult getDatasetPerBinary(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
+			ArrayList<String> elencoIdBinary,
+			int skip,
+			int limit) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] codiceApi="+codiceApi);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] nameSpace="+nameSpace);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] entityContainer="+entityContainer);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] internalId="+internalId);
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] userQuery="+userQuery);
+
+			initDbObject(codiceApi);
+			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
+
+			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
+			int totCnt=0;
+
+			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
+				//TODO log a debug
+				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
+				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
+				SDPDataResult cur=mongoDataAccess.getBinary(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+						,userOrderBy,elencoIdBinary,codiceApi,skip,limit);
+				List<Map<String, Object>> misureCur = cur.getDati();
+				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
+					ret.add(misureCur.get(k));
+				}
+				totCnt+=cur.getTotalCount();
+
+			}
+
+			return new SDPDataResult(ret,totCnt);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getBynaryPerDataset] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getBynaryPerDataset] END");
+
+		}		
+	}	
 
 
 

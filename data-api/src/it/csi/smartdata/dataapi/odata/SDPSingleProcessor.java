@@ -18,8 +18,11 @@ import org.apache.olingo.odata2.api.commons.InlineCount;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmEntityType;
 import org.apache.olingo.odata2.api.edm.EdmLiteralKind;
+import org.apache.olingo.odata2.api.edm.EdmNavigationProperty;
 import org.apache.olingo.odata2.api.edm.EdmProperty;
 import org.apache.olingo.odata2.api.edm.EdmSimpleType;
+import org.apache.olingo.odata2.api.edm.provider.EntitySet;
+import org.apache.olingo.odata2.api.edm.provider.NavigationProperty;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties.ODataEntityProviderPropertiesBuilder;
@@ -77,10 +80,17 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		//controlli ... sollevo eccezione quando:
 		// top valorizzato e > di maxsize
 		// top non valorizzato e size > max
+<<<<<<< HEAD
+
+
+
+
+=======
 		
 		
 		
 		
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 		if(top!=null && top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+endindex,Locale.UK);
 		if(top==null && resultSize>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())  throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+endindex,Locale.UK);
 
@@ -89,18 +99,18 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		if(skip!=null) {
 			startindex=startindex+skip.intValue();
 		}
-		
-		
+
+
 		// a questo punto i parametri sono buoni ... valorizzo endindex in base al top se valorizzato (sempre con start index >0
 		if(top!=null) endindex=top.intValue();
 
 		endindex=startindex+endindex;
-		
+
 		// riporto endinx a resultsize nel caso in cui sia maggiore
 		if (endindex>resultSize) endindex=resultSize;
 
 
-		
+
 
 
 
@@ -113,8 +123,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		return ret; 
 
 	}
-	
-	
+
+
 	private int [] checkPagesData(Integer skip,Integer top, int resultSize) throws Exception{
 		int startindex=0;
 		int endindex=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
@@ -127,9 +137,15 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		if(skip!=null) {
 			startindex=startindex+skip.intValue();
 		}
+<<<<<<< HEAD
+
+		if(skip!=null && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max page = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+
+=======
 		
 		if(skip!=null && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max page = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
 		
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 
 		//controlli ... sollevo eccezione quando:
 		// top valorizzato e > di maxsize
@@ -139,18 +155,18 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		if(skip!=null && skip.intValue()>resultSize) throw new SDPPageSizeException("skip value out of range: max document in query result = "+resultSize,Locale.UK);
 
 
-		
-		
+
+
 		// a questo punto i parametri sono buoni ... valorizzo endindex in base al top se valorizzato (sempre con start index >0
 		if(top!=null) endindex=top.intValue();
 
 		endindex=startindex+endindex;
-		
+
 		// riporto endinx a resultsize nel caso in cui sia maggiore
 		if (endindex>resultSize) endindex=resultSize;
 
 
-		
+
 
 
 
@@ -164,6 +180,23 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 	}	
 
+<<<<<<< HEAD
+
+	private int [] checkSkipTop(Integer skip,Integer top) throws Exception{
+
+		if (skip==null) skip=new Integer(-1);
+		if (top==null) top= new Integer(-1);
+		if(skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+		if(top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+
+
+
+		int [] ret = new int[] { skip.intValue() ,top.intValue() }; 
+		return ret; 
+
+	}		
+
+=======
 	
 	private int [] checkSkipTop(Integer skip,Integer top) throws Exception{
 		
@@ -179,6 +212,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 	}		
 	
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 	@Override
 	public ODataResponse readEntitySimpleProperty(final GetSimplePropertyUriInfo uriInfo,final String contentType) throws ODataException {
 		throw new ODataNotImplementedException();
@@ -273,10 +307,40 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									.expandSelectTree(expandSelectTreeNode)
 									.build());
 
+<<<<<<< HEAD
+				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).equals(entitySet.getName())) {
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).getEntityType().getNamespace();
+					String timeGroupByParam=uriInfo.getCustomQueryOptions().get("timeGroupBy");
+					String timeGroupOperatorsParam=uriInfo.getCustomQueryOptions().get("timeGroupOperators");
+=======
 					return ret;
 					
 				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName())) {
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 
+<<<<<<< HEAD
+					String timeGroupFilter=uriInfo.getCustomQueryOptions().get("timeGroupFilter");
+					Object userSourceEntityQuery=null;
+					if (null!=timeGroupFilter && timeGroupFilter.trim().length()>0) {
+						EdmEntityType measureType=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType();
+						FilterExpression feStats=new FilterParserImpl(measureType).parseFilterString(timeGroupFilter, true);
+						if (feStats != null) {
+							SDPExpressionVisitor ev = new SDPExpressionVisitor();
+							ev.setEntitySetName(entitySet.getName());
+							userSourceEntityQuery = feStats.accept(ev);
+							log.info("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
+						}
+					}
+
+
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int skip=skiptop[0];
+					int top=skiptop[1];
+
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userSourceEntityQuery,orderQuery,-1,-1,
+							timeGroupByParam,timeGroupOperatorsParam,userQuery);
+
+=======
 					
 					
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType().getNamespace();
@@ -289,6 +353,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					
 					
 					
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
 					int startindex=limiti[0];
 					int endindex=limiti[1];
@@ -297,6 +362,46 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
 					for (int i=startindex;i<endindex;i++) {
 						misureNew.add(dataRes.getDati().get(i));
+<<<<<<< HEAD
+					}
+
+					ODataResponse ret= EntityProvider.writeFeed (
+							contentType,
+							entitySet,
+							misureNew,
+							EntityProviderWriteProperties.serviceRoot(
+									newUri)
+									.inlineCountType(InlineCount.ALLPAGES)
+									.inlineCount(dataRes.getTotalCount())
+									.expandSelectTree(expandSelectTreeNode)
+									.build());
+
+					return ret;
+
+				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName())) {
+
+
+
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType().getNamespace();
+
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int skip=skiptop[0];
+					int top=skiptop[1];
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
+
+
+
+
+					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
+					int startindex=limiti[0];
+					int endindex=limiti[1];
+
+
+					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+					for (int i=startindex;i<endindex;i++) {
+						misureNew.add(dataRes.getDati().get(i));
+=======
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					}
 
 
@@ -317,12 +422,74 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).equals(entitySet.getName())) {
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).getEntityType().getNamespace();
 
+<<<<<<< HEAD
+=======
 					
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 					
 					
 					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),null,userQuery,orderQuery,
+							skiptop[0],
+							skiptop[1]);
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
+
+<<<<<<< HEAD
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+
+
+					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),null,userQuery,orderQuery,
+							skiptop[0],
+							skiptop[1]);
+
+=======
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
+					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
+					int startindex=limiti[0];
+					int endindex=limiti[1];
+
+					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+					for (int i=startindex;i<endindex;i++) {
+						misureNew.add(dataRes.getDati().get(i));
+					}
+
+<<<<<<< HEAD
+
+
+=======
+					
+					
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
+					ODataResponse ret= EntityProvider.writeFeed(
+							contentType,
+							entitySet,
+							misureNew,
+							EntityProviderWriteProperties.serviceRoot(
+									newUri)
+									.inlineCountType(InlineCount.ALLPAGES)
+									.inlineCount(dataRes.getTotalCount())
+									.expandSelectTree(expandSelectTreeNode)
+									.build()
+<<<<<<< HEAD
+							);
+=======
+									);
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
+
+					return ret;
+
+
+				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_BINARY).equals(entitySet.getName())) {
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY).getEntityType().getNamespace();
+
+
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+
+
+					SDPDataResult dataRes=  new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),null,userQuery,orderQuery,
+							null,
 							skiptop[0],
 							skiptop[1]);
 
@@ -335,8 +502,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 						misureNew.add(dataRes.getDati().get(i));
 					}
 
-					
-					
+
+
 					ODataResponse ret= EntityProvider.writeFeed(
 							contentType,
 							entitySet,
@@ -347,13 +514,17 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									.inlineCount(dataRes.getTotalCount())
 									.expandSelectTree(expandSelectTreeNode)
 									.build()
-									);
+							);
 
 					return ret;
 
 
-				}				
+				}
 				throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
+
+
+
+
 
 
 
@@ -361,6 +532,120 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				// navigation first level, simplified example for illustration
 				// purposes only
 				entitySet = uriInfo.getTargetEntitySet();
+				EdmEntitySet startEntity=uriInfo.getStartEntitySet();
+				//EdmNavigationProperty navigationProperty = getContext().getNavigationProperty();
+
+
+				EdmEntitySet targetEntity=uriInfo.getNavigationSegments().get(0).getEntitySet();
+				EdmNavigationProperty prpnav=uriInfo.getNavigationSegments().get(0).getNavigationProperty();
+				
+				Object userQuery=null;
+				Object orderQuery=null;
+				FilterExpression fe = uriInfo.getFilter();
+				OrderByExpression oe=uriInfo.getOrderBy();
+				if (fe != null) {
+					SDPExpressionVisitor ev = new SDPExpressionVisitor();
+					ev.setEntitySetName(targetEntity.getName());
+					userQuery = fe.accept(ev);
+					log.info("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
+				}
+				if (oe != null) {
+					SDPExpressionVisitor ev = new SDPExpressionVisitor();
+					ev.setEntitySetName(targetEntity.getName());
+					orderQuery=oe.accept(ev);
+					log.info("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
+				}
+				log.info("[SDPSingleProcessor::readEntitySet] entitySet="+targetEntity.getName());
+				
+				
+
+
+				if  (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(startEntity.getName())) {
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).getEntityType().getNamespace();
+
+					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
+
+					SDPDataResult dataRes  = new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),id,null,null,-1,-1);
+
+
+					if  (SDPDataApiConstants.ENTITY_SET_NAME_BINARY.equals(targetEntity.getName())) {
+
+						ArrayList<String> elencoIdBinary=new ArrayList<String> ();
+						for (int i=0;i<dataRes.getDati().size();i++) {
+							if (dataRes.getDati().get(i).containsKey("____binaryIdsArray")) {
+								ArrayList<String> curarr=(ArrayList<String>)dataRes.getDati().get(i).get("____binaryIdsArray");
+								for (int j=0; curarr!=null && j<curarr.size(); j++) {
+									elencoIdBinary.add(curarr.get(j));
+								}
+							}
+						}
+						
+						String nameSpaceTarget=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY).getEntityType().getNamespace();
+
+
+						int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+
+
+						SDPDataResult dataResTarget=  new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpaceTarget,
+								uriInfo.getEntityContainer(),null,userQuery,orderQuery,
+								elencoIdBinary,
+								skiptop[0],
+								skiptop[1]);
+
+						int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataResTarget.getDati().size());
+						int startindex=limiti[0];
+						int endindex=limiti[1];
+
+						List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
+						for (int i=startindex;i<endindex;i++) {
+							misureNew.add(dataResTarget.getDati().get(i));
+						}
+
+
+
+						ODataResponse ret= EntityProvider.writeFeed(
+								contentType,
+								entitySet,
+								misureNew,
+								EntityProviderWriteProperties.serviceRoot(
+										newUri)
+										.inlineCountType(InlineCount.ALLPAGES)
+										.inlineCount(dataResTarget.getTotalCount())
+										.expandSelectTree(expandSelectTreeNode)
+										.build()
+								);
+
+						return ret;						
+						
+					}
+
+					log.info("[SDPSingleProcessor::readEntitySet] ENaaaaaaD");
+
+				} else if  (SDPDataApiConstants.ENTITY_SET_NAME_BINARY.equals(startEntity.getName())) {
+					
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY).getEntityType().getNamespace();
+
+					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
+
+					SDPDataResult dataRes  = new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),id,null,null,null,-1,-1);
+					
+
+					ArrayList<String> elencoIdBinary=new ArrayList<String>();
+					for (int i=0; dataRes!=null && dataRes.getDati()!=null && i<dataRes.getDati().size(); i++) {
+						Map<String, Object> cur=dataRes.getDati().get(i);
+						if (cur.containsKey("idBinary")) elencoIdBinary.add((String) cur.get("idBinary"));
+					}
+					
+					
+					if  (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(targetEntity.getName())) {
+
+						
+					}
+
+					
+				}
 				/*
 				 * if (ENTITY_SET_NAME_CARS.equals(entitySet.getName())) { int
 				 * manufacturerKey = getKeyValue(uriInfo.getKeyPredicates().get(0));
@@ -511,7 +796,11 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 					//Map<String, Object> data = dataRes.getDati().get(0);
 					Map<String, Object> data = ( dataRes.getDati()!= null && dataRes.getDati().size()>0 ) ? dataRes.getDati().get(0) :null ;
+<<<<<<< HEAD
+
+=======
 					
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 
 					if (data != null) {
 						URI serviceRoot = getContext().getPathInfo()
@@ -545,6 +834,31 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
 					} else {
 						throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
+<<<<<<< HEAD
+					}
+				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_BINARY).equals(entitySet.getName())) {
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY).getEntityType().getNamespace();
+
+					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
+
+					SDPDataResult dataRes  = new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
+							uriInfo.getEntityContainer(),id,null,null,null,-1,-1);
+
+
+					Map<String, Object> data = ( dataRes.getDati()!= null && dataRes.getDati().size()>0 ) ? dataRes.getDati().get(0) : null ;
+
+					if (data != null) {
+						URI serviceRoot = getContext().getPathInfo()
+								.getServiceRoot();
+						ODataEntityProviderPropertiesBuilder propertiesBuilder = EntityProviderWriteProperties
+								.serviceRoot(newUri);
+
+						return EntityProvider.writeEntry(contentType, entitySet,
+								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
+					} else {
+						throw new ODataNotFoundException(ODataNotFoundException.ENTITY);
+=======
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					}
 				} 
 				/**
@@ -563,9 +877,9 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				 **/
 			}
 			throw new ODataNotImplementedException();			
-			
-			
-			
+
+
+
 		} catch (Exception e) {
 			log.error("[SDPSingleProcessor::readEntity] " + e);
 			if (e instanceof ODataException) throw (ODataException)e;
@@ -574,8 +888,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			log.info("[SDPSingleProcessor::readEntity] END");
 
 		}
-		
-		
+
+
 
 
 
