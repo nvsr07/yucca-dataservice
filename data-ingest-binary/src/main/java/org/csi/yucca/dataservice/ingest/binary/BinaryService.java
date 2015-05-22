@@ -1,7 +1,5 @@
 package org.csi.yucca.dataservice.ingest.binary;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
@@ -119,7 +117,7 @@ public class BinaryService {
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/binary/{tenant}/")
+	@Path("/binary/input/{tenant}/")
 	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
 			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
 			UnknownHostException {
@@ -136,7 +134,6 @@ public class BinaryService {
 		try {
 			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, datasetVersion, tenantCode);
 		} catch (Exception ex1) {
-			// TODO Auto-generated catch block
 			ex1.printStackTrace();
 		}
 		if (mdFromMongo == null) {
@@ -165,6 +162,8 @@ public class BinaryService {
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 						.entity("{'error_name':'Dataset attachment wrong', 'error_code':'E113', 'output':'NONE', 'message':'" + ex.getMessage() + "'}").build();
 			}
+			
+			System.out.println("HDFS URI = " + uri);
 			
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
 			binaryData.setMetadataBinary("");
