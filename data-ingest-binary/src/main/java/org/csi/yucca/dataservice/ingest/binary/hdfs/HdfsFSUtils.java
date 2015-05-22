@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.ingest.binary.hdfs;
 
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.security.UserGroupInformation;
 
 public class HdfsFSUtils {
@@ -30,6 +31,23 @@ public class HdfsFSUtils {
 			throw new Exception(e.getMessage());
 		}
 		return uri;
+	}
+	
+	public static Integer sizeFile(String user, String remotePath) {
+		InputStream input = null;
+		Integer size = null;
+		try {
+			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+			
+			input = ugi.doAs(new ReadFileHdfsAction(user, remotePath));
+			size = input.available();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+	    	IOUtils.closeQuietly(input);
+	    }
+		
+		return size;
 	}
 
 }

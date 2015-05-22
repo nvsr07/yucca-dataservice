@@ -75,7 +75,6 @@ public class BinaryService {
 		try {
 			api = apiDAO.readApiByCode(apiCode);
 		} catch (Exception ex) {
-			// TODO Auto-generated catch block
 			ex.printStackTrace();
 		}
 		if (api != null){
@@ -89,7 +88,6 @@ public class BinaryService {
 			try { 
 				mdBinaryDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, datasetVersion, tenantCode);
 			} catch (Exception ex) {
-				// TODO Auto-generated catch block
 				ex.printStackTrace();
 			}
 			
@@ -105,7 +103,6 @@ public class BinaryService {
 							   (mdFromMongo.getInfo().getBinaryIdDataset().equals(idDataSet)) && 
 							   (mdFromMongo.getInfo().getBinaryDatasetVersion().equals(datasetVersion)))) {
 						
-						//String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 						String pathForUri = binaryData.getPathHdfsBinary();
 
 						InputStream is = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
@@ -123,8 +120,8 @@ public class BinaryService {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/binary/{tenant}/")
-	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("dataSetCode") String dataSetCode,
-			@Multipart("dataSetVersion") Integer dataSetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
+	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
+			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
 			UnknownHostException {
 
 		String pathFile = attachment.getContentDisposition().getParameter("filename");
@@ -135,9 +132,14 @@ public class BinaryService {
 		MongoDBBinaryDAO binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
 		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
 
-		Metadata mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(dataSetCode, dataSetVersion, tenantCode);
+		Metadata mdFromMongo = null;
+		try {
+			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, datasetVersion, tenantCode);
+		} catch (Exception ex1) {
+			// TODO Auto-generated catch block
+			ex1.printStackTrace();
+		}
 		if (mdFromMongo == null) {
-			// ToDo 500 Dataset unknown
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity("{'error_name':'Dataset unknown', 'error_code':'E111', 'output':'NONE', 'message':'You could not find the specified dataset'}").build();
 		}
@@ -145,7 +147,7 @@ public class BinaryService {
 		binaryData.setIdBinary(idBinary);
 		binaryData.setAliasNameBinary(aliasFile);
 		binaryData.setTenantBinary(tenantCode);
-		binaryData.setDataSetCode(dataSetCode);
+		binaryData.setDatasetCode(datasetCode);
 		binaryData.setFilenameBinary(pathFile);
 		binaryData.setContentTypeBinary(attachment.getContentType().toString());
 
@@ -155,15 +157,11 @@ public class BinaryService {
 
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(pathForUri);
-			String uri;
+			String uri = null;
 			try {
-				System.out.println("START HDFS WRITE!!!");
 				uri = HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
-				System.out.println("END HDFS WRITE!!!");
 			} catch (Exception ex) {
-				// TODO Auto-generated catch block
 				ex.printStackTrace();
-				// ToDo 500 Dataset attachment wrong
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 						.entity("{'error_name':'Dataset attachment wrong', 'error_code':'E113', 'output':'NONE', 'message':'" + ex.getMessage() + "'}").build();
 			}
@@ -174,14 +172,14 @@ public class BinaryService {
 			
 			binaryDAO.createBinary(binaryData);
 
-			return Response.ok("{'uri':'"+uri+"'}").build();
+			return Response.ok().build();
 		} else {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity("{'error_name':'Dataset not attachment', 'error_code':'E112', 'output':'NONE', 'message':'this dataset does not accept attachments'}").build();
 		}
 	}
 
-	@GET
+	@PUT
 	@Path("/binary/{tenantCode}/metadata/{idDataSet}/{datasetVersion}/{idBinary}")
 	public void updateMongo(@PathParam("tenantCode") String tenantCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
@@ -200,77 +198,82 @@ public class BinaryService {
 
 			Map<String,String> mapHS = null;
 			try {
+				//System.out.println("START EXTRACT METADATA");
 				mapHS = extractMetadata(fileToParser);
-				System.out.println("mapHS1 = " + mapHS.toString());
+				//System.out.println("mapHS = " + mapHS.toString());
 				binaryData.setMetadataBinary(mapHS.toString());
-				
+				//System.out.println(" METADATA settati!!!");
 				Long sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
-				System.out.println("sizeFileLenght = " + sizeFileLenght);
-				Long sizeUsableSpaceLenght = Long.parseLong(mapHS.get("sizeUsableSpaceLenght"));
-				System.out.println("sizeUsableSpaceLenght = " + sizeUsableSpaceLenght);
-				Long sizeTotalSpaceLenght = Long.parseLong(mapHS.get("sizeTotalSpaceLenght"));
-				System.out.println("sizeTotalSpaceLenght = " + sizeTotalSpaceLenght);
-				Long sizeFreeSpaceLenght = Long.parseLong(mapHS.get("sizeFreeSpaceLenght"));
-				System.out.println("sizeFreeSpaceLenght = " + sizeFreeSpaceLenght);
+				//System.out.println("sizeFileLenght = " + sizeFileLenght);
 				
 				binaryData.setSizeBinary(sizeFileLenght);
+				//System.out.println(" SIZE settati!!!");
 				binaryDAO.updateBinaryData(binaryData);
-				System.out.println(" 			 mapHS = " + mapHS.toString());
+				//System.out.println("--------> mapHS = " + mapHS.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
 				try {
 					fileToParser.close();
+					throw new WebApplicationException(Response.ok("{'update':'success'}").build());
 				} catch (IOException ex) {
-					// TODO Auto-generated catch block
+					
 					ex.printStackTrace();
 				}
 			}
 		} else {
-			System.out.println("File " + pathForUri + "not found in HDFS!");
+			//System.out.println("File " + pathForUri + "not found in HDFS!");
 		}
-		//throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
-		//		.entity("{'error_name':'Dataset not attachment', 'error_code':'E112', 'output':'NONE', 'message':'this dataset does not accept attachments'}").build());
+		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+				.entity("{'error_name':'Dataset not attachment', 'error_code':'E112', 'output':'NONE', 'message':'this dataset does not accept attachments'}").build());
 	}
 	
 	public static Map<String, String> extractMetadata(InputStream is) {
 
 	    Map<String,String> map = new HashMap<String,String>();
-	    BodyContentHandler contentHandler = new BodyContentHandler(-1);
+	    BodyContentHandler contentHandler = new BodyContentHandler(10000);
 	    org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();
 
         Parser parser = new AutoDetectParser();
         ParseContext parseContext = new ParseContext();
         parseContext.set(Parser.class, new ParserDecorator(parser));
+        
+        TikaInputStream tikaInputStream = null;
+        //File tikaFile = null;
 	    try {
-	    	File tikaFile = TikaInputStream.get(is).getFile();
-		    Long mySizeLenght = tikaFile.length();
-		    Long mySizeUsableSpace = tikaFile.getUsableSpace();
-		    Long mySizeTotalSpace = tikaFile.getTotalSpace();
-		    Long mySizeFreeSpace = tikaFile.getFreeSpace();
-		    
-	        TikaInputStream tikaInputStream =  TikaInputStream.get(new FileInputStream(tikaFile));
-	        
-	        parser.parse(tikaInputStream, contentHandler, metadata, parseContext);
-
+	    	//System.out.println("Size.......");
+		    Integer sizeFileLenght = is.available();
+		    //System.out.println("Parse....");
+	        parser.parse(is, contentHandler, metadata, parseContext);
+	        //System.out.println("FIll into Map....");
 		    for (String name : metadata.names()) {
 	            map.put(name, metadata.get(name));
 	        }
-		    
-		    map.put("sizeFileLenght", mySizeLenght.toString());
-		    map.put("sizeUsableSpaceLenght", mySizeUsableSpace.toString());
-		    map.put("sizeTotalSpaceLenght", mySizeTotalSpace.toString());
-		    map.put("sizeFreeSpaceLenght", mySizeFreeSpace.toString());
-
+		    map.put("sizeFileLenght", sizeFileLenght.toString());
 	    } catch (IOException e) {
-	        map.put("ERROR","(IOException), Error while retriving Metadata, " + e.getMessage());
+	        //map.put("ERROR","(IOException), Error while retriving Metadata, " + e.getMessage());
+	        for (String name : metadata.names()) {
+	            map.put(name, metadata.get(name));
+	        }
 	    } catch (SAXException e) {
-	        map.put("ERROR","(SAXException), Error while retriving Metadata, " + e.getMessage());
+	        //map.put("ERROR","(SAXException), Error while retriving Metadata, " + e.getMessage());
+	        for (String name : metadata.names()) {
+	            map.put(name, metadata.get(name));
+	        }
 	    } catch (TikaException e) {
-	        map.put("ERROR","(TikaException), Error while retriving Metadata, " + e.getMessage());
+	        //map.put("ERROR","(TikaException), Error while retriving Metadata, " + e.getMessage());
+	        for (String name : metadata.names()) {
+	            map.put(name, metadata.get(name));
+	        }
 	    } catch (Exception e) {
-	        map.put("ERROR","(Exception), Error while retriving Metadata, " + e.getMessage());
+	        //map.put("ERROR","(Exception), Error while retriving Metadata, " + e.getMessage());
+	        for (String name : metadata.names()) {
+	            map.put(name, metadata.get(name));
+	        }
+	    } finally {
+	    	IOUtils.closeQuietly(tikaInputStream);
 	    }
+	    //System.out.println("Return...");
 
 	    return map;
 	}

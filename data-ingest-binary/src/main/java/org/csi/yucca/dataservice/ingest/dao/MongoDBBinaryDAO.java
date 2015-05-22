@@ -109,21 +109,6 @@ public class MongoDBBinaryDAO {
 		return binaryLoaded;
 	}
 
-	public BinaryData readCurrentBinaryDataByTntAndDSCode(String metadataCode, Integer dataSetVersion, String tenantCode) {
-		BasicDBObject searchQuery = new BasicDBObject();
-		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
-		obj.add(new BasicDBObject("datasetCode", metadataCode));
-		obj.add(new BasicDBObject("configData.tenantCode", tenantCode));
-		obj.add(new BasicDBObject("datasetVersion", dataSetVersion));
-		searchQuery.put("$and", obj);
-
-		DBObject data = collection.find(searchQuery).one();
-		ObjectId id = (ObjectId) data.get("_id");
-		BinaryData binaryLoaded = BinaryData.fromJson(JSON.serialize(data));
-		binaryLoaded.setId(id.toString());
-		return binaryLoaded;
-	}
-
 	public BinaryData readCurrentBinaryDataByTntAndIDDS(Long idDataset, Integer datasetVersion, String tenantCode) {
 		BasicDBObject searchQuery = new BasicDBObject();
 		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();

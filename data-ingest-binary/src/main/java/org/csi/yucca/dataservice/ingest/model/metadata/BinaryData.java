@@ -27,7 +27,7 @@ public class BinaryData extends AbstractEntity {
 	private Date insertDateBinary;
 	private Date lastUpdateDateBinary;
 	private Long idDataset;
-	private String dataSetCode;
+	private String datasetCode;
 	private Integer datasetVersion;
 	private String metadataBinary;
 
@@ -149,12 +149,12 @@ public class BinaryData extends AbstractEntity {
 		this.idDataset = idDataset;
 	}
 
-	public String getDataSetCode() {
-		return dataSetCode;
+	public String getDatasetCode() {
+		return datasetCode;
 	}
 
-	public void setDataSetCode(String dataSetCode) {
-		this.dataSetCode = dataSetCode;
+	public void setDatasetCode(String datasetCode) {
+		this.datasetCode = datasetCode;
 	}
 
 	public Integer getDatasetVersion() {
