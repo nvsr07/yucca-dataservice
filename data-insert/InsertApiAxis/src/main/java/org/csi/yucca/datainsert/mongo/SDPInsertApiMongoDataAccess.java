@@ -136,6 +136,7 @@ public class SDPInsertApiMongoDataAccess {
 			while (cursor.hasNext()) {
 				count++;
 				DBObject oo = cursor.next();
+				//TODO... verificare per le date
 				builder.insert(oo);
 			}
 			cursor.close();

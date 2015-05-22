@@ -1,9 +1,16 @@
 package org.csi.yucca.datainsert.dto;
 
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SimpleTimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.bind.DatatypeConverter;
 
 public class FieldsMongoDto {
 
@@ -124,12 +131,61 @@ public class FieldsMongoDto {
 		}
 		return true;
 	}
-	private boolean validateDate(String valueToCheck) {
+	private boolean validateDate_old(String valueToCheck) {
 		Matcher m = r8601.matcher(valueToCheck);
 		if (!m.lookingAt()) return false;		
 		
 		return true;
 	}
+
+
+	private boolean validateDate(String valueToCheck) {
+		try {
+			Object o= null;
+			SimpleDateFormat format = new SimpleDateFormat(_msDateFormat);
+			format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+			o = format.parse(valueToCheck, new ParsePosition(0));
+			if (o == null) {
+				// try older format with no ms
+				format = new SimpleDateFormat(_secDateFormat);
+				format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				o = format.parse(valueToCheck, new ParsePosition(0));
+				if (o == null) {
+					// try timezone
+					format = new SimpleDateFormat(_msDateFormat_TZ);
+					format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+					o = format.parse(valueToCheck, new ParsePosition(0));
+					if (o == null) {
+						// try older format timezone
+						format = new SimpleDateFormat(_secDateFormat_TZ);
+						format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+						o = format.parse(valueToCheck, new ParsePosition(0));
+					}
+					if (o == null) {
+						// try isoDate with JAXB
+						Calendar cal = DatatypeConverter.parseDateTime(valueToCheck);
+						o = cal.getTime();
+					}
+
+				}
+
+
+			}
+
+
+			if (o==null ) return false;
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	public static final String _msDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+	public static final String _secDateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'";
+	public static final String _msDateFormat_TZ = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+	public static final String _secDateFormat_TZ = "yyyy-MM-dd'T'HH:mm:ssZ";
+
+
 	private boolean validateString(String valueToCheck) {
 		return true;
 	}
