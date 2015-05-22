@@ -190,26 +190,29 @@ public class BinaryService {
 		
 		binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
 		binaryData = binaryDAO.readCurrentBinaryDataByIdBinary(idBinary);
-
+		
+		System.out.println("binaryData = " + binaryData.toString());
+		
 		String pathForUri = binaryData.getPathHdfsBinary();
+		System.out.println("pathForUri = " + pathForUri);
 
 		InputStream fileToParser = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
 		if (fileToParser != null){
 
 			Map<String,String> mapHS = null;
 			try {
-				//System.out.println("START EXTRACT METADATA");
+				System.out.println("START EXTRACT METADATA");
 				mapHS = extractMetadata(fileToParser);
-				//System.out.println("mapHS = " + mapHS.toString());
+				System.out.println("mapHS = " + mapHS.toString());
 				binaryData.setMetadataBinary(mapHS.toString());
-				//System.out.println(" METADATA settati!!!");
+				System.out.println(" METADATA settati!!!");
 				Long sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
-				//System.out.println("sizeFileLenght = " + sizeFileLenght);
+				System.out.println("sizeFileLenght = " + sizeFileLenght);
 				
 				binaryData.setSizeBinary(sizeFileLenght);
-				//System.out.println(" SIZE settati!!!");
+				System.out.println(" SIZE settati!!!");
 				binaryDAO.updateBinaryData(binaryData);
-				//System.out.println("--------> mapHS = " + mapHS.toString());
+				System.out.println("--------> mapHS = " + mapHS.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -240,37 +243,38 @@ public class BinaryService {
         
         TikaInputStream tikaInputStream = null;
         //File tikaFile = null;
+        Integer sizeFileLenght = 0;
 	    try {
 	    	//System.out.println("Size.......");
-		    Integer sizeFileLenght = is.available();
+		    sizeFileLenght = is.available();
 		    //System.out.println("Parse....");
 	        parser.parse(is, contentHandler, metadata, parseContext);
 	        //System.out.println("FIll into Map....");
 		    for (String name : metadata.names()) {
 	            map.put(name, metadata.get(name));
 	        }
-		    map.put("sizeFileLenght", sizeFileLenght.toString());
 	    } catch (IOException e) {
-	        //map.put("ERROR","(IOException), Error while retriving Metadata, " + e.getMessage());
+	    	System.out.println("(IOException), Error while retriving Metadata, " + e.getMessage());
 	        for (String name : metadata.names()) {
 	            map.put(name, metadata.get(name));
 	        }
 	    } catch (SAXException e) {
-	        //map.put("ERROR","(SAXException), Error while retriving Metadata, " + e.getMessage());
+	    	System.out.println("(SAXException), Error while retriving Metadata, " + e.getMessage());
 	        for (String name : metadata.names()) {
 	            map.put(name, metadata.get(name));
 	        }
 	    } catch (TikaException e) {
-	        //map.put("ERROR","(TikaException), Error while retriving Metadata, " + e.getMessage());
+	    	System.out.println("(TikaException), Error while retriving Metadata, " + e.getMessage());
 	        for (String name : metadata.names()) {
 	            map.put(name, metadata.get(name));
 	        }
 	    } catch (Exception e) {
-	        //map.put("ERROR","(Exception), Error while retriving Metadata, " + e.getMessage());
+	    	System.out.println("(Exception), Error while retriving Metadata, " + e.getMessage());
 	        for (String name : metadata.names()) {
 	            map.put(name, metadata.get(name));
 	        }
 	    } finally {
+		    map.put("sizeFileLenght", sizeFileLenght.toString());
 	    	IOUtils.closeQuietly(tikaInputStream);
 	    }
 	    //System.out.println("Return...");
