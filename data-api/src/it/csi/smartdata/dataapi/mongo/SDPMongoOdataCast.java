@@ -290,21 +290,6 @@ public class SDPMongoOdataCast {
 
 	}
 
-<<<<<<< HEAD
-
-	private ArrayList<String> getEntitysetsNamesStats() {
-		//		Object eleCapmpi=obj.get("mergedComponents");
-		//		BasicDBList lista=null;
-		//		if (eleCapmpi instanceof BasicDBList) {
-		//			lista=(BasicDBList)eleCapmpi;
-		//		} else {
-		//			lista=new BasicDBList();
-		//			lista.add(eleCapmpi);
-		//		}
-		//		for (int j=0;j<lista.size();j++) {
-		//			
-		//		}	
-=======
 	
 	private ArrayList<String> getEntitysetsNamesStats() {
 //		Object eleCapmpi=obj.get("mergedComponents");
@@ -318,7 +303,6 @@ public class SDPMongoOdataCast {
 //		for (int j=0;j<lista.size();j++) {
 //			
 //		}	
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 		return null;
 	}
 
@@ -552,19 +536,11 @@ public class SDPMongoOdataCast {
 
 			dataAttributes.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			dataAttributes.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
-<<<<<<< HEAD
-			//			dataAttributes.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
-			dataAttributes.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-
-
-
-=======
 //			dataAttributes.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 			dataAttributes.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			
 			
 			
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			if(historical) {
 				dataAttributes.add(new SimpleProperty().setName("startdate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 				dataAttributes.add(new SimpleProperty().setName("enddate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
@@ -635,21 +611,13 @@ public class SDPMongoOdataCast {
 		try {
 			log.info("[SDPMongoOdataCast::getMeasureType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
-<<<<<<< HEAD
-
-=======
 			
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			// SPOSTATI IN CFGd
 			measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
 
-<<<<<<< HEAD
 
-=======
-			
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
@@ -658,13 +626,8 @@ public class SDPMongoOdataCast {
 			//measureProps.add(new ComplexProperty().setName("values").setType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES)));
 			//measureProps.add(new SimpleProperty().setName("current").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
 
-<<<<<<< HEAD
-
-			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
-=======
 			
-			List<Property> componentProp= getDatasetField(eleCapmpi);
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				measureProps.add(componentProp.get(i));
 			}
@@ -699,33 +662,6 @@ public class SDPMongoOdataCast {
 			log.info("[SDPMongoOdataCast::getMeasureStatsType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
 
-<<<<<<< HEAD
-
-			//			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
-			//			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
-			//			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-
-			measureProps.add(new SimpleProperty().setName("year").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-			measureProps.add(new SimpleProperty().setName("month").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-			measureProps.add(new SimpleProperty().setName("dayofmonth").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-
-
-			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
-			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
-
-				SimpleProperty curProp=new SimpleProperty()
-				.setName( ((SimpleProperty)componentProp.get(i)).getName()+"_sts")
-				.setType(((SimpleProperty)componentProp.get(i)).getType())
-				.setFacets(new Facets().setNullable(true));
-
-				measureProps.add(curProp);
-			}
-			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
-
-
-
-=======
 			
 //			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 //			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
@@ -737,7 +673,7 @@ public class SDPMongoOdataCast {
 			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 
-			List<Property> componentProp= getDatasetField(eleCapmpi);
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				
 				SimpleProperty curProp=new SimpleProperty()
@@ -751,7 +687,6 @@ public class SDPMongoOdataCast {
 			
 			
 			
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 			measureProps.add(new SimpleProperty().setName("count").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 
@@ -816,17 +751,10 @@ public class SDPMongoOdataCast {
 					//				entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_STREAMS),codiceApi));
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES),codiceApi));
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS),codiceApi));
-<<<<<<< HEAD
-
-
-
-
-=======
 					
 					
 					
 					
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					//			    entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASUREVALUES),codiceApi));
 					//			    entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_MEASURECOMPONENTS),codiceApi));
 					schema.setEntityTypes(entityTypes);
@@ -854,11 +782,7 @@ public class SDPMongoOdataCast {
 					List<EntitySet> entitySets = new ArrayList<EntitySet>();
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_MEASURES,codiceApi));
 
-<<<<<<< HEAD
-
-=======
 					
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS,codiceApi));
 
 					//entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT,codiceApi));
@@ -1050,11 +974,7 @@ public class SDPMongoOdataCast {
 				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
 						,userOrderBy,skip,limit);
 				List<Map<String, Object>> misureCur = cur.getDati();
-<<<<<<< HEAD
 
-=======
-				
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
 					ret.add(misureCur.get(k));
 				}
@@ -1115,54 +1035,8 @@ public class SDPMongoOdataCast {
 		}			
 	}		
 
-	public SDPDataResult getMeasuresStatsPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
-			int skip,
-			int limit,
-			String timeGroupByParam,
-			String timeGroupOperatorsParam,
-			Object groupOutQuery) throws Exception{
-		try {
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer="+entityContainer);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] internalId="+internalId);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] userQuery="+userQuery);
-
-			initDbObject(codiceApi);
-			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
-			int totCnt=0;
-			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
-
-			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
-				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
-				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
-				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
-						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
-				List<Map<String, Object>> misureCur = cur.getDati();
-
-				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
-					ret.add(misureCur.get(k));
-				}
-				totCnt+=cur.getTotalCount();
-
-			}
-
-			return new SDPDataResult(ret,totCnt);
-		} catch (Exception e) {
-			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
-			throw e;
-		} finally {
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] END");
-
-		}			
-	}		
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice
 	public SDPDataResult getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
 			int skip,
 			int limit) throws Exception{
