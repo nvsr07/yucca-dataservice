@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -49,6 +48,7 @@ public class BinaryService {
 	private final String MEDIA = "media";
 	private final String PATH_INTERNAL_HDFS = "/rawdata/files/";
 	private final Integer MAX_SIZE_FILE_ATTACHMENT = 104857601;
+	private String datasetCode;
 
 	static Logger log = Logger.getLogger(BinaryService.class);
 
@@ -183,8 +183,9 @@ public class BinaryService {
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
 			binaryData.setMetadataBinary("");
 			binaryData.setSizeBinary(0L);
-			
 			binaryDAO.createBinary(binaryData);
+
+			updateMongo(binaryData.getTenantBinary(), binaryData.getDatasetCode(), binaryData.getDatasetVersion(), binaryData.getIdBinary());
 
 			return Response.ok().build();
 		} else {
@@ -297,5 +298,13 @@ public class BinaryService {
 	    }
 
 	    return map;
+	}
+
+	public String getDatasetCode() {
+		return datasetCode;
+	}
+
+	public void setDatasetCode(String datasetCode) {
+		this.datasetCode = datasetCode;
 	}
 }
