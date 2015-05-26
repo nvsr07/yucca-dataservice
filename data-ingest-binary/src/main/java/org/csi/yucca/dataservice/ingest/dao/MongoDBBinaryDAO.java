@@ -95,9 +95,10 @@ public class MongoDBBinaryDAO {
 		return binaryLoaded;
 	}
 
-	public BinaryData readCurrentBinaryDataByIdBinary(String idBinary) {
+	public BinaryData readCurrentBinaryDataByIdBinary(String idBinary, Long idDataset) {
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("idBinary", idBinary);
+		searchQuery.put("idDataset", idDataset);
 		
 		DBObject data = collection.find(searchQuery).one();
 		BinaryData binaryLoaded = null;
