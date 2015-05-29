@@ -1,20 +1,85 @@
-<!--Mon Dec 15 12:20:31 2014-->
+<!--Fri May 29 12:08:59 2015-->
     <configuration>
     
     <property>
-      <name>io.serializations</name>
-      <value>org.apache.hadoop.io.serializer.WritableSerialization</value>
+      <name>fs.defaultFS</name>
+      <value>hdfs://sdnetha</value>
+      <final>true</final>
     </property>
     
     <property>
-      <name>hadoop.security.auth_to_local</name>
-      <value>
-        RULE:[2:$1@$0]([rn]m@.*)s/.*/yarn/
-        RULE:[2:$1@$0](jhs@.*)s/.*/mapred/
-        RULE:[2:$1@$0]([nd]n@.*)s/.*/hdfs/
-        RULE:[2:$1@$0](hm@.*)s/.*/hbase/
-        RULE:[2:$1@$0](rs@.*)s/.*/hbase/
-        DEFAULT</value>
+      <name>fs.trash.interval</name>
+      <value>360</value>
+    </property>
+    
+    <property>
+      <name>ha.failover-controller.active-standby-elector.zk.op.retries</name>
+      <value>120</value>
+    </property>
+    
+    <property>
+      <name>ha.zookeeper.quorum</name>
+      <value>sdnet-master1.sdp.csi.it:2181,sdnet-master2.sdp.csi.it:2181,sdnet-master3.sdp.csi.it:2181,sdnet-master4.sdp.csi.it:2181,sdnet-master5.sdp.csi.it:2181</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.authentication.simple.anonymous.allowed</name>
+      <value>true</value>
+    </property>
+    
+    <property>
+      <name>hadoop.http.staticuser.user</name>
+      <value>dr.who</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.falcon.groups</name>
+      <value>users</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.falcon.hosts</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hcat.groups</name>
+      <value>users</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hcat.hosts</name>
+      <value>sdnet-master5.sdp.csi.it</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hive.groups</name>
+      <value>users</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.hive.hosts</name>
+      <value>sdnet-master5.sdp.csi.it</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.knox.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.knox.hosts</name>
+      <value>sdnet-knox1.sdp.csi.it</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.oozie.groups</name>
+      <value>*</value>
+    </property>
+    
+    <property>
+      <name>hadoop.proxyuser.oozie.hosts</name>
+      <value>sdnet-master3.sdp.csi.it</value>
     </property>
     
     <property>
@@ -23,13 +88,58 @@
     </property>
     
     <property>
+      <name>hadoop.security.auth_to_local</name>
+      <value>DEFAULT</value>
+    </property>
+    
+    <property>
       <name>hadoop.security.authentication</name>
       <value>simple</value>
     </property>
     
     <property>
-      <name>hadoop.proxyuser.falcon.hosts</name>
-      <value>*</value>
+      <name>hadoop.security.authorization</name>
+      <value>false</value>
+    </property>
+    
+    <property>
+      <name>io.compression.codec.lzo.class</name>
+      <value>com.hadoop.compression.lzo.LzoCodec</value>
+    </property>
+    
+    <property>
+      <name>io.compression.codecs</name>
+      <value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec</value>
+    </property>
+    
+    <property>
+      <name>io.file.buffer.size</name>
+      <value>131072</value>
+    </property>
+    
+    <property>
+      <name>io.serializations</name>
+      <value>org.apache.hadoop.io.serializer.WritableSerialization</value>
+    </property>
+    
+    <property>
+      <name>ipc.client.connect.max.retries</name>
+      <value>50</value>
+    </property>
+    
+    <property>
+      <name>ipc.client.connection.maxidletime</name>
+      <value>30000</value>
+    </property>
+    
+    <property>
+      <name>ipc.client.idlethreshold</name>
+      <value>8000</value>
+    </property>
+    
+    <property>
+      <name>ipc.server.tcpnodelay</name>
+      <value>true</value>
     </property>
     
     <property>
@@ -43,98 +153,8 @@
     </property>
     
     <property>
-      <name>hadoop.proxyuser.knox.groups</name>
-      <value>*</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.oozie.groups</name>
-      <value>*</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.hcat.hosts</name>
-      <value>sdnet-master5.sdp.csi.it</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.hive.hosts</name>
-      <value>sdnet-master5.sdp.csi.it</value>
-    </property>
-    
-    <property>
-      <name>fs.defaultFS</name>
-      <value>hdfs://sdnetha</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.falcon.groups</name>
+      <name>proxyuser_group</name>
       <value>users</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.hcat.groups</name>
-      <value>users</value>
-    </property>
-    
-    <property>
-      <name>fs.trash.interval</name>
-      <value>360</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.hive.groups</name>
-      <value>users</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.oozie.hosts</name>
-      <value>sdnet-master3.sdp.csi.it</value>
-    </property>
-    
-    <property>
-      <name>io.compression.codecs</name>
-      <value>org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.DefaultCodec,com.hadoop.compression.lzo.LzoCodec,com.hadoop.compression.lzo.LzopCodec</value>
-    </property>
-    
-    <property>
-      <name>hadoop.proxyuser.knox.hosts</name>
-      <value>sdnet-knox1.sdp.csi.it</value>
-    </property>
-    
-    <property>
-      <name>hadoop.security.authorization</name>
-      <value>false</value>
-    </property>
-    
-    <property>
-      <name>ipc.client.connect.max.retries</name>
-      <value>50</value>
-    </property>
-    
-    <property>
-      <name>ipc.client.idlethreshold</name>
-      <value>8000</value>
-    </property>
-    
-    <property>
-      <name>io.file.buffer.size</name>
-      <value>131072</value>
-    </property>
-    
-    <property>
-      <name>ha.zookeeper.quorum</name>
-      <value>sdnet-master1.sdp.csi.it:2181,sdnet-master2.sdp.csi.it:2181,sdnet-master3.sdp.csi.it:2181</value>
-    </property>
-    
-    <property>
-      <name>io.compression.codec.lzo.class</name>
-      <value>com.hadoop.compression.lzo.LzoCodec</value>
-    </property>
-    
-    <property>
-      <name>ipc.client.connection.maxidletime</name>
-      <value>30000</value>
     </property>
     
   </configuration>
