@@ -11,5 +11,6 @@
   <modules>
     <module>artifacts\api\YuccaDownloadFile</module>
     <module>artifacts\api\YuccaUploadFile</module>
+    <module>artifacts\api\YuccaUpdateFile</module>
   </modules>
 </project>

@@ -9,6 +9,7 @@ import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 
 public interface SDPDataApiConstants {
 
+	public static final long SDP_MAX_DOC_FOR_ORDERBY=100000;
 	
 	public static final String SDP_WEB_FILTER_PATTERN="/SmartDataOdataService.svc/";
 	public static final String SDP_WEB_SERVLET_URL="/SDPOdataServlet.svc/";

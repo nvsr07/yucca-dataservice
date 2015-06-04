@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api xmlns="http://ws.apache.org/ns/synapse" name="YuccaDownloadFile" context="/wso005/api/download/binary">
-    <resource methods="GET" uri-template="/{tenant}/{file}">
-        <inSequence>
-            <send>
-                <endpoint>
-                    <address uri="http://localhost:9768/data-ingest-binary/services/binary_service/binary/"/>
-                </endpoint>
-            </send>
-        </inSequence>
-        <outSequence>
-            <send/>
-        </outSequence>
-        <faultSequence/>
-    </resource>
+   <resource methods="GET">
+      <inSequence>
+         <send>
+            <endpoint>
+               <address uri="http://localhost:9768/data-ingest-binary-1.0.0/services/binary_service/binary/"></address>
+            </endpoint>
+         </send>
+      </inSequence>
+      <outSequence>
+         <send></send>
+      </outSequence>
+      <faultSequence></faultSequence>
+   </resource>
 </api>
+                        

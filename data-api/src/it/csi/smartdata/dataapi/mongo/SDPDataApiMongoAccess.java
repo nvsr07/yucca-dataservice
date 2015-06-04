@@ -5,9 +5,9 @@ import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.dto.DbConfDto;
 import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
 import it.csi.smartdata.dataapi.mongo.exception.SDPCustomQueryOptionException;
+import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -478,7 +478,7 @@ public class SDPDataApiMongoAccess {
 	public SDPDataResult getMeasuresPerStream(String codiceTenant, String nameSpace, EdmEntityContainer entityContainer,DBObject streamMetadata,String internalId,String datatType,Object userQuery, Object userOrderBy,
 			int skip,
 			int limit
-			) {
+			) throws SDPOrderBySizeException {
 		String collection=null;
 		//		String sensore=null;
 		//		String stream=null;
@@ -600,7 +600,22 @@ public class SDPDataApiMongoAccess {
 			skip=0;
 			
 			
-			if (null!=userOrderBy) cursor = collMisure.find(query).skip(skip).limit(limit).sort((BasicDBList)userOrderBy);
+			
+			
+			if (null!=userOrderBy) {
+				
+				boolean orderByAllowed=false;
+				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
+					orderByAllowed=true;
+				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((BasicDBList)userOrderBy).size()<=1) {
+					BasicDBObject elemOrder=(BasicDBObject)((BasicDBList)userOrderBy).get(0);
+					if (elemOrder.toString().indexOf("\"time\"")!=-1) orderByAllowed=true;
+				}
+				
+				
+				if (!orderByAllowed) throw new SDPOrderBySizeException("too many documents for order clause;",Locale.UK);
+				cursor = collMisure.find(query).sort((BasicDBList)userOrderBy).skip(skip).limit(limit);
+			}
 			else cursor = collMisure.find(query).skip(skip).limit(limit);
 			try {
 				while (cursor.hasNext()) {
@@ -690,7 +705,10 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				cursor.close();			
 			} 
 
-
+			
+		} catch (SDPOrderBySizeException e) {
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] SDPOrderBySizeException" +e);
+			throw (SDPOrderBySizeException)e;
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] INGORED" +e);
 		} finally {

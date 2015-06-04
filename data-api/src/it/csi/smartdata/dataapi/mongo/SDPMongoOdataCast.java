@@ -3,6 +3,7 @@ package it.csi.smartdata.dataapi.mongo;
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
+import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -983,6 +984,9 @@ public class SDPMongoOdataCast {
 			}
 
 			return new SDPDataResult(ret,totCnt);
+		} catch (SDPOrderBySizeException e) {
+			log.error("[SDPMongoOdataCast::getMeasuresPerApi] SDPOrderBySizeException" +e);
+			throw (SDPOrderBySizeException)e;
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
 			throw e;
@@ -1069,6 +1073,9 @@ public class SDPMongoOdataCast {
 			}
 
 			return new SDPDataResult(ret,totCnt);
+		} catch (SDPOrderBySizeException e) {
+			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] SDPOrderBySizeException" +e);
+			throw (SDPOrderBySizeException)e;
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] " + e);
 			throw e;

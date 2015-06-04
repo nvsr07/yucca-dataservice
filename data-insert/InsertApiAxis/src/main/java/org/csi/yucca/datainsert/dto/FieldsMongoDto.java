@@ -23,6 +23,8 @@ public class FieldsMongoDto {
 	public static final String DATA_TYPE_DATETIME = "dateTime";
 	public static final String DATA_TYPE_LON = "longitude";
 	public static final String DATA_TYPE_LAT = "latitude";	
+	public static final String DATA_TYPE_BINARY = "binary";	
+	
 
 	private static Map<String,String> testMap;
 	static {
@@ -37,6 +39,7 @@ public class FieldsMongoDto {
 		testMap.put(DATA_TYPE_LON, DATA_TYPE_LON);
 		testMap.put(DATA_TYPE_LAT, DATA_TYPE_LAT);
 		testMap.put(DATA_TYPE_FLOAT, DATA_TYPE_FLOAT);
+		testMap.put(DATA_TYPE_BINARY, DATA_TYPE_BINARY);
 
 
 	}
@@ -120,6 +123,7 @@ public class FieldsMongoDto {
 		if (DATA_TYPE_DATETIME.equals(this.fieldType)) return validateDate(valueToCheck); 
 		if (DATA_TYPE_LON.equals(this.fieldType)) return validateDouble(valueToCheck); 
 		if (DATA_TYPE_LAT.equals(this.fieldType)) return validateDouble(valueToCheck); 
+		if (DATA_TYPE_BINARY.equals(this.fieldType)) return validateBinary(valueToCheck); 
 		return false;
 	}
 
@@ -189,6 +193,9 @@ public class FieldsMongoDto {
 	private boolean validateString(String valueToCheck) {
 		return true;
 	}
+	private boolean validateBinary(String valueToCheck) {
+		return true;
+	}
 	private boolean validateLong(String valueToCheck) {
 		try {
 			Long.parseLong(valueToCheck); 
@@ -235,6 +242,7 @@ public class FieldsMongoDto {
 		if (DATA_TYPE_DATETIME.equals(this.fieldType)) ret+="{$date : \""+value+"\"}";
 		if (DATA_TYPE_LON.equals(this.fieldType)) ret+=value;
 		if (DATA_TYPE_LAT.equals(this.fieldType)) ret+=value;
+		if (DATA_TYPE_BINARY.equals(this.fieldType)) ret+="\""+value.replace("\"", "\\\"")+"\"";
 		
 		
 		//{ "$date" : "2013-02-07T09:09:09.212Z"}
