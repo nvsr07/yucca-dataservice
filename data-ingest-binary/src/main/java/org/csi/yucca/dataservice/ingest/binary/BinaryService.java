@@ -107,12 +107,23 @@ public class BinaryService {
 						InputStream is = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
 						if (is != null)
 							return is;
-					} 
+						else
+							throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+									.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
+					} else {
+						throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+								.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
+					}
 				}
+			} else {
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+						.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
 			}
+		} else {
+			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+					.entity("{\"error_name\":\"API Code Wrong\", \"error_code\":\"E115\", \"output\":\"NONE\", \"message\":\"this api does not exist\"}").build());
 		}
-		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-				.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
+		return null;
 	}
 
 	@POST
