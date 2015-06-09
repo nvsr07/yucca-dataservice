@@ -103,9 +103,6 @@ public class MongoDBBinaryDAO {
 		DBObject data = collection.find(searchQuery).one();
 		BinaryData binaryLoaded = null;
 		
-		System.out.println("searchQuery = " + searchQuery.toString());
-		System.out.println("data = " + data.toString());
-		
 		if (data != null){
 			
 			ObjectId id = (ObjectId) data.get("_id");
