@@ -1,6 +1,7 @@
 package it.csi.smartdata.dataapi.odata;
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
+import it.csi.smartdata.dataapi.mongo.dto.SDPMongoOrderElement;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -295,6 +295,20 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			List<Object> paramList) {
 		out.append("visitOrderByExpression\n");
 		
+		ArrayList<SDPMongoOrderElement> ret=new ArrayList<SDPMongoOrderElement>();
+		for (int i =0;paramList!=null && i<paramList.size() ; i++) {
+			if (paramList.get(i) instanceof SDPMongoOrderElement) {
+				ret.add((SDPMongoOrderElement)paramList.get(i));
+			}
+		}
+		if (ret.size()>0) return ret;
+		return null;
+	}
+	public Object visitOrderByExpression_old(
+			OrderByExpression paramOrderByExpression, String paramString,
+			List<Object> paramList) {
+		out.append("visitOrderByExpression\n");
+		
 		BasicDBList ret=new BasicDBList();
 		for (int i =0;paramList!=null && i<paramList.size() ; i++) {
 			if (paramList.get(i) instanceof BasicDBObject) {
@@ -307,6 +321,22 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 
 	@Override
 	public Object visitOrder(OrderExpression paramOrderExpression,
+			Object paramObject, SortOrder paramSortOrder) {
+		
+		
+		if (paramObject instanceof String ) {
+			String val= getFullFielName ((String)paramObject);
+			int order=1;
+			if (paramSortOrder.compareTo(SortOrder.asc)==0)  order= 1;
+			if (paramSortOrder.compareTo(SortOrder.desc)==0)  order= -1;
+			
+			return new SDPMongoOrderElement(val,order);
+		}  
+		
+		out.append("visitOrder\n");
+		return null;
+	}
+	public Object visitOrder_old(OrderExpression paramOrderExpression,
 			Object paramObject, SortOrder paramSortOrder) {
 		
 		

@@ -102,6 +102,19 @@
 			</build>
 		</profile>
 		<profile>
+			<id>localprod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+					<resource>
+						<directory>resources/localprod</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
 			<id>dev</id>
 			<build>
 				<resources>

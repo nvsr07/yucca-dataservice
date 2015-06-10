@@ -4,6 +4,7 @@ import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.dto.DbConfDto;
 import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
+import it.csi.smartdata.dataapi.mongo.dto.SDPMongoOrderElement;
 import it.csi.smartdata.dataapi.mongo.exception.SDPCustomQueryOptionException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
 
@@ -607,14 +608,25 @@ public class SDPDataApiMongoAccess {
 				boolean orderByAllowed=false;
 				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
 					orderByAllowed=true;
-				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((BasicDBList)userOrderBy).size()<=1) {
-					BasicDBObject elemOrder=(BasicDBObject)((BasicDBList)userOrderBy).get(0);
-					if (elemOrder.toString().indexOf("\"time\"")!=-1) orderByAllowed=true;
+				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
+					
+					
+					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
+					//if (elemOrder.toString().indexOf("\"time\"")!=-1) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
 				}
 				
 				
 				if (!orderByAllowed) throw new SDPOrderBySizeException("too many documents for order clause;",Locale.UK);
-				cursor = collMisure.find(query).sort((BasicDBList)userOrderBy).skip(skip).limit(limit);
+				
+				BasicDBObject dbObjUserOrder=null;
+				
+				for (int kkk=0;kkk<((ArrayList<SDPMongoOrderElement>)userOrderBy).size();kkk++) {
+					SDPMongoOrderElement curOrdElem=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(kkk);
+					if (null==dbObjUserOrder) dbObjUserOrder=new BasicDBObject(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
+					else dbObjUserOrder.append(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
+				}
+				cursor = collMisure.find(query).sort(dbObjUserOrder).skip(skip).limit(limit);
 			}
 			else cursor = collMisure.find(query).skip(skip).limit(limit);
 			try {
@@ -951,19 +963,22 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			if (null!=userOrderBy) {
 				//pipeline.add(new BasicDBObject("$sort",(BasicDBList)userOrderBy));
 				BasicDBObject objeSort=new BasicDBObject();
-				for (int kk=0;kk<((BasicDBList)userOrderBy).size();kk++ ) {
-					BasicDBObject curObj=(BasicDBObject)((BasicDBList)userOrderBy).get(kk);
-					Iterator<String> it = curObj.keySet().iterator();
-					while (it.hasNext()) {
-						String key=it.next();
-						Integer orderVersus=new Integer(curObj.getString(key));
-						objeSort.append(key, orderVersus);
-						
-					}
-					
-					
-					//objeSort.append(((BasicDBObject)((BasicDBList)userOrderBy).get(kk)).get, val)
+//				for (int kk=0;kk<((BasicDBList)userOrderBy).size();kk++ ) {
+//					BasicDBObject curObj=(BasicDBObject)((BasicDBList)userOrderBy).get(kk);
+//					Iterator<String> it = curObj.keySet().iterator();
+//					while (it.hasNext()) {
+//						String key=it.next();
+//						Integer orderVersus=new Integer(curObj.getString(key));
+//						objeSort.append(key, orderVersus);
+//						
+//					}
+//				}
+				for (int kkk=0;kkk<((ArrayList<SDPMongoOrderElement>)userOrderBy).size();kkk++) {
+					SDPMongoOrderElement curOrdElem=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(kkk);
+					objeSort.append(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
 				}
+				
+				
 				pipeline.add(new BasicDBObject("$sort",objeSort));
 				
 			}
