@@ -956,6 +956,9 @@ public class SDPMongoOdataCast {
 	public SDPDataResult getMeasuresPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
 			int skip,
 			int limit) throws Exception{
+		
+		
+		//TODO YUCCA-74 odata evoluzione
 		try {
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
@@ -969,6 +972,30 @@ public class SDPMongoOdataCast {
 			int totCnt=0;
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
 
+			
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 *  elencodataset potrebbe contenere più elementi dello stesso dataset in versione differente ad es:
+			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
+			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1, [campo1:log]
+			 *  
+			 *  deve diventare 
+			 *  idDataset= 1, datasetVersion=1,2, [campo1:int,camp2:string,campo3:date,campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1 [campo1:log]
+			 *  
+			 *  
+			 *  si dovrebbe trasformare List<DBObject> elencoDataset in un array di oggetti di questo tipo:
+			 *  
+			 *  idDataset
+			 *  array di datasetVersion
+			 *  array dei campi ottenuto come join dei campi delle varie versioni di quel dataset
+			 *  parte di config (presa da una versione a caso)
+			 *  info presa da una versione a caso
+			 *  
+			 */
+			
+			
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
@@ -1002,6 +1029,9 @@ public class SDPMongoOdataCast {
 			String timeGroupByParam,
 			String timeGroupOperatorsParam,
 			Object groupOutQuery) throws Exception{
+		
+		//TODO YUCCA-74 odata evoluzione
+
 		try {
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
@@ -1014,7 +1044,27 @@ public class SDPMongoOdataCast {
 			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 			int totCnt=0;
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
-
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 *  elencodataset potrebbe contenere più elementi dello stesso dataset in versione differente ad es:
+			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
+			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1, [campo1:log]
+			 *  
+			 *  deve diventare 
+			 *  idDataset= 1, datasetVersion=1,2, [campo1:int,camp2:string,campo3:date,campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1 [campo1:log]
+			 *  
+			 *  
+			 *  si dovrebbe trasformare List<DBObject> elencoDataset in un array di oggetti di questo tipo:
+			 *  
+			 *  idDataset
+			 *  array di datasetVersion
+			 *  array dei campi ottenuto come join dei campi delle varie versioni di quel dataset
+			 *  parte di config (presa da una versione a caso)
+			 *  info presa da una versione a caso
+			 *  
+			 */	
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
@@ -1044,6 +1094,10 @@ public class SDPMongoOdataCast {
 	public SDPDataResult getMeasuresPerDataset(String codiceApi, String nameSpace, EdmEntityContainer entityContainer,String internalId, Object userQuery,Object userOrderBy,
 			int skip,
 			int limit) throws Exception{
+		
+		
+		//TODO YUCCA-74 odata evoluzione
+
 		try {
 			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] codiceApi="+codiceApi);
@@ -1058,6 +1112,30 @@ public class SDPMongoOdataCast {
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
 			int totCnt=0;
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 *  elencodataset potrebbe contenere più elementi dello stesso dataset in versione differente ad es:
+			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
+			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1, [campo1:log]
+			 *  
+			 *  deve diventare 
+			 *  idDataset= 1, datasetVersion=1,2, [campo1:int,camp2:string,campo3:date,campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1 [campo1:log]
+			 *  
+			 *  
+			 *  si dovrebbe trasformare List<DBObject> elencoDataset in un array di oggetti di questo tipo:
+			 *  
+			 *  idDataset
+			 *  array di datasetVersion
+			 *  array dei campi ottenuto come join dei campi delle varie versioni di quel dataset
+			 *  parte di config (presa da una versione a caso)
+			 *  info presa da una versione a caso
+			 *  
+			 *  
+			 */
+			
+			
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
@@ -1090,6 +1168,9 @@ public class SDPMongoOdataCast {
 			ArrayList<String> elencoIdBinary,
 			int skip,
 			int limit) throws Exception{
+		
+		//TODO YUCCA-74 odata evoluzione
+
 		try {
 			log.info("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
 			log.info("[SDPMongoOdataCast::getBynaryPerDataset] codiceApi="+codiceApi);
@@ -1104,6 +1185,28 @@ public class SDPMongoOdataCast {
 			List<DBObject> elencoDataset=mongoDataAccess.getDatasetPerApi(codiceApi);
 			int totCnt=0;
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 *  elencodataset potrebbe contenere più elementi dello stesso dataset in versione differente ad es:
+			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
+			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1, [campo1:log]
+			 *  
+			 *  deve diventare 
+			 *  idDataset= 1, datasetVersion=1,2, [campo1:int,camp2:string,campo3:date,campo1:int,camp2:string,campo3:date,campo11:long]
+			 *  idDataset= 3, datasetVersion=1 [campo1:log]
+			 *  
+			 *  
+			 *  si dovrebbe trasformare List<DBObject> elencoDataset in un array di oggetti di questo tipo:
+			 *  
+			 *  idDataset
+			 *  array di datasetVersion
+			 *  array dei campi ottenuto come join dei campi delle varie versioni di quel dataset
+			 *  parte di config (presa da una versione a caso)
+			 *  info presa da una versione a caso
+			 *  
+			 */			
+			
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();

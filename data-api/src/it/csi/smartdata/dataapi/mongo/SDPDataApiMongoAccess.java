@@ -487,6 +487,10 @@ public class SDPDataApiMongoAccess {
 		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 		int cnt = -1;
+		
+		
+		//TODO YUCCA-74 odata evoluzione
+
 		try {
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] BEGIN");
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] codiceTenant="+codiceTenant);
@@ -501,11 +505,24 @@ public class SDPDataApiMongoAccess {
 			List<Property> compPropsCur=new ArrayList<Property>();			
 
 
+			
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero di collencion,host, port, db specifici per il dataset
+			//       - modificare eventualmente la logica di recupero dell'idDataset
+			
 			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
 			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
 			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
 			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
+
+			
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 */
+
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
 			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
 
@@ -526,6 +543,9 @@ public class SDPDataApiMongoAccess {
 			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
 			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero dell'elenco dei campi che contiene il join di info.fuields di tutte le versioni di quel dataset
 			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
 
 			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
@@ -536,6 +556,8 @@ public class SDPDataApiMongoAccess {
 					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
 
 				}
+				//TODO nel caso in cui present= true si potrebbe verficare il tipo che abbiamo in compsproptot con quello in  campiDbList.get(k)
+				// sollevando eccezione se son diversi
 				if (!present) {
 					compPropsTot.add(compPropsCur.get(0));
 				}
@@ -562,8 +584,17 @@ public class SDPDataApiMongoAccess {
 			BasicDBList queryTot=new BasicDBList();
 
 			//queryTot.add( new BasicDBObject("idDataset",idDataset));
+			
+			
+			
 			queryTot.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * 
+			 * la parte aggiunta a query tot per il dataset versione  deve essere  {datasetversion: {$in: [........ ] }}
+			 */
 			queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
 			
 			
@@ -762,6 +793,9 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 		int cnt = 1212;
+		
+		//TODO YUCCA-74 odata evoluzione
+
 		try {
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] BEGIN");
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] codiceTenant="+codiceTenant);
@@ -776,11 +810,22 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			List<Property> compPropsCur=new ArrayList<Property>();			
 
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero di collencion,host, port, db specifici per il dataset
+			//       - modificare eventualmente la logica di recupero dell'idDataset
 			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
 			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
 			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
 			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
+
+			
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 */
+			
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
 			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
 
@@ -801,6 +846,9 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
 			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero dell'elenco dei campi che contiene il join di info.fuields di tutte le versioni di quel dataset
 			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
 
 			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
@@ -811,6 +859,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
 
 				}
+				//TODO nel caso in cui present= true si potrebbe verficare il tipo che abbiamo in compsproptot con quello in  campiDbList.get(k)
+				// sollevando eccezione se son diversi
 				if (!present) {
 					compPropsTot.add(compPropsCur.get(0));
 				}
@@ -839,6 +889,12 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			//queryTot.add( new BasicDBObject("idDataset",idDataset));
 			queryTot.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
 
+			//TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * 
+			 * la parte aggiunta a query tot per il dataset versione  deve essere  {datasetversion: {$in: [........ ] }}
+			 */
 			queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
 			
 			
@@ -1115,6 +1171,13 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			int skip,
 			int limit
 			) {
+		
+		
+		//TODO YUCCA-74 odata evoluzione
+		//TODO YUCCA-74 odata evoluzione dettaglio
+		// potrebbe no nsubire modifiche verificare solo info.binaryIdDataset e info.binaryDatasetVersion in base a come viene modificato streamMetadata
+
+		
 		String collection=null;
 		//		String sensore=null;
 		//		String stream=null;
