@@ -54,7 +54,7 @@
             <property name="REST_URL_POSTFIX" scope="axis2" action="remove"/>
             <property name="POST_TO_URI" value="true" scope="axis2" type="STRING"/>
             <property name="FORCE_ERROR_ON_SOAP_FAULT" value="true" scope="default" type="STRING"/>
-            <callout serviceURL="https://sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi" action="insertApi">
+            <callout serviceURL="https://int-sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi" action="insertApi">
                 <source xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
                 <target xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
             </callout>
@@ -124,7 +124,7 @@
                         </log>
                         <send>
                             <endpoint>
-                                <address uri="https://sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi" format="soap11"/>
+                                <address uri="https://int-sdnet-intapi.sdp.csi.it:453/wso005/services/InsertApi" format="soap11"/>
                             </endpoint>
                         </send>
                     </sequence>
@@ -163,7 +163,7 @@
     </resource>
     <handlers>
         <handler class="org.csi.yucca.realtime.authhandler.ISAuthenticationHandler">
-            <property name="isServerUrl" value="https://sso.smartdatanet.it"/>
+            <property name="isServerUrl" value="https://int-sso.smartdatanet.it"/>
             <property name="isAdminPassword" value="pi4KD0zI8a"/>
             <property name="isAdminUsername" value="admin"/>
         </handler>
