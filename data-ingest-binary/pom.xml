@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.data-ingest-binary</groupId>
 	<artifactId>data-ingest-binary</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.0</version>
 	<packaging>war</packaging>
 	<name>data-ingest-binary</name>
 	<description>data-ingest-binary</description>
