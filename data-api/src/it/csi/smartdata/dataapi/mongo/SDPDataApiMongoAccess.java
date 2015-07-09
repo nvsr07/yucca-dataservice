@@ -540,6 +540,18 @@ public class SDPDataApiMongoAccess {
 				dbcfg=tanantDbCfg.getDataBase();
 			}
 
+			if (null==dbcfg || dbcfg.trim().length()<=0) {
+				DbConfDto tanantDbCfg=new DbConfDto();
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
+				}  
+				dbcfg=tanantDbCfg.getDataBase();
+			}
+
+			
 			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
 			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
 

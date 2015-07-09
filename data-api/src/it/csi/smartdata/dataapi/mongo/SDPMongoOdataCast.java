@@ -686,6 +686,39 @@ public class SDPMongoOdataCast {
 					schema.setEntityContainers(entityContainers);
 
 					schemas.add(schema);
+				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISOCIAL.equals(subType)) {
+					
+					List<EntityType> entityTypes = new ArrayList<EntityType>();
+					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SOCIAL),codiceApi));
+					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS),codiceApi));
+					
+					schema.setEntityTypes(entityTypes);
+
+
+					List<EntityContainer> entityContainers = new ArrayList<EntityContainer>();
+					EntityContainer entityContainer = new EntityContainer();
+					entityContainer.setName(entContainerDB).setDefaultEntityContainer(true);
+
+					List<EntitySet> entitySets = new ArrayList<EntitySet>();
+					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL,codiceApi));
+					
+					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS,codiceApi));
+
+					//entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT,codiceApi));
+					//entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_STREAMS,codiceApi));
+					entityContainer.setEntitySets(entitySets);
+
+					//				List<AssociationSet> associationSets = new ArrayList<AssociationSet>();
+					//				associationSets.add(getAssociationSet(entContainerDB, new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_MEASURE_STREAM),
+					//						SDPDataApiConstants.ENTITY_SET_NAME_STREAMS, SDPDataApiConstants.ROLE_STREAM_MEASURE,codiceApi));
+					//				entityContainer.setAssociationSets(associationSets);
+
+					//			    List<FunctionImport> functionImports = new ArrayList<FunctionImport>();
+					//			    functionImports.add(getFunctionImport(entContainerDB, "funzioneProva"),codiceApi);
+					//			    entityContainer.setFunctionImports(functionImports);
+
+					entityContainers.add(entityContainer);
+					schema.setEntityContainers(entityContainers);					
 
 				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType)) {
 					//TODO bulk or 
@@ -822,7 +855,7 @@ public class SDPMongoOdataCast {
 			
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 *  elencodataset potrebbe contenere più elementi dello stesso dataset in versione differente ad es:
+			 *  elencodataset potrebbe contenere piÔøΩ elementi dello stesso dataset in versione differente ad es:
 			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
 			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
 			 *  idDataset= 3, datasetVersion=1, [campo1:log]
@@ -884,7 +917,7 @@ public class SDPMongoOdataCast {
 
 			Integer posizioneItemDS = 0;
 			
-			//Condizione in cui nella lista elenco non c'è, ancora, nessun dataset con questo determinato datasetCode 
+			//Condizione in cui nella lista elenco non c'ÔøΩ, ancora, nessun dataset con questo determinato datasetCode 
 			if (dsCodeList.indexOf(datasetCode) == -1) {
 
 				List<DBObject> tmpArrList = new ArrayList();
@@ -897,7 +930,7 @@ public class SDPMongoOdataCast {
 				posizioneItemDS = dsCodeList.size();
 			} else {
 
-				//Ho già inserito nella list elenco il dataset con questo determinato datasetCode, quindi vado ad integrare
+				//Ho giÀÜ inserito nella list elenco il dataset con questo determinato datasetCode, quindi vado ad integrare
 				Integer pos = 0;
 				Iterator<DBObject> elIterator = elenco.iterator();
 				while (elIterator.hasNext()) {
@@ -962,7 +995,7 @@ public class SDPMongoOdataCast {
 			
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 *  elencodataset potrebbe contenere pi˘ elementi dello stesso dataset in versione differente ad es:
+			 *  elencodataset potrebbe contenere pi√π elementi dello stesso dataset in versione differente ad es:
 			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
 			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
 			 *  idDataset= 3, datasetVersion=1, [campo1:log]
@@ -1029,7 +1062,7 @@ public class SDPMongoOdataCast {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 *  elencodataset potrebbe contenere pi˘ elementi dello stesso dataset in versione differente ad es:
+			 *  elencodataset potrebbe contenere pi√π elementi dello stesso dataset in versione differente ad es:
 			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
 			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
 			 *  idDataset= 3, datasetVersion=1, [campo1:log]
@@ -1105,7 +1138,7 @@ public class SDPMongoOdataCast {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 *  elencodataset potrebbe contenere pi˘ elementi dello stesso dataset in versione differente ad es:
+			 *  elencodataset potrebbe contenere pi√π elementi dello stesso dataset in versione differente ad es:
 			 *  idDataset= 1, datasetVersion=1, [campo1:int,camp2:string,campo3:date]
 			 *  idDataset= 1, datasetVersion=2, [campo1:int,camp2:string,campo3:date,campo11:long]
 			 *  idDataset= 3, datasetVersion=1, [campo1:log]

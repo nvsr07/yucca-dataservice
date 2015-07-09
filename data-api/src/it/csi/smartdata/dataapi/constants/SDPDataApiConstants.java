@@ -44,7 +44,13 @@ public interface SDPDataApiConstants {
 	public static final String ENTITY_SET_NAME_MEASURES = "Measures";
 	public static final String ENTITY_SET_NAME_MEASURES_STATS = "MeasuresStats";
 
+	public static final String ENTITY_SET_NAME_SOCIAL = "SocialFeeds";
+	public static final String ENTITY_SET_NAME_SOCIAL_STATS = "SocialFeedsStats";
+	public static final String ENTITY_NAME_SOCIAL = "SocialFeed";
+	public static final String ENTITY_NAME_SOCIAL_STATS = "SocialFeedStat";
 
+	
+	
 	public static final String SMART_ENTITY_CONTAINER="SmartDataEntityContainer";
 
 	public static final String ENTITY_NAME_UPLOADDATA = "DataEntity";
@@ -71,9 +77,16 @@ public interface SDPDataApiConstants {
 	
 	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM="apiMultiStream";
 	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK="apiMultiBulk";
+	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISOCIAL="apiMultiSocial";
+	
+	
+	
 	
 	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_DATASETBULK="bulkDataset";
 	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_DATASETSTREAM="streamDataset";
+	public static final String SDPCONFIG_CONSTANTS_SUBTYPE_DATASETSOCIAL="socialDataset";
+	
+	
 	
 	public static final Map<String,EdmSimpleTypeKind> SDP_DATATYPE_MAP = new HashMap<String, EdmSimpleTypeKind>() {{
 		put("Boolean" ,EdmSimpleTypeKind.Boolean);
