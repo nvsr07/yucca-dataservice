@@ -98,6 +98,18 @@ public class SDPMongoOdataCast {
 						Object eleCapmpi=obj.get("mergedComponents");
 						ret= getMeasureStatsType(nameSpace,eleCapmpi);
 					}
+
+				
+				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISOCIAL.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
+					if (SDPDataApiConstants.ENTITY_NAME_SOCIAL.equals(edmFQName.getName())) {
+						Object eleCapmpi=obj.get("mergedComponents");
+						ret= getSocialType(nameSpace,eleCapmpi);
+					} else if (SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS.equals(edmFQName.getName())) {
+						Object eleCapmpi=obj.get("mergedComponents");
+						ret= getSocialStatsType(nameSpace,eleCapmpi);
+					}
+				
+				
 				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
 					if (SDPDataApiConstants.ENTITY_NAME_UPLOADDATA.equals(edmFQName.getName())) {
 						Object eleCapmpi=obj.get("mergedComponents");
@@ -240,6 +252,21 @@ public class SDPMongoOdataCast {
 						} if (SDPDataApiConstants.ENTITY_SET_NAME_SMARTOBJECT.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SMARTOBJECT));						
 						}
+					} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISOCIAL.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) ) {
+						
+						if (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL.equals(name)) {
+							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SOCIAL));						
+						} else if (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS.equals(name)) {
+							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS));						
+						} 						
+						
+					} else if (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL.equals(name)) {
+						return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SOCIAL));						
+					} else if (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS.equals(name)) {
+						return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS));						
+						
+						
+						
 					} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) ) {
 						if (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(name)) {
 							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA));
@@ -527,6 +554,81 @@ public class SDPMongoOdataCast {
 		}			
 	}	
 
+	
+	private EntityType getSocialType (String nameSpace,Object eleCapmpi) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getSocialType] BEGIN");
+			List<Property> measureProps=new ArrayList<Property>();
+			
+			// SPOSTATI IN CFGd
+			measureProps.add(new SimpleProperty().setName("streamCode").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("sensor").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("time").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(false)));
+
+			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
+			measureProps.add(new SimpleProperty().setName("datasetVersion").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+			
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
+			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
+				measureProps.add(componentProp.get(i));
+			}
+			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
+
+			keyPropertiesMeasure.add(new PropertyRef().setName("internalId"));
+			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
+			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_SOCIAL)
+					.setProperties(measureProps).setKey(keyMeasure);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getSocialType] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getSocialType] END");
+		}			
+	}
+
+	private EntityType getSocialStatsType (String nameSpace,Object eleCapmpi) throws Exception{
+		try {
+			log.info("[SDPMongoOdataCast::getSocialStatsType] BEGIN");
+			List<Property> measureProps=new ArrayList<Property>();
+			
+			measureProps.add(new SimpleProperty().setName("year").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("month").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("dayofmonth").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
+			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
+				
+				SimpleProperty curProp=new SimpleProperty()
+				.setName( ((SimpleProperty)componentProp.get(i)).getName()+"_sts")
+				.setType(((SimpleProperty)componentProp.get(i)).getType())
+				.setFacets(new Facets().setNullable(true));
+				
+				measureProps.add(curProp);
+			}
+			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
+			
+			measureProps.add(new SimpleProperty().setName("count").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+
+			keyPropertiesMeasure.add(new PropertyRef().setName("year"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("month"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("dayofmonth"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("hour"));
+			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
+			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS)
+					.setProperties(measureProps).setKey(keyMeasure);
+		} catch (Exception e) {
+			log.error("[SDPMongoOdataCast::getSocialStatsType] " + e);
+			throw e;
+		} finally {
+			log.info("[SDPMongoOdataCast::getSocialStatsType] END");
+		}			
+	}
+	
+	
+	
 	private EntityType getMeasureType (String nameSpace,Object eleCapmpi) throws Exception{
 		try {
 			log.info("[SDPMongoOdataCast::getMeasureType] BEGIN");
@@ -719,6 +821,7 @@ public class SDPMongoOdataCast {
 
 					entityContainers.add(entityContainer);
 					schema.setEntityContainers(entityContainers);					
+					schemas.add(schema);
 
 				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType)) {
 					//TODO bulk or 

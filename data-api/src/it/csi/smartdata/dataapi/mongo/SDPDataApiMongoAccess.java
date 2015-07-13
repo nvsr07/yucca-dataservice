@@ -121,7 +121,10 @@ public class SDPDataApiMongoAccess {
 
 
 
-					if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM.equals(subType)) {
+					if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && 
+							(SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM.equals(subType) ||
+									SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISOCIAL.equals(subType)
+									)) {
 
 						//BasicDBList objStreams = (BasicDBList)((DBObject)obj.get("streams")).get("stream");
 						BasicDBList objStreams = (BasicDBList)obj.get("dataset");
@@ -263,7 +266,10 @@ public class SDPDataApiMongoAccess {
 					String subType=((DBObject)obj.get("configData")).get("subtype").toString();
 
 
-					if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM.equals(subType)) {
+					if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && ( 
+							SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM.equals(subType)
+							|| SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISOCIAL.equals(subType))
+							){
 						//BasicDBList objStreams = (BasicDBList)((DBObject)obj.get("streams")).get("stream");
 
 						BasicDBList objDataset = (BasicDBList)obj.get("dataset");
@@ -855,6 +861,16 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				collection=tanantDbCfg.getCollection();
 				host=tanantDbCfg.getHost();
 				port=""+tanantDbCfg.getPort();
+				dbcfg=tanantDbCfg.getDataBase();
+			}
+			if (null==dbcfg || dbcfg.trim().length()<=0) {
+				DbConfDto tanantDbCfg=new DbConfDto();
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
+				}  
 				dbcfg=tanantDbCfg.getDataBase();
 			}
 

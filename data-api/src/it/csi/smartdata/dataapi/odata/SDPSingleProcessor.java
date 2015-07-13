@@ -229,15 +229,24 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				}
 				log.info("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
 				
-				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).equals(entitySet.getName())) {
-					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).getEntityType().getNamespace();
+				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).equals(entitySet.getName()) || (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) {
+					
+					String setNameStatCONST=SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS;
+					String setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_MEASURES;
+					
+					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) {
+						setNameStatCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS;
+						setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL;
+					}
+					
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameStatCONST).getEntityType().getNamespace();
 					String timeGroupByParam=uriInfo.getCustomQueryOptions().get("timeGroupBy");
 					String timeGroupOperatorsParam=uriInfo.getCustomQueryOptions().get("timeGroupOperators");
 					
 					String timeGroupFilter=uriInfo.getCustomQueryOptions().get("timeGroupFilter");
 					Object userSourceEntityQuery=null;
 					if (null!=timeGroupFilter && timeGroupFilter.trim().length()>0) {
-						EdmEntityType measureType=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType();
+						EdmEntityType measureType=uriInfo.getEntityContainer().getEntitySet(setNameCONST).getEntityType();
 						FilterExpression feStats=new FilterParserImpl(measureType).parseFilterString(timeGroupFilter, true);
 						if (feStats != null) {
 							SDPExpressionVisitor ev = new SDPExpressionVisitor();
@@ -278,11 +287,15 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 					return ret;
 					
-				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName())) {
+				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName()) || (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) {
 
+					String setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_MEASURES;
+					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) {
+						setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL;
+					}
 					
+					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameCONST).getEntityType().getNamespace();
 					
-					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType().getNamespace();
 					
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 					int skip=skiptop[0];
