@@ -256,7 +256,20 @@ public class MongoDbStore {
 			cur.put("smartOCode", code);
 			cur.put("smartOType", type);
 			cur.put("smartOCategory",category );
-
+			
+			cur.put("twtResultType",(String)stream.get("twtResultType") );
+			cur.put("twtMaxStreamsOfVE",(Integer)stream.get("twtMaxStreamsOfVE") );
+			cur.put("twtRatePercentage",(Integer)stream.get("twtRatePercentage") );
+			cur.put("twtCount",(Integer)stream.get("twtCount") );
+			cur.put("twtUntil",(String)stream.get("twtUntil") );
+			cur.put("twtLocale",(String)stream.get("twtLocale") );
+			cur.put("twtLang",(String)stream.get("twtLang") );
+			cur.put("twtGeolocUnit",(String)stream.get("twtGeolocUnit") );
+			cur.put("twtQuery",(String)stream.get("twtQuery") );
+			cur.put("twtGeolocLat",(Double)stream.get("twtGeolocLat") );
+			cur.put("twtGeolocLon",(Double)stream.get("twtGeolocLon") );
+			cur.put("twtGeolocRadius",(Double)stream.get("twtGeolocRadius") );
+			
 			DBObject vePos = (DBObject) stream.get("virtualEntityPositions");
 
 
@@ -391,14 +404,12 @@ public class MongoDbStore {
 
 
 
-
 		if(streams != null ){
 			DBObject nx = streams;
 
 			DBObject config = (DBObject) nx.get("configData");
 			DBObject streamsObj = (DBObject) nx.get("streams");
 			DBObject stream = (DBObject) streamsObj.get("stream");
-
 
 
 			streambuilder.append(mongoParams.get("MONGO_API_ADDRESS"));
@@ -413,7 +424,7 @@ public class MongoDbStore {
 
 		String download = mongoParams.get("MONGO_DOWNLOAD_ADDRESS")+"/"+tenant+"/"+datasetCode+"/csv";
 
-
+		
 		cur.put("STREAM",streambuilder.toString() );
 
 		cur.put("download", download);

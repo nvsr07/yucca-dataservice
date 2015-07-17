@@ -282,6 +282,22 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("longitude").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
 		propertiesSmartObject.add(new SimpleProperty().setName("elevation").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
 
+		
+		propertiesSmartObject.add(new SimpleProperty().setName("twtResultType").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtMaxStreamsOfVE").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtRatePercentage").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtCount").setType(EdmSimpleTypeKind.Int32).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtUntil").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtLocale").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtLang").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtGeolocUnit").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtQuery").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtGeolocLat").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtGeolocLon").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("twtGeolocRadius").setType(EdmSimpleTypeKind.Double).setFacets(new Facets().setNullable(true)));
+		
+		
+		
 		List<PropertyRef> keyPropertiesSmartObject = new ArrayList<PropertyRef>();
 		keyPropertiesSmartObject.add(new PropertyRef().setName("idStream"));
 		Key keySmartObject = new Key().setKeys(keyPropertiesSmartObject);

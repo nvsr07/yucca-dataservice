@@ -26,7 +26,7 @@
 				<version>2.3</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-					<outputDirectory>/usr/local/jboss-eap-6.0/standalone/deployments</outputDirectory>
+					<outputDirectory>C:\Users\Administrator\Documents\jboss-eap-6.0\standalone\deployments</outputDirectory>
 					<warName>datadiscovery</warName>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
