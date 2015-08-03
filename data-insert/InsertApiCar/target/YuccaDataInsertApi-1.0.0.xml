@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<api xmlns="http://ws.apache.org/ns/synapse" name="YuccaDataInsertGenericAip" context="/wso005/dataset">
+<api xmlns="http://ws.apache.org/ns/synapse" name="YuccaDataInsertApi" context="/wso005/stream">
     <resource methods="POST" uri-template="/input/{codTenant}">
         <inSequence>
-        <throttle id="throttleDataset">
+        
+        
+        <throttle id="throttleStream">
         <policy>
             <!-- define throttle policy -->
             <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
@@ -31,22 +33,16 @@
             <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
             <property name="codiceTenant" expression="get-property('uri.var.codTenant')" scope="default" type="STRING"/>
             <property name="JSONPayload" expression="json-eval($.)" scope="default" type="STRING"/>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta BEGIN"/>
-            </log>
             <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD JS "/>
-            </log>
             <payloadFactory media-type="xml">
                 <format>
                     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dat="http://datainsert.yucca.csi.org">
                         <soapenv:Body>
-                            <dat:insertApiDataset>
+                            <dat:insertApi>
                                 <dat:codTenant>$1</dat:codTenant>
                                 <dat:jsonData>$2
 								</dat:jsonData>
-                            </dat:insertApiDataset>
+                            </dat:insertApi>
                         </soapenv:Body>
                     </soapenv:Envelope>
                 </format>
@@ -55,41 +51,24 @@
                     <arg evaluator="xml" expression="get-property('JSONPayload')"/>
                 </args>
             </payloadFactory>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD med "/>
-            </log>
             <property name="messageType" value="text/xml" scope="axis2" type="STRING"/>
             <property name="ContentType" value="text/xml" scope="axis2" type="STRING"/>
             <property name="HTTP_METHOD" value="POST" scope="axis2" type="STRING"/>
             <property name="REST_URL_POSTFIX" scope="axis2" action="remove"/>
             <property name="POST_TO_URI" value="true" scope="axis2" type="STRING"/>
             <property name="FORCE_ERROR_ON_SOAP_FAULT" value="true" scope="default" type="STRING"/>
-            <callout serviceURL="http://sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApiDataset">
+            <callout serviceURL="http://int-sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApi">
                 <source xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
                 <target xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
             </callout>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO CALLOUT"/>
-            </log>
             <xslt xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" key="XSLTInsApiRemNameSpace" source="$body"/>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO trasformazione XSLT"/>
-            </log>
-            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertException" expression="boolean($body/insertApiDatasetResponse/return/insertException/errorCode)" scope="default" type="STRING"/>
+            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertException" expression="boolean($body/insertApiResponse/return/insertException/errorCode)" scope="default" type="STRING"/>
             <filter source="get-property('insertException')" regex="false">
                 <then>
-                    <log level="custom">
-                        <property name="step" value="API_DataInsertGeneric_InsertRequesta insertException NESSSSUNERRROREEE"/>
-                        <property name="insertExceptionLOG" expression="get-property('insertException')"/>
-                    </log>
                 </then>
                 <else>
-                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionCode" expression="$body/insertApiDatasetResponse/return/insertException/errorCode" scope="default" type="STRING"/>
-                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionName" expression="$body/insertApiDatasetResponse/return/insertException/errorName" scope="default" type="STRING"/>
-                    <log level="custom">
-                        <property name="step" value="API_DataInsertGeneric_InsertRequesta insertException ERRROREEEEEEEEEEEEEEEEEE SIIIIIIIIIIIIIIII"/>
-                        <property name="insertExceptionLOG" expression="get-property('insertException')"/>
-                    </log>
+                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionCode" expression="$body/insertApiResponse/return/insertException/errorCode" scope="default" type="STRING"/>
+                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionName" expression="$body/insertApiResponse/return/insertException/errorName" scope="default" type="STRING"/>
                     <property name="HTTP_SC" value="500" scope="axis2" type="STRING" description="500HTTP"/>
                     <call-template target="YuccaDataservice_IsertApiErrorTMPL" description="">
                         <with-param name="error_name" value="{get-property('insertExceptionName')}"/>
@@ -100,10 +79,7 @@
                 </else>
             </filter>
             <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="risposta" expression="$body" scope="default" type="STRING"/>
-            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="globalRequestId" expression="$body/insertApiDatasetResponse/return/globalRequestId" scope="default" type="STRING"/>
-            <log level="custom">
-                <property name="globalRequestIdLOG" expression="get-property('globalRequestId')"/>
-            </log>
+            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="globalRequestId" expression="$body/insertApiResponse/return/globalRequestId" scope="default" type="STRING"/>
             <payloadFactory media-type="xml">
                 <format>
                     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dat="http://datainsert.yucca.csi.org">
@@ -120,9 +96,6 @@
                     <arg evaluator="xml" expression="get-property('globalRequestId')"/>
                 </args>
             </payloadFactory>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta PRIMA DI COPY"/>
-            </log>
             <property name="SC_ACCEPTED" value="true" scope="axis2" type="STRING"/>
             <property name="OUT_ONLY" value="true" scope="default" type="STRING"/>
             <header name="Action" scope="default" value="urn:copyData"/>
@@ -162,15 +135,12 @@
         </throttle>           
         </inSequence>
         <outSequence>
-            <throttle id="throttleDataset" />
+            <throttle id="throttleStream" />
             <property name="messageType" value="application/json" scope="axis2" type="STRING"/>
-            <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta END"/>
-            </log>
             <send/>
         </outSequence>
         <faultSequence>
-            <throttle id="throttleDataset" />
+            <throttle id="throttleStream" />
             <log level="custom">
                 <property name="ERROR_MESSAGE" expression="get-property('ERROR_MESSAGE')"/>
                 <property name="ERROR_CODE" expression="get-property('ERROR_CODE')"/>
@@ -204,21 +174,21 @@
             <property name="codiceTenant" expression="get-property('uri.var.codTenant')" scope="default" type="STRING"/>
             <property name="JSONPayload" expression="json-eval($.)" scope="default" type="STRING"/>
             <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta BEGIN"/>
+                <property name="step" value="API_DataInsert_InsertRequesta BEGIN"/>
             </log>
             <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
             <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD JS "/>
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD JS "/>
             </log>
             <payloadFactory media-type="xml">
                 <format>
                     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dat="http://datainsert.yucca.csi.org">
                         <soapenv:Body>
-                            <dat:insertApiDataset>
+                            <dat:insertApi>
                                 <dat:codTenant>$1</dat:codTenant>
                                 <dat:jsonData>$2
 								</dat:jsonData>
-                            </dat:insertApiDataset>
+                            </dat:insertApi>
                         </soapenv:Body>
                     </soapenv:Envelope>
                 </format>
@@ -228,38 +198,38 @@
                 </args>
             </payloadFactory>
             <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD med "/>
-              </log>  
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD med "/>
+            </log>
             <property name="messageType" value="text/xml" scope="axis2" type="STRING"/>
             <property name="ContentType" value="text/xml" scope="axis2" type="STRING"/>
             <property name="HTTP_METHOD" value="POST" scope="axis2" type="STRING"/>
             <property name="REST_URL_POSTFIX" scope="axis2" action="remove"/>
             <property name="POST_TO_URI" value="true" scope="axis2" type="STRING"/>
             <property name="FORCE_ERROR_ON_SOAP_FAULT" value="true" scope="default" type="STRING"/>
-            <callout serviceURL="http://sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApiDataset">
+            <callout serviceURL="http://int-sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApi">
                 <source xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
                 <target xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
             </callout>
             <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO CALLOUT"/>
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO CALLOUT"/>
             </log>
             <xslt xmlns:soapenv="http://www.w3.org/2003/05/soap-envelope" key="XSLTInsApiRemNameSpace" source="$body"/>
             <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO trasformazione XSLT"/>
+                <property name="step" value="API_DataInsert_InsertRequesta DOPO trasformazione XSLT"/>
             </log>
-            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertException" expression="boolean($body/insertApiDatasetResponse/return/insertException/errorCode)" scope="default" type="STRING"/>
+            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertException" expression="boolean($body/insertApiResponse/return/insertException/errorCode)" scope="default" type="STRING"/>
             <filter source="get-property('insertException')" regex="false">
                 <then>
                     <log level="custom">
-                        <property name="step" value="API_DataInsertGeneric_InsertRequesta insertException NESSSSUNERRROREEE"/>
+                        <property name="step" value="API_DataInsert_InsertRequesta insertException NESSSSUNERRROREEE"/>
                         <property name="insertExceptionLOG" expression="get-property('insertException')"/>
                     </log>
                 </then>
                 <else>
-                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionCode" expression="$body/insertApiDatasetResponse/return/insertException/errorCode" scope="default" type="STRING"/>
-                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionName" expression="$body/insertApiDatasetResponse/return/insertException/errorName" scope="default" type="STRING"/>
+                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionCode" expression="$body/insertApiResponse/return/insertException/errorCode" scope="default" type="STRING"/>
+                    <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="insertExceptionName" expression="$body/insertApiResponse/return/insertException/errorName" scope="default" type="STRING"/>
                     <log level="custom">
-                        <property name="step" value="API_DataInsertGeneric_InsertRequesta insertException ERRROREEEEEEEEEEEEEEEEEE SIIIIIIIIIIIIIIII"/>
+                        <property name="step" value="API_DataInsert_InsertRequesta insertException ERRROREEEEEEEEEEEEEEEEEE SIIIIIIIIIIIIIIII"/>
                         <property name="insertExceptionLOG" expression="get-property('insertException')"/>
                     </log>
                     <property name="HTTP_SC" value="500" scope="axis2" type="STRING" description="500HTTP"/>
@@ -272,11 +242,10 @@
                 </else>
             </filter>
             <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="risposta" expression="$body" scope="default" type="STRING"/>
-            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="globalRequestId" expression="$body/insertApiDatasetResponse/return/globalRequestId" scope="default" type="STRING"/>
+            <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="globalRequestId" expression="$body/insertApiResponse/return/globalRequestId" scope="default" type="STRING"/>
             <log level="custom">
                 <property name="globalRequestIdLOG" expression="get-property('globalRequestId')"/>
             </log>
-
             <property name="OUT_ONLY" value="false" scope="default" type="STRING"/>
             <payloadFactory media-type="xml">
                 <format>
@@ -293,7 +262,7 @@
         <outSequence>
             <property name="messageType" value="application/json" scope="axis2" type="STRING"/>
             <log level="custom">
-                <property name="step" value="API_DataInsertGeneric_InsertRequesta END"/>
+                <property name="step" value="API_DataInsert_InsertRequesta END"/>
             </log>
             <send/>
         </outSequence>
@@ -307,15 +276,12 @@
             <property name="HTTP_SC" value="500" scope="axis2" type="STRING" description="500HTTP"/>
             <respond/>
         </faultSequence>
-    </resource>
-    
-    
-    
-    <handlers>
+    </resource>    
+        <handlers>
         <handler class="org.csi.yucca.realtime.authhandler.ISAuthenticationHandler">
-            <property name="isServerUrl" value="https://sso.smartdatanet.it"/>
+            <property name="isServerUrl" value="https://int-sso.smartdatanet.it"/>
             <property name="isAdminPassword" value="pi4KD0zI8a"/>
             <property name="isAdminUsername" value="admin"/>
         </handler>
-    </handlers>
-  </api>
+    </handlers> 
+ </api>

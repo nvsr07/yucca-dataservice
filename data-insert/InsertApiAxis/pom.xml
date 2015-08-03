@@ -76,7 +76,17 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>resources/integ</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datainsert/InsertApiAxis/resources/integ</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>resources/dev</directory>
 					</resource>
 				</resources>
 			</build>
@@ -86,7 +96,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>resources/prod</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datainsert/InsertApiAxis/resources/prod</directory>
 					</resource>
 				</resources>
 			</build>

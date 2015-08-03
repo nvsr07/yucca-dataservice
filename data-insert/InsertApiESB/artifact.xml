@@ -8,4 +8,10 @@
     <artifact name="YuccaDataInsertGenericAip" groupId="org.csi.yucca.datainsert.InsertApiESB.api" version="1.0.0" type="synapse/api" serverRole="EnterpriseServiceBus">
         <file>src/main/synapse-config/api/YuccaDataInsertGenericAip.xml</file>
     </artifact>
-</artifacts>
+    <artifact name="XSLTInsApiRemNameSpace" groupId="org.csi.yucca.datainsert.InsertApiESB.local-entry" version="1.0.0" type="synapse/local-entry" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/local-entries/XSLTInsApiRemNameSpace.xml</file>
+    </artifact>
+        <artifact name="copyEndpoint" groupId="org.csi.yucca.datainsert.InsertApiESB.endpoint" version="1.0.0" type="synapse/endpoint" serverRole="EnterpriseServiceBus">
+        <file>src/main/synapse-config/endpoints/copyEndpoint.xml</file>
+    </artifact>
+    </artifacts>

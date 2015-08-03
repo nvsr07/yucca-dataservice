@@ -12,5 +12,7 @@
     <module>artifacts\template\YuccaDataservice_IsertApiErrorTMPL</module>
     <module>artifacts\api\YuccaDataInsertApi</module>
     <module>artifacts\api\YuccaDataInsertGenericAip</module>
+    <module>artifacts\local-entry\XSLTInsApiRemNameSpace</module>
+    <module>artifacts\endpoint\copyEndpoint</module>
   </modules>
 </project>

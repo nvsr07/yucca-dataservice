@@ -118,8 +118,12 @@ public class SDPInsertApiMongoDataAccess {
 		try {
 			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
 
+			
+			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+			DBCollection coll = db.getCollection("stage_"+globIdRequest);
+			
+			
 
 			MongoClient mongoClientTarget =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(cfgDb.getHost(),cfgDb.getPort());
 			DB dbTarget = mongoClientTarget.getDB(cfgDb.getDataBase());
@@ -364,7 +368,11 @@ public class SDPInsertApiMongoDataAccess {
 		return true;
 	}
 	
-	public int insertBulk(String tenant, DatasetBulkInsert dati) throws Exception {
+	
+	
+
+	
+	public int insertBulk(String tenant, DatasetBulkInsert dati, boolean creatIndex) throws Exception {
 		String riga=null;
 		DBObject dbObject = null;
 		BulkWriteResult result=null;
@@ -372,7 +380,13 @@ public class SDPInsertApiMongoDataAccess {
 			//System.out.println("###########################################");
 			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+
+			
+			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+			DBCollection coll = db.getCollection("stage_"+dati.getGlobalReqId());
+			if (creatIndex) coll.createIndex(new BasicDBObject("idRequest", 1));
+			
+			
 			BulkWriteOperation builder = coll.initializeOrderedBulkOperation();
 			for (int i = 0; i<dati.getRowsToInsert().size(); i++) {
 				riga="{idRequest:\""+dati.getRequestId()+"\" , "+dati.getRowsToInsert().get(i)+"}";
@@ -388,6 +402,37 @@ public class SDPInsertApiMongoDataAccess {
 		return result==null? -1 : result.getInsertedCount();
 		
 	}
+	
+
+	public boolean dropCollection(String tenant,String globIdRequest) throws Exception {
+		BulkWriteResult result=null;
+
+		try {
+			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+
+			
+			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+			DBCollection coll = db.getCollection("stage_"+globIdRequest);
+			
+			coll.drop();
+			
+
+			
+			//System.out.println("copy bulk ready ... idRequest="+blockInfo.getRequestId()+"   countExpected="+blockInfo.getNumRowToInsFromJson()+ "     documents in bulkoperation="+count);
+
+			
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		} finally {
+			
+		}
+		return true;
+	}
+
 	
 	
 	public MongoStreamInfo getStreamInfoForDataset (String tenant,long idDataset,long datasetVersion) {

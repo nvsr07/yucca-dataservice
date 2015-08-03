@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:esb="http:///org/wso2/developerstudio/eclipse/gmf/esb" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xmi:id="_s-0CUDXCEeWAsMyuFJ-aIA" type="Esb" name="messageStore_YuccaDataCopyProxyQueueStore.esb_diagram" measurementUnit="Pixel">
+  <children xmi:type="notation:Node" xmi:id="_t4xwMDXCEeWAsMyuFJ-aIA" type="2001">
+    <children xmi:type="notation:DecorationNode" xmi:id="_t41akDXCEeWAsMyuFJ-aIA" type="7001">
+      <children xmi:type="notation:Node" xmi:id="_MSTd8DXEEeWAsMyuFJ-aIA" type="3715">
+        <styles xmi:type="notation:DescriptionStyle" xmi:id="_MSTd8TXEEeWAsMyuFJ-aIA"/>
+        <styles xmi:type="notation:FontStyle" xmi:id="_MSTd8jXEEeWAsMyuFJ-aIA" fontName="Segoe UI"/>
+        <styles xmi:type="notation:LineStyle" xmi:id="_MSTd8zXEEeWAsMyuFJ-aIA"/>
+        <element xmi:type="esb:MessageStore" href="messageStore_YuccaDataCopyProxyQueueStore.esb#//@server/@children.0"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_MSTd9DXEEeWAsMyuFJ-aIA" width="75" height="75"/>
+      </children>
+    </children>
+    <styles xmi:type="notation:DescriptionStyle" xmi:id="_t4yXQDXCEeWAsMyuFJ-aIA"/>
+    <styles xmi:type="notation:FontStyle" xmi:id="_t4yXQTXCEeWAsMyuFJ-aIA" fontName="Segoe UI"/>
+    <styles xmi:type="notation:LineStyle" xmi:id="_t4yXQjXCEeWAsMyuFJ-aIA"/>
+    <element xmi:type="esb:EsbServer" href="messageStore_YuccaDataCopyProxyQueueStore.esb#//@server"/>
+    <layoutConstraint xmi:type="notation:Bounds" xmi:id="_t4yXQzXCEeWAsMyuFJ-aIA"/>
+  </children>
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_s-0pYDXCEeWAsMyuFJ-aIA"/>
+  <element xmi:type="esb:EsbDiagram" href="messageStore_YuccaDataCopyProxyQueueStore.esb#/"/>
+</notation:Diagram>

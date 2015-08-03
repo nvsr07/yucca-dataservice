@@ -88,6 +88,23 @@
 </dependency>		
 	</dependencies>
 	<profiles>
+	
+	
+		<profile>
+			<id>integ1</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+				<resources>
+					<resource>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/dataapi/resources/integ1</directory>
+					</resource>
+				</resources>
+			</build>
+		</profile>
+	
+	
 		<profile>
 			<id>local</id>
 			<activation>
@@ -139,7 +156,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>resources/integ</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/dataapi/resources/integ</directory>
 					</resource>
 				</resources>
 			</build>
@@ -149,7 +166,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>resources/prod</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/dataapi/resources/prod</directory>
 					</resource>
 				</resources>
 			</build>

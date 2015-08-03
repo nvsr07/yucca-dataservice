@@ -8,7 +8,7 @@
             <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
                         xmlns:throttle="http://www.wso2.org/products/wso2commons/throttle">
                 <throttle:ThrottleAssertion>
-                    <throttle:MaximumConcurrentAccess>4</throttle:MaximumConcurrentAccess>
+                    <throttle:MaximumConcurrentAccess>2</throttle:MaximumConcurrentAccess>
                 </throttle:ThrottleAssertion>
             </wsp:Policy>
         </policy>  
@@ -24,7 +24,7 @@
                         <with-param name="error_code" value="E012"/>
                         <with-param name="show_json" value="false"/>
                     </call-template>
-                    <loopback description="end"/>
+                    <respond/>
                 </then>
                 <else/>
             </filter>
@@ -64,7 +64,7 @@
             <property name="REST_URL_POSTFIX" scope="axis2" action="remove"/>
             <property name="POST_TO_URI" value="true" scope="axis2" type="STRING"/>
             <property name="FORCE_ERROR_ON_SOAP_FAULT" value="true" scope="default" type="STRING"/>
-            <callout serviceURL="http://sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApiDataset">
+            <callout serviceURL="http://int-sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApiDataset">
                 <source xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
                 <target xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
             </callout>
@@ -96,7 +96,7 @@
                         <with-param name="error_code" value="{get-property('insertExceptionCode')}"/>
                         <with-param name="show_json" value="true"/>
                     </call-template>
-                    <loopback description="end"/>
+                    <respond/>
                 </else>
             </filter>
             <property xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" name="risposta" expression="$body" scope="default" type="STRING"/>
@@ -153,7 +153,7 @@
                     <property name="HTTP_SC" value="500" scope="axis2" type="STRING" description="500HTTP"/>
                     <call-template target="YuccaDataservice_IsertApiErrorTMPL" description="">
                         <with-param name="error_name" value="Access Denied"/>
-                        <with-param name="error_code" value="E016"/>
+                        <with-param name="error_code" value="Exxxxxxx"/>
                         <with-param name="show_json" value="false"/>
                     </call-template>
                     <respond/>
@@ -162,7 +162,6 @@
         </throttle>           
         </inSequence>
         <outSequence>
-            <throttle id="throttleDataset" />
             <property name="messageType" value="application/json" scope="axis2" type="STRING"/>
             <log level="custom">
                 <property name="step" value="API_DataInsertGeneric_InsertRequesta END"/>
@@ -170,7 +169,6 @@
             <send/>
         </outSequence>
         <faultSequence>
-            <throttle id="throttleDataset" />
             <log level="custom">
                 <property name="ERROR_MESSAGE" expression="get-property('ERROR_MESSAGE')"/>
                 <property name="ERROR_CODE" expression="get-property('ERROR_CODE')"/>
@@ -236,7 +234,7 @@
             <property name="REST_URL_POSTFIX" scope="axis2" action="remove"/>
             <property name="POST_TO_URI" value="true" scope="axis2" type="STRING"/>
             <property name="FORCE_ERROR_ON_SOAP_FAULT" value="true" scope="default" type="STRING"/>
-            <callout serviceURL="http://sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApiDataset">
+            <callout serviceURL="http://int-sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi" action="insertApiDataset">
                 <source xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
                 <target xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:org="http://org.csi.yucca" xpath="$body/child::*"/>
             </callout>
@@ -313,7 +311,7 @@
     
     <handlers>
         <handler class="org.csi.yucca.realtime.authhandler.ISAuthenticationHandler">
-            <property name="isServerUrl" value="https://sso.smartdatanet.it"/>
+            <property name="isServerUrl" value="https://int-sso.smartdatanet.it"/>
             <property name="isAdminPassword" value="pi4KD0zI8a"/>
             <property name="isAdminUsername" value="admin"/>
         </handler>

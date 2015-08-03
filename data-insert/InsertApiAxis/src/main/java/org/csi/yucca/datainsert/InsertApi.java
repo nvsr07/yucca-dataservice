@@ -21,8 +21,10 @@ public class InsertApi {
 	public DatasetBulkInsertOutput insertApiDataset(String codTenant, String jsonData) throws Exception{
 		DatasetBulkInsertOutput outData=new DatasetBulkInsertOutput();
 		InsertApiLogic insApiLogic=new InsertApiLogic();
+		long starTtime=0;
+		long deltaTime=-1;
 		try {
-
+			starTtime=System.currentTimeMillis();
 
 			log.log(Level.INFO, "[InsertApi::insertApiDataset] BEGIN ");
 
@@ -56,7 +58,11 @@ public class InsertApi {
 			InsertApiBaseException newEx=new InsertApiBaseException("UNKNOWN");
 			outData.setInsertException(newEx);
 		} finally {
-			log.log(Level.INFO, "[InsertApi::insertApiDataset] BEGIN ");
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			
+			log.log(Level.INFO, "[InsertApi::insertApiDataset] END --> elapsed: "+deltaTime);
 		}
 
 		return outData;
@@ -130,8 +136,11 @@ public class InsertApi {
 
 	public DatasetBulkInsertOutput insertApi(String codTenant, String jsonData) throws Exception{
 		DatasetBulkInsertOutput outData=new DatasetBulkInsertOutput();
+		long starTtime=0;
+		long deltaTime=-1;
 
 		try {
+			starTtime=System.currentTimeMillis();
 			log.log(Level.INFO, "[InsertApi::insertApi] BEGIN ");
 
 
@@ -163,7 +172,11 @@ public class InsertApi {
 			InsertApiBaseException newEx=new InsertApiBaseException("UNKNOWN");
 			outData.setInsertException(newEx);
 		} finally {
-			log.log(Level.INFO, "[InsertApi::insertApi] END ");
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			
+			log.log(Level.INFO, "[InsertApi::insertApi] END --> elapsed: "+deltaTime);
 
 		}
 
@@ -172,8 +185,11 @@ public class InsertApi {
 
 
 
-	public void copyData (String codTenant, String globalIdRequest) throws Exception{
+	public String copyData (String codTenant, String globalIdRequest) throws Exception{
+		long starTtime=0;
+		long deltaTime=-1;
 		try {
+			starTtime=System.currentTimeMillis();
 			log.log(Level.INFO, "[InsertApi::copyData] BEGIN ");
 			InsertApiLogic insApiLogic=new InsertApiLogic();
 			insApiLogic.copyData(codTenant, globalIdRequest);
@@ -183,10 +199,15 @@ public class InsertApi {
 		} catch (Exception e) {
 			log.log(Level.SEVERE, "[InsertApi::copyData] GenericException "+e);
 		} finally {
-			log.log(Level.INFO, "[InsertApi::copyData] END ");
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			
+			log.log(Level.INFO, "[InsertApi::copyData] END --> elapsed: "+deltaTime);
 
 		}
 
+		return "FineElaborazioneCopia";
 
 	}
 

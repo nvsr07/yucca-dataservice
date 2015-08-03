@@ -66,18 +66,20 @@ public class InsertApiLogic {
 
 		
 		int cnt=0;
+		boolean indiceDaCReare=true;
 		while (iter.hasNext()) {
 			try {
 				String key=iter.next();
 				curBulkToIns=datiToIns.get(key);
+				curBulkToIns.setGlobalReqId(idRequest);
 
-				int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns);
+				int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns,indiceDaCReare);
 				//System.out.println(" TIMETIME insertManager -- insert bulk blocco "+cnt+"--> "+System.currentTimeMillis());
 				
 				
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
-				curBulkToIns.setGlobalReqId(idRequest);
+				indiceDaCReare=false;
 
 				datiToIns.put(key, curBulkToIns);
 			} catch (Exception e) {
@@ -748,10 +750,12 @@ public class InsertApiLogic {
 
 
 		boolean fineOp=false;
-		if (allOk)
+		if (allOk) {
+			fineOp=mongoAccess.dropCollection(tenantCode, globlalRequestId);
 			fineOp= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_END_COPY,DatasetBulkInsert.STATUS_START_COPY) ;
-		else 
+		} else { 
 			fineOp= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_KO_COPY,DatasetBulkInsert.STATUS_START_COPY) ;
+		}
 
 
 
