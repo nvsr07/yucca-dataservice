@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<endpoint xmlns="http://ws.apache.org/ns/synapse" name="copyEndpoint">
-    <address uri="http://int-sdnet-intapi.sdp.csi.it:90/wso005/services/InsertApi"/>
-</endpoint>
