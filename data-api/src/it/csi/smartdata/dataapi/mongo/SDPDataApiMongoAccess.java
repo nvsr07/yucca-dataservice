@@ -179,7 +179,10 @@ public class SDPDataApiMongoAccess {
 			query = new BasicDBObject("$or", queryStreams);
 			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] mongo query="+query);
 
-			cursor = coll.find(query);
+			//YUCCA-264 recuperare i metadati comuni a tutte le cersioni dalla current
+			BasicDBObject order= new BasicDBObject("configData.current",-1);
+			cursor = coll.find(query).sort(order);
+			//cursor = coll.find(query);
 			try {
 				List<Property> compProps=new ArrayList<Property>();
 				BasicDBList campiDbList=null;
@@ -450,7 +453,11 @@ public class SDPDataApiMongoAccess {
 			query = new BasicDBObject("$or", queryStreams);
 			log.info("[SDPDataApiMongoAccess::getDatasetPerApi] query="+query);
 
-			cursor = coll.find(query);
+			
+			//YUCCA-264 recuperare i metadati comuni a tutte le cersioni dalla current
+			//cursor = coll.find(query);
+			BasicDBObject order= new BasicDBObject("configData.current",-1);
+			cursor = coll.find(query).sort(order);
 			try {
 				while (cursor.hasNext()) {
 					DBObject obj=cursor.next();

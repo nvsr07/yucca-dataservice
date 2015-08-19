@@ -83,6 +83,7 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 
 		List<EntitySet> entitySets = new ArrayList<EntitySet>();
 		entitySets.add(getEntitySet(SMART_ENTITY_CONTAINER, ENTITY_SET_NAME_DATASETS));
+		entitySets.add(getEntitySet(SMART_ENTITY_CONTAINER, ENTITY_SET_NAME_STREAMS));
 		entityContainer.setEntitySets(entitySets);
 
 		List<AssociationSet> associationSets = new ArrayList<AssociationSet>();

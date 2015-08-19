@@ -51,6 +51,12 @@ public class MongoDbStore {
 
 		DBObject searchById = new BasicDBObject("idDataset", idDataset);
 		searchById.put("configData.current", 1);
+		searchById.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
+		
+		
+		
+		
+		
 		DBObject found = colldataset.findOne(searchById);
 
 		if (found != null) {
@@ -72,6 +78,8 @@ public class MongoDbStore {
 
 		BasicDBObject query = (BasicDBObject) userQuery;
 		query.put("configData.current", 1);
+		
+		query.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
 		DBCursor cursor = coll.find(query);
 
 		while (cursor.hasNext()) {
@@ -100,6 +108,7 @@ public class MongoDbStore {
 		BasicDBObject query = new BasicDBObject();
 		query.append("idDataset", datasetKey);
 		query.put("configData.current", 1);
+		query.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
 		DBCursor cursor = coll.find(query);
 
 		while (cursor.hasNext()) {
@@ -191,6 +200,9 @@ public class MongoDbStore {
 		DBCollection colldataset = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
 
 		BasicDBObject query = (BasicDBObject) userQuery;
+		
+		query.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
+
 		DBCursor cursor = collstream.find(query);
 
 		while (cursor.hasNext()) {

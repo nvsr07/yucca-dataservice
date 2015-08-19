@@ -107,7 +107,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>resources/prod</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datadiscovery/resources/prod</directory>
 					</resource>
 				</resources>
 			</build>
@@ -117,7 +117,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>resources/integ</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datadiscovery/resources/integ</directory>
 					</resource>
 				</resources>
 			</build>
