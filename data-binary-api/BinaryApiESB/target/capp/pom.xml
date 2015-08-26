@@ -9,8 +9,9 @@
   <name>BinaryApiESB_module</name>
   <description>BinaryApiESB_module</description>
   <modules>
-    <module>artifacts\api\YuccaDownloadFile</module>
-    <module>artifacts\api\YuccaUploadFile</module>
-    <module>artifacts\api\YuccaUpdateFile</module>
+    <module>artifacts/api/YuccaDownloadFile</module>
+    <module>artifacts/api/YuccaDeleteFile</module>
+    <module>artifacts/api/YuccaUploadFile</module>
+    <module>artifacts/api/YuccaUpdateFile</module>
   </modules>
 </project>

@@ -10,8 +10,7 @@ public class HdfsFSUtils {
 	public static InputStream readFile(String user, String remotePath) {
 		InputStream input = null;
 		try {
-			UserGroupInformation ugi = UserGroupInformation
-					.createRemoteUser(user);
+			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
 
 			input = ugi.doAs(new ReadFileHdfsAction(user, remotePath));
 		} catch (Exception e) {
@@ -28,9 +27,24 @@ public class HdfsFSUtils {
 
 			uri = ugi.doAs(new WriteFileHdfsAction(user, remotePath, is));
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new Exception(e.getMessage());
 		}
 		return uri;
+	}
+	
+	public static Boolean deleteDir(String user, String remotePath) throws Exception {
+
+		Boolean result = false;
+		try {
+			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+			result = ugi.doAs(new DeleteFilesHdfsAction(user, remotePath));
+		} catch (Exception e) {
+			System.out.println("deleteDir, Exception!");
+			e.printStackTrace();
+			throw new Exception(e.getMessage());
+		}
+		return result;
 	}
 	
 	public static Integer sizeFile(String user, String remotePath) {

@@ -10,6 +10,7 @@ import org.csi.yucca.dataservice.ingest.model.metadata.BinaryData;
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
@@ -75,14 +76,12 @@ public class MongoDBBinaryDAO {
 		newObj.put("datasetVersion", binary.getDatasetVersion());
 		newObj.put("metadataBinary", binary.getMetadataBinary());
 		
-		System.out.println("query = " + query.toString());
-		System.out.println("newObj = " + newObj.toString());
-
 		this.collection.update(query, newObj);
 	}
 
 	public void deleteBinaryData(BinaryData binary) {
 		DBObject query = BasicDBObjectBuilder.start().append("_id", new ObjectId(binary.getId())).get();
+
 		this.collection.remove(query);
 	}
 
@@ -128,4 +127,19 @@ public class MongoDBBinaryDAO {
 		return binaryLoaded;
 	}
 
+	public List<BinaryData> readCurrentBinaryDataByIdDataset(Long idDataset) {
+		List<BinaryData> data = new ArrayList<BinaryData>();
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("idDataset", idDataset);
+
+		DBCursor cursor = collection.find(searchQuery);
+		while (cursor.hasNext()) {
+			DBObject doc = cursor.next();
+			ObjectId id = (ObjectId) doc.get("_id");
+			BinaryData binaryLoaded = new BinaryData(doc);
+			binaryLoaded.setId(id.toString());
+			data.add(binaryLoaded);
+		}
+		return data;
+	}
 }

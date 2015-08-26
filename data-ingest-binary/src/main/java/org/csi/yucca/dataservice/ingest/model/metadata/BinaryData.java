@@ -1,7 +1,9 @@
 package org.csi.yucca.dataservice.ingest.model.metadata;
 
 import java.util.Date;
+
 import org.csi.yucca.dataservice.ingest.util.json.JSonHelper;
+
 import com.google.gson.Gson;
 import com.mongodb.DBObject;
 

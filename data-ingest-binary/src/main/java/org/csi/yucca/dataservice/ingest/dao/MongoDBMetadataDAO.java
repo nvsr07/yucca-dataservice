@@ -124,6 +124,21 @@ public class MongoDBMetadataDAO {
 		return metadataLoaded;
 	}
 
+	public Metadata readCurrentMetadataByTntAndDSCode(String metadataCode, String tenantCode) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		obj.add(new BasicDBObject("datasetCode", metadataCode));
+		obj.add(new BasicDBObject("configData.tenantCode", tenantCode));
+		obj.add(new BasicDBObject("configData.current", 1));
+		searchQuery.put("$and", obj);
+
+		DBObject data = collection.find(searchQuery).one();
+		ObjectId id = (ObjectId) data.get("_id");
+		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
+		metadataLoaded.setId(id.toString());
+		return metadataLoaded;
+	}
+
 	public Metadata readCurrentMetadataByTntAndDSCode(String metadataCode, Integer dataSetVersion, String tenantCode) {
 		BasicDBObject searchQuery = new BasicDBObject();
 		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();

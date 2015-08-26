@@ -6,8 +6,7 @@ import java.security.PrivilegedExceptionAction;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 
-public class ReadFileHdfsAction implements
-		PrivilegedExceptionAction<InputStream> {
+public class ReadFileHdfsAction implements PrivilegedExceptionAction<InputStream> {
 
 	private String pathFile;
 	private String user;
@@ -20,8 +19,7 @@ public class ReadFileHdfsAction implements
 	@Override
 	public InputStream run() throws Exception {
 		try {
-			org.apache.hadoop.fs.Path pt = new org.apache.hadoop.fs.Path(
-					pathFile);
+			org.apache.hadoop.fs.Path pt = new org.apache.hadoop.fs.Path(pathFile);
 			Configuration conf = new Configuration();
 			conf.addResource(new org.apache.hadoop.fs.Path("src/main/resources/core-site.xml"));
 			conf.addResource(new org.apache.hadoop.fs.Path("src/main/resources/hdfs-site.xml"));

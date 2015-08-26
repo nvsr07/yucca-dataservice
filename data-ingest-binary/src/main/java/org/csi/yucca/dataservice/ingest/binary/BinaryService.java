@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -266,6 +268,62 @@ public class BinaryService {
 		}
 		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
 				.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
+	}
+
+	@DELETE
+	@Path("/binary/{tenantCode}/clearMetadata/{datasetCode}")
+	public void clearMetadata(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode) throws WebApplicationException, NumberFormatException, UnknownHostException {
+
+		MongoClient mongo = MongoSingleton.getMongoClient();
+
+		//Get idDataset from datasetCode 
+		String supportDb = Config.getInstance().getDbSupport();
+		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
+		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
+		Metadata mdFromMongo = null;
+		try {
+			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, tenantCode);
+		} catch (Exception ex1) {
+			ex1.printStackTrace();
+		}
+		if (mdFromMongo == null) {
+			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity("{\"error_name\":\"Dataset unknown\", \"error_code\":\"E111\", \"output\":\"NONE\", \"message\":\"You could not find the specified dataset\"}").build());
+		}
+		
+		//Get binaryObject
+		String pathForUri = "/pre-tenant/tnt-"+tenantCode+"/rawdata/files/"+datasetCode+"/";
+
+		//Get METADATA of selected file
+		Boolean resultDel = false;
+		try {
+			resultDel = HdfsFSUtils.deleteDir(Config.getHdfsUsername() + tenantCode, pathForUri);
+		} catch (Exception ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+	
+			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity("{\"error_name\":\"Dataset not attachment (METADATA not found) " + ex.getMessage() + "\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments " + ex.getCause() + "\"}").build());
+		}
+		if (resultDel){
+			MongoDBBinaryDAO binaryDAO = null;
+			binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
+			
+			Long idDataset = mdFromMongo.getIdDataset();
+			
+			//Get binaryObject
+			List<BinaryData> binaryData = binaryDAO.readCurrentBinaryDataByIdDataset(idDataset);
+			
+			for (Iterator<BinaryData> binDS = binaryData.iterator(); binDS.hasNext();) {
+				BinaryData binary = binDS.next();
+				binaryDAO.deleteBinaryData(binary);
+			}
+			
+			
+			throw new WebApplicationException(Response.ok().build());
+		} else 
+			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
+					.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
 	}
 	
 	public static Map<String, String> extractMetadata(InputStream is) {
