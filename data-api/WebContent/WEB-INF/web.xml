@@ -39,10 +39,25 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<servlet-name>SDPOdataCSVservlet</servlet-name>
+		<servlet-class>it.csi.smartdata.dataapi.servlet.SDPOdataCSVServlet</servlet-class>
+		<init-param>
+			<param-name>org.apache.olingo.odata2.service.factory</param-name>
+			<param-value>it.csi.smartdata.dataapi.odata.SDPServiceFactory</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
+
 
 	<servlet-mapping>
 		<servlet-name>SDPOdataServiceServlet</servlet-name>
 		<url-pattern>/SDPOdataServlet.svc/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>SDPOdataCSVservlet</servlet-name>
+		<url-pattern>/SDPOdataCSVservlet.svc/*</url-pattern>
 	</servlet-mapping>
 
 </web-app>

@@ -17,7 +17,7 @@ public class SDPServiceFactory extends ODataServiceFactory {
 
 	@Override
 	public ODataService createService(ODataContext odc) throws ODataException {
-		log.info("[SDPServiceFactory::createService] BEGIN");
+		log.debug("[SDPServiceFactory::createService] BEGIN");
 
 		try {
 
@@ -37,9 +37,9 @@ public class SDPServiceFactory extends ODataServiceFactory {
 			String resto=uri.substring(root.length());
 
 
-			log.info("[SDPServiceFactory::createService] uri " + uri);
-			log.info("[SDPServiceFactory::createService] root " + root);
-			log.info("[SDPServiceFactory::createService] uri " + resto);
+			log.debug("[SDPServiceFactory::createService] uri " + uri);
+			log.debug("[SDPServiceFactory::createService] root " + root);
+			log.debug("[SDPServiceFactory::createService] uri " + resto);
 
 
 			SDPEdmProvider edmProvider = new SDPEdmProvider();
@@ -71,7 +71,7 @@ public class SDPServiceFactory extends ODataServiceFactory {
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
-			log.info("[SDPServiceFactory::createService] END");
+			log.debug("[SDPServiceFactory::createService] END");
 		}
 
 	}

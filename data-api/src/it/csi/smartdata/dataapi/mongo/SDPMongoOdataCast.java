@@ -65,9 +65,9 @@ public class SDPMongoOdataCast {
 	public EntityType getEntityType(final FullQualifiedName edmFQName,String codiceApi) throws ODataException {
 
 		try {
-			log.info("[SDPMongoOdataCast::getEntityType] BEGIN");
-			log.info("[SDPMongoOdataCast::getEntityType] FullQualifiedName="+edmFQName);
-			log.info("[SDPMongoOdataCast::getEntityType] codiceApi="+codiceApi);
+			log.debug("[SDPMongoOdataCast::getEntityType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getEntityType] FullQualifiedName="+edmFQName);
+			log.debug("[SDPMongoOdataCast::getEntityType] codiceApi="+codiceApi);
 
 			EntityType ret=null;
 
@@ -132,7 +132,7 @@ public class SDPMongoOdataCast {
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
-			log.info("[SDPMongoOdataCast::getEntityType] END");
+			log.debug("[SDPMongoOdataCast::getEntityType] END");
 		}
 	}
 
@@ -216,10 +216,10 @@ public class SDPMongoOdataCast {
 	public EntitySet getEntitySet(final String entityContainer, final String name,String codiceApi) throws ODataException {
 
 		try {
-			log.info("[SDPMongoOdataCast::getEntitySet] BEGIN");
-			log.info("[SDPMongoOdataCast::getEntitySet] entityContainer="+entityContainer);
-			log.info("[SDPMongoOdataCast::getEntitySet] name="+name);
-			log.info("[SDPMongoOdataCast::getEntitySet] codiceApi="+codiceApi);
+			log.debug("[SDPMongoOdataCast::getEntitySet] BEGIN");
+			log.debug("[SDPMongoOdataCast::getEntitySet] entityContainer="+entityContainer);
+			log.debug("[SDPMongoOdataCast::getEntitySet] name="+name);
+			log.debug("[SDPMongoOdataCast::getEntitySet] codiceApi="+codiceApi);
 
 			initDbObject(codiceApi);
 			for (int i=0;i<this.configObject.size();i++) {
@@ -286,7 +286,7 @@ public class SDPMongoOdataCast {
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
-			log.info("[SDPMongoOdataCast::getEntityType] END");
+			log.debug("[SDPMongoOdataCast::getEntityType] END");
 		}
 	}
 	
@@ -349,9 +349,9 @@ public class SDPMongoOdataCast {
 
 	public EntityContainerInfo getEntityContainerInfo(final String name,String codiceApi) throws ODataException {
 		try {
-			log.info("[SDPMongoOdataCast::getEntityContainerInfo] BEGIN");
-			log.info("[SDPMongoOdataCast::getEntityContainerInfo] name="+name);
-			log.info("[SDPMongoOdataCast::getEntityContainerInfo] codiceApi="+codiceApi);
+			log.debug("[SDPMongoOdataCast::getEntityContainerInfo] BEGIN");
+			log.debug("[SDPMongoOdataCast::getEntityContainerInfo] name="+name);
+			log.debug("[SDPMongoOdataCast::getEntityContainerInfo] codiceApi="+codiceApi);
 
 			EntityContainerInfo eci = null;
 
@@ -375,13 +375,13 @@ public class SDPMongoOdataCast {
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
-			log.info("[SDPMongoOdataCast::getEntityContainerInfo] END");
+			log.debug("[SDPMongoOdataCast::getEntityContainerInfo] END");
 		}		
 	}	
 
 	private EntityType getSmartObjectType()throws Exception {
 		try {
-			log.info("[SDPMongoOdataCast::getSmartObjectType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getSmartObjectType] BEGIN");
 			List<Property> propertiesSmartObject = new ArrayList<Property>();
 
 			CustomizableFeedMappings cfeed = new CustomizableFeedMappings();
@@ -399,13 +399,13 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getSmartObjectType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getSmartObjectType] END");
+			log.debug("[SDPMongoOdataCast::getSmartObjectType] END");
 		}		
 	}
 
 	private EntityType getStreamType(String nameSpace)throws Exception {
 		try {
-			log.info("[SDPMongoOdataCast::getStreamType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getStreamType] BEGIN");
 			List<Property> propertiesStream = new ArrayList<Property>();
 
 			CustomizableFeedMappings cfeed = new CustomizableFeedMappings();
@@ -432,16 +432,16 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getStreamType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getStreamType] END");
+			log.debug("[SDPMongoOdataCast::getStreamType] END");
 		}			
 	}
 
 	//1.2 binary
 	private EntityType getBinaryDataType (String nameSpace,Object eleCapmpi,boolean historical) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getBinaryDataType] BEGIN");
-			log.info("[SDPMongoOdataCast::getBinaryDataType] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getBinaryDataType] historical="+historical);
+			log.debug("[SDPMongoOdataCast::getBinaryDataType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getBinaryDataType] nameSpace="+nameSpace);
+			log.debug("[SDPMongoOdataCast::getBinaryDataType] historical="+historical);
 			List<Property> dataAttributes=new ArrayList<Property>();
 
 			dataAttributes.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
@@ -489,15 +489,15 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getBinaryDataType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getBinaryDataType] END");
+			log.debug("[SDPMongoOdataCast::getBinaryDataType] END");
 		}			
 	}		
 
 	private EntityType getUploadDataType (String nameSpace,Object eleCapmpi,boolean historical) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getUploadDataType] BEGIN");
-			log.info("[SDPMongoOdataCast::getUploadDataType] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getUploadDataType] historical="+historical);
+			log.debug("[SDPMongoOdataCast::getUploadDataType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getUploadDataType] nameSpace="+nameSpace);
+			log.debug("[SDPMongoOdataCast::getUploadDataType] historical="+historical);
 			List<Property> dataAttributes=new ArrayList<Property>();
 
 			dataAttributes.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
@@ -550,14 +550,14 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getUploadDataType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getUploadDataType] END");
+			log.debug("[SDPMongoOdataCast::getUploadDataType] END");
 		}			
 	}	
 
 	
 	private EntityType getSocialType (String nameSpace,Object eleCapmpi) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getSocialType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getSocialType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
 			
 			// SPOSTATI IN CFGd
@@ -584,19 +584,21 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getSocialType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getSocialType] END");
+			log.debug("[SDPMongoOdataCast::getSocialType] END");
 		}			
 	}
 
 	private EntityType getSocialStatsType (String nameSpace,Object eleCapmpi) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getSocialStatsType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getSocialStatsType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
 			
 			measureProps.add(new SimpleProperty().setName("year").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("month").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("dayofmonth").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			//YUCCA-346
+			measureProps.add(new SimpleProperty().setName("minute").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
@@ -616,6 +618,9 @@ public class SDPMongoOdataCast {
 			keyPropertiesMeasure.add(new PropertyRef().setName("month"));
 			keyPropertiesMeasure.add(new PropertyRef().setName("dayofmonth"));
 			keyPropertiesMeasure.add(new PropertyRef().setName("hour"));
+			//YUCCA-346
+			keyPropertiesMeasure.add(new PropertyRef().setName("minute"));
+			
 			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
 			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS)
 					.setProperties(measureProps).setKey(keyMeasure);
@@ -623,7 +628,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getSocialStatsType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getSocialStatsType] END");
+			log.debug("[SDPMongoOdataCast::getSocialStatsType] END");
 		}			
 	}
 	
@@ -631,7 +636,7 @@ public class SDPMongoOdataCast {
 	
 	private EntityType getMeasureType (String nameSpace,Object eleCapmpi) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getMeasureType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getMeasureType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
 			
 			// SPOSTATI IN CFGd
@@ -667,13 +672,13 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getMeasureType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getMeasureType] END");
+			log.debug("[SDPMongoOdataCast::getMeasureType] END");
 		}			
 	}
 
 	private EntityType getMeasureStatsType (String nameSpace,Object eleCapmpi) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getMeasureStatsType] BEGIN");
+			log.debug("[SDPMongoOdataCast::getMeasureStatsType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
 			
 //			measureProps.add(new SimpleProperty().setName("internalId").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
@@ -683,6 +688,8 @@ public class SDPMongoOdataCast {
 			measureProps.add(new SimpleProperty().setName("month").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("dayofmonth").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("hour").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			//YUCCA-346
+			measureProps.add(new SimpleProperty().setName("minute").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
@@ -702,6 +709,8 @@ public class SDPMongoOdataCast {
 			keyPropertiesMeasure.add(new PropertyRef().setName("month"));
 			keyPropertiesMeasure.add(new PropertyRef().setName("dayofmonth"));
 			keyPropertiesMeasure.add(new PropertyRef().setName("hour"));
+			//YUCCA-346
+			keyPropertiesMeasure.add(new PropertyRef().setName("minute"));
 			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
 			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS)
 					.setProperties(measureProps).setKey(keyMeasure);
@@ -709,13 +718,13 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getMeasureStatsType] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getMeasureStatsType] END");
+			log.debug("[SDPMongoOdataCast::getMeasureStatsType] END");
 		}			
 	}
 
 	public List<Schema> getSchemasInternal(String codiceApi) throws ODataException,Exception {
 		try {
-			log.info("[SDPMongoOdataCast::getSchemasInternal] BEGIN");
+			log.debug("[SDPMongoOdataCast::getSchemasInternal] BEGIN");
 			log.info("[SDPMongoOdataCast::getSchemasInternal] codiceApi="+codiceApi);
 
 			List<Schema> schemas = new ArrayList<Schema>();
@@ -870,7 +879,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getSchemasInternal] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getSchemasInternal] END");
+			log.debug("[SDPMongoOdataCast::getSchemasInternal] END");
 		}		
 	}	
 
@@ -881,7 +890,7 @@ public class SDPMongoOdataCast {
 
 	private List<Property> getDatasetField(Object eleCapmpi,String nameSpace) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getDatasetField] BEGIN");
+			log.debug("[SDPMongoOdataCast::getDatasetField] BEGIN");
 
 			List<Property> propOut=new ArrayList<Property>();
 
@@ -922,7 +931,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getDatasetField] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getDatasetField] END");
+			log.debug("[SDPMongoOdataCast::getDatasetField] END");
 		}		
 	}	
 
@@ -940,11 +949,11 @@ public class SDPMongoOdataCast {
 		
 		// TODO YUCCA-74 odata evoluzione
 		try {
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi = " + codiceApi);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace = " + nameSpace);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer = " + entityContainer);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] internalId = " + internalId);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace = " + nameSpace);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer = " + entityContainer);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] internalId = " + internalId);
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] userQuery = " + userQuery);
 
 			initDbObject(codiceApi);
@@ -977,10 +986,10 @@ public class SDPMongoOdataCast {
 			 *  info presa da una versione a caso
 			 *  
 			 */
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] Dataset.size = " + elencoDataset.size());
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] Dataset.size = " + elencoDataset.size());
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				
-				log.info("[SDPMongoOdataCast::getMeasuresPerApi] Dataset = " + ((DBObject)elencoDataset.get(i)));
+				log.debug("[SDPMongoOdataCast::getMeasuresPerApi] Dataset = " + ((DBObject)elencoDataset.get(i)));
 				
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
@@ -1003,14 +1012,14 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] END");
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] END");
 
 		}			
 	}	
 	
 	private List<DBObject> orderNestDS(List<DBObject> listDS) {
-		log.info("[SDPMongoOdataCast::orderNestDS] START");
-		log.info("[SDPMongoOdataCast::orderNestDS] listDS = " + listDS);
+		log.debug("[SDPMongoOdataCast::orderNestDS] START");
+		log.debug("[SDPMongoOdataCast::orderNestDS] listDS = " + listDS);
 		List<DBObject> elenco = new ArrayList();
 		List<String> dsCodeList = new ArrayList();
 		Iterator<DBObject> iteretorDS = listDS.iterator();
@@ -1065,8 +1074,8 @@ public class SDPMongoOdataCast {
 			}
 		}
 		
-		log.info("[SDPMongoOdataCast::orderNestDS] elenco = " + elenco);
-		log.info("[SDPMongoOdataCast::orderNestDS] END");
+		log.debug("[SDPMongoOdataCast::orderNestDS] elenco = " + elenco);
+		log.debug("[SDPMongoOdataCast::orderNestDS] END");
 		return elenco;
 	}
 	
@@ -1080,12 +1089,12 @@ public class SDPMongoOdataCast {
 		// TODO YUCCA-74 odata evoluzione
 
 		try {
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerApi] codiceApi="+codiceApi);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer="+entityContainer);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] internalId="+internalId);
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] userQuery="+userQuery);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] nameSpace="+nameSpace);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] entityContainer="+entityContainer);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] internalId="+internalId);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] userQuery="+userQuery);
 
 			initDbObject(codiceApi);
 			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
@@ -1136,7 +1145,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] END");
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] END");
 
 		}			
 	}		
@@ -1147,12 +1156,12 @@ public class SDPMongoOdataCast {
 		
 		// TODO YUCCA-74 odata evoluzione
 		try {
-			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] BEGIN");
+			log.debug("[SDPMongoOdataCast::getMeasuresPerDataset] BEGIN");
 			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] codiceApi="+codiceApi);
-			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] entityContainer="+entityContainer);
-			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] internalId="+internalId);
-			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] userQuery="+userQuery);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerDataset] nameSpace="+nameSpace);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerDataset] entityContainer="+entityContainer);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerDataset] internalId="+internalId);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerDataset] userQuery="+userQuery);
 
 			initDbObject(codiceApi);
 			List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
@@ -1186,11 +1195,11 @@ public class SDPMongoOdataCast {
 			 *  
 			 */
 
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] Dataset.size = " + elencoDataset.size());
-			log.info("[SDPMongoOdataCast::getMeasuresPerApi] elencoDataset = " + elencoDataset);
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] Dataset.size = " + elencoDataset.size());
+			log.debug("[SDPMongoOdataCast::getMeasuresPerApi] elencoDataset = " + elencoDataset);
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				
-				log.info("[SDPMongoOdataCast::getMeasuresPerApi] Dataset = " + ((DBObject)elencoDataset.get(i)));
+				log.debug("[SDPMongoOdataCast::getMeasuresPerApi] Dataset = " + ((DBObject)elencoDataset.get(i)));
 				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
@@ -1211,7 +1220,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getMeasuresPerDataset] END");
+			log.debug("[SDPMongoOdataCast::getMeasuresPerDataset] END");
 
 		}		
 	}	
@@ -1224,11 +1233,11 @@ public class SDPMongoOdataCast {
 		// TODO YUCCA-74 odata evoluzione
 
 		try {
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
 			log.info("[SDPMongoOdataCast::getBynaryPerDataset] codiceApi="+codiceApi);
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] entityContainer="+entityContainer);
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] internalId="+internalId);
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] nameSpace="+nameSpace);
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] entityContainer="+entityContainer);
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] internalId="+internalId);
 			log.info("[SDPMongoOdataCast::getBynaryPerDataset] userQuery="+userQuery);
 
 			initDbObject(codiceApi);
@@ -1279,7 +1288,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getBynaryPerDataset] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] END");
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] END");
 
 		}		
 	}	
@@ -1289,11 +1298,11 @@ public class SDPMongoOdataCast {
 			int skip,
 			int limit) throws Exception{
 		try {
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] BEGIN");
 			log.info("[SDPMongoOdataCast::getBynaryPerDataset] codiceApi="+codiceApi);
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] nameSpace="+nameSpace);
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] entityContainer="+entityContainer);
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] internalId="+internalId);
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] nameSpace="+nameSpace);
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] entityContainer="+entityContainer);
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] internalId="+internalId);
 			log.info("[SDPMongoOdataCast::getBynaryPerDataset] userQuery="+userQuery);
 
 			initDbObject(codiceApi);
@@ -1320,7 +1329,7 @@ public class SDPMongoOdataCast {
 			log.error("[SDPMongoOdataCast::getBynaryPerDataset] " + e);
 			throw e;
 		} finally {
-			log.info("[SDPMongoOdataCast::getBynaryPerDataset] END");
+			log.debug("[SDPMongoOdataCast::getBynaryPerDataset] END");
 		}		
 	}	
 }

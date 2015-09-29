@@ -78,8 +78,8 @@ public class SDPDataApiMongoAccess {
 
 	public ArrayList<DBObject> initConfDbObject(String codiceApi) {
 		try {
-			log.info("[SDPDataApiMongoAccess::initConfDbObject] BEGIN");
-			log.info("[SDPDataApiMongoAccess::initConfDbObject] codiceApi="+codiceApi);
+			log.debug("[SDPDataApiMongoAccess::initConfDbObject] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::initConfDbObject] codiceApi="+codiceApi);
 
 
 
@@ -144,7 +144,7 @@ public class SDPDataApiMongoAccess {
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::initConfDbObject] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::initConfDbObject] END");
+			log.debug("[SDPDataApiMongoAccess::initConfDbObject] END");
 
 		}
 
@@ -157,7 +157,7 @@ public class SDPDataApiMongoAccess {
 		BasicDBList ret2=new BasicDBList();
 		try {
 
-			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] BEGIN");
 			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] queryStreams="+queryStreams);
 
 
@@ -227,7 +227,7 @@ public class SDPDataApiMongoAccess {
 			log.error("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] INGORED" +e);
 
 		} finally {
-			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] END");
+			log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] END");
 
 		}
 		return ret2;
@@ -238,7 +238,7 @@ public class SDPDataApiMongoAccess {
 	private BasicDBList getQueryStreamPerApi(String codiceApi) {
 		BasicDBList queryStreams=new BasicDBList();
 		try {
-			log.info("[SDPDataApiMongoAccess::getQueryStreamPerApi] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getQueryStreamPerApi] BEGIN");
 			log.info("[SDPDataApiMongoAccess::getQueryStreamPerApi] codiceApi="+codiceApi);
 
 
@@ -301,7 +301,7 @@ public class SDPDataApiMongoAccess {
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::getQueryStreamPerApi] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::getQueryStreamPerApi] END");
+			log.debug("[SDPDataApiMongoAccess::getQueryStreamPerApi] END");
 
 		}	
 		return queryStreams;
@@ -355,8 +355,8 @@ public class SDPDataApiMongoAccess {
 	private BasicDBList createQueryStreamPerApi(BasicDBList objElencoStream) {
 		BasicDBList queryStreams=new BasicDBList();
 		try {
-			log.info("[SDPDataApiMongoAccess::createQueryStreamPerApi] BEGIN");
-			log.info("[SDPDataApiMongoAccess::createQueryStreamPerApi] objElencoStream="+objElencoStream);
+			log.debug("[SDPDataApiMongoAccess::createQueryStreamPerApi] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::createQueryStreamPerApi] objElencoStream="+objElencoStream);
 
 
 
@@ -381,7 +381,7 @@ public class SDPDataApiMongoAccess {
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::createQueryStreamPerApi] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::createQueryStreamPerApi] END");
+			log.debug("[SDPDataApiMongoAccess::createQueryStreamPerApi] END");
 		}	
 		return queryStreams;
 	}
@@ -420,7 +420,7 @@ public class SDPDataApiMongoAccess {
 				}
 			}
 		} catch (Exception e) {
-			log.info("SDPDataApiMongoAccess.getDatasetFiledsDbList --> ERROR " + e);
+			log.error("SDPDataApiMongoAccess.getDatasetFiledsDbList --> ERROR " + e);
 
 		}
 		return dblistout;
@@ -432,8 +432,8 @@ public class SDPDataApiMongoAccess {
 		List<DBObject> ret= new ArrayList<DBObject>();
 
 		try {
-			log.info("[SDPDataApiMongoAccess::getDatasetPerApi] BEGIN");
-			log.info("[SDPDataApiMongoAccess::getDatasetPerApi] codiceApi="+codiceApi);
+			log.debug("[SDPDataApiMongoAccess::getDatasetPerApi] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getDatasetPerApi] codiceApi="+codiceApi);
 
 			BasicDBList queryStreams=getQueryStreamPerApi(codiceApi);
 			BasicDBObject query =null;
@@ -468,12 +468,12 @@ public class SDPDataApiMongoAccess {
 			}finally {
 				cursor.close();
 			}
-			log.info("[SDPDataApiMongoAccess::getDatasetPerApi] ret="+ret);
+			log.debug("[SDPDataApiMongoAccess::getDatasetPerApi] ret="+ret);
 
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::getDatasetPerApi] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::getDatasetPerApi] END");
+			log.debug("[SDPDataApiMongoAccess::getDatasetPerApi] END");
 		}
 
 		return ret;		
@@ -503,12 +503,12 @@ public class SDPDataApiMongoAccess {
 		// TODO YUCCA-74 odata evoluzione
 
 		try {
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] BEGIN");
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] codiceTenant="+codiceTenant);
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] nameSpace="+nameSpace);
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] entityContainer="+entityContainer);
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] internalId="+internalId);
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] datatType="+datatType);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] nameSpace="+nameSpace);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] entityContainer="+entityContainer);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] internalId="+internalId);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] datatType="+datatType);
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] streamMetadata="+streamMetadata);
 
@@ -598,8 +598,10 @@ public class SDPDataApiMongoAccess {
 
 			DBCollection collMisure = db.getCollection(collection);
 			BasicDBList queryTot=new BasicDBList();
+			BasicDBList queryTotCnt=new BasicDBList();
 
 			queryTot.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
+			queryTotCnt.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
@@ -627,14 +629,17 @@ public class SDPDataApiMongoAccess {
 			if (null!=internalId) {
 				//query.append("_id",new ObjectId(internalId));
 				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
-
+				queryTotCnt.add( new BasicDBObject("_id",new ObjectId(internalId)));
+				
 			}
 			if (null != userQuery) {
-				log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] userQuery="+userQuery);
+				log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] userQuery="+userQuery);
 				if (userQuery instanceof BasicDBList) {
 					queryTot.addAll((BasicDBList)userQuery);
+					queryTotCnt.addAll((BasicDBList)userQuery);
 				} else if (userQuery instanceof BasicDBObject) {
 					queryTot.add((BasicDBObject)userQuery);
+					queryTotCnt.add((BasicDBObject)userQuery);
 				}
 
 				//query.append("$and", userQuery);
@@ -645,8 +650,22 @@ public class SDPDataApiMongoAccess {
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query ="+query);
 			//cursor = collMisure.find(query);
 
-			cnt = collMisure.find(query).count();
+			long starTtime=0;
+			long deltaTime=-1;
+			
+			
+			starTtime=System.currentTimeMillis();
+			cnt = collMisure.find( new BasicDBObject("$and", queryTotCnt)).count();
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query COUNT executed in --> "+deltaTime);
 
+			
+			starTtime=0;
+			deltaTime=-1;
+			
+			
 			if (skip<0) skip=0;
 			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
 			
@@ -654,6 +673,8 @@ public class SDPDataApiMongoAccess {
 			// per ordinamento su max 
 			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
 			skip=0;
+			
+			
 			
 			
 			
@@ -681,9 +702,21 @@ public class SDPDataApiMongoAccess {
 					if (null==dbObjUserOrder) dbObjUserOrder=new BasicDBObject(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
 					else dbObjUserOrder.append(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
 				}
+				starTtime=System.currentTimeMillis();
 				cursor = collMisure.find(query).sort(dbObjUserOrder).skip(skip).limit(limit);
+				try {
+					deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
 			}
-			else cursor = collMisure.find(query).skip(skip).limit(limit);
+			else {
+				starTtime=System.currentTimeMillis();
+				cursor = collMisure.find(query).skip(skip).limit(limit);
+				try {
+					deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
+				
+			}
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query executed in --> "+deltaTime);
 			try {
 				while (cursor.hasNext()) {
 
@@ -779,7 +812,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] END");
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] END");
 		}
 
 
@@ -822,13 +855,13 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		// TODO YUCCA-74 odata evoluzione
 
 		try {
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] BEGIN");
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] codiceTenant="+codiceTenant);
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] nameSpace="+nameSpace);
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] entityContainer="+entityContainer);
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] internalId="+internalId);
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] datatType="+datatType);
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] userQuery="+userQuery);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] codiceTenant="+codiceTenant);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] nameSpace="+nameSpace);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] entityContainer="+entityContainer);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] internalId="+internalId);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] datatType="+datatType);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] streamMetadata="+streamMetadata);
 
 			List<Property> compPropsTot=new ArrayList<Property>();
@@ -956,7 +989,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 			}
 			if (null != userQuery) {
-				log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] userQuery="+userQuery);
+				log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] userQuery="+userQuery);
 				if (userQuery instanceof BasicDBList) {
 					queryTot.addAll((BasicDBList)userQuery);
 				} else if (userQuery instanceof BasicDBObject) {
@@ -968,7 +1001,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 			BasicDBList queryOutTot=new BasicDBList();
 			if (null != groupOutQuery) {
-				log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] groupOutQuery="+groupOutQuery);
+				log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] groupOutQuery="+groupOutQuery);
 				if (groupOutQuery instanceof BasicDBList) {
 					queryOutTot.addAll((BasicDBList)groupOutQuery);
 				} else if (groupOutQuery instanceof BasicDBObject) {
@@ -1017,6 +1050,13 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				groupFiledsId.put("dayofmonth", new BasicDBObject("$dayOfMonth","$time"));
 				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
 				groupFiledsId.put("hour", new BasicDBObject("$hour","$time"));
+			} else if ("minute_hour_dayofmonth_month_year".equals(timeGroupByParam)) {
+				//YUCCA-346
+				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
+				groupFiledsId.put("dayofmonth", new BasicDBObject("$dayOfMonth","$time"));
+				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
+				groupFiledsId.put("hour", new BasicDBObject("$hour","$time"));
+				groupFiledsId.put("minute", new BasicDBObject("$minute","$time"));
 			} else {
 				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
 			}
@@ -1100,7 +1140,20 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			        .allowDiskUse(true)
 			        .build();			
 			
+			long starTtime=0;
+			long deltaTime=-1;
+			
+			starTtime=System.currentTimeMillis();
 			Cursor cursor =collMisure.aggregate(pipeline,aggregationOptions);
+			
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] QUERY TIME ="+deltaTime);
+			
+			starTtime=System.currentTimeMillis();
+			deltaTime=-1;
+			
 			cnt=0;
 			try {
 				//for (DBObject result : output.results()) {
@@ -1117,6 +1170,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 					String mese=takeNvlValues( ((DBObject)obj.get("_id")).get("month"));
 					String anno=takeNvlValues( ((DBObject)obj.get("_id")).get("year"));
 					String ora=takeNvlValues( ((DBObject)obj.get("_id")).get("hour"));
+					//YUCCA-346
+					String minuto=takeNvlValues( ((DBObject)obj.get("_id")).get("minute"));
 
 					
 					//String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
@@ -1131,6 +1186,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 					misura.put("month",  (mese==null ? -1 : new Integer(mese)));
 					misura.put("year",  (anno==null ? -1 : new Integer(anno)));
 					misura.put("hour",  (ora==null ? -1 : new Integer(ora)));
+					//YUCCA-346
+					misura.put("minute",  (minuto==null ? -1 : new Integer(minuto)));
 					misura.put("count",  (count==null ? 0 : new Integer(count)));
 
 //					if (DATA_TYPE_MEASURE.equals(datatType)) {
@@ -1199,6 +1256,10 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			}  finally {
 				//cursor.close();			
 			} 
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] FETCH TIME ="+deltaTime);
 
 
 		} catch (Exception e) {
@@ -1207,7 +1268,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				throw (SDPCustomQueryOptionException) e;
 			} else log.error("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] END");
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] END");
 		}
 
 
@@ -1235,13 +1296,13 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 		int cnt = -1;
 		try {
-			log.info("[SDPDataApiMongoAccess::getBinary] BEGIN");
-			log.info("[SDPDataApiMongoAccess::getBinary] codiceTenant="+codiceTenant);
-			log.info("[SDPDataApiMongoAccess::getBinary] nameSpace="+nameSpace);
-			log.info("[SDPDataApiMongoAccess::getBinary] entityContainer="+entityContainer);
-			log.info("[SDPDataApiMongoAccess::getBinary] internalId="+internalId);
-			log.info("[SDPDataApiMongoAccess::getBinary] datatType="+datatType);
-			log.info("[SDPDataApiMongoAccess::getBinary] userQuery="+userQuery);
+			log.debug("[SDPDataApiMongoAccess::getBinary] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getBinary] codiceTenant="+codiceTenant);
+			log.debug("[SDPDataApiMongoAccess::getBinary] nameSpace="+nameSpace);
+			log.debug("[SDPDataApiMongoAccess::getBinary] entityContainer="+entityContainer);
+			log.debug("[SDPDataApiMongoAccess::getBinary] internalId="+internalId);
+			log.debug("[SDPDataApiMongoAccess::getBinary] datatType="+datatType);
+			log.debug("[SDPDataApiMongoAccess::getBinary] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getBinary] streamMetadata="+streamMetadata);
 
 //			List<Property> compPropsTot=new ArrayList<Property>();
@@ -1339,7 +1400,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 			}
 			if (null != userQuery) {
-				log.info("[SDPDataApiMongoAccess::getBinary] userQuery="+userQuery);
+				log.debug("[SDPDataApiMongoAccess::getBinary] userQuery="+userQuery);
 				if (userQuery instanceof BasicDBList) {
 					queryTot.addAll((BasicDBList)userQuery);
 				} else if (userQuery instanceof BasicDBObject) {
@@ -1473,7 +1534,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		} catch (Exception e) {
 			log.error("[SDPDataApiMongoAccess::getBinary] INGORED" +e);
 		} finally {
-			log.info("[SDPDataApiMongoAccess::getBinary] END");
+			log.debug("[SDPDataApiMongoAccess::getBinary] END");
 		}
 
 

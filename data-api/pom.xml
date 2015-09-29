@@ -26,8 +26,8 @@
 				<version>2.3</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-<!-- 					<outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
-<!--  <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
+					<!-- <outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
+					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
 
 
 					<warName>DataApi</warName>
@@ -80,16 +80,30 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.3</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.0.1</version>
+			<scope>provided</scope>
+		</dependency>
 <dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <version>3.0.1</version>
-    <scope>provided</scope>
-</dependency>		
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20140107</version>
+</dependency>
+
+		
+		
 	</dependencies>
 	<profiles>
-	
-	
+
+
 		<profile>
 			<id>integ1</id>
 			<activation>
@@ -103,8 +117,8 @@
 				</resources>
 			</build>
 		</profile>
-	
-	
+
+
 		<profile>
 			<id>local</id>
 			<activation>
@@ -172,6 +186,6 @@
 			</build>
 		</profile>
 	</profiles>
-	
-	
+
+
 </project>

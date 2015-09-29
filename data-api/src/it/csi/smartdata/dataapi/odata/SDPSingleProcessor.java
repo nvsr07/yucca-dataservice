@@ -73,8 +73,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		int startindex=0;
 		int endindex=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
 
-		log.info("[SDPSingleProcessor::checkPagesData] skipParameter="+skip);
-		log.info("[SDPSingleProcessor::checkPagesData] topParameter="+top);
+		log.debug("[SDPSingleProcessor::checkPagesData] skipParameter="+skip);
+		log.debug("[SDPSingleProcessor::checkPagesData] topParameter="+top);
 
 
 		//controlli ... sollevo eccezione quando:
@@ -107,8 +107,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 
 
-		log.info("[SDPSingleProcessor::checkPagesData] checkPagesData="+startindex);
-		log.info("[SDPSingleProcessor::checkPagesData] checkPagesData="+endindex);	
+		log.debug("[SDPSingleProcessor::checkPagesData] checkPagesData="+startindex);
+		log.debug("[SDPSingleProcessor::checkPagesData] checkPagesData="+endindex);	
 
 
 
@@ -123,8 +123,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		int endindex=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
 
 
-		log.info("[SDPSingleProcessor::checkPagesData] skipParameter="+skip);
-		log.info("[SDPSingleProcessor::checkPagesData] topParameter="+top);
+		log.debug("[SDPSingleProcessor::checkPagesData] skipParameter="+skip);
+		log.debug("[SDPSingleProcessor::checkPagesData] topParameter="+top);
 
 		//se skip è valorizzato
 		if(skip!=null) {
@@ -157,8 +157,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 
 
-		log.info("[SDPSingleProcessor::checkPagesData] checkPagesData="+startindex);
-		log.info("[SDPSingleProcessor::checkPagesData] checkPagesData="+endindex);	
+		log.debug("[SDPSingleProcessor::checkPagesData] checkPagesData="+startindex);
+		log.debug("[SDPSingleProcessor::checkPagesData] checkPagesData="+endindex);	
 
 
 
@@ -195,16 +195,16 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 	public ODataResponse readEntitySet(final GetEntitySetUriInfo uriInfo,final String contentType) throws ODataException {
 
 		try {
-			log.info("[SDPSingleProcessor::readEntitySet] BEGIN");
-			log.info("[SDPSingleProcessor::readEntitySet] uriInfo="+uriInfo);
-			log.info("[SDPSingleProcessor::readEntitySet] contentType="+contentType);
-			log.info("[SDPSingleProcessor::readEntitySet] codiceApi="+codiceApi);
+			log.debug("[SDPSingleProcessor::readEntitySet] BEGIN");
+			log.debug("[SDPSingleProcessor::readEntitySet] uriInfo="+uriInfo);
+			log.debug("[SDPSingleProcessor::readEntitySet] contentType="+contentType);
+			log.debug("[SDPSingleProcessor::readEntitySet] codiceApi="+codiceApi);
 			log.debug("[SDPSingleProcessor::readEntitySet] uriInfoDetail="+dump("uriInfo",uriInfo));
 			URI newUri=getContext().getPathInfo().getServiceRoot();
 			try {
 				newUri=new URI(this.baseUrl);
 			} catch (Exception e) {}
-			log.info("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
+			log.debug("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
 			EdmEntitySet entitySet;
 			ExpandSelectTreeNode expandSelectTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
 
@@ -219,15 +219,15 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
 					userQuery = fe.accept(ev);
-					log.info("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
+					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
 				}
 				if (oe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
 					orderQuery=oe.accept(ev);
-					log.info("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
+					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 				}
-				log.info("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
+				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
 				
 				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).equals(entitySet.getName()) || (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) {
 					
@@ -252,7 +252,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							SDPExpressionVisitor ev = new SDPExpressionVisitor();
 							ev.setEntitySetName(entitySet.getName());
 							userSourceEntityQuery = feStats.accept(ev);
-							log.info("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
+							log.debug("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
 						}
 					}
 					
@@ -434,15 +434,15 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(targetEntity.getName());
 					userQuery = fe.accept(ev);
-					log.info("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
+					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
 				}
 				if (oe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(targetEntity.getName());
 					orderQuery=oe.accept(ev);
-					log.info("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
+					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 				}
-				log.info("[SDPSingleProcessor::readEntitySet] entitySet="+targetEntity.getName());
+				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+targetEntity.getName());
 				
 				
 
@@ -507,7 +507,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 						
 					}
 
-					log.info("[SDPSingleProcessor::readEntitySet] ENaaaaaaD");
+					log.debug("[SDPSingleProcessor::readEntitySet] ENaaaaaaD");
 
 				} else if  (SDPDataApiConstants.ENTITY_SET_NAME_BINARY.equals(startEntity.getName())) {
 					
@@ -555,7 +555,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
-			log.info("[SDPSingleProcessor::readEntitySet] END");
+			log.debug("[SDPSingleProcessor::readEntitySet] END");
 
 		}
 
@@ -578,7 +578,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		//				SDPExpressionVisitor ev = new SDPExpressionVisitor();
 		//				ev.setEntitySetName(entitySet.getName());
 		//				userQuery = fe.accept(ev);
-		//				log.info("expression:\n" + ev.getOut());
+		//				log.debug("expression:\n" + ev.getOut());
 		//
 		//			}
 		//
@@ -656,16 +656,16 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 	public ODataResponse readEntity(final GetEntityUriInfo uriInfo,final String contentType) throws ODataException {
 
 		try {
-			log.info("[SDPSingleProcessor::readEntity] BEGIN");
-			log.info("[SDPSingleProcessor::readEntity] uriInfo="+uriInfo);
-			log.info("[SDPSingleProcessor::readEntity] contentType="+contentType);
-			log.info("[SDPSingleProcessor::readEntity] codiceApi="+codiceApi);
+			log.debug("[SDPSingleProcessor::readEntity] BEGIN");
+			log.debug("[SDPSingleProcessor::readEntity] uriInfo="+uriInfo);
+			log.debug("[SDPSingleProcessor::readEntity] contentType="+contentType);
+			log.debug("[SDPSingleProcessor::readEntity] codiceApi="+codiceApi);
 			log.debug("[SDPSingleProcessor::readEntity] uriInfoDetail="+dump("uriInfo",uriInfo));
 			URI newUri=getContext().getPathInfo().getServiceRoot();
 			try {
 				newUri=new URI(this.baseUrl);
 			} catch (Exception e) {}
-			log.info("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
+			log.debug("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
 			ExpandSelectTreeNode expandSelectTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
 
 			if (uriInfo.getNavigationSegments().size() == 0) {
@@ -765,7 +765,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
-			log.info("[SDPSingleProcessor::readEntity] END");
+			log.debug("[SDPSingleProcessor::readEntity] END");
 
 		}
 

@@ -14,6 +14,7 @@ public interface SDPDataApiConstants {
 	public static final String SDP_WEB_FILTER_PATTERN="/SmartDataOdataService.svc/";
 	public static final String SDP_WEB_SERVLET_URL="/SDPOdataServlet.svc/";
 //	public static final String SDP_WEB_BASE_URL="http://localhost:8080/odataServer/SmartDataOdataService.svc/";
+	public static final String SDP_WEB_CSVSERVLET_URL="/SDPOdataCSVservlet.svc/";
 	
 	
 	public static final String SDP_ODATA_DEFAULT_SERVICE_FACTORY="it.csi.smartdata.dataapi.odataSDPServiceFactory";

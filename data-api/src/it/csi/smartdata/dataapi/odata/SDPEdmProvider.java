@@ -58,14 +58,15 @@ public class SDPEdmProvider extends EdmProvider {
 
 	@Override
 	public EntityType getEntityType(final FullQualifiedName edmFQName) throws ODataException {
-		log.info("[SDPEdmProvider::getEntityType] BEGIN - calling SDPMongoOdataCast" );
+		log.debug("[SDPEdmProvider::getEntityType] BEGIN - calling SDPMongoOdataCast" );
 		return mongoAccess.getEntityType(edmFQName, this.codiceApi);
 	}
 
 
 	@Override
 	public ComplexType getComplexType(final FullQualifiedName edmFQName) throws ODataException {
-		log.info("[SDPEdmProvider::getComplexType] BEGIN - calling SDPMongoOdataCast" );
+		log.debug("[SDPEdmProvider::getComplexType] BEGIN - calling SDPMongoOdataCast" );
+		
 		return mongoAccess.getComplexType(edmFQName, this.codiceApi);
 
 	}
@@ -74,20 +75,20 @@ public class SDPEdmProvider extends EdmProvider {
 	@Override
 	public AssociationSet getAssociationSet(final String entityContainer, final FullQualifiedName association,
 			final String sourceEntitySetName, final String sourceEntitySetRole) throws ODataException {
-		log.info("[SDPEdmProvider::getAssociationSet] BEGIN - calling SDPMongoOdataCast" );
+		log.debug("[SDPEdmProvider::getAssociationSet] BEGIN - calling SDPMongoOdataCast" );
 		return mongoAccess.getAssociationSet(entityContainer, association, sourceEntitySetName, sourceEntitySetRole,  this.codiceApi);
 		
 	}
 
 	@Override
 	public EntitySet getEntitySet(final String entityContainer, final String name) throws ODataException {
-		log.info("[SDPEdmProvider::getEntitySet] BEGIN - calling SDPMongoOdataCast" );
+		log.debug("[SDPEdmProvider::getEntitySet] BEGIN - calling SDPMongoOdataCast" );
 		return mongoAccess.getEntitySet(entityContainer, name, this.codiceApi);
 	}
 			
 	@Override
 	public Association getAssociation(final FullQualifiedName edmFQName) throws ODataException {
-		log.info("[SDPEdmProvider::getAssociation] BEGIN - calling SDPMongoOdataCast" );
+		log.debug("[SDPEdmProvider::getAssociation] BEGIN - calling SDPMongoOdataCast" );
 		return mongoAccess.getAssociation(edmFQName, this.codiceApi);
 	}
 
@@ -95,13 +96,13 @@ public class SDPEdmProvider extends EdmProvider {
 
 	@Override
 	public FunctionImport getFunctionImport(final String entityContainer, final String name) throws ODataException {
-		log.info("[SDPEdmProvider::getFunctionImport] BEGIN - return null" );
+		log.debug("[SDPEdmProvider::getFunctionImport] BEGIN - return null" );
 		return null;
 	}
 
 	@Override
 	public EntityContainerInfo getEntityContainerInfo(final String name) throws ODataException {
-		log.info("[SDPEdmProvider::getEntityContainerInfo] BEGIN - calling SDPMongoOdataCast" );
+		log.debug("[SDPEdmProvider::getEntityContainerInfo] BEGIN - calling SDPMongoOdataCast" );
 		return mongoAccess.getEntityContainerInfo(name, this.codiceApi);
 	}
 
@@ -111,7 +112,7 @@ public class SDPEdmProvider extends EdmProvider {
 
 	@Override
 	public List<Schema> getSchemas() throws ODataException {
-		log.info("[SDPEdmProvider::getSchemas] BEGIN " );
+		log.debug("[SDPEdmProvider::getSchemas] BEGIN " );
 		try {
 			return mongoAccess.getSchemasInternal(this.codiceApi);
 		} catch (Exception ex) {
@@ -119,7 +120,7 @@ public class SDPEdmProvider extends EdmProvider {
 			ODataException oex = new ODataException("unexpected",ex);
 			throw oex;
 		} finally {
-			log.info("[SDPEdmProvider::getSchemas] END " );
+			log.debug("[SDPEdmProvider::getSchemas] END " );
 		}
 	}
 

@@ -48,6 +48,10 @@ public class SDPDataApiConfig {
 		params.put("SDP_WEB_FILTER_PATTERN", rb.getString("SDP_WEB_FILTER_PATTERN"));
 		params.put("SDP_WEB_SERVLET_URL", rb.getString("SDP_WEB_SERVLET_URL"));
 		params.put("SDP_WEB_BASE_URL", rb.getString("SDP_WEB_BASE_URL"));
+		params.put("SDP_WEB_LOCALHOST_PORT", rb.getString("SDP_WEB_LOCALHOST_PORT"));
+		
+		
+		
 		
 		params.put("SDP_MONGO_CFG_DATASET_HOST", rb.getString("SDP_MONGO_CFG_DATASET_HOST"));
 		params.put("SDP_MONGO_CFG_DATASET_PORT", rb.getString("SDP_MONGO_CFG_DATASET_PORT"));
@@ -112,6 +116,9 @@ public class SDPDataApiConfig {
 	}
 	public String getWebBaseUrl() {
 		return params.get("SDP_WEB_BASE_URL");
+	}
+	public String getWebLocalHostPort() {
+		return params.get("SDP_WEB_LOCALHOST_PORT");
 	}
 	
 	

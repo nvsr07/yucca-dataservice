@@ -23,7 +23,7 @@ public class SDPOdataFilter implements Filter{
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException, IOException {
-		log.info("[SDPOdataFilter::doFilter] BEGIN");
+		log.debug("[SDPOdataFilter::doFilter] BEGIN");
 		try { 
 			HttpServletRequest request = (HttpServletRequest) req;
 			String requestURI = request.getRequestURI();
@@ -46,7 +46,7 @@ public class SDPOdataFilter implements Filter{
 			log.debug("[SDPOdataFilter::doFilter] webServletUrl="+webServletUrl);
 
 			if (requestURI.indexOf(webFilterPattern)!=-1) {
-				log.info("[SDPOdataFilter::doFilter] FILTERING");
+				log.debug("[SDPOdataFilter::doFilter] FILTERING");
 
 
 				String prima=requestURI.substring(0,requestURI.indexOf(webFilterPattern));
@@ -95,15 +95,30 @@ public class SDPOdataFilter implements Filter{
 				//if (dopo.length()>0) codiceApi=codiceApi.substring(0, codiceApi.indexOf(dopo)-1);
 				//else codiceApi=codiceApi.substring(0, codiceApi.length()-1);
 				String newURI=webServletUrl+dopo+"?codiceApi="+codiceApi;
+				
+				//YUCCA-345
+				if ("csv".equals(request.getParameter("$format"))) {
+					newURI=SDPDataApiConstants.SDP_WEB_CSVSERVLET_URL+dopo+"?codiceApi="+codiceApi+"&restoUri="+dopo;
+				}
 
 
 				if (request.getQueryString()!=null && request.getQueryString().length()>0) newURI=newURI+"&"+request.getQueryString();
 
+				//YUCCA-345
+				if ("csv".equals(request.getParameter("$format"))) {
+
+					CharSequence toFind="$format=csv";
+					CharSequence toreplace="$format=json";
+					
+					newURI=newURI.replace(toFind, toreplace);
+				}
+				
+				
 				log.info("[SDPOdataFilter::doFilter] codiceApi="+codiceApi);
 				log.info("[SDPOdataFilter::doFilter] newURI="+newURI);
 				req.getRequestDispatcher(newURI).forward(req, res);
 			} else {
-				log.info("[SDPOdataFilter::doFilter] NO FILTER");
+				log.debug("[SDPOdataFilter::doFilter] NO FILTER");
 				
 				chain.doFilter(req, res);
 			}
@@ -115,7 +130,7 @@ public class SDPOdataFilter implements Filter{
 			throw new ServletException(e.getMessage());
 			
 		} finally {
-			log.info("[SDPOdataFilter::doFilter] END");
+			log.debug("[SDPOdataFilter::doFilter] END");
 
 		}
 	}
