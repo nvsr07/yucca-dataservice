@@ -600,6 +600,12 @@ public class SDPMongoOdataCast {
 			//YUCCA-346
 			measureProps.add(new SimpleProperty().setName("minute").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
+			
+			//YUCCA-388
+			measureProps.add(new SimpleProperty().setName("dayofweek").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("retweetparentid").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			
+			
 			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				
@@ -620,6 +626,9 @@ public class SDPMongoOdataCast {
 			keyPropertiesMeasure.add(new PropertyRef().setName("hour"));
 			//YUCCA-346
 			keyPropertiesMeasure.add(new PropertyRef().setName("minute"));
+			//YUCCA-388
+			keyPropertiesMeasure.add(new PropertyRef().setName("dayofweek"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("retweetparentid"));
 			
 			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
 			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS)
@@ -691,6 +700,10 @@ public class SDPMongoOdataCast {
 			//YUCCA-346
 			measureProps.add(new SimpleProperty().setName("minute").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
+			//YUCCA-388
+			measureProps.add(new SimpleProperty().setName("dayofweek").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			
+			
 			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				
@@ -711,6 +724,11 @@ public class SDPMongoOdataCast {
 			keyPropertiesMeasure.add(new PropertyRef().setName("hour"));
 			//YUCCA-346
 			keyPropertiesMeasure.add(new PropertyRef().setName("minute"));
+
+			//YUCCA-388
+			keyPropertiesMeasure.add(new PropertyRef().setName("dayofweek"));
+			
+			
 			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
 			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS)
 					.setProperties(measureProps).setKey(keyMeasure);

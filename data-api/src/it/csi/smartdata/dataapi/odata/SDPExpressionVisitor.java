@@ -667,9 +667,15 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".year" ,"_id.year");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".month" ,"_id.month");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".dayofmonth" ,"_id.dayofmonth");
+		//YUCCA-388
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".dayofweek" ,"_id.dayofweek");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".hour" ,"_id.hour");
 		//YUCCA-346
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.minute");
+		
+		//YUCCA-388
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.retweetparentid");
+		
 
 	}
 

@@ -453,7 +453,7 @@ public class SDPDataApiMongoAccess {
 			query = new BasicDBObject("$or", queryStreams);
 			log.info("[SDPDataApiMongoAccess::getDatasetPerApi] query="+query);
 
-			
+
 			//YUCCA-264 recuperare i metadati comuni a tutte le cersioni dalla current
 			//cursor = coll.find(query);
 			BasicDBObject order= new BasicDBObject("configData.current",-1);
@@ -497,9 +497,9 @@ public class SDPDataApiMongoAccess {
 		String datasetCode=null;
 		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
-		int cnt = -1;
-		
-		
+		int cnt = 0;
+
+
 		// TODO YUCCA-74 odata evoluzione
 
 		try {
@@ -516,13 +516,13 @@ public class SDPDataApiMongoAccess {
 			List<Property> compPropsCur=new ArrayList<Property>();			
 
 
-			
+
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
 			//       - modificare eventualmente la logica di recupero di collencion,host, port, db specifici per il dataset
 			//       - modificare eventualmente la logica di recupero dell'idDataset
 			//INVARIATO!!
-			
+
 			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
 			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
 			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
@@ -530,7 +530,7 @@ public class SDPDataApiMongoAccess {
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
 			datasetCode=takeNvlValues(streamMetadata.get("datasetCode"));
 
-			
+
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
 			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
@@ -564,7 +564,7 @@ public class SDPDataApiMongoAccess {
 				dbcfg=tanantDbCfg.getDataBase();
 			}
 
-			
+
 			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
 			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
 
@@ -611,7 +611,7 @@ public class SDPDataApiMongoAccess {
 			 */
 
 			ArrayList<Integer> vals = new ArrayList<Integer>();
-			
+
 			List<DBObject> listDatasetVersion = (List<DBObject>) streamMetadata.get("listDatasetVersion");
 			Iterator<DBObject> listaIterator = listDatasetVersion.iterator();
 			while (listaIterator.hasNext()) {
@@ -622,15 +622,15 @@ public class SDPDataApiMongoAccess {
 
 			//queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
 			queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$in", vals)));
-			
-			
+
+
 
 			//BasicDBObject query = new BasicDBObject("idDataset",idDataset);
 			if (null!=internalId) {
 				//query.append("_id",new ObjectId(internalId));
 				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
 				queryTotCnt.add( new BasicDBObject("_id",new ObjectId(internalId)));
-				
+
 			}
 			if (null != userQuery) {
 				log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] userQuery="+userQuery);
@@ -652,8 +652,8 @@ public class SDPDataApiMongoAccess {
 
 			long starTtime=0;
 			long deltaTime=-1;
-			
-			
+
+
 			starTtime=System.currentTimeMillis();
 			cnt = collMisure.find( new BasicDBObject("$and", queryTotCnt)).count();
 			try {
@@ -661,42 +661,42 @@ public class SDPDataApiMongoAccess {
 			} catch (Exception e) {}
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query COUNT executed in --> "+deltaTime);
 
-			
+
 			starTtime=0;
 			deltaTime=-1;
-			
-			
+
+
 			if (skip<0) skip=0;
 			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
-			
-			
+
+
 			// per ordinamento su max 
 			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
 			skip=0;
-			
-			
-			
-			
-			
-			
+
+
+
+
+
+
 			if (null!=userOrderBy) {
-				
+
 				boolean orderByAllowed=false;
 				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
 					orderByAllowed=true;
 				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
-					
-					
+
+
 					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
 					//if (elemOrder.toString().indexOf("\"time\"")!=-1) orderByAllowed=true;
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
 				}
-				
-				
+
+
 				if (!orderByAllowed) throw new SDPOrderBySizeException("too many documents for order clause;",Locale.UK);
-				
+
 				BasicDBObject dbObjUserOrder=null;
-				
+
 				for (int kkk=0;kkk<((ArrayList<SDPMongoOrderElement>)userOrderBy).size();kkk++) {
 					SDPMongoOrderElement curOrdElem=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(kkk);
 					if (null==dbObjUserOrder) dbObjUserOrder=new BasicDBObject(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
@@ -714,7 +714,7 @@ public class SDPDataApiMongoAccess {
 				try {
 					deltaTime=System.currentTimeMillis()-starTtime;
 				} catch (Exception e) {}
-				
+
 			}
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query executed in --> "+deltaTime);
 			try {
@@ -740,14 +740,14 @@ public class SDPDataApiMongoAccess {
 						misura.put("time",  obj.get("time"));
 					}					
 
-					
+
 					String iddataset=takeNvlValues(obj.get("idDataset"));
 					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 
 
 
-ArrayList<String> elencoBinaryId=new ArrayList<String>();
+					ArrayList<String> elencoBinaryId=new ArrayList<String>();
 					for (int i=0;i<compPropsTot.size();i++) {
 
 						String chiave=compPropsTot.get(i).getName();
@@ -795,7 +795,7 @@ ArrayList<String> elencoBinaryId=new ArrayList<String>();
 							}
 						}
 					}					
-if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
+					if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 					ret.add(misura);
 				}	
@@ -805,11 +805,12 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				cursor.close();			
 			} 
 
-			
+
 		} catch (SDPOrderBySizeException e) {
 			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] SDPOrderBySizeException" +e);
 			throw (SDPOrderBySizeException)e;
 		} catch (Exception e) {
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] GenericException" +e);
 			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] INGORED" +e);
 		} finally {
 			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] END");
@@ -820,7 +821,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		return outres;
 	}	
 
-	
+
 	private boolean hasField(List<Property> compPropsTot,String fieldName) {
 		for (int i=0;compPropsTot!=null && i<compPropsTot.size();i++) {
 			String chiave=compPropsTot.get(i).getName();
@@ -828,7 +829,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		}
 		return false;
 	}
-	
+
 	public SDPDataResult getMeasuresStatsPerStream(String codiceTenant, 
 			String nameSpace, 
 			EdmEntityContainer entityContainer,
@@ -850,8 +851,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		String datasetCode=null;
 		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
-		int cnt = 1212;
-		
+		int cnt = 0;
+
 		// TODO YUCCA-74 odata evoluzione
 
 		try {
@@ -873,7 +874,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			//       - modificare eventualmente la logica di recupero di collencion,host, port, db specifici per il dataset
 			//       - modificare eventualmente la logica di recupero dell'idDataset
 			//INVARIATO
-			
+
 			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
 			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
 			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
@@ -881,12 +882,13 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
 			datasetCode=takeNvlValues(streamMetadata.get("datasetCode"));
 
-			
+			//TODO = socialDataset
+			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
 			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
 			 */
-			
+
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
 			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
 
@@ -968,7 +970,7 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			 */
 
 			ArrayList<Integer> vals = new ArrayList<Integer>();
-			
+
 			List<DBObject> listDatasetVersion = (List<DBObject>) streamMetadata.get("listDatasetVersion");
 			Iterator<DBObject> listaIterator = listDatasetVersion.iterator();
 			while (listaIterator.hasNext()) {
@@ -979,8 +981,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 			//queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
 			queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$in", vals)));
-			
-			
+
+
 
 			//BasicDBObject query = new BasicDBObject("idDataset",idDataset);
 			if (null!=internalId) {
@@ -1010,8 +1012,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 				//query.append("$and", userQuery);
 			}
-			
-			
+
+
 			BasicDBObject query = new BasicDBObject("$and", queryTot);
 			BasicDBObject queryGroupOut = new BasicDBObject("$and", queryOutTot);
 
@@ -1021,21 +1023,21 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 			//cnt = collMisure.find(query).count();
 
-//			if (skip<0) skip=0;
-//			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
-//			
-//			
-//			// per ordinamento su max 
-//			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
-//			skip=0;
-			
-			
+			//			if (skip<0) skip=0;
+			//			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+			//			
+			//			
+			//			// per ordinamento su max 
+			//			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
+			//			skip=0;
+
+
 			DBObject match=new BasicDBObject("$match",query);
 			DBObject matchAggregationOut=new BasicDBObject("$match",queryGroupOut);
-			
+
 			// groupby id
 			BasicDBObject groupFiledsId= new BasicDBObject();
-			
+
 			if ("year".equals(timeGroupByParam)) {
 				groupFiledsId.put("year", new BasicDBObject("$year","$time"));
 			} else if ("month_year".equals(timeGroupByParam)) {
@@ -1057,12 +1059,41 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
 				groupFiledsId.put("hour", new BasicDBObject("$hour","$time"));
 				groupFiledsId.put("minute", new BasicDBObject("$minute","$time"));
+			} else if ("month".equals(timeGroupByParam)) {
+				//YUCCA-388
+				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
+			} else if ("dayofmonth_month".equals(timeGroupByParam)) {
+				//YUCCA-388
+				groupFiledsId.put("dayofmonth", new BasicDBObject("$dayOfMonth","$time"));
+				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
+			} else if ("dayofweek_month".equals(timeGroupByParam)) {
+				//YUCCA-388
+				groupFiledsId.put("dayofweek", new BasicDBObject("$dayOfWeek","$time"));
+				groupFiledsId.put("month", new BasicDBObject("$month","$time"));
+			} else if ("dayofweek".equals(timeGroupByParam)) {
+				//YUCCA-388
+				groupFiledsId.put("dayofweek", new BasicDBObject("$dayOfWeek","$time"));
+			} else if ("hour_dayofweek".equals(timeGroupByParam)) {
+				//YUCCA-388
+				groupFiledsId.put("dayofweek", new BasicDBObject("$dayOfWeek","$time"));
+				groupFiledsId.put("hour", new BasicDBObject("$hour","$time"));
+			} else if ("hour".equals(timeGroupByParam)) {
+				//YUCCA-388
+				groupFiledsId.put("hour", new BasicDBObject("$hour","$time"));
+
+			} else if ("retweetparentid".equals(timeGroupByParam)) {
+				//YUCCA-388
+
+				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: retweetparentid aggregations is aveailable only for social dataset", Locale.UK);
+				groupFiledsId.put("retweetparentid", "$retweetParentId");
+				//TODO .. eccezione per dataset sbagliato
+
 			} else {
 				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
 			}
 			BasicDBObject groupId= new BasicDBObject("_id",groupFiledsId);
 
-			
+
 			//BasicDBList groupFiledsFileds= new BasicDBList();
 			if (null==timeGroupOperatorsParam || timeGroupOperatorsParam.trim().length()<=0) throw new SDPCustomQueryOptionException("invalid timeGroupOperators value", Locale.UK);
 			StringTokenizer st=new StringTokenizer(timeGroupOperatorsParam,";",false);
@@ -1071,37 +1102,37 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				String curOperator=st.nextToken();
 				StringTokenizer stDue=new StringTokenizer(curOperator,",",false);
 				if (stDue.countTokens()!=2) throw new SDPCustomQueryOptionException("invalid timeGroupOperators value: '" + curOperator+"'", Locale.UK);
-					String op=stDue.nextToken();
-					String field=stDue.nextToken();
-					if (!hasField(compPropsTot,field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' in '" + curOperator +"' not fund in edm" , Locale.UK);
-					String opMongo=null;
-					if ("avg".equals(op)) opMongo="$avg";
-					else if ("first".equals(op)) opMongo="$first";
-					else if ("last".equals(op)) opMongo="$last";
-					else if ("sum".equals(op)) opMongo="$sum";
-					else if ("max".equals(op)) opMongo="$max";
-					else if ("min".equals(op)) opMongo="$min";
-					else throw new SDPCustomQueryOptionException("invalid timeGroupOperators invalid operation '"+op+"' in '" + curOperator  +"'", Locale.UK);
-					
-					if (campoOperazione.containsKey(field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' present in more than one operation" , Locale.UK);
-					
-					campoOperazione.put(field, opMongo);
-					groupId.put(field+"_sts", new BasicDBObject(opMongo, "$"+field));
-					
+				String op=stDue.nextToken();
+				String field=stDue.nextToken();
+				if (!hasField(compPropsTot,field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' in '" + curOperator +"' not fund in edm" , Locale.UK);
+				String opMongo=null;
+				if ("avg".equals(op)) opMongo="$avg";
+				else if ("first".equals(op)) opMongo="$first";
+				else if ("last".equals(op)) opMongo="$last";
+				else if ("sum".equals(op)) opMongo="$sum";
+				else if ("max".equals(op)) opMongo="$max";
+				else if ("min".equals(op)) opMongo="$min";
+				else throw new SDPCustomQueryOptionException("invalid timeGroupOperators invalid operation '"+op+"' in '" + curOperator  +"'", Locale.UK);
+
+				if (campoOperazione.containsKey(field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' present in more than one operation" , Locale.UK);
+
+				campoOperazione.put(field, opMongo);
+				groupId.put(field+"_sts", new BasicDBObject(opMongo, "$"+field));
+
 			}
 			groupId.put("count", new BasicDBObject("$sum", 1));
-			
+
 			DBObject group = new BasicDBObject("$group", groupId);			
-			
+
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] total match ="+match);
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] total group ="+group);
-			
-			
+
+
 			ArrayList<DBObject> pipeline = new ArrayList<DBObject>();
-			
+
 			pipeline.add(match);
 			pipeline.add(group);
-			
+
 			//Arrays.asList(match,  group );
 			if (groupOutQuery != null) {
 				pipeline.add(matchAggregationOut);
@@ -1109,51 +1140,53 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			if (null!=userOrderBy) {
 				//pipeline.add(new BasicDBObject("$sort",(BasicDBList)userOrderBy));
 				BasicDBObject objeSort=new BasicDBObject();
-//				for (int kk=0;kk<((BasicDBList)userOrderBy).size();kk++ ) {
-//					BasicDBObject curObj=(BasicDBObject)((BasicDBList)userOrderBy).get(kk);
-//					Iterator<String> it = curObj.keySet().iterator();
-//					while (it.hasNext()) {
-//						String key=it.next();
-//						Integer orderVersus=new Integer(curObj.getString(key));
-//						objeSort.append(key, orderVersus);
-//						
-//					}
-//				}
+				//				for (int kk=0;kk<((BasicDBList)userOrderBy).size();kk++ ) {
+				//					BasicDBObject curObj=(BasicDBObject)((BasicDBList)userOrderBy).get(kk);
+				//					Iterator<String> it = curObj.keySet().iterator();
+				//					while (it.hasNext()) {
+				//						String key=it.next();
+				//						Integer orderVersus=new Integer(curObj.getString(key));
+				//						objeSort.append(key, orderVersus);
+				//						
+				//					}
+				//				}
 				for (int kkk=0;kkk<((ArrayList<SDPMongoOrderElement>)userOrderBy).size();kkk++) {
 					SDPMongoOrderElement curOrdElem=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(kkk);
 					objeSort.append(curOrdElem.getNomeCampo(),curOrdElem.getOrdine());
 				}
-				
-				
+
+
 				pipeline.add(new BasicDBObject("$sort",objeSort));
-				
+
 			}
-			
+
 			//if (null!=userOrderBy) cursor = collMisure.find(query).skip(skip).limit(limit).sort((BasicDBList)userOrderBy);
 			//else cursor = collMisure.find(query).skip(skip).limit(limit);
-			
+
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] total pipeline ="+pipeline.toString());
-			
+
 			AggregationOptions aggregationOptions = AggregationOptions.builder()
-			        .batchSize(100)
-			        .outputMode(AggregationOptions.OutputMode.CURSOR)
-			        .allowDiskUse(true)
-			        .build();			
-			
+					.batchSize(100)
+					.outputMode(AggregationOptions.OutputMode.CURSOR)
+					.allowDiskUse(true)
+					.build();			
+
 			long starTtime=0;
 			long deltaTime=-1;
-			
+
 			starTtime=System.currentTimeMillis();
 			Cursor cursor =collMisure.aggregate(pipeline,aggregationOptions);
-			
+
 			try {
 				deltaTime=System.currentTimeMillis()-starTtime;
 			} catch (Exception e) {}
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStream] QUERY TIME ="+deltaTime);
-			
+
 			starTtime=System.currentTimeMillis();
 			deltaTime=-1;
-			
+
+
+
 			cnt=0;
 			try {
 				//for (DBObject result : output.results()) {
@@ -1173,12 +1206,17 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 					//YUCCA-346
 					String minuto=takeNvlValues( ((DBObject)obj.get("_id")).get("minute"));
 
-					
+
+					//YUCCA-388
+					String dayofweek=takeNvlValues( ((DBObject)obj.get("_id")).get("dayofweek"));
+					String retweetparentid=takeNvlValues( ((DBObject)obj.get("_id")).get("retweetparentid"));
+
+
 					//String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
 
-					
+
 					String count=takeNvlValues( obj.get("count"));
-					
+
 
 
 					Map<String, Object> misura = new HashMap<String, Object>();
@@ -1188,20 +1226,29 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 					misura.put("hour",  (ora==null ? -1 : new Integer(ora)));
 					//YUCCA-346
 					misura.put("minute",  (minuto==null ? -1 : new Integer(minuto)));
+					//YUCCA-388
+					misura.put("dayofweek",  (dayofweek==null ? -1 : new Integer(dayofweek)));
+
+					//TODO solo se e' social
+					misura.put("retweetparentid",  (retweetparentid==null ? -1 : new Long(retweetparentid)));
+
+
 					misura.put("count",  (count==null ? 0 : new Integer(count)));
 
-//					if (DATA_TYPE_MEASURE.equals(datatType)) {
-//						String streamId=obj.get("streamCode").toString();
-//						String sensorId=obj.get("sensor").toString();
-//						misura.put("streamCode", streamId);
-//						misura.put("sensor", sensorId);
-//						misura.put("time",  obj.get("time"));
-//					}					
-//
-//					
-//					String iddataset=takeNvlValues(obj.get("idDataset"));
-//					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
-//					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
+
+
+					//					if (DATA_TYPE_MEASURE.equals(datatType)) {
+					//						String streamId=obj.get("streamCode").toString();
+					//						String sensorId=obj.get("sensor").toString();
+					//						misura.put("streamCode", streamId);
+					//						misura.put("sensor", sensorId);
+					//						misura.put("time",  obj.get("time"));
+					//					}					
+					//
+					//					
+					//					String iddataset=takeNvlValues(obj.get("idDataset"));
+					//					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
+					//					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 
 
 					for (int i=0;i<compPropsTot.size();i++) {
@@ -1275,24 +1322,24 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 		SDPDataResult outres= new SDPDataResult(ret, cnt);
 		return outres;
 	}		
-	
+
 	public SDPDataResult getBinary(String codiceTenant, String nameSpace, EdmEntityContainer entityContainer,DBObject streamMetadata,String internalId,String datatType,Object userQuery, Object userOrderBy,
 			ArrayList<String> elencoIdBinary,
 			String codiceApi,
 			int skip,
 			int limit
 			) {
-		
-		
+
+
 		// TODO YUCCA-74 odata evoluzione
 		// potrebbe no nsubire modifiche verificare solo info.binaryIdDataset e info.binaryDatasetVersion in base a come viene modificato streamMetadata
 
-		
+
 		String collection=null;
 		//		String sensore=null;
 		//		String stream=null;
-//		String idDataset=null;
-//		String datasetToFindVersion=null;
+		//		String idDataset=null;
+		//		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
 		int cnt = -1;
 		try {
@@ -1305,47 +1352,47 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			log.debug("[SDPDataApiMongoAccess::getBinary] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getBinary] streamMetadata="+streamMetadata);
 
-//			List<Property> compPropsTot=new ArrayList<Property>();
-//			List<Property> compPropsCur=new ArrayList<Property>();			
+			//			List<Property> compPropsTot=new ArrayList<Property>();
+			//			List<Property> compPropsCur=new ArrayList<Property>();			
 
 
-//			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
-//			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
-//			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
-//			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
-//			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
-//			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
+			//			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
+			//			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
+			//			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
+			//			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
+			//			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
+			//			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
 
-			
+
 			DbConfDto tanantDbCfg=new DbConfDto();
 			tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MEDIA, codiceTenant);
 			collection=tanantDbCfg.getCollection();
 			String host=tanantDbCfg.getHost();
 			String port=""+tanantDbCfg.getPort();
 			String dbcfg=tanantDbCfg.getDataBase();
-			
-			
+
+
 			Integer idDatasetBinary=(Integer)((DBObject)streamMetadata.get("info")).get("binaryIdDataset");
 			Integer binaryDatasetVersion=(Integer)((DBObject)streamMetadata.get("info")).get("binaryDatasetVersion");
-			
+
 
 			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
 			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
 
-//			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
-//
-//			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
-//			for (int k=0;k<campiDbList.size();k++) {
-//				boolean present=false;
-//				compPropsCur=getDatasetFiledsOdataPros(campiDbList.get(k));
-//				for (int i=0;i<compPropsTot.size();i++) {
-//					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
-//
-//				}
-//				if (!present) {
-//					compPropsTot.add(compPropsCur.get(0));
-//				}
-//			}
+			//			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
+			//
+			//			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
+			//			for (int k=0;k<campiDbList.size();k++) {
+			//				boolean present=false;
+			//				compPropsCur=getDatasetFiledsOdataPros(campiDbList.get(k));
+			//				for (int i=0;i<compPropsTot.size();i++) {
+			//					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
+			//
+			//				}
+			//				if (!present) {
+			//					compPropsTot.add(compPropsCur.get(0));
+			//				}
+			//			}
 
 
 			List<Property> compPropsTot=new ArrayList<Property>();
@@ -1355,15 +1402,15 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			compPropsTot.add(new SimpleProperty().setName("idDataset").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
 
-			
-			
-			
+
+
+
 			compPropsTot.add(new SimpleProperty().setName("idBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(false)));
 			compPropsTot.add(new SimpleProperty().setName("filenameBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 			compPropsTot.add(new SimpleProperty().setName("aliasNameBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 			compPropsTot.add(new SimpleProperty().setName("sizeBinary").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
-//			compPropsTot.add(new SimpleProperty().setName("insertDateBinary").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(true)));
-//			compPropsTot.add(new SimpleProperty().setName("lastUpdateDateBinary").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(true)));
+			//			compPropsTot.add(new SimpleProperty().setName("insertDateBinary").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(true)));
+			//			compPropsTot.add(new SimpleProperty().setName("lastUpdateDateBinary").setType(EdmSimpleTypeKind.DateTimeOffset).setFacets(new Facets().setNullable(true)));
 			compPropsTot.add(new SimpleProperty().setName("contentTypeBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 			compPropsTot.add(new SimpleProperty().setName("urlDownloadBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 			compPropsTot.add(new SimpleProperty().setName("metadataBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
@@ -1390,8 +1437,8 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 			queryTot.add( new BasicDBObject("idDataset",idDatasetBinary));
 
 			queryTot.add( new BasicDBObject("datasetVersion",binaryDatasetVersion));
-			
-			
+
+
 
 			//BasicDBObject query = new BasicDBObject("idDataset",idDataset);
 			if (null!=internalId) {
@@ -1410,13 +1457,13 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 				//query.append("$and", userQuery);
 			}
 
-			
+
 			if (null!=elencoIdBinary && elencoIdBinary.size()>0) {
 				BasicDBObject inQuery = new BasicDBObject();
 				inQuery.put("idBinary", new BasicDBObject("$in", elencoIdBinary));
 				queryTot.add(inQuery);
 			}
-			
+
 			BasicDBObject query = new BasicDBObject("$and", queryTot);
 
 			log.info("[SDPDataApiMongoAccess::getBinary] total data query ="+query);
@@ -1426,18 +1473,18 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 			if (skip<0) skip=0;
 			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
-			
-			
+
+
 			// per ordinamento su max 
 			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
 			skip=0;
-			
-			
+
+
 			if (null!=userOrderBy) cursor = collMisure.find(query).skip(skip).limit(limit).sort((BasicDBList)userOrderBy);
 			else cursor = collMisure.find(query).skip(skip).limit(limit);
 			try {
 				while (cursor.hasNext()) {
-	
+
 
 
 					DBObject obj=cursor.next();
@@ -1458,14 +1505,14 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 						misura.put("time",  obj.get("time"));
 					}					
 
-					
+
 					String iddataset=takeNvlValues(obj.get("idDataset"));
 					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 
 
-					
-					
+
+
 					for (int i=0;i<compPropsTot.size();i++) {
 
 						String chiave=compPropsTot.get(i).getName();
@@ -1507,19 +1554,19 @@ if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 									Map<String, Object> mappaBinaryRef=new HashMap<String, Object>();
 									mappaBinaryRef.put("idBinary", (String)valore);
 									misura.put(chiave, mappaBinaryRef);
-									
+
 
 								}
 							}
 						}
 					}
-					
-///binary/{apiCode}/{dataSetCode}/{dataSetVersion}/{idBinary}
-					
 
-					
+					///binary/{apiCode}/{dataSetCode}/{dataSetVersion}/{idBinary}
+
+
+
 					String path="/api/"+codiceApi+"/attachment/"+idDatasetBinary+"/"+binaryDatasetVersion+"/"+misura.get("idBinary");
-					
+
 					misura.put("urlDownloadBinary", path);
 
 					ret.add(misura);
