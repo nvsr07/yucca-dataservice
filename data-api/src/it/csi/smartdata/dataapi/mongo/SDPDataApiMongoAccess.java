@@ -7,6 +7,7 @@ import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
 import it.csi.smartdata.dataapi.mongo.dto.SDPMongoOrderElement;
 import it.csi.smartdata.dataapi.mongo.exception.SDPCustomQueryOptionException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
+import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -515,7 +516,13 @@ public class SDPDataApiMongoAccess {
 			List<Property> compPropsTot=new ArrayList<Property>();
 			List<Property> compPropsCur=new ArrayList<Property>();			
 
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] limit_init --> "+limit);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] skip_init --> "+skip);
 
+			int limit_init=limit;
+			int skip_init=skip;
+			
+			
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
@@ -621,7 +628,8 @@ public class SDPDataApiMongoAccess {
 			}
 
 			//queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
-			queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$in", vals)));
+			//queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$in", vals)));
+			queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$gt", 0)));
 
 
 
@@ -717,12 +725,37 @@ public class SDPDataApiMongoAccess {
 
 			}
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total data query executed in --> "+deltaTime);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] count --> "+cursor.count());
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] limit --> "+limit);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] skip --> "+skip);
+			
+			
+			int [] limiti = checkPagesData((skip_init>=0 ? new Integer(skip_init): null) ,
+					 (limit_init>=0 ? new Integer(limit_init): null), cursor.count())	;		
+			int startindex=limiti[0];
+			int endindex=limiti[1];
+			
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] startindex --> "+startindex);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] endindex --> "+endindex);
+			
+			int recCount=0;
+			DBObject obj=null;
+			starTtime=System.currentTimeMillis();
+			
+			cursor.skip(startindex);
+			
 			try {
-				while (cursor.hasNext()) {
+				while (cursor.hasNext() && recCount<(endindex-startindex)) {
 
+					//log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] ciclo  recCount--> "+recCount);
 
-
-					DBObject obj=cursor.next();
+					obj=cursor.next();
+					
+					
+					if ((1==1) || (recCount>=startindex && recCount<endindex )) {
+						log.info("[SDPDataApiMongoAccess::getMeasuresPerStream]       TAKEN recCount --> "+recCount);
+					
+					
 					String internalID=obj.get("_id").toString();
 					String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
 					//					String current=takeNvlValues(obj.get("current"));
@@ -798,7 +831,19 @@ public class SDPDataApiMongoAccess {
 					if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
 
 					ret.add(misura);
+					
+					
+					}
+					recCount++;
+					
 				}	
+				
+				try {
+					deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStream] total fetch in --> "+deltaTime);
+				
+				
 			} catch (Exception e) {
 				throw e;
 			}  finally {
@@ -980,7 +1025,8 @@ public class SDPDataApiMongoAccess {
 			}
 
 			//queryTot.add( new BasicDBObject("datasetVersion",new Integer(new Double(datasetToFindVersion).intValue())));
-			queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$in", vals)));
+			//queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$in", vals)));
+			queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$gt", 0)));
 
 
 
@@ -1589,4 +1635,54 @@ public class SDPDataApiMongoAccess {
 		return outres;
 	}		
 
+	
+	private int [] checkPagesData(Integer skip,Integer top, int resultSize) throws Exception{
+		int startindex=0;
+		int endindex=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+
+
+		log.debug("[SDPDataApiMongoAccess::checkPagesData] skipParameter="+skip);
+		log.debug("[SDPDataApiMongoAccess::checkPagesData] topParameter="+top);
+
+		//se skip è valorizzato
+		if(skip!=null) {
+			startindex=startindex+skip.intValue();
+		}
+		
+		if(skip!=null && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max page = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+		
+
+		//controlli ... sollevo eccezione quando:
+		// top valorizzato e > di maxsize
+		// top non valorizzato e size - start > max
+		if(top!=null && top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+endindex,Locale.UK);
+		if(top==null && (resultSize-startindex)>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())  throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+endindex,Locale.UK);
+		if(skip!=null && skip.intValue()>resultSize) throw new SDPPageSizeException("skip value out of range: max document in query result = "+resultSize,Locale.UK);
+
+
+
+
+		// a questo punto i parametri sono buoni ... valorizzo endindex in base al top se valorizzato (sempre con start index >0
+		if(top!=null) endindex=top.intValue();
+
+		endindex=startindex+endindex;
+
+		// riporto endinx a resultsize nel caso in cui sia maggiore
+		if (endindex>resultSize) endindex=resultSize;
+
+
+
+
+
+
+		log.debug("[SDPDataApiMongoAccess::checkPagesData] checkPagesData="+startindex);
+		log.debug("[SDPDataApiMongoAccess::checkPagesData] checkPagesData="+endindex);	
+
+
+
+		int [] ret = new int[] {startindex,endindex, ((top!=null) ? top.intValue() : -1 ) , ((skip!=null) ? skip.intValue() : -1 ) }; 
+		return ret; 
+
+	}		
+	
 }

@@ -305,15 +305,18 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					
 					
 					
-					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
-					int startindex=limiti[0];
-					int endindex=limiti[1];
+//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
+//					int startindex=limiti[0];
+//					int endindex=limiti[1];
 
 
 					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-					for (int i=startindex;i<endindex;i++) {
-						misureNew.add(dataRes.getDati().get(i));
-					}
+//					for (int i=startindex;i<endindex;i++) {
+//						misureNew.add(dataRes.getDati().get(i));
+//					}
+					for (int i=0;i<dataRes.getDati().size();i++) {
+					misureNew.add(dataRes.getDati().get(i));
+				}
 
 
 
@@ -342,15 +345,18 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							skiptop[0],
 							skiptop[1]);
 
-					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
-					int startindex=limiti[0];
-					int endindex=limiti[1];
-
+//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
+//					int startindex=limiti[0];
+//					int endindex=limiti[1];
+//
 					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-					for (int i=startindex;i<endindex;i++) {
-						misureNew.add(dataRes.getDati().get(i));
-					}
+//					for (int i=startindex;i<endindex;i++) {
+//						misureNew.add(dataRes.getDati().get(i));
+//					}
 
+					for (int i=0;i<dataRes.getDati().size();i++) {
+					misureNew.add(dataRes.getDati().get(i));
+				}
 
 					ODataResponse ret= EntityProvider.writeFeed(
 							contentType,
