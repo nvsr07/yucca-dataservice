@@ -522,7 +522,6 @@ public class SDPDataApiMongoAccess {
 			int limit_init=limit;
 			int skip_init=skip;
 			
-			
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
@@ -536,6 +535,8 @@ public class SDPDataApiMongoAccess {
 			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
 			datasetCode=takeNvlValues(streamMetadata.get("datasetCode"));
+
+			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
 
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
@@ -694,10 +695,10 @@ public class SDPDataApiMongoAccess {
 					orderByAllowed=true;
 				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
 
-
 					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
-					//if (elemOrder.toString().indexOf("\"time\"")!=-1) orderByAllowed=true;
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
+					
 				}
 
 
@@ -852,10 +853,10 @@ public class SDPDataApiMongoAccess {
 
 
 		} catch (SDPOrderBySizeException e) {
-			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] SDPOrderBySizeException" +e);
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] SDPOrderBySizeException",e);
 			throw (SDPOrderBySizeException)e;
 		} catch (Exception e) {
-			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] GenericException" +e);
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] GenericException",e);
 			log.error("[SDPDataApiMongoAccess::getMeasuresPerStream] INGORED" +e);
 		} finally {
 			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStream] END");
