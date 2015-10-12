@@ -69,7 +69,7 @@ public class MongoDbStore {
 		return ret;
 	}
 
-	public List<Map<String, Object>> getAllFilteredDatasets(Object userQuery) {
+	public List<Map<String, Object>> getAllFilteredDatasets(Object userQuery,int skip,int limit) {
 		List<Map<String,Object>> ret = new ArrayList<Map<String,Object>>();
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
 		DBCollection coll = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
@@ -79,8 +79,14 @@ public class MongoDbStore {
 		BasicDBObject query = (BasicDBObject) userQuery;
 		query.put("configData.current", 1);
 		
+		
+		if (skip<0) skip=0;
+		
 		query.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
-		DBCursor cursor = coll.find(query);
+		DBCursor cursor = null;
+		
+		if (limit>0) cursor=coll.find(query).skip(skip).limit(limit); 
+		else cursor=coll.find(query).skip(skip);
 
 		while (cursor.hasNext()) {
 
@@ -88,10 +94,10 @@ public class MongoDbStore {
 
 			Map<String, Object> cur = extractOdataPropertyFromMongo(collapi,
 					collstream, found);
-			if(ret.size()<MAX_RECORDS){
+			//if(ret.size()<MAX_RECORDS){
 				ret.add(cur);
-			}else 
-				break;
+			//}else 
+			//	break;
 		}
 
 		return ret;

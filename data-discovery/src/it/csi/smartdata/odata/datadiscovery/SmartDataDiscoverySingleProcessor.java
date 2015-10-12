@@ -59,8 +59,13 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 				MongoDbStore mongoAccess=new MongoDbStore();
 
 				//Map<String,String> param = uriInfo.getCustomQueryOptions();
+				
+				
+				//TODO
+				Integer skip=(uriInfo.getSkip()!=null ? uriInfo.getSkip() : new Integer(-1));
+				Integer top= (uriInfo.getTop()!= null ? uriInfo.getTop()  : new Integer(-1));
 
-				List<Map<String,Object>> allDatasets=mongoAccess.getAllFilteredDatasets(userQuery);
+				List<Map<String,Object>> allDatasets=mongoAccess.getAllFilteredDatasets(userQuery,skip.intValue(),top.intValue());
 				if (allDatasets != null) {
 					URI serviceRoot = getContext().getPathInfo().getServiceRoot();
 					ODataEntityProviderPropertiesBuilder propertiesBuilder =EntityProviderWriteProperties.serviceRoot(serviceRoot);
