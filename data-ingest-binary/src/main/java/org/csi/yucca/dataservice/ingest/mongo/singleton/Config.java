@@ -28,7 +28,12 @@ public class Config {
 	public static final String STORE_API_ADDRESS = "STORE_API_ADDRESS";
 	public static final String HDFS_ROOT_DIR = "HDFS_ROOT_DIR";
 	public static final String HDFS_USERNAME = "HDFS_USERNAME";
-	
+	public static final String KNOX_URL = "KNOX_URL";
+	public static final String KNOX_PWD = "KNOX_PWD";
+	public static final String KNOX_USER = "KNOX_USER";
+	public static final String KNOX_GROUP = "KNOX_GROUP";
+	public static final String HDFS_LIBRARY = "HDFS_LIBRARY";
+
 	private static Map<String, String> params = null;
 	private static Config instance = null;
 
@@ -57,10 +62,15 @@ public class Config {
 		params.put(STORE_API_ADDRESS, rb.getString(STORE_API_ADDRESS));
 		params.put(HDFS_ROOT_DIR, rb.getString(HDFS_ROOT_DIR));
 		params.put(HDFS_USERNAME, rb.getString(HDFS_USERNAME));
+		params.put(HDFS_LIBRARY, rb.getString(HDFS_LIBRARY));
 		
 		
 		ResourceBundle rbSecret = ResourceBundle.getBundle("SDPDataApiSecret");
 		params.put(MONGO_PASSWORD, rbSecret.getString(MONGO_PASSWORD));
+		params.put(KNOX_URL, rbSecret.getString(KNOX_URL));
+		params.put(KNOX_PWD, rbSecret.getString(KNOX_PWD));
+		params.put(KNOX_USER, rbSecret.getString(KNOX_USER));
+		params.put(KNOX_GROUP, rbSecret.getString(KNOX_GROUP));
 	}
 
 	public static Config getInstance() {
@@ -155,5 +165,25 @@ public class Config {
 	
 	public static String getHdfsUsername() {
 		return params.get(HDFS_USERNAME);
+	}
+
+	public static String getKnoxUrl() {
+		return params.get(KNOX_URL);
+	}
+
+	public static String getKnoxPwd() {
+		return params.get(KNOX_PWD);
+	}
+
+	public static String getKnoxUser() {
+		return params.get(KNOX_USER);
+	}
+
+	public static String getKnoxGroup() {
+		return params.get(KNOX_GROUP);
+	}
+
+	public static String getHdfsLibrary() {
+		return params.get(HDFS_LIBRARY);
 	}
 }
