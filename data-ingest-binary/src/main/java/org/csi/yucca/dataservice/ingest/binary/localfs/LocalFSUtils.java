@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.net.URI;
 
 import org.apache.hadoop.security.UserGroupInformation;
+import org.csi.yucca.dataservice.ingest.binary.hdfs.WriteFileHdfsAction;
 
 public class LocalFSUtils {
 
@@ -23,18 +24,23 @@ public class LocalFSUtils {
 	}
 	
 	
-//	public static URI writeFile(String user, String remotePath, InputStream is)
-//	{
-//		URI uri = null;
-//		 try {
-//				UserGroupInformation ugi
-//	                = UserGroupInformation.createRemoteUser(user);
-//
-//				uri = ugi.doAs(new WriteFileHdfsAction(user, remotePath, is));
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	        }
-//		return uri;
-//	}
+	public static String writeFile(String user, String remotePath, InputStream is)
+	{
+		String uri = null;
+		 try {
+				UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+
+				uri = ugi.doAs(new WriteFileHdfsAction(user, remotePath, is));
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+		return uri;
+	}
+
+
+	public static Boolean deleteDir(String user, String remotePath){
+		// TODO Auto-generated method stub
+		return true;
+	}
 	
 }

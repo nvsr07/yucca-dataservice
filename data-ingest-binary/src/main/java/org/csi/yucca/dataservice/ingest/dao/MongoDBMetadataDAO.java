@@ -158,6 +158,8 @@ public class MongoDBMetadataDAO {
 		BasicDBObject searchQuery = new BasicDBObject();
 		searchQuery.put("idDataset", binaryIdDataset);
 		searchQuery.put("configData.current", 1);
+		
+		System.out.println("searchQuery in getCurrentMetadaByBinaryID = " + searchQuery.toString());
 
 		DBObject data = collection.find(searchQuery).one();
 		ObjectId id = (ObjectId) data.get("_id");

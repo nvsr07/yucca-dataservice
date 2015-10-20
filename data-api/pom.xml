@@ -26,10 +26,14 @@
 				<version>2.3</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+<<<<<<< Updated upstream
 					<!-- <outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
 					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
 
 
+=======
+					<outputDirectory>/usr/local/jboss-eap-6.0/standalone/deployments</outputDirectory>
+>>>>>>> Stashed changes
 					<warName>DataApi</warName>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>

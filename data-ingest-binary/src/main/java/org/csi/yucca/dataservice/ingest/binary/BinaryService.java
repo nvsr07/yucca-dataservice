@@ -31,7 +31,9 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
-import org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils;
+
+//import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
+
 import org.csi.yucca.dataservice.ingest.model.api.Dataset;
 import org.csi.yucca.dataservice.ingest.model.api.MyApi;
 import org.csi.yucca.dataservice.ingest.model.metadata.BinaryData;
@@ -49,7 +51,7 @@ public class BinaryService {
 
 	private final String MEDIA = "media";
 	private final String PATH_INTERNAL_HDFS = "/rawdata/files/";
-	private final Integer MAX_SIZE_FILE_ATTACHMENT = 104857601;
+	private final Integer MAX_SIZE_FILE_ATTACHMENT = 154857601;
 	private String datasetCode;
 
 	static Logger log = Logger.getLogger(BinaryService.class);
@@ -109,7 +111,14 @@ public class BinaryService {
 						} else {
 							String pathForUri = binaryData.getPathHdfsBinary();
 
-							InputStream is = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+							InputStream is = null;
+							if (Config.getHdfsLibrary().equals("webhdfs")){
+								is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl());
+							} else if (Config.getHdfsLibrary().equals("hdfs")){
+								is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+							} else {
+								is = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+							}
 							if (is != null)
 								return is;
 							else 
@@ -181,14 +190,26 @@ public class BinaryService {
 		binaryData.setContentTypeBinary(attachment.getContentType().toString());
 
 		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
-
+		
+		System.out.println("Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
+			pathForUri = "/tenant/tnt-sandbox" + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(pathForUri);
 			String uri = null;
 			try {
-				uri = HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
+				if (Config.getHdfsLibrary().equals("webhdfs")){
+					System.out.println("webhdfs = " + Config.getHdfsLibrary());
+					uri = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.writeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), Config.getKnoxGroup(), attachment.getObject(InputStream.class));
+				} else if (Config.getHdfsLibrary().equals("hdfs")){
+					System.out.println("hdfs = " + Config.getHdfsLibrary());
+					uri = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
+				} else {
+					System.out.println("LocalFSUtils = " + Config.getHdfsLibrary());
+					uri = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
+				}
+				
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -243,7 +264,16 @@ public class BinaryService {
 		String pathForUri = binaryData.getPathHdfsBinary();
 
 		//Get METADATA of selected file
-		InputStream fileToParser = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+		//InputStream fileToParser = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd() , pathForUri, Config.getKnoxUrl());
+		InputStream fileToParser = null;
+		if (Config.getHdfsLibrary().equals("webhdfs")){
+			fileToParser = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl());
+		} else if (Config.getHdfsLibrary().equals("hdfs")){
+			fileToParser = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+		} else {
+			fileToParser = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+		}
+		
 		if (fileToParser != null){
 
 			Map<String,String> mapHS = null;
@@ -293,11 +323,20 @@ public class BinaryService {
 		
 		//Get binaryObject
 		String pathForUri = "/pre-tenant/tnt-"+tenantCode+"/rawdata/files/"+datasetCode+"/";
+		pathForUri = "/tenant/tnt-sandbox/rawdata/files/"+datasetCode+"/";
 
 		//Get METADATA of selected file
 		Boolean resultDel = false;
 		try {
-			resultDel = HdfsFSUtils.deleteDir(Config.getHdfsUsername() + tenantCode, pathForUri);
+			//resultDel = HdfsFSUtils.deleteDir(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl());
+			if (Config.getHdfsLibrary().equals("webhdfs")){
+				resultDel = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.deleteDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl());
+			} else if (Config.getHdfsLibrary().equals("hdfs")){
+				resultDel = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.deleteDir(Config.getHdfsUsername() + tenantCode, pathForUri);
+			} else {
+				resultDel = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.deleteDir(Config.getHdfsUsername() + tenantCode, pathForUri);
+			}
+			
 		} catch (Exception ex) {
 			// TODO Auto-generated catch block
 			ex.printStackTrace();
