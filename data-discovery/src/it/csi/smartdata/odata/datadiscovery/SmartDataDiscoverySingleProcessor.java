@@ -1,10 +1,11 @@
 package it.csi.smartdata.odata.datadiscovery;
 
-import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_DATASETS;
 import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_NAME_DATASET;
+import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_NAME_STREAM;
+import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_DATASETS;
 import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_FIELDS;
 import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_SET_NAME_STREAMS;
-import static it.csi.smartdata.odata.datadiscovery.SmartDataDiscoveryEdmProvider.ENTITY_NAME_STREAM;
+import it.csi.smartdata.odata.dto.SmartDataDiscoveryResponseDTO;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -66,7 +67,10 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 				Integer skip=(uriInfo.getSkip()!=null ? uriInfo.getSkip() : new Integer(-1));
 				Integer top= (uriInfo.getTop()!= null ? uriInfo.getTop()  : new Integer(-1));
 
-				List<Map<String,Object>> allDatasets=mongoAccess.getAllFilteredDatasets(userQuery,skip.intValue(),top.intValue());
+				
+				SmartDataDiscoveryResponseDTO daoRet=mongoAccess.getAllFilteredDatasets(userQuery,skip.intValue(),top.intValue());
+				List<Map<String,Object>> allDatasets=(daoRet!= null ? daoRet.getDati() : null);
+				int totalCount=(daoRet!= null ? daoRet.getTotalCount() : 0);
 				if (allDatasets != null) {
 					URI serviceRoot = getContext().getPathInfo().getServiceRoot();
 					ODataEntityProviderPropertiesBuilder propertiesBuilder =EntityProviderWriteProperties.serviceRoot(serviceRoot);
@@ -80,7 +84,7 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 					
 //					ExpandSelectTreeNode expandSensorTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
 					//
-					propertiesBuilder.inlineCountType(InlineCount.ALLPAGES).inlineCount(allDatasets.size()).expandSelectTree(expandSelectTreeNode).callbacks(callbacks);
+					propertiesBuilder.inlineCountType(InlineCount.ALLPAGES).inlineCount(totalCount).expandSelectTree(expandSelectTreeNode).callbacks(callbacks);
 
 					return EntityProvider.writeFeed(contentType, entitySet, allDatasets, propertiesBuilder.build());
 				}

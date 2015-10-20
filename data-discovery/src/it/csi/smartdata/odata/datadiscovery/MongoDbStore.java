@@ -2,6 +2,7 @@ package it.csi.smartdata.odata.datadiscovery;
 
 import it.csi.smartdata.odata.dbconfig.ConfigParamsSingleton;
 import it.csi.smartdata.odata.dbconfig.MongoSingleton;
+import it.csi.smartdata.odata.dto.SmartDataDiscoveryResponseDTO;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -69,7 +70,10 @@ public class MongoDbStore {
 		return ret;
 	}
 
-	public List<Map<String, Object>> getAllFilteredDatasets(Object userQuery,int skip,int limit) {
+	public SmartDataDiscoveryResponseDTO getAllFilteredDatasets(Object userQuery,int skip,int limit) {
+		
+		SmartDataDiscoveryResponseDTO risposta= new SmartDataDiscoveryResponseDTO();
+		
 		List<Map<String,Object>> ret = new ArrayList<Map<String,Object>>();
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
 		DBCollection coll = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
@@ -83,6 +87,9 @@ public class MongoDbStore {
 		if (skip<0) skip=0;
 		
 		query.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
+		
+		int cnt=coll.find(query).count();
+		
 		DBCursor cursor = null;
 		
 		if (limit>0) cursor=coll.find(query).skip(skip).limit(limit); 
@@ -99,8 +106,10 @@ public class MongoDbStore {
 			//}else 
 			//	break;
 		}
-
-		return ret;
+		risposta.setDati(ret);
+		risposta.setTotalCount(cnt);
+		//return ret;
+		return risposta;
 	}
 
 
