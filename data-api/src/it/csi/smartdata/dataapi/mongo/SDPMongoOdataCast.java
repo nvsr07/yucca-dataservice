@@ -78,6 +78,17 @@ public class SDPMongoOdataCast {
 				String nameSpace=((DBObject)obj.get("configData")).get("entityNameSpace").toString();
 				String subType=((DBObject)obj.get("configData")).get("subtype").toString();
 
+				
+				String binaryIdDataset=null;
+				try {
+					binaryIdDataset=takeNvlValues(    obj.get("binaryIdDataset"));
+					//binaryIdDataset=takeNvlValues(    ((DBObject)(((DBObject)obj.get("configData")).get("info"))).get("binaryIdDataset"));
+				} catch (Exception e) {
+					binaryIdDataset=null;
+				}
+				
+				
+				
 				if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_STREAM.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
 					//TODO eliminato
 				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTISTREAM.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
@@ -113,10 +124,10 @@ public class SDPMongoOdataCast {
 				} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && nameSpace.equals(edmFQName.getNamespace())) {
 					if (SDPDataApiConstants.ENTITY_NAME_UPLOADDATA.equals(edmFQName.getName())) {
 						Object eleCapmpi=obj.get("mergedComponents");
-						ret=getUploadDataType(nameSpace,eleCapmpi,false);			
+						ret=getUploadDataType(nameSpace,eleCapmpi,false,binaryIdDataset);			
 					} else if (SDPDataApiConstants.ENTITY_NAME_UPLOADDATA_HISTORY.equals(edmFQName.getName())) {
 						Object eleCapmpi=obj.get("mergedComponents");
-						ret=getUploadDataType(nameSpace,eleCapmpi,true);			
+						ret=getUploadDataType(nameSpace,eleCapmpi,true,binaryIdDataset);			
 					}  
 
 					//1.2 binary
@@ -493,7 +504,7 @@ public class SDPMongoOdataCast {
 		}			
 	}		
 
-	private EntityType getUploadDataType (String nameSpace,Object eleCapmpi,boolean historical) throws Exception{
+	private EntityType getUploadDataType (String nameSpace,Object eleCapmpi,boolean historical, String binaryIdDataset) throws Exception{
 		try {
 			log.debug("[SDPMongoOdataCast::getUploadDataType] BEGIN");
 			log.debug("[SDPMongoOdataCast::getUploadDataType] nameSpace="+nameSpace);
@@ -521,12 +532,13 @@ public class SDPMongoOdataCast {
 			Key keyMeasure = new Key().setKeys(keyPropertiesDataAttributes);
 
 			//1.2 binary
+			 
 			List<NavigationProperty> navigationProperties = new ArrayList<NavigationProperty>();
 			navigationProperties = new ArrayList<NavigationProperty>();
 //			navigationProperties.add(new NavigationProperty().setName(SDPDataApiConstants.ENTITY_SET_NAME_BINARY)
 //					.setRelationship(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)).setFromRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setToRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD)
 //					);
-			navigationProperties.add(new NavigationProperty().setName(SDPDataApiConstants.ENTITY_SET_NAME_BINARY)
+			if (null!=binaryIdDataset) navigationProperties.add(new NavigationProperty().setName(SDPDataApiConstants.ENTITY_SET_NAME_BINARY)
 					.setRelationship(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY)).setFromRole(SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY).setToRole(SDPDataApiConstants.ROLE_BINARY_DATASETUPLOAD));
 
 
@@ -604,6 +616,7 @@ public class SDPMongoOdataCast {
 			//YUCCA-388
 			measureProps.add(new SimpleProperty().setName("dayofweek").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			measureProps.add(new SimpleProperty().setName("retweetparentid").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
+			measureProps.add(new SimpleProperty().setName("iduser").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 			
 			
 			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
@@ -629,6 +642,7 @@ public class SDPMongoOdataCast {
 			//YUCCA-388
 			keyPropertiesMeasure.add(new PropertyRef().setName("dayofweek"));
 			keyPropertiesMeasure.add(new PropertyRef().setName("retweetparentid"));
+			keyPropertiesMeasure.add(new PropertyRef().setName("iduser"));
 			
 			Key keyMeasure = new Key().setKeys(keyPropertiesMeasure);
 			return new EntityType().setName(SDPDataApiConstants.ENTITY_NAME_SOCIAL_STATS)
@@ -757,7 +771,8 @@ public class SDPMongoOdataCast {
 				//1.2 binary
 				String binaryIdDataset=null;
 				try {
-					binaryIdDataset=takeNvlValues(    ((DBObject)(((DBObject)obj.get("configData")).get("info"))).get("binaryIdDataset"));
+					binaryIdDataset=takeNvlValues(    obj.get("binaryIdDataset"));
+					//binaryIdDataset=takeNvlValues(    ((DBObject)(((DBObject)obj.get("configData")).get("info"))).get("binaryIdDataset"));
 				} catch (Exception e) {
 					binaryIdDataset=null;
 				}
@@ -856,7 +871,7 @@ public class SDPMongoOdataCast {
 					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA),codiceApi));
 
 					//1.2 binary
-					entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_BINARY),codiceApi));
+					if (null!=binaryIdDataset) entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_BINARY),codiceApi));
 
 					//entityTypes.add(getEntityType(new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA_HISTORY),codiceApi));
 					schema.setEntityTypes(entityTypes);
@@ -869,22 +884,26 @@ public class SDPMongoOdataCast {
 					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA,codiceApi));
 
 					//1.2 binary
-					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_BINARY,codiceApi));
+					if (null!=binaryIdDataset)   entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_BINARY,codiceApi));
+					
+					
 					entityContainer.setEntitySets(entitySets);
-					entityContainers.add(entityContainer);
+					entityContainers.add(entityContainer); 
 
 					//1.2 binary
 					List<Association> associations = new ArrayList<Association>();
-					associations.add(getAssociation(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY),codiceApi));
+					if (null!=binaryIdDataset)   associations.add(getAssociation(new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_NAME_DATASETUPLOAD_BINARY),codiceApi));
 					schema.setAssociations(associations);
 					
+					if (null!=binaryIdDataset)  {
 				    List<ComplexType> complexTypes = new ArrayList<ComplexType>();
 				    complexTypes.add(getComplexType(new FullQualifiedName(nameSpace, SDPDataApiConstants.COMPLEX_TYPE_BINARYREF),codiceApi));
 				    schema.setComplexTypes(complexTypes);
+					}
 
 					//1.2 binary
 					List<AssociationSet> associationSets = new ArrayList<AssociationSet>();
-					associationSets.add(getAssociationSet(entContainerDB, new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_SET_DATASETUPLOAD_BINARY),
+					if (null!=binaryIdDataset)   associationSets.add(getAssociationSet(entContainerDB, new FullQualifiedName(nameSpace, SDPDataApiConstants.ASSOCIATION_SET_DATASETUPLOAD_BINARY),
 							SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA, SDPDataApiConstants.ROLE_DATASETUPLOAD_BINARY,codiceApi));
 					entityContainer.setAssociationSets(associationSets);					
 

@@ -675,6 +675,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		
 		//YUCCA-388
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.retweetparentid");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.iduser");
 		
 
 	}

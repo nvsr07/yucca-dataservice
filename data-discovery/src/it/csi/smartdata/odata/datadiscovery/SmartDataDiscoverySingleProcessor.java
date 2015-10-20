@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.ODataCallback;
+import org.apache.olingo.odata2.api.commons.InlineCount;
 import org.apache.olingo.odata2.api.edm.EdmEntitySet;
 import org.apache.olingo.odata2.api.edm.EdmLiteralKind;
 import org.apache.olingo.odata2.api.edm.EdmProperty;
@@ -79,7 +80,7 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 					
 //					ExpandSelectTreeNode expandSensorTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
 					//
-					propertiesBuilder.expandSelectTree(expandSelectTreeNode).callbacks(callbacks);
+					propertiesBuilder.inlineCountType(InlineCount.ALLPAGES).inlineCount(allDatasets.size()).expandSelectTree(expandSelectTreeNode).callbacks(callbacks);
 
 					return EntityProvider.writeFeed(contentType, entitySet, allDatasets, propertiesBuilder.build());
 				}

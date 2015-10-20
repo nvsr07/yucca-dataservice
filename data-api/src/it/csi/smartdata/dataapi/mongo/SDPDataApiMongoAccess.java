@@ -130,13 +130,21 @@ public class SDPDataApiMongoAccess {
 						//BasicDBList objStreams = (BasicDBList)((DBObject)obj.get("streams")).get("stream");
 						BasicDBList objStreams = (BasicDBList)obj.get("dataset");
 						BasicDBList queryStreams=createQueryStreamPerApi(objStreams);
-						BasicDBList compPropsTot = getMergedStreamComponentsPerQueryString(queryStreams);
+						
+						HashMap<String , Object> returnData=getMergedStreamComponentsPerQueryString(queryStreams);
+						
+						BasicDBList compPropsTot = (null!=returnData.get("mergedComponents") ? (BasicDBList) returnData.get("mergedComponents"): null);
+						String binaryIdDataset=(null!=returnData.get("binaryIdDataset") ? (String) returnData.get("binaryIdDataset"): null);;
 						((DBObject)obj).put("mergedComponents", compPropsTot);
+						((DBObject)obj).put("binaryIdDataset", binaryIdDataset);
 					} else 	if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType)) {
 						BasicDBList objStreams = (BasicDBList)obj.get("dataset");
 						BasicDBList queryStreams=createQueryStreamPerApi(objStreams);
-						BasicDBList compPropsTot = getMergedStreamComponentsPerQueryString(queryStreams);
+						HashMap<String , Object> returnData=getMergedStreamComponentsPerQueryString(queryStreams);
+						BasicDBList compPropsTot = (null!=returnData.get("mergedComponents") ? (BasicDBList) returnData.get("mergedComponents"): null);
+						String binaryIdDataset=(null!=returnData.get("binaryIdDataset") ? (String) returnData.get("binaryIdDataset"): null);;
 						((DBObject)obj).put("mergedComponents", compPropsTot);
+						((DBObject)obj).put("binaryIdDataset", binaryIdDataset);
 
 					}
 				}
@@ -153,7 +161,104 @@ public class SDPDataApiMongoAccess {
 	}	
 
 
-	public BasicDBList  getMergedStreamComponentsPerQueryString(BasicDBList queryStreams ) {
+	public HashMap<String, Object>  getMergedStreamComponentsPerQueryString(BasicDBList queryStreams ) {
+		List<Property> compPropsTot=new ArrayList<Property>();
+		BasicDBList ret2=new BasicDBList();
+		HashMap<String , Object> returnData=new HashMap<String , Object> ();
+
+		try {
+
+			log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] BEGIN");
+			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] queryStreams="+queryStreams);
+
+
+			BasicDBObject query =null;
+			DBCursor cursor=null;
+
+			//			MongoClient mongoClient = new MongoClient(
+			//					SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+			//					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+
+			MongoClient mongoClient = getMongoClient(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_DATASET), 
+					SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_DATASET));				
+
+
+			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+			DBCollection coll = db.getCollection(SDPDataApiConfig.getInstance().getMongoCfgCollection(SDPDataApiConfig.MONGO_DB_CFG_DATASET));
+
+
+			query = new BasicDBObject("$or", queryStreams);
+			log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] mongo query="+query);
+
+			//YUCCA-264 recuperare i metadati comuni a tutte le cersioni dalla current
+			BasicDBObject order= new BasicDBObject("configData.current",-1);
+			cursor = coll.find(query).sort(order);
+			//cursor = coll.find(query);
+			String binaryIdDataset=null;
+			try {
+				List<Property> compProps=new ArrayList<Property>();
+				BasicDBList campiDbList=null;
+				while (cursor.hasNext()) {
+					DBObject obj=cursor.next();
+					//					Object eleCapmpi=((BasicDBObject)obj.get("dataset")).get("fields");				
+					Object eleCapmpi=((BasicDBObject)obj.get("info")).get("fields");				
+
+					try {
+						binaryIdDataset=takeNvlValues(    ((BasicDBObject)obj.get("info")).get("binaryIdDataset"));
+					} catch (Exception e) {
+						binaryIdDataset=null;
+					}					
+					
+					campiDbList= getDatasetFiledsDbList(eleCapmpi);
+
+					log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] current dataset="+obj);
+					log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] current dataset campiDbList="+campiDbList);
+
+
+					for (int k=0;k<campiDbList.size();k++) {
+						boolean present=false;
+						compProps=getDatasetFiledsOdataPros(campiDbList.get(k));
+						for (int i=0;i<compPropsTot.size();i++) {
+							if (compPropsTot.get(i).getName().equals(compProps.get(0).getName())) present=true;
+
+						}
+						if (!present) {
+							compPropsTot.add(compProps.get(0));
+							log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString]        filed added="+campiDbList.get(k));
+
+							ret2.add(campiDbList.get(k));
+						}
+					}
+
+
+				}
+
+
+
+			}finally {
+				cursor.close();
+			}
+
+
+			returnData.put("binaryIdDataset", binaryIdDataset);
+			returnData.put("mergedComponents", ret2);
+			
+			
+			
+
+		} catch (Exception e) {
+			log.error("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] INGORED" +e);
+
+		} finally {
+			log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] END");
+
+		}
+		return returnData;
+
+	}		
+	
+	
+	public BasicDBList  getMergedStreamComponentsPerQueryString_orig(BasicDBList queryStreams ) {
 		List<Property> compPropsTot=new ArrayList<Property>();
 		BasicDBList ret2=new BasicDBList();
 		try {
@@ -698,6 +803,7 @@ public class SDPDataApiMongoAccess {
 					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("userId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
 					
 				}
 
@@ -1133,7 +1239,11 @@ public class SDPDataApiMongoAccess {
 
 				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: retweetparentid aggregations is aveailable only for social dataset", Locale.UK);
 				groupFiledsId.put("retweetparentid", "$retweetParentId");
-				//TODO .. eccezione per dataset sbagliato
+			} else if ("iduser".equals(timeGroupByParam)) {
+				//YUCCA-388
+
+				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: iduser aggregations is aveailable only for social dataset", Locale.UK);
+				groupFiledsId.put("iduser", "$userId");
 
 			} else {
 				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
@@ -1257,6 +1367,7 @@ public class SDPDataApiMongoAccess {
 					//YUCCA-388
 					String dayofweek=takeNvlValues( ((DBObject)obj.get("_id")).get("dayofweek"));
 					String retweetparentid=takeNvlValues( ((DBObject)obj.get("_id")).get("retweetparentid"));
+					String iduser=takeNvlValues( ((DBObject)obj.get("_id")).get("iduser"));
 
 
 					//String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
@@ -1278,6 +1389,7 @@ public class SDPDataApiMongoAccess {
 
 					//TODO solo se e' social
 					misura.put("retweetparentid",  (retweetparentid==null ? -1 : new Long(retweetparentid)));
+					misura.put("iduser",  (iduser==null ? -1 : new Long(iduser)));
 
 
 					misura.put("count",  (count==null ? 0 : new Integer(count)));
