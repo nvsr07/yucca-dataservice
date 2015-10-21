@@ -40,7 +40,7 @@ public class MongoDbStore {
 		}
 	}
 
-	public Map<String, Object> getDataset(Long idDataset) {
+	public Map<String, Object> getDataset(Long idDataset, Object userQuery) {
 
 		Map<String,Object> ret = null;
 
@@ -50,15 +50,24 @@ public class MongoDbStore {
 		DBCollection collapi = db.getCollection(mongoParams.get("MONGO_COLLECTION_API"));
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
 
-		DBObject searchById = new BasicDBObject("idDataset", idDataset);
-		searchById.put("configData.current", 1);
-		searchById.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
+		
+		BasicDBObject query = (BasicDBObject) userQuery;
+		query.put("idDataset", idDataset);
+
+		query.put("configData.current", 1);
+		query.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
+		
+		
+//		DBObject searchById = new BasicDBObject("idDataset", idDataset);
+//		searchById.put("configData.current", 1);
+//		searchById.put("configData.subtype", new BasicDBObject("$ne","binaryDataset"));
+//		
 		
 		
 		
 		
-		
-		DBObject found = colldataset.findOne(searchById);
+		//DBObject found = colldataset.findOne(searchById);
+		DBObject found = colldataset.findOne(query);
 
 		if (found != null) {
 			Map<String, Object> cur = extractOdataPropertyFromMongo(collapi,
@@ -180,7 +189,7 @@ public class MongoDbStore {
 		return extractDataFromStream(found);
 	}
 
-	public Map<String, Object> getStream(Long idStream) {
+	public Map<String, Object> getStream(Long idStream, Object userQuery) {
 		DB db = mongoClient.getDB(mongoParams.get("MONGO_DB_META"));
 		DBCollection collstream = db.getCollection(mongoParams.get("MONGO_COLLECTION_STREAM"));
 		DBCollection colldataset = db.getCollection(mongoParams.get("MONGO_COLLECTION_DATASET"));
@@ -194,10 +203,15 @@ public class MongoDbStore {
 
 		DBObject configData = (DBObject) found.get("configData");
 
+		BasicDBObject query = (BasicDBObject) userQuery;
 
-		DBObject searchActive = new BasicDBObject("idDataset",configData.get("idDataset"));
-		searchActive.put("configData.current", 1);
-		DBObject existingDatasetOfStream = colldataset.findOne(searchActive);
+		//DBObject searchActive = new BasicDBObject("idDataset",configData.get("idDataset"));
+		//searchActive.put("configData.current", 1);
+		query.put("idDataset",configData.get("idDataset"));
+		query.put("configData.current", 1);
+		
+		//DBObject existingDatasetOfStream = colldataset.findOne(searchActive);
+		DBObject existingDatasetOfStream = colldataset.findOne(query);
 		if(existingDatasetOfStream==null)
 			return null;
 

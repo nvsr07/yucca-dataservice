@@ -790,7 +790,9 @@ public class SDPDataApiMongoAccess {
 
 
 
+			if (limit>cnt) limit=cnt;
 
+			
 
 
 			if (null!=userOrderBy) {

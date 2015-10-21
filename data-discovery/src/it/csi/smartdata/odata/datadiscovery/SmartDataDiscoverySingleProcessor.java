@@ -149,9 +149,20 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 
 			if (ENTITY_SET_NAME_DATASETS.equals(entitySet.getName())) {
 
+				
+				Object userQuery = new BasicDBObject();
+				FilterExpression fe = uriInfo.getFilter();
+				if (fe != null) {
+					SDPExpressionVisitor ev = new SDPExpressionVisitor();
+					ev.setEntitySetName(entitySet.getName());
+					userQuery = fe.accept(ev);
+					log.info("expression:\n" + ev.getOut());
+				}
+				
+				
 				MongoDbStore mongoAccess=new MongoDbStore();
 				Long idDataset = getLongKeyValue(uriInfo.getKeyPredicates().get(0));
-				Map<String,Object> dataset=mongoAccess.getDataset(idDataset);
+				Map<String,Object> dataset=mongoAccess.getDataset(idDataset,userQuery);
 
 				if (dataset != null) {
 					URI serviceRoot = getContext().getPathInfo().getServiceRoot();
@@ -171,9 +182,20 @@ public class SmartDataDiscoverySingleProcessor extends ODataSingleProcessor {
 				}
 			}else if (ENTITY_SET_NAME_STREAMS.equals(entitySet.getName())) {
 
+				Object userQuery = new BasicDBObject();
+				FilterExpression fe = uriInfo.getFilter();
+				if (fe != null) {
+					SDPExpressionVisitor ev = new SDPExpressionVisitor();
+					ev.setEntitySetName(entitySet.getName());
+					userQuery = fe.accept(ev);
+					log.info("expression:\n" + ev.getOut());
+				}
+				
+				
+				
 				MongoDbStore mongoAccess=new MongoDbStore();
 				Long idStream = getLongKeyValue(uriInfo.getKeyPredicates().get(0));
-				Map<String,Object> stream=mongoAccess.getStream(idStream);
+				Map<String,Object> stream=mongoAccess.getStream(idStream,userQuery);
 
 				if (stream != null) {
 					URI serviceRoot = getContext().getPathInfo().getServiceRoot();
