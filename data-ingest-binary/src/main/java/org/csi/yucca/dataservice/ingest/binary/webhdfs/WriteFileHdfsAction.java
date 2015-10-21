@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.PrivilegedExceptionAction;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -19,14 +21,16 @@ public class WriteFileHdfsAction implements PrivilegedExceptionAction<String> {
 	private String pwd;
 	private String knoxurl;
 	private String knoxgroup;
+	private String fileName;
 	private InputStream is;
 
-	public WriteFileHdfsAction(String user, String pwd, String pathFile, String knoxurl, String knoxgroup, InputStream is) {
+	public WriteFileHdfsAction(String user, String pwd, String pathFile, String knoxurl, String knoxgroup, InputStream is, String fileName) {
 		this.pathFile = pathFile;
 		this.user = user;
 		this.pwd = pwd;
 		this.knoxurl = knoxurl;
 		this.knoxgroup = knoxgroup;
+		this.fileName = fileName;
 		this.is = is;
 	}
 
@@ -59,7 +63,19 @@ public class WriteFileHdfsAction implements PrivilegedExceptionAction<String> {
 				System.out.println("Setto fs");
 				System.out.println("uri = " + uri.toString());
 				System.out.println("conf = " + conf.toString());
+				
+				SimpleDateFormat sdconnSWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateSWebHDFS = new Date();
+				System.out.println("start FileSystem get Conn ( filename="+fileName+") => " + sdconnSWebHDFS.format(dateSWebHDFS));
+				
 				fs = FileSystem.get(uri, conf);
+
+				
+				SimpleDateFormat sdconnEWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateEWebHDFS = new Date();
+				System.out.println("end FileSystem get Conn ( filename="+fileName+") => " + sdconnEWebHDFS.format(dateEWebHDFS));
+				
+				
 				System.out.println("FileSystem Object " + fs.toString());
 			} else {
 				fs = FileSystem.get(conf);
@@ -71,12 +87,41 @@ public class WriteFileHdfsAction implements PrivilegedExceptionAction<String> {
 				System.out.println("File already exists!");
 				throw new Exception("File already exists!");
 			} else {
+				
+				SimpleDateFormat sdconnSFSCreate = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateSFSCreate = new Date();
+				System.out.println("start FileSystem CREATE ( filename="+fileName+") => " + sdconnSFSCreate.format(dateSFSCreate));
+				
 				os = fs.create(pt);
+
+				
+				SimpleDateFormat sdconnEFSCreate = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateEWebHDFS = new Date();
+				System.out.println("end FileSystem CREATE ( filename="+fileName+") => " + sdconnEFSCreate.format(dateEWebHDFS));
+				
+				SimpleDateFormat sdScopyBytes = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateScopyBytes = new Date();
+				System.out.println("start copyBytes ( filename="+fileName+") => " + sdScopyBytes.format(dateScopyBytes));
+				
 				IOUtils.copyBytes(is, os, conf);
+				
+				SimpleDateFormat sdEcopyBytes = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateEcopyBytes = new Date();
+				System.out.println("end copyBytes ( filename="+fileName+") => " + sdEcopyBytes.format(dateEcopyBytes));
+				
+				SimpleDateFormat sdSPermission = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateSPermission = new Date();
+				System.out.println("start Permission ( filename="+fileName+") => " + sdSPermission.format(dateSPermission));
+				
 				System.out.println("Setto Permission");
 				fs.setPermission(pt, new FsPermission(FsAction.READ_WRITE,FsAction.READ_WRITE,FsAction.NONE)); //660
 				System.out.println("Setto Owner");
 				fs.setOwner(pt, user, knoxgroup);
+				
+				SimpleDateFormat sdEPermission = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+				Date dateEPermission = new Date();
+				System.out.println("end Permission ( filename="+fileName+") => " + sdEPermission.format(dateEPermission));
+				
 				return pathFile;
 			}
 		} catch (Exception e) {

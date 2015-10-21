@@ -13,12 +13,14 @@ public class ReadFileHdfsAction implements PrivilegedExceptionAction<InputStream
 	private String user;
 	private String pwd;
 	private String knoxurl;
+	private String fileName;
 
-	public ReadFileHdfsAction(String user, String pwd, String pathFile, String knoxurl) {
+	public ReadFileHdfsAction(String user, String pwd, String pathFile, String knoxurl, String fileName) {
 		this.pathFile = pathFile;
 		this.user = user;
 		this.pwd = pwd;
 		this.knoxurl = knoxurl;
+		this.fileName = fileName;
 	}
 
 	@Override
@@ -56,6 +58,7 @@ public class ReadFileHdfsAction implements PrivilegedExceptionAction<InputStream
 			System.out.println("Filesystem URI : " + fs.getUri());
 			System.out.println("Filesystem Home Directory : " + fs.getHomeDirectory());
 			System.out.println("Filesystem Working Directory : " + fs.getWorkingDirectory());
+			System.out.println("pathFile : " + pathFile);
 			
 			
 			org.apache.hadoop.fs.Path pt = new org.apache.hadoop.fs.Path(pathFile);
@@ -66,6 +69,7 @@ public class ReadFileHdfsAction implements PrivilegedExceptionAction<InputStream
 
 			return fs.open(pt);
 		} catch (Exception e) {
+			System.out.println("Exception : " + e.getMessage());
 			e.printStackTrace();
 			return null;
 		}

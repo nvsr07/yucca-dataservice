@@ -3,6 +3,8 @@ package org.csi.yucca.dataservice.ingest.binary;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -107,13 +109,13 @@ public class BinaryService {
 							   (mdFromMongo.getInfo().getBinaryDatasetVersion().equals(datasetVersion)))) {
 						if (binaryData == null){ 
 							throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-									.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
+									.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117a\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
 						} else {
 							String pathForUri = binaryData.getPathHdfsBinary();
 
 							InputStream is = null;
 							if (Config.getHdfsLibrary().equals("webhdfs")){
-								is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl());
+								is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
 							} else if (Config.getHdfsLibrary().equals("hdfs")){
 								is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
 							} else {
@@ -123,7 +125,7 @@ public class BinaryService {
 								return is;
 							else 
 								throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-										.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
+										.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
 						}
 					} else {
 						throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -162,6 +164,10 @@ public class BinaryService {
 					.entity("{\"error_name\":\"File too Big\", \"error_code\":\"E114\", \"output\":\"NONE\", \"message\":\"THE SIZE IS TOO BIG\"}").build();
 		}
 		
+		SimpleDateFormat sdfStartMongo = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+		Date dateS = new Date();
+		System.out.println("start Mongo => " + sdfStartMongo.format(dateS));
+		
 		String pathFile = attachment.getContentDisposition().getParameter("filename");
 		BinaryData binaryData = new BinaryData();
 		MongoClient mongo = MongoSingleton.getMongoClient();
@@ -191,9 +197,19 @@ public class BinaryService {
 
 		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
 		
+		SimpleDateFormat sdfEndMongo = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+		Date dateE = new Date();
+		System.out.println("end Mongo => " + sdfEndMongo.format(dateE));
+		
 		System.out.println("Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
+
+			SimpleDateFormat sdfStartWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+			Date dateSWebHDFS = new Date();
+			System.out.println("start WebHDFS => " + sdfStartWebHDFS.format(dateSWebHDFS));
+			
+			
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			pathForUri = "/tenant/tnt-sandbox" + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(pathForUri);
@@ -201,7 +217,7 @@ public class BinaryService {
 			try {
 				if (Config.getHdfsLibrary().equals("webhdfs")){
 					System.out.println("webhdfs = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.writeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), Config.getKnoxGroup(), attachment.getObject(InputStream.class));
+					uri = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.writeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), Config.getKnoxGroup(), attachment.getObject(InputStream.class), idBinary);
 				} else if (Config.getHdfsLibrary().equals("hdfs")){
 					System.out.println("hdfs = " + Config.getHdfsLibrary());
 					uri = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
@@ -215,6 +231,11 @@ public class BinaryService {
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 						.entity("{\"error_name\":\"Dataset attachment wrong\", \"error_code\":\"E113\", \"output\":\"NONE\", \"message\":\"" + ex.getMessage() + "\"}").build();
 			}
+			
+
+			SimpleDateFormat sdfEndWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+			Date dateEWebHDFS = new Date();
+			System.out.println("end WebHDFS => " + sdfEndWebHDFS.format(dateEWebHDFS));
 			
 			System.out.println("HDFS URI = " + uri);
 			
@@ -242,6 +263,8 @@ public class BinaryService {
 		BinaryData binaryData = null;
 		
 		binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
+		
+		System.out.println("updateMongo - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode + ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
 
 		//Get idDataset from datasetCode 
 		String supportDb = Config.getInstance().getDbSupport();
@@ -267,12 +290,14 @@ public class BinaryService {
 		//InputStream fileToParser = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd() , pathForUri, Config.getKnoxUrl());
 		InputStream fileToParser = null;
 		if (Config.getHdfsLibrary().equals("webhdfs")){
-			fileToParser = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl());
+			fileToParser = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
 		} else if (Config.getHdfsLibrary().equals("hdfs")){
 			fileToParser = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
 		} else {
-			fileToParser = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+			fileToParser = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri); 
 		}
+		
+		System.out.println("fileToParser = " + fileToParser.toString());
 		
 		if (fileToParser != null){
 
@@ -281,6 +306,8 @@ public class BinaryService {
 				mapHS = extractMetadata(fileToParser);
 				binaryData.setMetadataBinary(mapHS.toString());
 				Long sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
+				
+				System.out.println("sizeFileLenght = " + sizeFileLenght.toString());
 				
 				binaryData.setSizeBinary(sizeFileLenght);
 				binaryDAO.updateBinaryData(binaryData);
