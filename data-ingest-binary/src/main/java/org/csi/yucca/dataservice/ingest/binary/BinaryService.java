@@ -305,7 +305,14 @@ public class BinaryService {
 			try {
 				mapHS = extractMetadata(fileToParser);
 				binaryData.setMetadataBinary(mapHS.toString());
-				Long sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
+				
+				Long sizeFileLenght = 0L;
+				
+				if (Config.getHdfsLibrary().equals("webhdfs")){
+					sizeFileLenght = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.sizeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
+				} else {
+					sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
+				}
 				
 				System.out.println("sizeFileLenght = " + sizeFileLenght.toString());
 				
@@ -394,6 +401,8 @@ public class BinaryService {
 	
 	public static Map<String, String> extractMetadata(InputStream is) {
 
+		//System.out.println("sizeFileLenght = " + sizeFileLenght.toString());
+		
 	    Map<String,String> map = new HashMap<String,String>();
 	    BodyContentHandler contentHandler = new BodyContentHandler(0);
 	    org.apache.tika.metadata.Metadata metadata = new org.apache.tika.metadata.Metadata();

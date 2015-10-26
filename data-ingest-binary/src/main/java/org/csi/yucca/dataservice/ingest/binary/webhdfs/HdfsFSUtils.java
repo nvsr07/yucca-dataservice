@@ -69,14 +69,32 @@ public class HdfsFSUtils {
 		return result;
 	}
 	
-	public static Integer sizeFile(String user, String pwd, String remotePath, String knoxurl, String fileName) {
+	public static Long sizeFile(String user, String pwd, String remotePath, String knoxurl, String fileName) {
 		InputStream input = null;
-		Integer size = null;
+		Long size = null;
+		
 		try {
-			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+			//UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
 			
-			input = ugi.doAs(new ReadFileHdfsAction(user, pwd, remotePath, knoxurl, fileName));
-			size = input.available();
+			System.out.println("user in readFile = " + user);
+			System.out.println("pwd in readFile = " + pwd);
+			System.out.println("remotePath in readFile = " + remotePath);
+			System.out.println("knoxurl in readFile = " + knoxurl);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+			Date dateS = new Date();
+			System.out.println("start readFile ("+fileName+") => " + sdf.format(dateS));
+			
+			ReadFileHdfsAction rfha = new ReadFileHdfsAction(user, pwd, remotePath, knoxurl, fileName);
+
+			//input = ugi.doAs(rfha);
+			size = rfha.getSizeFile();
+			
+			//Long l = input.getSizeFile();
+			//System.out.println("input = " + input.toString());
+			
+			Date dateF = new Date();
+			System.out.println("end readFile ("+fileName+") => " + sdf.format(dateF));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {

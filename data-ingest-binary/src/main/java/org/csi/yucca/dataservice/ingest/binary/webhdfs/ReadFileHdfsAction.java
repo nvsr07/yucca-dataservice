@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.security.PrivilegedExceptionAction;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 
 public class ReadFileHdfsAction implements PrivilegedExceptionAction<InputStream> {
@@ -21,6 +22,41 @@ public class ReadFileHdfsAction implements PrivilegedExceptionAction<InputStream
 		this.pwd = pwd;
 		this.knoxurl = knoxurl;
 		this.fileName = fileName;
+	}
+	
+	public Long getSizeFile() throws Exception {
+		
+		try {
+			
+			Configuration conf = new Configuration();
+			conf.set("fs.swebhdfs.impl", KnoxWebHdfsFileSystem.class.getName());
+			if (this.knoxurl!=null) {
+				conf.set("knox.username", user);
+				conf.set("knox.password", pwd);
+			}
+			System.out.println("Conf Object " + conf);
+			FileSystem fs = null;
+			if (knoxurl!=null)
+			{
+				java.net.URI uri = new java.net.URI(knoxurl);
+				fs = FileSystem.get(uri,conf);
+			}
+			else {
+				fs = FileSystem.get(conf);
+			}
+			org.apache.hadoop.fs.Path pt = new org.apache.hadoop.fs.Path(pathFile);
+
+		
+			FileStatus fStatus = fs.getFileStatus(pt);
+			Long size = fStatus.getLen();
+			
+			return size;
+		} catch (Exception e) {
+			System.out.println("Exception : " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 
 	@Override
