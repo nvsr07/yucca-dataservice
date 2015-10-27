@@ -9,7 +9,7 @@ import org.apache.hadoop.security.UserGroupInformation;
 
 public class HdfsFSUtils {
 
-	public static InputStream readFile(String user, String pwd, String remotePath, String knoxurl) {
+	public static InputStream readFile(String user, String pwd, String remotePath, String knoxurl, String fileName) {
 		InputStream input = null;
 		try {
 			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
@@ -21,19 +21,20 @@ public class HdfsFSUtils {
 
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 			Date dateS = new Date();
-			System.out.println("start readFile => " + sdf.format(dateS));
+			System.out.println("start readFile ("+fileName+") => " + sdf.format(dateS));
 
-			input = ugi.doAs(new ReadFileHdfsAction(user, pwd, remotePath, knoxurl));
+			input = ugi.doAs(new ReadFileHdfsAction(user, pwd, remotePath, knoxurl, fileName));
+			System.out.println("input = " + input.toString());
 			
 			Date dateF = new Date();
-			System.out.println("end readFile => " + sdf.format(dateF));
+			System.out.println("end readFile ("+fileName+") => " + sdf.format(dateF));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return input;
 	}
 
-	public static String writeFile(String user, String pwd, String remotePath, String knoxurl, String knoxgroup, InputStream is) throws Exception {
+	public static String writeFile(String user, String pwd, String remotePath, String knoxurl, String knoxgroup, InputStream is, String fileName) throws Exception {
 		String uri = null;
 		try {
 			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
@@ -43,14 +44,8 @@ public class HdfsFSUtils {
 			System.out.println("remotePath in writeFile = " + remotePath);
 			System.out.println("knoxgroup in writeFile = " + knoxgroup);
 
-			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-			Date dateS = new Date();
-			System.out.println("start writeFile => " + sdf.format(dateS));
-
-			uri = ugi.doAs(new WriteFileHdfsAction(user, pwd, remotePath, knoxurl, knoxgroup, is));
+			uri = ugi.doAs(new WriteFileHdfsAction(user, pwd, remotePath, knoxurl, knoxgroup, is, fileName));
 			
-			Date dateF = new Date();
-			System.out.println("end writeFile => " + sdf.format(dateF));
 		} catch (Exception e) {
 			System.out.println("writeFile, Exception!");
 			e.printStackTrace();
@@ -74,14 +69,32 @@ public class HdfsFSUtils {
 		return result;
 	}
 	
-	public static Integer sizeFile(String user, String pwd, String remotePath, String knoxurl) {
+	public static Long sizeFile(String user, String pwd, String remotePath, String knoxurl, String fileName) {
 		InputStream input = null;
-		Integer size = null;
+		Long size = null;
+		
 		try {
-			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+			//UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
 			
-			input = ugi.doAs(new ReadFileHdfsAction(user, pwd, remotePath, knoxurl));
-			size = input.available();
+			System.out.println("user in readFile = " + user);
+			System.out.println("pwd in readFile = " + pwd);
+			System.out.println("remotePath in readFile = " + remotePath);
+			System.out.println("knoxurl in readFile = " + knoxurl);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+			Date dateS = new Date();
+			System.out.println("start readFile ("+fileName+") => " + sdf.format(dateS));
+			
+			ReadFileHdfsAction rfha = new ReadFileHdfsAction(user, pwd, remotePath, knoxurl, fileName);
+
+			//input = ugi.doAs(rfha);
+			size = rfha.getSizeFile();
+			
+			//Long l = input.getSizeFile();
+			//System.out.println("input = " + input.toString());
+			
+			Date dateF = new Date();
+			System.out.println("end readFile ("+fileName+") => " + sdf.format(dateF));
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
