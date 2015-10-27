@@ -70,24 +70,26 @@ public class SDPInsertApiMongoConnectionSingleton {
 			//STREAM
 			String host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
 			int port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
-			mongoConnection.put(MONGO_DB_CFG_STREAM, getMongoClientLocal(host, port));
+			
+			
+			mongoConnection.put(MONGO_DB_CFG_STREAM, getMongoClient(host, port));
 
 			host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_METADATA);
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_METADATA);
-			mongoConnection.put(MONGO_DB_CFG_METADATA, getMongoClientLocal(host, port));
+			mongoConnection.put(MONGO_DB_CFG_METADATA, getMongoClient(host, port));
 
 			host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO);
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO);
-			mongoConnection.put(MONGO_DB_CFG_APPOGGIO, getMongoClientLocal(host, port));
+			mongoConnection.put(MONGO_DB_CFG_APPOGGIO, getMongoClient(host, port));
 
 
 			host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STATUS);
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STATUS);
-			mongoConnection.put(MONGO_DB_CFG_STATUS, getMongoClientLocal(host, port));
+			mongoConnection.put(MONGO_DB_CFG_STATUS, getMongoClient(host, port));
 
 			host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
-			mongoConnection.put(MONGO_DB_CFG_TENANT, getMongoClientLocal(host, port));
+			mongoConnection.put(MONGO_DB_CFG_TENANT, getMongoClient(host, port));
 
 			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_TENANT));
