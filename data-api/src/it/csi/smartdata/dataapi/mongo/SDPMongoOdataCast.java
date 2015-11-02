@@ -3,6 +3,7 @@ package it.csi.smartdata.dataapi.mongo;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
 import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
+import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -1030,8 +1031,13 @@ public class SDPMongoOdataCast {
 				
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
-				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+//				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+//						,userOrderBy,skip,limit);
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimit(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
 						,userOrderBy,skip,limit);
+				
+				
+				
 				List<Map<String, Object>> misureCur = cur.getDati();
 
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
@@ -1045,6 +1051,9 @@ public class SDPMongoOdataCast {
 		} catch (SDPOrderBySizeException e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerApi] SDPOrderBySizeException" +e);
 			throw (SDPOrderBySizeException)e;
+		} catch (SDPPageSizeException e) {
+			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] SDPPageSizeException" +e);
+			throw (SDPPageSizeException)e;
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerApi] " + e);
 			throw e;
@@ -1240,8 +1249,13 @@ public class SDPMongoOdataCast {
 				//TODO log a debug
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
-				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+//				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+//						,userOrderBy,skip,limit);
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimit(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
 						,userOrderBy,skip,limit);
+				
+				
+				
 				List<Map<String, Object>> misureCur = cur.getDati();
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
 					ret.add(misureCur.get(k));
@@ -1253,6 +1267,9 @@ public class SDPMongoOdataCast {
 		} catch (SDPOrderBySizeException e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] SDPOrderBySizeException" +e);
 			throw (SDPOrderBySizeException)e;
+		} catch (SDPPageSizeException e) {
+			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] SDPPageSizeException" +e);
+			throw (SDPPageSizeException)e;
 		} catch (Exception e) {
 			log.error("[SDPMongoOdataCast::getMeasuresPerDataset] " + e);
 			throw e;

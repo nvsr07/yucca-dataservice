@@ -2,12 +2,16 @@ package it.csi.smartdata.dataapi.mongo;
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.mongo.dto.DbConfDto;
+import it.csi.smartdata.dataapi.odata.SDPSingleProcessor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
 
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
@@ -18,6 +22,9 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 public class MongoTenantDbSingleton {
+	
+	static Logger log = Logger.getLogger(SDPSingleProcessor.class.getPackage().getName());
+	
 	
 	public static final String DB_MESURES="DBMEASURES";
 	public static final String DB_DATA="DBDATA";
@@ -34,8 +41,8 @@ public class MongoTenantDbSingleton {
 	private static int giorno_init = 0;
 
 	
-	private HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
-	private HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
+	private static HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
+	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 		
 
 	
@@ -45,11 +52,34 @@ public class MongoTenantDbSingleton {
 		int curGiorno = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		if (curAnno > anno_init) return true;
 		else if (curMese > mese_init) return true;
-		else if (curGiorno > giorno_init)return true;
+		//per refresh mensile
+		//else if (curGiorno > giorno_init)return true;
 		return false;
 	}
+	
+	private void cleanMongoConnection() {
+		if (mongoConnection!=null && mongoConnection.size()>0) {
+			Iterator<String> chiavi=mongoConnection.keySet().iterator();
+			while (chiavi.hasNext()) {
+				String chiave=chiavi.next();
+				mongoConnection.get(chiave).close();
+			}
+			
+		}
+	}
+	
+	
 	public synchronized static MongoTenantDbSingleton getInstance() throws Exception{
-		if(instance == null || singletonToRefresh()) {
+		log.info("[MongoTenantDbSingleton::getInstance] refresh singleton mongoConnection.size()="+ (instance==null ? -1 : instance.mongoConnection.size()));
+		
+		
+		
+		
+		//if(instance == null || singletonToRefresh()) {
+		if(instance == null ) {
+			
+			log.info("[MongoTenantDbSingleton::getInstance] refresh singleton instanceNull=" +(instance==null));
+			//if (instance!=null) instance.cleanMongoConnection(); 
 			instance = new MongoTenantDbSingleton();
 			anno_init = Calendar.getInstance().get(Calendar.YEAR);
 			mese_init = Calendar.getInstance().get(Calendar.MONTH);
@@ -149,6 +179,7 @@ public class MongoTenantDbSingleton {
 					params.put(tenant+"__"+DB_DATA, dataDb);
 					params.put(tenant+"__"+DB_DATA_TRASH, dataDbTrash);
 					params.put(tenant+"__"+DB_MEDIA, mediaDb);
+					log.info("[MongoTenantDbSingleton::MongoTenantDbSingleton] refresh add client  " +SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT)+"___"+SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
 					mongoConnection.put(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT)+"___"+SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT), mongoClient);
 					
 				}				
@@ -192,6 +223,8 @@ public class MongoTenantDbSingleton {
 		} else {
 			mongoClient = new MongoClient(arrServerAddr);
 		}
+		log.info("[MongoTenantDbSingleton::getMongoClient] refresh add client  " +host+"___"+port);
+
 		mongoConnection.put(host+"___"+port, mongoClient);
 		return mongoClient;
 		

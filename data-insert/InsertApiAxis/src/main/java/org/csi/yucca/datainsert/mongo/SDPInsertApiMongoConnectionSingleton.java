@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import org.csi.yucca.datainsert.constants.SDPInsertApiConfig;
@@ -36,20 +37,23 @@ public class SDPInsertApiMongoConnectionSingleton {
 	private static int giorno_init = 0;
 	public static SDPInsertApiMongoConnectionSingleton instance=null;
 
-	private HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
-	private HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
-	private HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
+	private static HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
+	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
+	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
 	private static boolean singletonToRefresh() {
 		int curAnno = Calendar.getInstance().get(Calendar.YEAR);
 		int curMese = Calendar.getInstance().get(Calendar.MONTH);
 		int curGiorno = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		if (curAnno > anno_init) return true;
 		else if (curMese > mese_init) return true;
-		else if (curGiorno > giorno_init)return true;
+		//per refresh mensile
+		//else if (curGiorno > giorno_init)return true;
 		return false;
 	}
 	public synchronized static SDPInsertApiMongoConnectionSingleton getInstance() throws Exception{
-		if(instance == null || singletonToRefresh()) {
+		//if(instance == null || singletonToRefresh()) {
+		if(instance == null) {
+			//if (instance!=null) instance.cleanMongoConnection(); 
 			instance = new SDPInsertApiMongoConnectionSingleton();
 			anno_init = Calendar.getInstance().get(Calendar.YEAR);
 			mese_init = Calendar.getInstance().get(Calendar.MONTH);
@@ -61,12 +65,23 @@ public class SDPInsertApiMongoConnectionSingleton {
 		if (null==obj) return null;
 		else return obj.toString();
 	}
+	
+	public void cleanMongoConnection() {
+		if (mongoConnection!=null && mongoConnection.size()>0) {
+			Iterator<String> chiavi=mongoConnection.keySet().iterator();
+			while (chiavi.hasNext()) {
+				String chiave=chiavi.next();
+				mongoConnection.get(chiave).close();
+			}
+			
+		}
+	}
+	
 	private SDPInsertApiMongoConnectionSingleton() throws Exception{
 		DBCursor cursor=null;
 		try {
 			mongoConnection = new HashMap<String, MongoClient>();
 			params = new HashMap<String, DbConfDto>();
-			mongoTenantConnection = new HashMap<String, MongoClient>();
 			//STREAM
 			String host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
 			int port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
