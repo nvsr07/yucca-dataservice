@@ -64,4 +64,16 @@ public class HdfsFSUtils {
 		return size;
 	}
 
+	public static InputStream readDir(String user, String remotePath, String version) {
+		InputStream input = null;
+		try {
+			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+
+			input = ugi.doAs(new ReadDirHdfsAction(user, remotePath, version));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return input;
+	}
+
 }

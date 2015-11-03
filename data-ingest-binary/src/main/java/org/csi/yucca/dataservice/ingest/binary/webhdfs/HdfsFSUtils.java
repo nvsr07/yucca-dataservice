@@ -34,6 +34,31 @@ public class HdfsFSUtils {
 		return input;
 	}
 
+	public static InputStream readDir(String user, String pwd, String remotePath, String knoxurl, String version) {
+		InputStream input = null;
+		try {
+			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
+			
+			System.out.println("user in readDir = " + user);
+			System.out.println("pwd in readDir = " + pwd);
+			System.out.println("remotePath in readDir = " + remotePath);
+			System.out.println("knoxurl in readDir = " + knoxurl);
+			System.out.println("version in readDir = " + version);
+
+			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
+			Date dateS = new Date();
+			System.out.println("start readDir ("+remotePath+") => " + sdf.format(dateS));
+
+			input = ugi.doAs(new ReadDirHdfsAction(user, pwd, remotePath, knoxurl, version));
+			
+			Date dateF = new Date();
+			System.out.println("end readDir ("+remotePath+") => " + sdf.format(dateF));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return input;
+	}
+
 	public static String writeFile(String user, String pwd, String remotePath, String knoxurl, String knoxgroup, InputStream is, String fileName) throws Exception {
 		String uri = null;
 		try {

@@ -142,4 +142,39 @@ public class MongoDBBinaryDAO {
 		}
 		return data;
 	}
+
+	public BinaryData readCurrentBinaryDataByIdDatasetCurrent(Long idDataSet) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		obj.add(new BasicDBObject("idDataset", idDataSet));
+		obj.add(new BasicDBObject("configData.current", 1));
+		searchQuery.put("$and", obj);
+		
+		System.out.println("idDataSet = " + idDataSet.toString());
+		System.out.println("Query = " + searchQuery.toString());
+
+		DBObject data = collection.find(searchQuery).one();
+		ObjectId id = (ObjectId) data.get("_id");
+		BinaryData binaryLoaded = BinaryData.fromJson(JSON.serialize(data));
+		binaryLoaded.setId(id.toString());
+		return binaryLoaded;
+	}
+
+	public BinaryData readCurrentBinaryDataByIdDatasetAndVersion(Long idDataSet, Integer datasetVersion) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		obj.add(new BasicDBObject("idDataset", idDataSet));
+		obj.add(new BasicDBObject("datasetVersion", datasetVersion));
+		searchQuery.put("$and", obj);
+
+		System.out.println("idDataSet = " + idDataSet.toString());
+		System.out.println("datasetVersion = " + datasetVersion.toString());
+		System.out.println("Query = " + searchQuery.toString());
+
+		DBObject data = collection.find(searchQuery).one();
+		ObjectId id = (ObjectId) data.get("_id");
+		BinaryData binaryLoaded = BinaryData.fromJson(JSON.serialize(data));
+		binaryLoaded.setId(id.toString());
+		return binaryLoaded;
+	}
 }

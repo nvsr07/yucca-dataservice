@@ -57,6 +57,130 @@ public class BinaryService {
 	private String datasetCode;
 
 	static Logger log = Logger.getLogger(BinaryService.class);
+	
+	@GET
+	//@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Produces({"text/csv"})
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/binary/{apiCode}/download/{idDataSet}/{datasetVersion}")
+	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion) throws WebApplicationException, NumberFormatException, UnknownHostException {
+		
+		MongoClient mongo = MongoSingleton.getMongoClient();
+		String supportDb = Config.getInstance().getDbSupport();
+		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
+		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
+		String supportApiCollection = Config.getInstance().getCollectionSupportApi();
+		
+		//Get tenantCode from ApiCode
+		org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO apiDAO = new org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO(mongo, supportDb, supportApiCollection);
+		MyApi api = null;
+		try {
+			api = apiDAO.readApiByCode(apiCode);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		Metadata mdMetadata = null;;
+		String tenantCode = api.getConfigData().getTenantCode();
+		Integer dsVersion = null;
+		
+		if (datasetVersion.equals("current")){
+			System.out.println("Current");
+
+			mdMetadata = metadataDAO.getCurrentMetadaByBinaryID(idDataSet);
+			if (mdMetadata == null){ 
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+						.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117a\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}")
+						.build());
+			} else {
+				dsVersion = mdMetadata.getDatasetVersion();
+				System.out.println("dsVersion a = " + dsVersion);
+			}
+		} else {
+			System.out.println("Versione specifica");
+			dsVersion = Integer.parseInt(datasetVersion);
+			System.out.println("dsVersion b = " + dsVersion);
+			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
+		}
+
+		String datasetCode = mdMetadata.getDatasetCode();
+		System.out.println("datasetCode = " + datasetCode);
+		Metadata metadataDataSet = null;
+
+		try { 
+			metadataDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		if (metadataDataSet != null){
+			String hdfsDirectory = "";
+			String visibility = null;
+			String visDir;
+			Boolean checkDataSet = false;
+			List<Dataset> myListDS = api.getDataset();
+			
+			//Verify if have a permission to download selected file (...)
+			for (Iterator<Dataset> itDS = myListDS.iterator(); itDS.hasNext();) {
+				
+				Dataset itemDS = itDS.next();
+				if((itemDS.getIdDataset().equals(idDataSet)) && 
+						(itemDS.getDatasetVersion().equals(dsVersion))){
+					checkDataSet = true;
+				}
+			}
+				
+			if (checkDataSet){
+				if (metadataDataSet.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
+				
+					visibility = metadataDataSet.getInfo().getVisibility();
+					visDir = (visibility.equals("private")) ? "rowdata" : "share";
+					System.out.println("visDir = " + visDir);
+					
+					hdfsDirectory = (metadataDataSet.getConfigData().getSubtype().equals("bulkDataset")) ? "data" : 
+									((metadataDataSet.getConfigData().getSubtype().equals("streamDataset")) ? "measures" : 
+									((metadataDataSet.getConfigData().getSubtype().equals("socialDataset")) ? "social" :  ""));
+
+					System.out.println("mdFromMongo.subtype = " + metadataDataSet.getConfigData().getSubtype());
+					System.out.println("hdfsDirectory = " + hdfsDirectory);
+					
+					if (hdfsDirectory.equals("")) {
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Metadata Wrong\", \"error_code\":\"E126\", \"output\":\"NONE\", \"message\":\"ther's an error in metadata configuration\"}")
+								.build());
+					}
+					
+					String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + "/" + visDir + "/" + hdfsDirectory + "/" + datasetCode + "/";
+					System.out.println("pathForUri = " + pathForUri);
+					InputStream is = null;
+					if (Config.getHdfsLibrary().equals("webhdfs")){
+						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), datasetVersion);
+					} else if (Config.getHdfsLibrary().equals("hdfs")){
+						is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readDir(Config.getHdfsUsername() + tenantCode, pathForUri, datasetVersion);
+					} else {
+						//is = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readDirFile(Config.getHdfsUsername() + tenantCode, pathForUri, datasetVersion);
+					}
+					System.out.println("InputStream letto");
+					
+					if (is != null){ 
+						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + datasetVersion + ".csv").build();
+						//return is;
+					} else { 
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
+					}
+				} else {
+					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+							.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116a\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
+				}
+			} else {
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+						.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116b\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
+			}	
+		}
+
+		return null;
+	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
