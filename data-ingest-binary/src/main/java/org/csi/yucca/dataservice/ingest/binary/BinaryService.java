@@ -335,7 +335,7 @@ public class BinaryService {
 			
 			
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
-			pathForUri = "/tenant/tnt-sandbox" + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
+			//pathForUri = "/tenant/tnt-sandbox" + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(pathForUri);
 			String uri = null;
 			try {
