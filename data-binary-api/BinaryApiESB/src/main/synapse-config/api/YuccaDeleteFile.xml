@@ -4,7 +4,7 @@
       <inSequence>
          <send>
             <endpoint>
-               <address uri="http://localhost:9768/data-ingest-binary-1.0.0/services/binary_service/binary/"></address>
+               <address uri="http://localhost:9768/data-ingest-binary/services/binary_service/binary/"></address>
             </endpoint>
          </send>
       </inSequence>
