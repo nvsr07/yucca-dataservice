@@ -1976,7 +1976,10 @@ public class SDPDataApiMongoAccess {
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
 					if (elemOrder.getNomeCampo().equalsIgnoreCase("userId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
-
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("_id")) orderByAllowed=true;
+				} else if (DATA_TYPE_DATA.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
+					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("_id")) orderByAllowed=true;
 				}
 
 

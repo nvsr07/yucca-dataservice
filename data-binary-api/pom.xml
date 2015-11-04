@@ -25,5 +25,6 @@
   <modules>
   	<module>BinaryApiESB</module>
   	<module>BinaryApiCar</module>
+  	<module>../data-ingest-binary</module>
   </modules>
 </project>
