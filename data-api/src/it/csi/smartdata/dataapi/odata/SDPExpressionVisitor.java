@@ -663,6 +663,9 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"_id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time");
 
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".internalId" ,"_id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".internalId" ,"_id");
+		
 
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".year" ,"_id.year");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".month" ,"_id.month");
