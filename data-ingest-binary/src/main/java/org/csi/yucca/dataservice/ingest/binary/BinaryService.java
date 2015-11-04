@@ -153,17 +153,17 @@ public class BinaryService {
 					String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + "/" + visDir + "/" + hdfsDirectory + "/" + datasetCode + "/";
 					System.out.println("pathForUri = " + pathForUri);
 					InputStream is = null;
-					if (Config.getHdfsLibrary().equals("webhdfs")){
-						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), datasetVersion);
+					if (Config.getHdfsLibrary().equals("webhdfs")){ 
+						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), dsVersion);
 					} else if (Config.getHdfsLibrary().equals("hdfs")){
-						is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readDir(Config.getHdfsUsername() + tenantCode, pathForUri, datasetVersion);
+						is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readDir(Config.getHdfsUsername() + tenantCode, pathForUri, dsVersion);
 					} else {
 						//is = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readDirFile(Config.getHdfsUsername() + tenantCode, pathForUri, datasetVersion);
 					}
 					System.out.println("InputStream letto");
 					
 					if (is != null){ 
-						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + datasetVersion + ".csv").build();
+						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + dsVersion.toString() + ".csv").build();
 						//return is;
 					} else { 
 						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)

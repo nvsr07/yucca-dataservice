@@ -64,7 +64,7 @@ public class HdfsFSUtils {
 		return size;
 	}
 
-	public static InputStream readDir(String user, String remotePath, String version) {
+	public static InputStream readDir(String user, String remotePath, Integer version) {
 		InputStream input = null;
 		try {
 			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
