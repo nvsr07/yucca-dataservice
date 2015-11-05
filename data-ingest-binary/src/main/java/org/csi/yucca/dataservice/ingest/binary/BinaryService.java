@@ -83,8 +83,9 @@ public class BinaryService {
 		Metadata mdMetadata = null;;
 		String tenantCode = api.getConfigData().getTenantCode();
 		Integer dsVersion = null;
+		Integer dsVersionCurrent = null;
 		
-		if (datasetVersion.equals("current")){
+		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))){
 			System.out.println("Current");
 
 			mdMetadata = metadataDAO.getCurrentMetadaByBinaryID(idDataSet);
@@ -93,7 +94,18 @@ public class BinaryService {
 						.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117a\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}")
 						.build());
 			} else {
-				dsVersion = mdMetadata.getDatasetVersion();
+				if (datasetVersion.equals("all")){
+					if (!mdMetadata.getConfigData().getSubtype().equals("bulkDataset")){
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
+								.build());
+					}
+					System.out.println("VOGLIO TUTTO!!!!");
+					dsVersion = 0;
+					System.out.println("dsVersion b = " + dsVersion);
+				} else {
+					dsVersion = mdMetadata.getDatasetVersion();
+				}
 				System.out.println("dsVersion a = " + dsVersion);
 			}
 		} else {
@@ -102,18 +114,18 @@ public class BinaryService {
 			System.out.println("dsVersion b = " + dsVersion);
 			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
 		}
-
+		
 		String datasetCode = mdMetadata.getDatasetCode();
 		System.out.println("datasetCode = " + datasetCode);
-		Metadata metadataDataSet = null;
+		//Metadata metadataDataSet = null;
 
-		try { 
-			metadataDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+//		try { 
+//			metadataDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
+//		} catch (Exception ex) {
+//			ex.printStackTrace();
+//		}
 		
-		if (metadataDataSet != null){
+		if (mdMetadata != null){
 			String hdfsDirectory = "";
 			String visibility = null;
 			String visDir;
@@ -124,24 +136,23 @@ public class BinaryService {
 			for (Iterator<Dataset> itDS = myListDS.iterator(); itDS.hasNext();) {
 				
 				Dataset itemDS = itDS.next();
-				if((itemDS.getIdDataset().equals(idDataSet)) && 
-						(itemDS.getDatasetVersion().equals(dsVersion))){
+				if(itemDS.getIdDataset().equals(idDataSet)){
 					checkDataSet = true;
 				}
 			}
 				
 			if (checkDataSet){
-				if (metadataDataSet.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
+				if (mdMetadata.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
 				
-					visibility = metadataDataSet.getInfo().getVisibility();
+					visibility = mdMetadata.getInfo().getVisibility();
 					visDir = (visibility.equals("private")) ? "rowdata" : "share";
 					System.out.println("visDir = " + visDir);
 					
-					hdfsDirectory = (metadataDataSet.getConfigData().getSubtype().equals("bulkDataset")) ? "data" : 
-									((metadataDataSet.getConfigData().getSubtype().equals("streamDataset")) ? "measures" : 
-									((metadataDataSet.getConfigData().getSubtype().equals("socialDataset")) ? "social" :  ""));
+					hdfsDirectory = (mdMetadata.getConfigData().getSubtype().equals("bulkDataset")) ? "data" : 
+									((mdMetadata.getConfigData().getSubtype().equals("streamDataset")) ? "measures" : 
+									((mdMetadata.getConfigData().getSubtype().equals("socialDataset")) ? "social" :  ""));
 
-					System.out.println("mdFromMongo.subtype = " + metadataDataSet.getConfigData().getSubtype());
+					System.out.println("mdFromMongo.subtype = " + mdMetadata.getConfigData().getSubtype());
 					System.out.println("hdfsDirectory = " + hdfsDirectory);
 					
 					if (hdfsDirectory.equals("")) {
@@ -163,7 +174,7 @@ public class BinaryService {
 					System.out.println("InputStream letto");
 					
 					if (is != null){ 
-						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + dsVersion.toString() + ".csv").build();
+						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv").build();
 						//return is;
 					} else { 
 						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
@@ -179,7 +190,8 @@ public class BinaryService {
 			}	
 		}
 
-		return null;
+		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
+				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
 	}
 
 	@GET
@@ -335,7 +347,6 @@ public class BinaryService {
 			
 			
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
-			//pathForUri = "/tenant/tnt-sandbox" + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(pathForUri);
 			String uri = null;
 			try {

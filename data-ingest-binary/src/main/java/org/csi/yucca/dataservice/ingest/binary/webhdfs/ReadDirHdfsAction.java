@@ -115,7 +115,8 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 					org.apache.hadoop.fs.Path myPath = mFile.getPath();
 					String myFileName = myPath.getName();
 					System.out.println("Analizzo il file " + myFileName);
-					if (myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(this.version.toString()+".csv")){
+					
+					if ((myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(this.version.toString()+".csv")) || (this.version.equals(0))){
 						org.apache.hadoop.fs.Path localPath = org.apache.hadoop.fs.Path.getPathWithoutSchemeAndAuthority(myPath);
 						System.out.println("Faccio OPEN sul file " + localPath.toString());
 						try {
@@ -131,8 +132,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 
 						System.out.println("File OK");
 					} else {
-
-						System.out.println("File Ko!");
+						System.out.println("File Ko");
 					}
 				} else {
 					//che faccio?

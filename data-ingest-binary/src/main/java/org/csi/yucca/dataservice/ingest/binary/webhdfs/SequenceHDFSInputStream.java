@@ -111,8 +111,8 @@ public class SequenceHDFSInputStream extends InputStream {
                 throw new NullPointerException();
             
             in = fs.open(p);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            reader.readLine();
+            //BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+            //reader.readLine();
             
         }
         else in = null;

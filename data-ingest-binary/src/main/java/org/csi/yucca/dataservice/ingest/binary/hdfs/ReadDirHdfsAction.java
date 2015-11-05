@@ -16,10 +16,18 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 
 	private String pathFile;
 	private Integer version;
+	private Integer versionCurrent;
 
 	public ReadDirHdfsAction(String user, String pathFile, Integer version) {
 		this.pathFile = pathFile;
 		this.version = version;
+		this.versionCurrent = 0;
+	}
+
+	public ReadDirHdfsAction(String user, String pathFile, Integer version, Integer versionCurrent) {
+		this.pathFile = pathFile;
+		this.version = version;
+		this.versionCurrent = versionCurrent;
 	}
 
 	@Override
