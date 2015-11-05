@@ -118,7 +118,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 					
 					if ((myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(this.version.toString()+".csv")) || (this.version.equals(0))){
 						org.apache.hadoop.fs.Path localPath = org.apache.hadoop.fs.Path.getPathWithoutSchemeAndAuthority(myPath);
-						System.out.println("Faccio OPEN sul file " + localPath.toString());
+						System.out.println("Aggiungo file alla lista" + localPath.toString());
 						try {
 							System.out.println("Inizio lettura sul file " + myFileName);
 							System.out.println("Inserisco il file " + myFileName + " nella lista!");

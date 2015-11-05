@@ -33,20 +33,18 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
-
-//import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
-
-import org.csi.yucca.dataservice.ingest.model.api.Dataset;
+import org.csi.yucca.dataservice.ingest.dao.MongoDBBinaryDAO;
+import org.csi.yucca.dataservice.ingest.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.ingest.model.api.MyApi;
 import org.csi.yucca.dataservice.ingest.model.metadata.BinaryData;
 import org.csi.yucca.dataservice.ingest.model.metadata.Metadata;
-import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
-import org.csi.yucca.dataservice.ingest.dao.MongoDBBinaryDAO;
-import org.csi.yucca.dataservice.ingest.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.ingest.mongo.singleton.Config;
+import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
 import org.xml.sax.SAXException;
 
 import com.mongodb.MongoClient;
+//import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
+import org.csi.yucca.dataservice.ingest.model.api.Dataset;
 
 @Path("/")
 public class BinaryService {
@@ -54,7 +52,6 @@ public class BinaryService {
 	private final String MEDIA = "media";
 	private final String PATH_INTERNAL_HDFS = "/rawdata/files/";
 	private final Integer MAX_SIZE_FILE_ATTACHMENT = 154857601;
-	private String datasetCode;
 
 	static Logger log = Logger.getLogger(BinaryService.class);
 	
@@ -83,7 +80,6 @@ public class BinaryService {
 		Metadata mdMetadata = null;;
 		String tenantCode = api.getConfigData().getTenantCode();
 		Integer dsVersion = null;
-		Integer dsVersionCurrent = null;
 		
 		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))){
 			System.out.println("Current");
@@ -100,7 +96,7 @@ public class BinaryService {
 								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
 								.build());
 					}
-					System.out.println("VOGLIO TUTTO!!!!");
+					log.info("Richiesto caricamento ALL");
 					dsVersion = 0;
 					System.out.println("dsVersion b = " + dsVersion);
 				} else {
@@ -114,18 +110,10 @@ public class BinaryService {
 			System.out.println("dsVersion b = " + dsVersion);
 			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
 		}
-		
-		String datasetCode = mdMetadata.getDatasetCode();
-		System.out.println("datasetCode = " + datasetCode);
-		//Metadata metadataDataSet = null;
 
-//		try { 
-//			metadataDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
-//		} catch (Exception ex) {
-//			ex.printStackTrace();
-//		}
 		
 		if (mdMetadata != null){
+			String datasetCode = mdMetadata.getDatasetCode();
 			String hdfsDirectory = "";
 			String visibility = null;
 			String visDir;
@@ -228,7 +216,6 @@ public class BinaryService {
 			try { 
 				mdBinaryDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, datasetVersion, tenantCode);
 			} catch (Exception ex) {
-				ex.printStackTrace();
 			}
 			
 			if (mdBinaryDataSet != null){
@@ -583,11 +570,5 @@ public class BinaryService {
 	    return map;
 	}
 
-	public String getDatasetCode() {
-		return datasetCode;
-	}
 
-	public void setDatasetCode(String datasetCode) {
-		this.datasetCode = datasetCode;
-	}
 }

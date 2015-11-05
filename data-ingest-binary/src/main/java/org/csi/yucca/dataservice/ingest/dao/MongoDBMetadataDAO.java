@@ -177,10 +177,15 @@ public class MongoDBMetadataDAO {
 		searchQuery.put("$and", obj);
 
 		DBObject data = collection.find(searchQuery).one();
+		if (data!=null)
+		{
 		ObjectId id = (ObjectId) data.get("_id");
-		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
-		metadataLoaded.setId(id.toString());
-		return metadataLoaded;
+			Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
+			metadataLoaded.setId(id.toString());
+			return metadataLoaded;
+		}
+		else 
+			return null;
 	}
 
 	public List<Metadata> readCurrentMetadataByTntAndIDDS(Long idDataset, String tenantCode) {
