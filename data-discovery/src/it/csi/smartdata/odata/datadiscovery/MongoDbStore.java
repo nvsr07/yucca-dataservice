@@ -5,12 +5,17 @@ import it.csi.smartdata.odata.dbconfig.MongoSingleton;
 import it.csi.smartdata.odata.dto.SmartDataDiscoveryResponseDTO;
 
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
+import org.apache.olingo.odata2.api.edm.provider.Facets;
+import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
@@ -357,6 +362,24 @@ public class MongoDbStore {
 		String disclaimer = (String)info.get("disclaimer");
 		String copyright = (String)info.get("copyright");
 
+		
+		String externalReference = (String)info.get("externalReference");
+		//opendata
+		SimpleDateFormat sdp = new SimpleDateFormat("dd/MM/yyyy");
+		DBObject opendata = (DBObject) datasetFound.get("opendata");
+		Boolean isOpendata = null;
+		String author = null;
+		String dataUpdateDate = null;
+		String language = null;
+		if (opendata!=null)
+		{
+			isOpendata = (Boolean)opendata.get("isOpendata");
+			author = (String)opendata.get("author");
+			dataUpdateDate =sdp.format(new Date((Long)opendata.get("dataUpdateDate")));
+			language = (String)opendata.get("language");
+		}
+
+		
 
 		StringBuilder fieldsBuilder = new StringBuilder();
 		BasicDBList fieldsList = (BasicDBList) info.get("fields");
@@ -483,6 +506,15 @@ public class MongoDbStore {
 		cur.put("disclaimer", disclaimer);
 		cur.put("copyright", copyright);
 
+		
+		cur.put("externalReference", externalReference);
+		//opendata
+		cur.put("isOpendata", isOpendata);
+		cur.put("author", author);
+		cur.put("dataUpdateDate", dataUpdateDate);
+		cur.put("language", language);
+
+		
 		return cur;
 	}
 

@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -103,8 +104,8 @@ public class StaticTest implements PrivilegedAction<String> {
 	    	System.err.println("no operation (one of: ls cpto cpfrom");
 	    	err++;
 	    }
-	    if (!"ls cpto cpfrom".contains(op)) {
-	    	System.err.println("wrong operation (one of: ls cpto cpfrom");
+	    if (!"ls cpto cpfrom readdir".contains(op)) {
+	    	System.err.println("wrong operation (one of: readdir ls cpto cpfrom");
 	    	err++;
 	    }
 	    
@@ -139,10 +140,10 @@ public class StaticTest implements PrivilegedAction<String> {
 		/*System.setProperty("javax.net.ssl.trustStore", "D:\\pochdp.jks");
 		System.setProperty("javax.net.ssl.trustStorePassword", "pochdp");
 		System.setProperty("javax.net.ssl.trustStoreType","JKS");		*/
-		System.setProperty("javax.net.ssl.trustStore", "/appserv/wso400/wso005ptf_node01/repository/resources/security/client-truststore.jks");
-		System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
-		System.setProperty("javax.net.ssl.trustStoreType","JKS");
-		System.setProperty("javax.net.debug","ssl");
+//		System.setProperty("javax.net.ssl.trustStore", "/appserv/wso400/wso005ptf_node01/repository/resources/security/client-truststore.jks");
+//		System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+//		System.setProperty("javax.net.ssl.trustStoreType","JKS");
+//		System.setProperty("javax.net.debug","ssl");
 		
 		Configuration conf = new Configuration();
 		conf.set("fs.swebhdfs.impl", KnoxWebHdfsFileSystem.class.getName());
@@ -213,6 +214,22 @@ public class StaticTest implements PrivilegedAction<String> {
             	IOUtils.copyBytes(is, os, conf);
             	is.close();
             	os.close();
+            } else if (op.equals("readdir")) {
+            	ReadDirHdfsAction action = new ReadDirHdfsAction(user, pwd, remPath, knoxurl,0);
+            	try {
+					Reader rd = action.run();
+					int data = rd.read();
+			        System.out.print(""+(char)data);
+				    while(data != -1){
+				        data = rd.read();
+				        char dataChar = (char) data;
+				        System.out.print(""+dataChar);
+				    }
+				    
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
 		
 		} catch (IOException e) {

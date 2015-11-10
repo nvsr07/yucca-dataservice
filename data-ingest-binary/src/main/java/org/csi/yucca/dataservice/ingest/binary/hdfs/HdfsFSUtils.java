@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.ingest.binary.hdfs;
 
 import java.io.InputStream;
+import java.io.Reader;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.security.UserGroupInformation;
@@ -64,8 +65,8 @@ public class HdfsFSUtils {
 		return size;
 	}
 
-	public static InputStream readDir(String user, String remotePath, Integer version) {
-		InputStream input = null;
+	public static Reader readDir(String user, String remotePath, Integer version) {
+		Reader input = null;
 		try {
 			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
 

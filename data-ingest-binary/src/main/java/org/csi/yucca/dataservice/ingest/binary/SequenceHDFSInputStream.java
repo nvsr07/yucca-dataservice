@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.ingest.binary.webhdfs;
+package org.csi.yucca.dataservice.ingest.binary;
 
 /*
  * Copyright 1994-2006 Sun Microsystems, Inc.  All Rights Reserved.

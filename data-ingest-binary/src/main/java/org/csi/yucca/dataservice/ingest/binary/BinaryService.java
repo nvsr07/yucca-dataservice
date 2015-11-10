@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.ingest.binary;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -43,6 +44,7 @@ import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
 import org.xml.sax.SAXException;
 
 import com.mongodb.MongoClient;
+
 //import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
 import org.csi.yucca.dataservice.ingest.model.api.Dataset;
 
@@ -151,7 +153,7 @@ public class BinaryService {
 					
 					String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + "/" + visDir + "/" + hdfsDirectory + "/" + datasetCode + "/";
 					System.out.println("pathForUri = " + pathForUri);
-					InputStream is = null;
+					Reader is = null;
 					if (Config.getHdfsLibrary().equals("webhdfs")){ 
 						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), dsVersion);
 					} else if (Config.getHdfsLibrary().equals("hdfs")){

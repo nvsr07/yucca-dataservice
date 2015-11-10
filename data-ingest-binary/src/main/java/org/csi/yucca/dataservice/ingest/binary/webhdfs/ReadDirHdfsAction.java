@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.ingest.binary.webhdfs;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Reader;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 
@@ -11,8 +12,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.csi.yucca.dataservice.ingest.binary.ListOfFiles;
+import org.csi.yucca.dataservice.ingest.binary.SequenceHDFSReader;
 
-public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream> {
+public class ReadDirHdfsAction implements PrivilegedExceptionAction<Reader> {
 
 	private String pathFile;
 	private String user; 
@@ -64,7 +66,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 	}
 
 	@Override
-	public InputStream run() throws Exception {
+	public Reader run() throws Exception {
 		
 		System.setProperty("javax.net.ssl.trustStore", "repository/resources/security/client-truststore.jks");
 		System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
@@ -143,7 +145,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 				System.out.println("Cartella VUOTA!!!!");
 			}
 			
-			InputStream sis = new SequenceHDFSInputStream(fs, list);
+			Reader sis = new SequenceHDFSReader(fs, list);
 			System.out.println("Esco BENE!!");
 			
 			return sis;

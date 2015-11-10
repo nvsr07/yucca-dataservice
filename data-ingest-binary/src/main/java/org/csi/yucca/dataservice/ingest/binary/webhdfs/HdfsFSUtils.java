@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.ingest.binary.webhdfs;
 
 import java.io.InputStream;
+import java.io.Reader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -34,8 +35,8 @@ public class HdfsFSUtils {
 		return input;
 	}
 
-	public static InputStream readDir(String user, String pwd, String remotePath, String knoxurl, Integer version) {
-		InputStream input = null;
+	public static Reader readDir(String user, String pwd, String remotePath, String knoxurl, Integer version) {
+		Reader input = null;
 		try {
 			UserGroupInformation ugi = UserGroupInformation.createRemoteUser(user);
 			
