@@ -135,7 +135,7 @@ public class BinaryService {
 				if (mdMetadata.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
 				
 					visibility = mdMetadata.getInfo().getVisibility();
-					visDir = (visibility.equals("private")) ? "rowdata" : "share";
+					visDir = (visibility.equals("private")) ? "rawdata" : "share";
 					System.out.println("visDir = " + visDir);
 					
 					hdfsDirectory = (mdMetadata.getConfigData().getSubtype().equals("bulkDataset")) ? "data" : 
