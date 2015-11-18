@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.ingest.binary.webhdfs;
+package org.csi.yucca.dataservice.ingest.binary;
 
 /*
  * Copyright 1994-2006 Sun Microsystems, Inc.  All Rights Reserved.
@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Enumeration;
 
+import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 
 /**
@@ -48,7 +49,7 @@ import org.apache.hadoop.fs.FileSystem;
  */
 public class SequenceHDFSInputStream extends InputStream {
     Enumeration<? extends org.apache.hadoop.fs.Path> path;
-    InputStream in;
+    FSDataInputStream in;
     FileSystem fs;
 
     /**
@@ -111,8 +112,7 @@ public class SequenceHDFSInputStream extends InputStream {
                 throw new NullPointerException();
             
             in = fs.open(p);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            reader.readLine();
+            in.readLine();
             
         }
         else in = null;

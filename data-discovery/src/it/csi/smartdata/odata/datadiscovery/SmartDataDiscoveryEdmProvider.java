@@ -216,6 +216,12 @@ public class SmartDataDiscoveryEdmProvider extends EdmProvider{
 		propertiesSmartObject.add(new SimpleProperty().setName("copyright").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
 
+		propertiesSmartObject.add(new SimpleProperty().setName("externalReference").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		//opendata
+		propertiesSmartObject.add(new SimpleProperty().setName("isOpendata").setType(EdmSimpleTypeKind.Boolean).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("author").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("dataUpdateDate").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
+		propertiesSmartObject.add(new SimpleProperty().setName("language").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
 		//Keys
 		List<PropertyRef> keyPropertiesSmartObject = new ArrayList<PropertyRef>();

@@ -177,10 +177,34 @@ public class MongoDBMetadataDAO {
 		searchQuery.put("$and", obj);
 
 		DBObject data = collection.find(searchQuery).one();
+		if (data!=null)
+		{
 		ObjectId id = (ObjectId) data.get("_id");
-		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
-		metadataLoaded.setId(id.toString());
-		return metadataLoaded;
+			Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
+			metadataLoaded.setId(id.toString());
+			return metadataLoaded;
+		}
+		else 
+			return null;
+	}
+
+	public List<Metadata> readCurrentMetadataByTntAndIDDS(Long idDataset, String tenantCode) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		List<Metadata> data = new ArrayList<Metadata>();
+		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		obj.add(new BasicDBObject("idDataset", idDataset));
+		obj.add(new BasicDBObject("configData.tenantCode", tenantCode));
+		searchQuery.put("$and", obj);
+
+		DBCursor cursor = collection.find(searchQuery);
+		while (cursor.hasNext()) {
+			DBObject doc = cursor.next();
+			ObjectId id = (ObjectId) doc.get("_id");
+			Metadata metadata = Metadata.fromJson(JSON.serialize(doc));
+			metadata.setId(id.toString());
+			data.add(metadata);
+		}
+		return data;
 	}
 
 	public Metadata getCurrentMetadaByDataSetCode(String dataSetCode, Integer dataSetVersion, String tenantCode) {

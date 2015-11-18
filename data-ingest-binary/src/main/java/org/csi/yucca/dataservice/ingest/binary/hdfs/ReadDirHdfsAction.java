@@ -1,7 +1,7 @@
 package org.csi.yucca.dataservice.ingest.binary.hdfs;
 
 import java.io.File;
-import java.io.InputStream;
+import java.io.Reader;
 import java.security.PrivilegedExceptionAction;
 
 import org.apache.hadoop.conf.Configuration;
@@ -10,20 +10,28 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.csi.yucca.dataservice.ingest.binary.ListOfFiles;
-import org.csi.yucca.dataservice.ingest.binary.webhdfs.SequenceHDFSInputStream;
+import org.csi.yucca.dataservice.ingest.binary.SequenceHDFSReader;
 
-public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream> {
+public class ReadDirHdfsAction implements PrivilegedExceptionAction<Reader> {
 
 	private String pathFile;
 	private Integer version;
+	private Integer versionCurrent;
 
 	public ReadDirHdfsAction(String user, String pathFile, Integer version) {
 		this.pathFile = pathFile;
 		this.version = version;
+		this.versionCurrent = 0;
+	}
+
+	public ReadDirHdfsAction(String user, String pathFile, Integer version, Integer versionCurrent) {
+		this.pathFile = pathFile;
+		this.version = version;
+		this.versionCurrent = versionCurrent;
 	}
 
 	@Override
-	public InputStream run() throws Exception {
+	public Reader run() throws Exception {
 		try {
 			
 			System.out.println("Entro in run di ReadDirHdfsAction (hdfs)");
@@ -82,7 +90,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 				System.out.println("Cartella VUOTA!!!!");
 			}
 			
-			InputStream sis = new SequenceHDFSInputStream(fs, list);
+			Reader sis = new SequenceHDFSReader(fs, list);
 			System.out.println("Esco BENE!!");
 			
 			return sis;

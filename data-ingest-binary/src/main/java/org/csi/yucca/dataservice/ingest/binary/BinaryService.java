@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.ingest.binary;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,20 +34,19 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
-
-//import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
-
-import org.csi.yucca.dataservice.ingest.model.api.Dataset;
+import org.csi.yucca.dataservice.ingest.dao.MongoDBBinaryDAO;
+import org.csi.yucca.dataservice.ingest.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.ingest.model.api.MyApi;
 import org.csi.yucca.dataservice.ingest.model.metadata.BinaryData;
 import org.csi.yucca.dataservice.ingest.model.metadata.Metadata;
-import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
-import org.csi.yucca.dataservice.ingest.dao.MongoDBBinaryDAO;
-import org.csi.yucca.dataservice.ingest.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.ingest.mongo.singleton.Config;
+import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
 import org.xml.sax.SAXException;
 
 import com.mongodb.MongoClient;
+
+//import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
+import org.csi.yucca.dataservice.ingest.model.api.Dataset;
 
 @Path("/")
 public class BinaryService {
@@ -54,7 +54,6 @@ public class BinaryService {
 	private final String MEDIA = "media";
 	private final String PATH_INTERNAL_HDFS = "/rawdata/files/";
 	private final Integer MAX_SIZE_FILE_ATTACHMENT = 154857601;
-	private String datasetCode;
 
 	static Logger log = Logger.getLogger(BinaryService.class);
 	
@@ -84,7 +83,7 @@ public class BinaryService {
 		String tenantCode = api.getConfigData().getTenantCode();
 		Integer dsVersion = null;
 		
-		if (datasetVersion.equals("current")){
+		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))){
 			System.out.println("Current");
 
 			mdMetadata = metadataDAO.getCurrentMetadaByBinaryID(idDataSet);
@@ -93,7 +92,18 @@ public class BinaryService {
 						.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117a\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}")
 						.build());
 			} else {
-				dsVersion = mdMetadata.getDatasetVersion();
+				if (datasetVersion.equals("all")){
+					if (!mdMetadata.getConfigData().getSubtype().equals("bulkDataset")){
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
+								.build());
+					}
+					log.info("Richiesto caricamento ALL");
+					dsVersion = 0;
+					System.out.println("dsVersion b = " + dsVersion);
+				} else {
+					dsVersion = mdMetadata.getDatasetVersion();
+				}
 				System.out.println("dsVersion a = " + dsVersion);
 			}
 		} else {
@@ -103,17 +113,9 @@ public class BinaryService {
 			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
 		}
 
-		String datasetCode = mdMetadata.getDatasetCode();
-		System.out.println("datasetCode = " + datasetCode);
-		Metadata metadataDataSet = null;
-
-		try { 
-			metadataDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
 		
-		if (metadataDataSet != null){
+		if (mdMetadata != null){
+			String datasetCode = mdMetadata.getDatasetCode();
 			String hdfsDirectory = "";
 			String visibility = null;
 			String visDir;
@@ -124,24 +126,23 @@ public class BinaryService {
 			for (Iterator<Dataset> itDS = myListDS.iterator(); itDS.hasNext();) {
 				
 				Dataset itemDS = itDS.next();
-				if((itemDS.getIdDataset().equals(idDataSet)) && 
-						(itemDS.getDatasetVersion().equals(dsVersion))){
+				if(itemDS.getIdDataset().equals(idDataSet)){
 					checkDataSet = true;
 				}
 			}
 				
 			if (checkDataSet){
-				if (metadataDataSet.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
+				if (mdMetadata.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
 				
-					visibility = metadataDataSet.getInfo().getVisibility();
-					visDir = (visibility.equals("private")) ? "rowdata" : "share";
+					visibility = mdMetadata.getInfo().getVisibility();
+					visDir = (visibility.equals("private")) ? "rawdata" : "share";
 					System.out.println("visDir = " + visDir);
 					
-					hdfsDirectory = (metadataDataSet.getConfigData().getSubtype().equals("bulkDataset")) ? "data" : 
-									((metadataDataSet.getConfigData().getSubtype().equals("streamDataset")) ? "measures" : 
-									((metadataDataSet.getConfigData().getSubtype().equals("socialDataset")) ? "social" :  ""));
+					hdfsDirectory = (mdMetadata.getConfigData().getSubtype().equals("bulkDataset")) ? "data" : 
+									((mdMetadata.getConfigData().getSubtype().equals("streamDataset")) ? "measures" : 
+									((mdMetadata.getConfigData().getSubtype().equals("socialDataset")) ? "social" :  ""));
 
-					System.out.println("mdFromMongo.subtype = " + metadataDataSet.getConfigData().getSubtype());
+					System.out.println("mdFromMongo.subtype = " + mdMetadata.getConfigData().getSubtype());
 					System.out.println("hdfsDirectory = " + hdfsDirectory);
 					
 					if (hdfsDirectory.equals("")) {
@@ -152,7 +153,7 @@ public class BinaryService {
 					
 					String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + "/" + visDir + "/" + hdfsDirectory + "/" + datasetCode + "/";
 					System.out.println("pathForUri = " + pathForUri);
-					InputStream is = null;
+					Reader is = null;
 					if (Config.getHdfsLibrary().equals("webhdfs")){ 
 						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), dsVersion);
 					} else if (Config.getHdfsLibrary().equals("hdfs")){
@@ -163,7 +164,7 @@ public class BinaryService {
 					System.out.println("InputStream letto");
 					
 					if (is != null){ 
-						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + dsVersion.toString() + ".csv").build();
+						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv").build();
 						//return is;
 					} else { 
 						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
@@ -179,7 +180,8 @@ public class BinaryService {
 			}	
 		}
 
-		return null;
+		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
+				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
 	}
 
 	@GET
@@ -216,7 +218,6 @@ public class BinaryService {
 			try { 
 				mdBinaryDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, datasetVersion, tenantCode);
 			} catch (Exception ex) {
-				ex.printStackTrace();
 			}
 			
 			if (mdBinaryDataSet != null){
@@ -335,7 +336,6 @@ public class BinaryService {
 			
 			
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
-			//pathForUri = "/tenant/tnt-sandbox" + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(pathForUri);
 			String uri = null;
 			try {
@@ -572,11 +572,5 @@ public class BinaryService {
 	    return map;
 	}
 
-	public String getDatasetCode() {
-		return datasetCode;
-	}
 
-	public void setDatasetCode(String datasetCode) {
-		this.datasetCode = datasetCode;
-	}
 }

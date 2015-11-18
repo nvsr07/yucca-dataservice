@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.ingest.binary.webhdfs;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Reader;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 
@@ -11,8 +12,9 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.RemoteIterator;
 import org.csi.yucca.dataservice.ingest.binary.ListOfFiles;
+import org.csi.yucca.dataservice.ingest.binary.SequenceHDFSReader;
 
-public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream> {
+public class ReadDirHdfsAction implements PrivilegedExceptionAction<Reader> {
 
 	private String pathFile;
 	private String user; 
@@ -64,7 +66,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 	}
 
 	@Override
-	public InputStream run() throws Exception {
+	public Reader run() throws Exception {
 		
 		System.setProperty("javax.net.ssl.trustStore", "repository/resources/security/client-truststore.jks");
 		System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
@@ -115,9 +117,10 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 					org.apache.hadoop.fs.Path myPath = mFile.getPath();
 					String myFileName = myPath.getName();
 					System.out.println("Analizzo il file " + myFileName);
-					if (myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(this.version.toString()+".csv")){
+					
+					if ((myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(this.version.toString()+".csv")) || (this.version.equals(0))){
 						org.apache.hadoop.fs.Path localPath = org.apache.hadoop.fs.Path.getPathWithoutSchemeAndAuthority(myPath);
-						System.out.println("Faccio OPEN sul file " + localPath.toString());
+						System.out.println("Aggiungo file alla lista" + localPath.toString());
 						try {
 							System.out.println("Inizio lettura sul file " + myFileName);
 							System.out.println("Inserisco il file " + myFileName + " nella lista!");
@@ -131,8 +134,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 
 						System.out.println("File OK");
 					} else {
-
-						System.out.println("File Ko!");
+						System.out.println("File Ko");
 					}
 				} else {
 					//che faccio?
@@ -143,7 +145,7 @@ public class ReadDirHdfsAction implements PrivilegedExceptionAction<InputStream>
 				System.out.println("Cartella VUOTA!!!!");
 			}
 			
-			InputStream sis = new SequenceHDFSInputStream(fs, list);
+			Reader sis = new SequenceHDFSReader(fs, list);
 			System.out.println("Esco BENE!!");
 			
 			return sis;
