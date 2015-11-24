@@ -153,10 +153,52 @@ public class SDPInsertApiMongoConnectionSingleton {
 	}
 
 	public DbConfDto getDataDbConfiguration(String dbType,String tenantCode) {
+		if (null==params.get(tenantCode+"__"+dbType)) reloadDataDbConfig();
 		return params.get(tenantCode+"__"+dbType);
 	}
 
 
+	private void reloadDataDbConfig() {
+		DBCursor cursor =null;
+		try {
+			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_TENANT));
+			String collection=SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
+			DBCollection coll = db.getCollection(collection);
+
+			cursor = coll.find();
+			while (cursor.hasNext()) {
+
+				DBObject obj=cursor.next();
+
+				String tenant=obj.get("tenantCode").toString();
+				
+				DbConfDto measureDb=new DbConfDto();
+				measureDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
+				measureDb.setDataBase(takeNvlValues( obj.get("measuresCollectionDb")));
+				measureDb.setCollection(takeNvlValues( obj.get("measuresCollectionName")));
+				measureDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
+
+				
+				DbConfDto dataDb=new DbConfDto();
+				dataDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
+				dataDb.setDataBase(takeNvlValues( obj.get("dataCollectionDb")));
+				dataDb.setCollection(takeNvlValues( obj.get("dataCollectionName")));
+				dataDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
+				
+				
+				params.put(tenant+"__"+DB_MESURES, measureDb);
+				params.put(tenant+"__"+DB_DATA, dataDb);
+				
+			}
+		} catch (Exception e) {
+			//TODO log
+		} finally {
+			try { cursor.close(); } catch (Exception ec) {}
+
+		}
+		
+	}
 
 	public MongoClient getMongoClient(String databaseType) throws Exception{
 		if (MONGO_DB_CFG_TENANT.equals(databaseType)) return mongoConnection.get(MONGO_DB_CFG_TENANT);
