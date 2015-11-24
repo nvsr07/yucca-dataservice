@@ -322,6 +322,31 @@ public class MongoDbStore {
 					cur.put("elevation", veSingPos.get("elevation"));
 				}
 			}
+			
+			
+			SimpleDateFormat sdp = new SimpleDateFormat("dd/MM/yyyy");
+			
+			String externalReference = (String) stream.get("externalReference");
+			DBObject opendata = (DBObject) stream.get("opendata");
+		Boolean isOpendata = null;
+		String author = null;
+		String dataUpdateDate = null;
+		String language = null;
+		if (opendata != null) {
+			isOpendata = (Boolean) opendata.get("isOpendata");
+			author = (String) opendata.get("author");
+			if (null!=opendata.get("dataUpdateDate"))
+			dataUpdateDate = sdp.format(new Date(new Long(  ""+  opendata.get("dataUpdateDate"))));
+			language = (String) opendata.get("language");
+		}
+		cur.put("externalReference", externalReference);
+		// opendata
+		cur.put("isOpendata", isOpendata);
+		cur.put("author", author);
+		cur.put("dataUpdateDate", dataUpdateDate);
+		cur.put("language", language);
+			
+			
 		}
 		return cur;
 	}
@@ -363,7 +388,10 @@ public class MongoDbStore {
 		if (opendata != null) {
 			isOpendata = (Boolean) opendata.get("isOpendata");
 			author = (String) opendata.get("author");
-			dataUpdateDate = sdp.format(new Date((Long) opendata.get("dataUpdateDate")));
+			//dataUpdateDate = sdp.format(new Date((Long) opendata.get("dataUpdateDate")));
+			if (null!=opendata.get("dataUpdateDate"))
+			dataUpdateDate = sdp.format(new Date(new Long(  ""+  opendata.get("dataUpdateDate"))));
+			
 			language = (String) opendata.get("language");
 		}
 
