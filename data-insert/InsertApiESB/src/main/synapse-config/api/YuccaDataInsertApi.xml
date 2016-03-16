@@ -3,7 +3,11 @@
     <resource methods="POST" uri-template="/input/{codTenant}">
         <inSequence>
         
-        
+		<log level="custom">
+             <property name="UNIQUE_ID PRP" expression="$trp:UNIQUE_ID"/>
+             <property name="X-Forwarded-For PRP" expression="$trp:X-Forwarded-For"/>
+             <property name="X-JWT-Assertion PRP" expression="$trp:Authorization"/>
+         </log>        
         <throttle id="throttleStream">
         <policy>
             <!-- define throttle policy -->
@@ -30,6 +34,13 @@
                 </then>
                 <else/>
             </filter>
+
+             <property name="idunivoco" expression="$trp:UNIQUE_ID"/>
+             <property name="forwardfor" expression="$trp:X-Forwarded-For"/>
+             <property name="authinfo" expression="$trp:Authorization"/>
+             <property name="path" value="/stream/input/"/>
+
+
             <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
             <property name="codiceTenant" expression="get-property('uri.var.codTenant')" scope="default" type="STRING"/>
             <property name="JSONPayload" expression="json-eval($.)" scope="default" type="STRING"/>
@@ -42,6 +53,13 @@
                                 <dat:codTenant>$1</dat:codTenant>
                                 <dat:jsonData>$2
 								</dat:jsonData>
+                                <dat:uniqueid>$3</dat:uniqueid>
+                                <dat:forwardfor>$4</dat:forwardfor>
+                                <dat:authInfo>$5</dat:authInfo>
+                                <dat:path>$6</dat:path>
+								
+							
+								
                             </dat:insertApi>
                         </soapenv:Body>
                     </soapenv:Envelope>
@@ -49,6 +67,10 @@
                 <args>
                     <arg evaluator="xml" expression="get-property('codiceTenant')"/>
                     <arg evaluator="xml" expression="get-property('JSONPayload')"/>
+                    <arg evaluator="xml" expression="get-property('idunivoco')"/>
+                    <arg evaluator="xml" expression="get-property('forwardfor')"/>
+                    <arg evaluator="xml" expression="get-property('authinfo')"/>
+                    <arg evaluator="xml" expression="get-property('path')"/>
                 </args>
             </payloadFactory>
             <property name="messageType" value="text/xml" scope="axis2" type="STRING"/>
