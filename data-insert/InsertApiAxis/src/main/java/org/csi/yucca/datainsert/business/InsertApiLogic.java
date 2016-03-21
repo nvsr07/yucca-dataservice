@@ -135,8 +135,12 @@ public class InsertApiLogic {
 				//System.out.println(" TIMETIME parseJsonInputDataset -- lettura oggetto--> "+System.currentTimeMillis());
 				infoDataset=mongoAccess.getInfoDataset(datasetCode, reqVersion,tenant);
 				//System.out.println(" TIMETIME parseJsonInputDataset -- recuperata info dataset--> "+System.currentTimeMillis());
+
+				
 				
 				if (null==infoDataset)  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, " for dataset "+datasetCode);
+				
+				MongoDatasetInfo infoDatasetV1=mongoAccess.getInfoDataset(datasetCode, 1,tenant);
 				
 
 				String insStrConst="";
@@ -166,7 +170,7 @@ public class InsertApiLogic {
 				
 				
 				//DatasetBulkInsert datiToins=parseGenericDataset(tenant, ooo.toJSONString(), insStrConst, infoDataset);
-				DatasetBulkInsert datiToins=parseGenericDataset(tenant, ooo, insStrConst, infoDataset);
+				DatasetBulkInsert datiToins=parseGenericDataset(tenant, ooo, insStrConst, infoDataset,infoDatasetV1);
 				
 				
 				//System.out.println(" TIMETIME parseJsonInputDataset -- parsificato dataset info--> "+System.currentTimeMillis());
@@ -215,6 +219,7 @@ public class InsertApiLogic {
 		String application=null;
 		String stream=null;
 		String streamToFind=null;
+		String sensorToFind=null;
 		while (i<100000 && !endArray) {
 			try {
 				ooo = JsonPath.read(jsonInput, "$["+i+"]");
@@ -224,16 +229,17 @@ public class InsertApiLogic {
 				stream=(String)ooo.get("stream");
 
 
+				streamToFind=stream;
 
-				streamToFind=(stream!=null ? stream: application);
+						sensorToFind=(sensor!=null ? sensor: application);
 
 				//TODO non so se e' bloccante ... 
 				if (streamToFind == null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
-				if (sensor == null ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
+				if (sensorToFind == null ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
 
 
 
-				if (ret.get(sensor+"_"+streamToFind)!=null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DUPLICATE, " for stream "+streamToFind);
+				if (ret.get(sensorToFind+"_"+streamToFind)!=null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DUPLICATE, " for stream "+streamToFind);
 
 
 				DatasetBulkInsert datiToins=parseMisura(tenant, ooo);
@@ -241,14 +247,14 @@ public class InsertApiLogic {
 				//TODO .. controllo sul numero di record da inserire
 
 				datiToins.setStream(streamToFind);
-				datiToins.setSensor(sensor);
+				datiToins.setSensor(sensorToFind);
 				datiToins.setStatus(DatasetBulkInsert.STATUS_SYNTAX_CHECKED);
 				
 				totalDocumentsToIns=totalDocumentsToIns+datiToins.getNumRowToInsFromJson();
 				if (totalDocumentsToIns>SDPInsertApiConfig.MAX_DOCUMENTS_IN_REQUEST) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_MAXRECORDS);
 				//System.out.println("           "+datiToins.getRowsToInsert().size()+"/"+ datiToins.getNumRowToInsFromJson());
 
-				ret.put(sensor+"_"+streamToFind, datiToins);
+				ret.put(sensorToFind+"_"+streamToFind, datiToins);
 
 
 				i++;
@@ -256,11 +262,11 @@ public class InsertApiLogic {
 				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) {
 					endArray=true;
 				} else {
-					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> " + e );
+					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e );
 					throw e;
 				}
 			} catch (Exception ex) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception" + ex );
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception" , ex );
 				i++;
 				endArray=true;
 				throw ex;
@@ -275,7 +281,7 @@ public class InsertApiLogic {
 	}	
 
 
-	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns,String insStrConst,MongoDatasetInfo datasetMongoInfo) throws Exception {
+	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1) throws Exception {
 		//System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret=null;
 
@@ -291,6 +297,10 @@ public class InsertApiLogic {
 			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
 		}
 
+		HashMap<String, FieldsMongoDto> campiMongoV1= new HashMap<String, FieldsMongoDto>();
+		for (int i = 0; i< datasetMongoInfoV1.getCampi().size();i++) {
+			campiMongoV1.put(datasetMongoInfoV1.getCampi().get(i).getFieldName(), datasetMongoInfoV1.getCampi().get(i));
+		}
 		
 		
 		int i =0;
@@ -307,24 +317,16 @@ public class InsertApiLogic {
 				
 				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
-				rigadains.add(parseComponents(components, insStrConst, campiMongo));
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
 				
 				
 				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") parse componenti--> "+System.currentTimeMillis());
 
 				
 				
-				if (components.keySet().size()!=numeroCampiMongo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE);
-//				Iterator<String> itCampiCheck=campiMongo.keySet().iterator();
-//				while (itCampiCheck.hasNext()) {
-//					String nome=itCampiCheck.next();
-//					FieldsMongoDto campoMongo=campiMongo.get(nome);
-//					if (campoMongo.isSuccessChecked()==false) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
-//							" - field "+nome+" ("+insStrConst+") not found in input data : "+ooo); 
-//					(campiMongo.get(nome)).setSuccessChecked(false);
-//				}				
-				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") ciclo controllo--> "+System.currentTimeMillis());
-				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") fine--> "+System.currentTimeMillis());
+				//if (components.keySet().size()!=numeroCampiMongo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE);
+
+				
 
 				i++;
 			} catch (PathNotFoundException e) {
@@ -346,7 +348,7 @@ public class InsertApiLogic {
 		return ret;
 	}	
 	
-	private DatasetBulkInsert parseGenericDataset(String tenant, String jsonInput,String insStrConst,MongoDatasetInfo datasetMongoInfo) throws Exception {
+	private DatasetBulkInsert parseGenericDataset(String tenant, String jsonInput,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1) throws Exception {
 		//System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret=null;
 
@@ -355,8 +357,14 @@ public class InsertApiLogic {
 		boolean endArray=false;
 		ArrayList<String> rigadains= new ArrayList<String>();
 
-		ArrayList<FieldsMongoDto> elencoCampi=datasetMongoInfo.getCampi();
 
+		HashMap<String, FieldsMongoDto> campiMongoV1= new HashMap<String, FieldsMongoDto>();
+		for (int i = 0; i< datasetMongoInfoV1.getCampi().size();i++) {
+			campiMongoV1.put(datasetMongoInfoV1.getCampi().get(i).getFieldName(), datasetMongoInfoV1.getCampi().get(i));
+		}
+		
+		ArrayList<FieldsMongoDto> elencoCampi=datasetMongoInfo.getCampi();
+		
 		HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
 		for (int i = 0; i< elencoCampi.size();i++) {
 			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
@@ -375,24 +383,14 @@ public class InsertApiLogic {
 				components = JsonPath.read(jsonInput, "$.values["+i+"]");
 				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
-				rigadains.add(parseComponents(components, insStrConst, campiMongo));
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
 				
 				
 				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") parse componenti--> "+System.currentTimeMillis());
 
 				
 				
-				if (components.keySet().size()!=numeroCampiMongo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE);
-//				Iterator<String> itCampiCheck=campiMongo.keySet().iterator();
-//				while (itCampiCheck.hasNext()) {
-//					String nome=itCampiCheck.next();
-//					FieldsMongoDto campoMongo=campiMongo.get(nome);
-//					if (campoMongo.isSuccessChecked()==false) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
-//							" - field "+nome+" ("+insStrConst+") not found in input data : "+ooo); 
-//					(campiMongo.get(nome)).setSuccessChecked(false);
-//				}				
-				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") ciclo controllo--> "+System.currentTimeMillis());
-				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") fine--> "+System.currentTimeMillis());
+				//if (components.keySet().size()!=numeroCampiMongo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE);
 
 				i++;
 			} catch (PathNotFoundException e) {
@@ -416,7 +414,7 @@ public class InsertApiLogic {
 	
 	
 	//private String parseComponents (JSONObject components,String insStrConst,ArrayList<FieldsMongoDto> elencoCampi) throws Exception {
-	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo) throws Exception {		
+	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo,HashMap<String, FieldsMongoDto> campiMongoV1) throws Exception {		
 		ArrayList<String> rigadains= new ArrayList<String>();
 		Iterator<String> itCampiJson=components.keySet().iterator();
 
@@ -429,19 +427,49 @@ public class InsertApiLogic {
 //			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
 //		}
 
+		int numCampiInV1=0;
 		while (itCampiJson.hasNext()) {
 			String jsonField=(String)itCampiJson.next();
 
 			// 1. verifico che il campo sia tra quelli presenti nei metadati
 			
 			FieldsMongoDto campoMongo= campiMongo.get(jsonField);
+			FieldsMongoDto campoMongoV1= campiMongoV1.get(jsonField);
 			if (null==campoMongo ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INVALID_COMPONENTS,
 					" component "+jsonField+" not found in stream configuration ("+insStrConst+")");
 
-			String valore= (components.get(jsonField)).toString();
+			
+			String valore= null; 
+			if 	(null!=(components.get(jsonField))) valore= (components.get(jsonField)).toString();
+			
+			
+			
 			//validazione del valore
 			if (!campoMongo.validateValue(valore))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
 					" - field "+jsonField+" ("+insStrConst+"): "+valore);
+			
+			
+			log.info("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
+			log.info("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
+			log.info("[InsertApiLogic::parseCompnents] valore: "+valore);
+			if (campoMongoV1!=null) {
+				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
+				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
+				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
+				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
+				numCampiInV1++;
+			}
+			log.info("[InsertApiLogic::parseCompnents] .................");
+			log.info("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
+			log.info("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
+			log.info("[InsertApiLogic::parseCompnents]          valore="+valore);
+			
+			
+			if (null!=campoMongoV1 && !campoMongoV1.validateValue(valore))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
+					" - field "+jsonField+" ("+insStrConst+"): "+( (valore == null) ? "null" : valore));
+			
+			
+			
 			(campiMongo.get(jsonField)).setSuccessChecked(true);
 
 
@@ -449,6 +477,9 @@ public class InsertApiLogic {
 			else currRigaIns+=" , "+  campoMongo.getInsertJson(valore);
 
 		}
+		
+		if (numCampiInV1!=campiMongoV1.size()) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INVALID_COMPONENTS,"fields present in dataset v1 definition must be not null");
+		
 		if (currRigaIns!=null) {
 			//currRigaIns = insStrConst+", time: {$date :\""+timeStamp+"\"} , "+currRigaIns;
 			currRigaIns = insStrConst+", "+currRigaIns;
@@ -481,16 +512,44 @@ public class InsertApiLogic {
 		String application=(String)bloccoDaIns.get("application");
 		
 		
-		if (application == null && stream == null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
-		if (sensor == null ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
+//		if (application == null && stream == null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
+//		if (sensor == null ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
+
+		if (sensor == null && application == null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
+		if (stream == null ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
+		
 		if (null!=datasetVersion) reqVersion=datasetVersion.intValue();
 
 		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
-		ArrayList<MongoStreamInfo> elencoStream=mongoAccess.getStreamInfo(tenant, (stream!=null ? stream : application), sensor);
+		//ArrayList<MongoStreamInfo> elencoStream=mongoAccess.getStreamInfo(tenant, (stream!=null ? stream : application), sensor);
+		ArrayList<MongoStreamInfo> elencoStream=mongoAccess.getStreamInfo(tenant, stream, (sensor!=null ? sensor : application) );
 
-		if (elencoStream==null || elencoStream.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, ": "+(stream!=null ? stream : application) +" (sensor: "+sensor+")");
+		if (elencoStream==null || elencoStream.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
+		
+		for (int i = 0 ; i< elencoStream.size(); i++) {
+			
+			
+			log.info("[InsertApiLogic::parseMisura] nome stream, tipo stream: "+elencoStream.get(i).getStreamCode() + ","+elencoStream.get(i).getTipoStream());
+
+			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_APPLICATION && application==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")"); 
+			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_SENSOR && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
+			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_INTERNAL || 
+					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET || 
+					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
+			
+			log.info("[InsertApiLogic::parseMisura]      OK --------------");
+			
+			
+			
+		}
+		
+		
 		ArrayList<FieldsMongoDto> elencoCampi=mongoAccess.getCampiDataSet(elencoStream, Long.parseLong(""+reqVersion) );
 
+		
+		ArrayList<FieldsMongoDto> elencoCampiV1=mongoAccess.getCampiDataSet(elencoStream, Long.parseLong("1") );
+		
+		
 		if (elencoCampi==null || elencoCampi.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, ": "+(stream!=null ? stream : application) +" (sensor: "+sensor+")");
 		HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
 		long idDatasetTrovato=-1;
@@ -500,6 +559,13 @@ public class InsertApiLogic {
 			idDatasetTrovato=elencoCampi.get(i).getDatasetId();
 			datasetVersionTrovato=elencoCampi.get(i).getDatasetVersion();
 		}
+		
+		
+		HashMap<String, FieldsMongoDto> campiMongoV1= new HashMap<String, FieldsMongoDto>();		
+		for (int i = 0; i< elencoCampiV1.size();i++) {
+			campiMongoV1.put(elencoCampiV1.get(i).getFieldName(), elencoCampiV1.get(i));
+		}
+		
 		//JSONObject ooo=null;
 		JSONObject components=null;
 		int i =0;
@@ -549,14 +615,14 @@ public class InsertApiLogic {
 				//insStrConst+= ", time: {$date :\""+timeStamp+"\"} ";
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
 				
-				rigadains.add(parseComponents(components, insStrConstBase+", time: {$date :\""+timeStamp+"\"} ", campiMongo));
+				rigadains.add(parseComponents(components, insStrConstBase+", time: {$date :\""+timeStamp+"\"} ", campiMongo,campiMongoV1));
 				//System.out.println(" TIMETIME parseMisura -- valore ("+i+") parsing components--> "+System.currentTimeMillis());
 				
 
 
 				//ora controllo che tra i campi che arrivano dalla cfg non ce ne sia qualcuno che non era presente nel json in input
 				
-				if (components.keySet().size()!=numeroCampiMongo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE);
+				//if (components.keySet().size()!=numeroCampiMongo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE);
 				
 				
 //				Iterator<String> itCampiCheck=campiMongo.keySet().iterator();
@@ -604,6 +670,7 @@ public class InsertApiLogic {
 
 		if (elencoStream==null || elencoStream.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, ": "+(stream!=null ? stream : application) +" (sensor: "+sensor+")");
 		ArrayList<FieldsMongoDto> elencoCampi=mongoAccess.getCampiDataSet(elencoStream, Long.parseLong(""+reqVersion) );
+		ArrayList<FieldsMongoDto> elencoCampiV1=mongoAccess.getCampiDataSet(elencoStream, Long.parseLong("1") );
 
 		if (elencoCampi==null || elencoCampi.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, ": "+(stream!=null ? stream : application) +" (sensor: "+sensor+")");
 		HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
@@ -614,6 +681,12 @@ public class InsertApiLogic {
 			idDatasetTrovato=elencoCampi.get(i).getDatasetId();
 			datasetVersionTrovato=elencoCampi.get(i).getDatasetVersion();
 		}
+		
+		HashMap<String, FieldsMongoDto> campiMongoV1= new HashMap<String, FieldsMongoDto>();		
+		for (int i = 0; i< elencoCampiV1.size();i++) {
+			campiMongoV1.put(elencoCampiV1.get(i).getFieldName(), elencoCampiV1.get(i));
+		}
+		
 		JSONObject ooo=null;
 		JSONObject components=null;
 		int i =0;
@@ -683,7 +756,7 @@ public class InsertApiLogic {
 				insStrConst+= ", time: {$date :\""+timeStamp+"\"} ";
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
 				
-				rigadains.add(parseComponents(components, insStrConst, campiMongo));
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
 				
 
 
