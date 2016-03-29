@@ -12,6 +12,8 @@ public class Constants {
 	public static final DateFormat DEFAULT_FIELD_DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL, Locale.getDefault());
 	
 	public static final String OPENDATA_EXPORT_FORMAT_CKAN = "ckan";
+	
+	public static final String[] SUPPORTED_LANGUAGES = new String[] { "it", "en" };
 
 
 	public static final Integer SEARCH_MAX_RESULT = 10;

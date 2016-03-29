@@ -31,7 +31,7 @@ public class SearchService extends AbstractService {
 	@Path("/full")
 	@Produces("application/json; charset=UTF-8")
 	public String search(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
-			@QueryParam("domain") Integer domain) throws NumberFormatException, UnknownHostException {
+			@QueryParam("domain") Integer domain, @QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
@@ -74,7 +74,7 @@ public class SearchService extends AbstractService {
 		List<Metadata> metadataList = new LinkedList<Metadata>();
 		if (storeResponse.getResult() != null) {
 			for (StoreMetadataItem storeItem : storeResponse.getResult()) {
-				metadataList.add(Metadata.createFromStoreItem(storeItem));
+				metadataList.add(Metadata.createFromStoreItem(storeItem, lang));
 			}
 		}
 

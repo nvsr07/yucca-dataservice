@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.metadataapi.model.output;
 
 import java.util.Date;
 
+import org.csi.yucca.dataservice.metadataapi.delegate.I18nDelegate;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
 import org.csi.yucca.dataservice.metadataapi.util.Util;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -23,6 +24,7 @@ public class Metadata {
 	private String requestoremail;
 	private String tenantCode;
 	private String tenantName;
+	private String[] tagCodes;
 	private String[] tags;
 	private String icon;
 	private String visibility;
@@ -86,6 +88,14 @@ public class Metadata {
 
 	public void setRequestoremail(String requestoremail) {
 		this.requestoremail = requestoremail;
+	}
+
+	public String[] getTagCodes() {
+		return tagCodes;
+	}
+
+	public void setTagCodes(String[] tagCodes) {
+		this.tagCodes = tagCodes;
 	}
 
 	public String[] getTags() {
@@ -256,14 +266,14 @@ public class Metadata {
 		this.tenantName = tenantName;
 	}
 
-	public static Metadata createFromStoreItem(StoreMetadataItem item) {
+	public static Metadata createFromStoreItem(StoreMetadataItem item, String lang) {
 
 		Metadata metadata = new Metadata();
 		metadata.setCode(item.getName());
 		metadata.setVersion(item.getVersion());
 		metadata.setName(item.getDescription());
 		metadata.setDescription(item.getExtraApiDescription());
-		metadata.setDomain(item.getExtraDomain());
+		metadata.setDomain(I18nDelegate.translateDomain(item.getExtraDomain(), lang));
 		metadata.setVisibility(item.getVisibility());
 		metadata.setLicense(item.getExtraLicence());
 		metadata.setDisclaimer(item.getExtraDisclaimer());
@@ -271,9 +281,10 @@ public class Metadata {
 		metadata.setTenantCode(item.getExtraCodiceTenant());
 		metadata.setTenantName(item.getExtraNomeTenant());
 
-		if (item.getTags() != null)
-			metadata.setTags(item.getTags().split(","));
-
+		if (item.getTags() != null) {
+			metadata.setTagCodes(item.getTags().split(","));
+			metadata.setTags(I18nDelegate.translateTags(metadata.getTagCodes(), lang));
+		}
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);
 			// data.datasetIcon = Constants.API_RESOURCES_URL +

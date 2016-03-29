@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 public class Config {
 
 	public static final String STORE_BASE_URL = "STORE_BASE_URL";
+	public static final String SERVICE_BASE_URL = "SERVICE_BASE_URL";
 	public static final String OAUTH_BASE_URL = "OAUTH_BASE_URL";
 	public static final String OAUTH_USERNAME = "OAUTH_USERNAME";
 	public static final String OAUTH_PASSWORD = "OAUTH_PASSWORD";
@@ -19,6 +20,7 @@ public class Config {
 		params = new HashMap<String, String>();
 		ResourceBundle rb = ResourceBundle.getBundle("MetadataApiConfig");
 		params.put(STORE_BASE_URL, rb.getString(STORE_BASE_URL));
+		params.put(SERVICE_BASE_URL, rb.getString(SERVICE_BASE_URL));
 		params.put(OAUTH_BASE_URL, rb.getString(OAUTH_BASE_URL));
 		params.put(OAUTH_USERNAME, rb.getString(OAUTH_USERNAME));
 		ResourceBundle rbSecret = ResourceBundle.getBundle("MetadataApiSecret");
@@ -46,6 +48,10 @@ public class Config {
 
 	public String getOauthPassword() {
 		return params.get(OAUTH_PASSWORD);
+	}
+
+	public String getServiceBaseUrl() {
+		return params.get(SERVICE_BASE_URL);
 	}
 
 }
