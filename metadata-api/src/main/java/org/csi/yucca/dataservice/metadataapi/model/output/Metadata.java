@@ -273,7 +273,7 @@ public class Metadata {
 		metadata.setVersion(item.getVersion());
 		metadata.setName(item.getDescription());
 		metadata.setDescription(item.getExtraApiDescription());
-		metadata.setDomain(I18nDelegate.translateDomain(item.getExtraDomain(), lang));
+		metadata.setDomain(I18nDelegate.translate(item.getExtraDomain(), lang));
 		metadata.setVisibility(item.getVisibility());
 		metadata.setLicense(item.getExtraLicence());
 		metadata.setDisclaimer(item.getExtraDisclaimer());
@@ -282,8 +282,8 @@ public class Metadata {
 		metadata.setTenantName(item.getExtraNomeTenant());
 
 		if (item.getTags() != null) {
-			metadata.setTagCodes(item.getTags().split(","));
-			metadata.setTags(I18nDelegate.translateTags(metadata.getTagCodes(), lang));
+			metadata.setTagCodes(item.getTags().split("\\s*,\\s*"));
+			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
 		}
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);

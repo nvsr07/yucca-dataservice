@@ -20,6 +20,7 @@ import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataIte
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreResponse;
 import org.csi.yucca.dataservice.metadataapi.service.response.ListResponse;
 
+
 @Path("/search")
 public class SearchService extends AbstractService {
 

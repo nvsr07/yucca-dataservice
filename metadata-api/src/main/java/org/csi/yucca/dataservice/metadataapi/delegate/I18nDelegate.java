@@ -16,47 +16,56 @@ public class I18nDelegate {
 
 	}
 
-	private static Map<String, Map<String, String>> tagsMap;
-	private static Map<String, Map<String, String>> domainsMap;
+	private static Map<String, Map<String, String>> translationMap;
 
-	public static String translateTag(String tagCode, String lang) {
+	public static String translate(String code, String lang) {
 
-		Map<String, String> tagLanguages = getTagsMap().get(tagCode);
-		if (tagLanguages != null)
-			return tagLanguages.get(lang);
-		return tagCode;
+		Map<String, String> translations = getTranslationMap().get(code);
+		if (translations != null)
+			return translations.get(lang);
+		return code;
 	}
 
-	public static String[] translateTags(String[] tagCodes, String lang) {
-		
-		lang  = safeLanguage(lang);
+	public static String[] translateMulti(String[] codes, String lang) {
+
+		lang = safeLanguage(lang);
 		String[] tranlsated = null;
-		if (tagCodes != null && tagCodes.length > 0) {
-			tranlsated = new String[tagCodes.length];
-			for (int i = 0; i < tagCodes.length; i++) {
-				tranlsated[i] = translateTag(tagCodes[i], lang);
+		if (codes != null && codes.length > 0) {
+			tranlsated = new String[codes.length];
+			for (int i = 0; i < codes.length; i++) {
+				tranlsated[i] = translate(codes[i].trim(), lang);
 			}
 		}
 		return tranlsated;
 	}
 
-	private static Map<String, Map<String, String>> getTagsMap() {
-		if (tagsMap == null)
-			refreshTagTranslation();
-		return tagsMap;
+	private static Map<String, Map<String, String>> getTranslationMap() {
+		if (translationMap == null)
+			refreshTranslation();
+		return translationMap;
 	}
 
-	private static void refreshTagTranslation() {
+	private static void refreshTranslation() {
 		StreamTags streamTags = loadStreamTags();
 
-		tagsMap = new HashMap<String, Map<String, String>>();
+		translationMap = new HashMap<String, Map<String, String>>();
 
 		for (TagElement streamTag : streamTags.getElement()) {
 			Map<String, String> langMap = new HashMap<String, String>();
 			langMap.put("it", streamTag.getLangIt());
 			langMap.put("en", streamTag.getLangEn());
 
-			tagsMap.put(streamTag.getTagCode(), langMap);
+			translationMap.put(streamTag.getTagCode(), langMap);
+		}
+
+		StreamDomains streamDomains = loadStreamDomains();
+
+		for (DomainElement streamDomain : streamDomains.getElement()) {
+			Map<String, String> langMap = new HashMap<String, String>();
+			langMap.put("it", streamDomain.getLangIt());
+			langMap.put("en", streamDomain.getLangEn());
+
+			translationMap.put(streamDomain.getCodDomain(), langMap);
 
 		}
 	}
@@ -68,50 +77,12 @@ public class I18nDelegate {
 		return StreamTagsContainer.fromJson(tagsJson).getStreamTags();
 	}
 
-
-
-	
-	
-	public static String translateDomain(String domainCode, String lang) {
-
-		Map<String, String> domainLanguages = getDomainsMap().get(domainCode);
-		if (domainLanguages != null)
-			return domainLanguages.get(lang);
-		return domainCode;
+	public static void clearCache() {
+		translationMap = null;
 	}
 
-	public static String[] translateDomains(String[] domainCodes, String lang) {
-		
-		lang  = safeLanguage(lang);
-		String[] tranlsated = null;
-		if (domainCodes != null && domainCodes.length > 0) {
-			tranlsated = new String[domainCodes.length];
-			for (int i = 0; i < domainCodes.length; i++) {
-				tranlsated[i] = translateDomain(domainCodes[i], lang);
-			}
-		}
-		return tranlsated;
-	}
-
-	private static Map<String, Map<String, String>> getDomainsMap() {
-		if (domainsMap == null)
-			refreshDomainTranslation();
-		return domainsMap;
-	}
-
-	private static void refreshDomainTranslation() {
-		StreamDomains streamDomains = loadStreamDomains();
-
-		domainsMap = new HashMap<String, Map<String, String>>();
-
-		for (DomainElement streamDomain : streamDomains.getElement()) {
-			Map<String, String> langMap = new HashMap<String, String>();
-			langMap.put("it", streamDomain.getLangIt());
-			langMap.put("en", streamDomain.getLangEn());
-
-			domainsMap.put(streamDomain.getCodDomain(), langMap);
-
-		}
+	public static Map<String, Map<String, String>> viewTranslationsMap() {
+		return getTranslationMap();
 	}
 
 	private static StreamDomains loadStreamDomains() {
