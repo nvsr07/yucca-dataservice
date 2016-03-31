@@ -2,10 +2,13 @@ package org.csi.yucca.dataservice.metadataapi.model.output;
 
 import java.util.Date;
 
-import org.csi.yucca.dataservice.metadataapi.delegate.I18nDelegate;
+import org.csi.yucca.dataservice.metadataapi.delegate.i18n.I18nDelegate;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
+import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.Util;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
+
+
 
 import com.google.gson.Gson;
 
@@ -269,7 +272,7 @@ public class Metadata {
 	public static Metadata createFromStoreItem(StoreMetadataItem item, String lang) {
 
 		Metadata metadata = new Metadata();
-		metadata.setCode(item.getName());
+		metadata.setCode(item.getName().replaceAll("_odata", ""));
 		metadata.setVersion(item.getVersion());
 		metadata.setName(item.getDescription());
 		metadata.setDescription(item.getExtraApiDescription());
@@ -287,14 +290,12 @@ public class Metadata {
 		}
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);
-			// data.datasetIcon = Constants.API_RESOURCES_URL +
-			// "dataset/icon/"+data.tenantCode+"/"+data.datasetCode;
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl()+"resource/icon/"+item.getExtraCodiceTenant()+"/"+metadata.getCode());
 		} else if (item.getName().endsWith("_stream")) {
 			metadata.setType(METADATA_TYPE_STREAM);
 			metadata.setCode(item.getName().substring(0, item.getName().length() - 7));
 			metadata.setName(item.getExtraCodiceStream() + " " + item.getExtraVirtualEntityCode());
-			// data.datasetIcon = Constants.API_RESOURCES_URL +
-			// "stream/icon/"+data.tenantCode+"/"+data.virtualentityCode+"/"+data.streamCode;
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl()+"resource/icon/"+item.getExtraCodiceTenant()+"/"+item.getExtraVirtualEntityCode() + "/" +item.getExtraCodiceStream());
 		}
 
 		if (!Util.isEmpty(item.getExtraVirtualEntityCode())) {

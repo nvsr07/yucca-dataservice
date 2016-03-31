@@ -16,6 +16,7 @@ public class ApplicationConfig extends Application {
 		singletons.add(new DetailService());
 		singletons.add(new SearchService());
 		singletons.add(new CacheService());
+		singletons.add(new ResourceService());
 	}
 
 	public Set<Object> getSingletons() {

@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.metadataapi.delegate;
+package org.csi.yucca.dataservice.metadataapi.delegate.i18n;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +19,7 @@ public class I18nDelegate {
 	private static Map<String, Map<String, String>> translationMap;
 
 	public static String translate(String code, String lang) {
-
+		lang = safeLanguage(lang);
 		Map<String, String> translations = getTranslationMap().get(code);
 		if (translations != null)
 			return translations.get(lang);

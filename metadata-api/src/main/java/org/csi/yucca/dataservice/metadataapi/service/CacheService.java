@@ -8,7 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.delegate.I18nDelegate;
+import org.csi.yucca.dataservice.metadataapi.delegate.i18n.I18nDelegate;
 import org.csi.yucca.dataservice.metadataapi.service.response.SimpleResponse;
 
 @Path("/cache")

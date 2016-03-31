@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.metadataapi.delegate;
+package org.csi.yucca.dataservice.metadataapi.delegate.i18n;
 
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 

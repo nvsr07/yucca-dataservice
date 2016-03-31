@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.metadataapi.delegate;
+package org.csi.yucca.dataservice.metadataapi.delegate.i18n;
 
 public class TagElement {
 	private String tagCode;
