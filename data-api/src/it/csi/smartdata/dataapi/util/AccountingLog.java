@@ -20,7 +20,7 @@ public class AccountingLog {
 	}
 
 	public void setDatasetcode(String datasetcode) {
-		this.datasetcode = datasetcode;
+		if (null!=datasetcode) this.datasetcode = datasetcode;
 	}
 
 	public String getTenantcode() {
@@ -28,7 +28,7 @@ public class AccountingLog {
 	}
 
 	public void setTenantcode(String tenantcode) {
-		this.tenantcode = tenantcode;
+		if (null!=tenantcode) this.tenantcode = tenantcode;
 	}
 
 
@@ -45,7 +45,7 @@ public class AccountingLog {
 
 
 	public void setJwtData(String jwtData) {
-		this.jwtData = jwtData;
+		if (null!=jwtData)  this.jwtData = jwtData;
 	}
 
 
@@ -55,7 +55,7 @@ public class AccountingLog {
 
 
 	public void setForwardefor(String forwardefor) {
-		this.forwardefor = forwardefor;
+		if (null!=forwardefor)  this.forwardefor = forwardefor;
 	}
 
 
@@ -65,7 +65,7 @@ public class AccountingLog {
 
 
 	public void setUniqueid(String uniqueid) {
-		this.uniqueid = uniqueid;
+		if (null!=uniqueid) this.uniqueid = uniqueid;
 	}
 
 
@@ -75,7 +75,7 @@ public class AccountingLog {
 
 
 	public void setPath(String path) {
-		this.path = path;
+		if (null!=path)  this.path = path;
 	}
 
 
@@ -85,7 +85,7 @@ public class AccountingLog {
 
 
 	public void setApicode(String apicode) {
-		this.apicode = apicode;
+		if (null!=apicode) this.apicode = apicode;
 	}
 
 
@@ -95,7 +95,7 @@ public class AccountingLog {
 
 
 	public void setQuerString(String querString) {
-		this.querString = querString;
+		if (null!=querString) this.querString = querString;
 	}
 
 
@@ -135,7 +135,7 @@ public class AccountingLog {
 
 
 	public void setErrore(String errore) {
-		this.errore = errore;
+		if (null!=errore) this.errore = errore;
 	}
 
 
