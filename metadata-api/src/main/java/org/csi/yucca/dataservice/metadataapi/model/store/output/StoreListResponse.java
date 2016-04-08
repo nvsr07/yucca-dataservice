@@ -4,18 +4,18 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
 
-public class StoreResponse {
+public class StoreListResponse {
 
 	private boolean error;
 	private StoreMetadataItem[] result;
 
-	public StoreResponse() {
+	public StoreListResponse() {
 
 	}
 
-	public static StoreResponse fromJson(String json) {
+	public static StoreListResponse fromJson(String json) {
 		Gson gson = JSonHelper.getInstance();
-		return gson.fromJson(json, StoreResponse.class);
+		return gson.fromJson(json, StoreListResponse.class);
 	}
 
 	public boolean getError() {

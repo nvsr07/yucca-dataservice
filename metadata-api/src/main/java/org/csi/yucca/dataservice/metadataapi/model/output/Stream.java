@@ -5,8 +5,10 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 import com.google.gson.Gson;
 
 public class Stream {
-	private Smartobject smartobject;
-	private Integer fps;
+	private String code;  // campo stream dello stream
+	private String name;  // campo name dello stream
+ 	private Smartobject smartobject;
+	private Double  fps;  // FIXME dallo store torna double, va bene?
 	private Boolean savedata;
 	private StreamComponent[] components;
 
@@ -27,11 +29,11 @@ public class Stream {
 		this.smartobject = smartobject;
 	}
 
-	public Integer getFps() {
+	public Double getFps() {
 		return fps;
 	}
 
-	public void setFps(Integer fps) {
+	public void setFps(Double fps) {
 		this.fps = fps;
 	}
 
@@ -49,6 +51,22 @@ public class Stream {
 
 	public void setComponents(StreamComponent[] components) {
 		this.components = components;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

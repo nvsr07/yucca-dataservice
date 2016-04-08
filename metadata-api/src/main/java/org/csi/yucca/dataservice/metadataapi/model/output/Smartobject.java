@@ -5,20 +5,32 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 import com.google.gson.Gson;
 
 public class Smartobject {
+
+	public static final String SMARTOBJECT_TYPE_TWITTER = "twitter";
+	public static final String SMARTOBJECT_TYPE_DEVICE = "device";
+	public static final String SMARTOBJECT_TYPE_APPLICATION= "application";
+
+
 	private String type;
 	private String category;
-	private Integer maxstreams;
 	private String code;
 	private String name;
 	private String description;
-	private Boolean mobile;
+	private Boolean mobile; // FIXME serve?
 	private String esposition;
 	private Double longitude;
 	private Double latitude;
 	private Double altitude;
-	private Integer building;
+	private String building;
 	private String floor;
 	private String room;
+
+	private Integer twtMaxStreams;
+	private Integer twtRatePercentage;
+	private Integer twtCount;
+	private Double twtGeolocLat;
+	private Double twtGeolocLon;
+	private Double twtGeolocRadius;
 
 	public Smartobject() {
 		super();
@@ -43,14 +55,6 @@ public class Smartobject {
 
 	public void setCategory(String category) {
 		this.category = category;
-	}
-
-	public Integer getMaxstreams() {
-		return maxstreams;
-	}
-
-	public void setMaxstreams(Integer maxstreams) {
-		this.maxstreams = maxstreams;
 	}
 
 	public String getCode() {
@@ -117,11 +121,11 @@ public class Smartobject {
 		this.altitude = altitude;
 	}
 
-	public Integer getBuilding() {
+	public String getBuilding() {
 		return building;
 	}
 
-	public void setBuilding(Integer building) {
+	public void setBuilding(String building) {
 		this.building = building;
 	}
 
@@ -141,4 +145,51 @@ public class Smartobject {
 		this.room = room;
 	}
 
+	public Integer getTwtMaxStreams() {
+		return twtMaxStreams;
+	}
+
+	public void setTwtMaxStreams(Integer twtMaxStreams) {
+		this.twtMaxStreams = twtMaxStreams;
+	}
+
+	public Integer getTwtRatePercentage() {
+		return twtRatePercentage;
+	}
+
+	public void setTwtRatePercentage(Integer twtRatePercentage) {
+		this.twtRatePercentage = twtRatePercentage;
+	}
+
+	public Integer getTwtCount() {
+		return twtCount;
+	}
+
+	public void setTwtCount(Integer twtCount) {
+		this.twtCount = twtCount;
+	}
+
+	public Double getTwtGeolocLat() {
+		return twtGeolocLat;
+	}
+
+	public void setTwtGeolocLat(Double twtGeolocLat) {
+		this.twtGeolocLat = twtGeolocLat;
+	}
+
+	public Double getTwtGeolocLon() {
+		return twtGeolocLon;
+	}
+
+	public void setTwtGeolocLon(Double twtGeolocLon) {
+		this.twtGeolocLon = twtGeolocLon;
+	}
+
+	public Double getTwtGeolocRadius() {
+		return twtGeolocRadius;
+	}
+
+	public void setTwtGeolocRadius(Double twtGeolocRadius) {
+		this.twtGeolocRadius = twtGeolocRadius;
+	}
 }

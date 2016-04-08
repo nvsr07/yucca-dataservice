@@ -16,8 +16,8 @@ import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
+import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreListResponse;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreResponse;
 import org.csi.yucca.dataservice.metadataapi.service.response.ListResponse;
 
 
@@ -37,14 +37,6 @@ public class SearchService extends AbstractService {
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
 
-		int counter = 0;
-		while (request.getAttributeNames().hasMoreElements()) {
-			String nextElement = request.getAttributeNames().nextElement();
-			log.info("[SearchService::search] START - attribute: " + request.getAttribute(nextElement));
-			counter++;
-			if (counter > 1000)
-				break;
-		}
 
 		Map<String, String> parameters = new HashMap<String, String>();
 
@@ -70,12 +62,12 @@ public class SearchService extends AbstractService {
 
 		String resultString = doPost(searchUrl, "application/json", null, parameters);
 
-		StoreResponse storeResponse = StoreResponse.fromJson(resultString);
+		StoreListResponse storeResponse = StoreListResponse.fromJson(resultString);
 
 		List<Metadata> metadataList = new LinkedList<Metadata>();
 		if (storeResponse.getResult() != null) {
 			for (StoreMetadataItem storeItem : storeResponse.getResult()) {
-				metadataList.add(Metadata.createFromStoreItem(storeItem, lang));
+				metadataList.add(Metadata.createFromStoreSearchItem(storeItem, lang));
 			}
 		}
 
