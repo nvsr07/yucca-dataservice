@@ -151,7 +151,7 @@ public class SDPOdataFilter implements Filter{
 
 				//YUCCA-345
 				if ("csv".equals(request.getParameter("$format"))) {
-					newURI=SDPDataApiConstants.SDP_WEB_CSVSERVLET_URL+dopo+"?codiceApi="+codiceApi+"&restoUri="+dopo;
+					newURI=SDPDataApiConstants.SDP_WEB_CSVSERVLET_URL+dopo+"?codiceApi="+codiceApi+"&restoUri="+dopo+"&apacheUniqueId="+uniqueid;
 				}
 
 
