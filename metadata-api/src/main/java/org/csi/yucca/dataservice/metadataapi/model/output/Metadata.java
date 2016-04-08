@@ -397,6 +397,8 @@ public class Metadata {
 				smartobject.setTwtGeolocRadius(docStream.getTwtGeolocRadius());
 				smartobject.setTwtRatePercentage(docStream.getTwtRatePercentage());
 				smartobject.setTwtMaxStreams(docStream.getTwtMaxStreamsOfVE());
+				smartobject.setTwtQuery(docStream.getTwtQuery());
+				smartobject.setTwtLang(docStream.getTwtLang());
 			}
 
 			if (docStream.getVirtualEntityPositions() != null && docStream.getVirtualEntityPositions().getPosition() != null

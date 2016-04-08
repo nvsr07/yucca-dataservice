@@ -27,27 +27,35 @@ public class DetailService extends AbstractService {
 	@Path("/{tenant}/{datasetCode}")
 	@Produces("application/json; charset=UTF-8")
 	public String getDataset(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("datasetCode") String datasetCode,
-			@QueryParam("version") String version, @QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
+			@QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback) throws NumberFormatException, UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
 
 		String apiName = datasetCode + "_odata";
-		return loadMetadata(userAuth, apiName, version, lang);
+		String metadata = loadMetadata(userAuth, apiName, version, lang);
+		//if (callback!=null)
+		//	metadata = callback + "(" + metadata + ")";
+
+		return metadata;
 	}
 
 	@GET
 	@Path("/{tenant}/{smartobjectCode}/{streamCode}/")
 	@Produces("application/json; charset=UTF-8")
 	public String getStream(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("smartobjectCode") String smartobjectCode,
-			@PathParam("streamCode") String streamCode, @QueryParam("version") String version, @QueryParam("lang") String lang) throws NumberFormatException,
+			@PathParam("streamCode") String streamCode, @QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback) throws NumberFormatException,
 			UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 
 		String apiName = tenant + "." + smartobjectCode + "_" + streamCode + "_stream";
 
-		return loadMetadata(userAuth, apiName, version, lang);
+		String metadata = loadMetadata(userAuth, apiName, version, lang);
+		//if (callback!=null)
+		//	metadata = callback + "(" + metadata + ")";
+
+		return metadata;
 	}
 
 	private String loadMetadata(String userAuth, String apiName, String version, String lang) {
@@ -81,4 +89,6 @@ public class DetailService extends AbstractService {
 
 		return result;
 	}
+	
+	
 }

@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 
 public class Smartobject {
 
-	public static final String SMARTOBJECT_TYPE_TWITTER = "twitter";
+	public static final String SMARTOBJECT_TYPE_TWITTER = "Feed Tweet";
 	public static final String SMARTOBJECT_TYPE_DEVICE = "device";
 	public static final String SMARTOBJECT_TYPE_APPLICATION= "application";
 
@@ -31,6 +31,9 @@ public class Smartobject {
 	private Double twtGeolocLat;
 	private Double twtGeolocLon;
 	private Double twtGeolocRadius;
+	private String twtQuery;
+	private String twtLang;
+
 
 	public Smartobject() {
 		super();
@@ -191,5 +194,21 @@ public class Smartobject {
 
 	public void setTwtGeolocRadius(Double twtGeolocRadius) {
 		this.twtGeolocRadius = twtGeolocRadius;
+	}
+
+	public String getTwtQuery() {
+		return twtQuery;
+	}
+
+	public void setTwtQuery(String twtQuery) {
+		this.twtQuery = twtQuery;
+	}
+
+	public String getTwtLang() {
+		return twtLang;
+	}
+
+	public void setTwtLang(String twtLang) {
+		this.twtLang = twtLang;
 	}
 }

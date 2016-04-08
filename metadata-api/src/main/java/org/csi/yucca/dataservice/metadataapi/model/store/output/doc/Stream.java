@@ -9,6 +9,8 @@ public class Stream {
 	private Double twtGeolocLat;
 	private Double twtGeolocLon;
 	private Double twtGeolocRadius;
+	private String twtQuery;
+	private String twtLang;
 	private Integer idTenant;
 	private Integer idVirtualEntity;
 	private Integer idStream;
@@ -412,6 +414,22 @@ public class Stream {
 
 	public void setFps(Double fps) {
 		this.fps = fps;
+	}
+
+	public String getTwtQuery() {
+		return twtQuery;
+	}
+
+	public void setTwtQuery(String twtQuery) {
+		this.twtQuery = twtQuery;
+	}
+
+	public String getTwtLang() {
+		return twtLang;
+	}
+
+	public void setTwtLang(String twtLang) {
+		this.twtLang = twtLang;
 	}
 
 }
