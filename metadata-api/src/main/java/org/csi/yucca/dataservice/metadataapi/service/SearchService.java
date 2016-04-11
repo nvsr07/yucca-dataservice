@@ -56,7 +56,7 @@ public class SearchService extends AbstractService {
 
 		parameters.put("end", "" + end);
 
-		String searchUrl = BASE_STORE_URL + "site/blocks/search/api-search/ajax/search.jag?";
+		String searchUrl = STORE_BASE_URL + "site/blocks/search/api-search/ajax/search.jag?";
 		// String params = "?start=0&query=rumore&action=searchAPIs&end=12";
 		// searchUrl += params;
 

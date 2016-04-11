@@ -11,7 +11,8 @@ import org.csi.yucca.dataservice.metadataapi.util.Config;
 
 public abstract class AbstractService {
 
-	protected String BASE_STORE_URL = Config.getInstance().getStoreBaseUrl();
+	protected String STORE_BASE_URL = Config.getInstance().getStoreBaseUrl();
+	protected String MANAGEMENT_BASE_URL = Config.getInstance().getManagementBaseUrl();
 
 	static Logger log = Logger.getLogger(AbstractService.class);
 

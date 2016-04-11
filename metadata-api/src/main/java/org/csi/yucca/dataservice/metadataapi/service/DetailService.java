@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDocResponse;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
+import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
 
 @Path("/detail")
 public class DetailService extends AbstractService {
@@ -27,15 +28,14 @@ public class DetailService extends AbstractService {
 	@Path("/{tenant}/{datasetCode}")
 	@Produces("application/json; charset=UTF-8")
 	public String getDataset(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("datasetCode") String datasetCode,
-			@QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback) throws NumberFormatException, UnknownHostException {
+			@QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback) throws NumberFormatException,
+			UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
 
 		String apiName = datasetCode + "_odata";
 		String metadata = loadMetadata(userAuth, apiName, version, lang);
-		//if (callback!=null)
-		//	metadata = callback + "(" + metadata + ")";
 
 		return metadata;
 	}
@@ -44,16 +44,14 @@ public class DetailService extends AbstractService {
 	@Path("/{tenant}/{smartobjectCode}/{streamCode}/")
 	@Produces("application/json; charset=UTF-8")
 	public String getStream(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("smartobjectCode") String smartobjectCode,
-			@PathParam("streamCode") String streamCode, @QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback) throws NumberFormatException,
-			UnknownHostException {
+			@PathParam("streamCode") String streamCode, @QueryParam("version") String version, @QueryParam("lang") String lang,
+			@QueryParam("callback") String callback) throws NumberFormatException, UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 
 		String apiName = tenant + "." + smartobjectCode + "_" + streamCode + "_stream";
 
 		String metadata = loadMetadata(userAuth, apiName, version, lang);
-		//if (callback!=null)
-		//	metadata = callback + "(" + metadata + ")";
 
 		return metadata;
 	}
@@ -63,7 +61,7 @@ public class DetailService extends AbstractService {
 		String docName = apiName + "_internal_content";
 		version = version == null ? "1.0" : version;
 
-		String searchUrl = BASE_STORE_URL + "site/blocks/api/documentation/docs.jag?action=getInlineContent&provider=admin&apiName=" + apiName + "&version="
+		String searchUrl = STORE_BASE_URL + "site/blocks/api/documentation/docs.jag?action=getInlineContent&provider=admin&apiName=" + apiName + "&version="
 				+ version + "&docName=" + docName;
 
 		String resultString = doPost(searchUrl, "application/json", null, null);
@@ -78,17 +76,32 @@ public class DetailService extends AbstractService {
 			result = error.toJson();
 		} else {
 			Metadata metadata = null;
-			if(apiName.startsWith("ds_") || apiName.endsWith("_stream"))
+			if (apiName.startsWith("ds_") || apiName.endsWith("_stream"))
 				metadata = Metadata.createFromStoreDocStream(storeDocResponse.getDoc(), lang);
-			else 
+			else
 				metadata = Metadata.createFromStoreDocDataset(storeDocResponse.getDoc(), lang);
-			
+
+			if (metadata.getDataset() != null && metadata.getDataset().getCode() == null) {
+				// http://localhost:8080/datamanagementapi/api/stream/datasetCode/sandbox/smartobject_twitter_saverino/stressTwt_06
+				if (metadata.getStream() != null && metadata.getStream().getCode() != null && metadata.getStream().getSmartobject() != null
+						&& metadata.getStream().getSmartobject().getCode() != null) {
+					String tenantCode = metadata.getTenantCode();
+					String smartObjectCode = metadata.getStream().getSmartobject().getCode();
+					String streamCode = metadata.getStream().getCode();
+
+					String datasetCodeUrl = MANAGEMENT_BASE_URL + "stream/datasetCode/" + tenantCode + "/" + smartObjectCode + "/" + streamCode;
+					
+					String datasetCode  = HttpUtil.getInstance().doGet(datasetCodeUrl, "plain/text", null, null);
+					metadata.getDataset().setCode(datasetCode);
+				}
+
+			}
+
 			result = metadata.toJson();
 
 		}
 
 		return result;
 	}
-	
-	
+
 }
