@@ -64,6 +64,9 @@ public class DetailService extends AbstractService {
 		String searchUrl = STORE_BASE_URL + "site/blocks/api/documentation/docs.jag?action=getInlineContent&provider=admin&apiName=" + apiName + "&version="
 				+ version + "&docName=" + docName;
 
+		if (userAuth != null)
+			searchUrl += "&username=" + userAuth;
+
 		String resultString = doPost(searchUrl, "application/json", null, null);
 
 		StoreDocResponse storeDocResponse = StoreDocResponse.fromJson(resultString);
@@ -90,8 +93,8 @@ public class DetailService extends AbstractService {
 					String streamCode = metadata.getStream().getCode();
 
 					String datasetCodeUrl = MANAGEMENT_BASE_URL + "stream/datasetCode/" + tenantCode + "/" + smartObjectCode + "/" + streamCode;
-					
-					String datasetCode  = HttpUtil.getInstance().doGet(datasetCodeUrl, "plain/text", null, null);
+
+					String datasetCode = HttpUtil.getInstance().doGet(datasetCodeUrl, "plain/text", null, null);
 					metadata.getDataset().setCode(datasetCode);
 				}
 

@@ -42,10 +42,14 @@ public class SearchService extends AbstractService {
 
 		parameters.put("action", "searchAPIs");
 
+		if(userAuth!=null)
+			parameters.put("username", userAuth);
+
 		String query = "(" + q + ")";
 		if (domain != null) {
 			query += " && (domainStream=" + domain + " dataDomain=" + domain + ")";
 		}
+		
 		parameters.put("query", query);
 		if (start == null)
 			start = 0;
