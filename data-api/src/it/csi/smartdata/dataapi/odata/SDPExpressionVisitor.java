@@ -6,9 +6,11 @@ import it.csi.smartdata.dataapi.mongo.dto.SDPMongoOrderElement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SimpleTimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -294,7 +296,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			OrderByExpression paramOrderByExpression, String paramString,
 			List<Object> paramList) {
 		out.append("visitOrderByExpression\n");
-		
+
 		ArrayList<SDPMongoOrderElement> ret=new ArrayList<SDPMongoOrderElement>();
 		for (int i =0;paramList!=null && i<paramList.size() ; i++) {
 			if (paramList.get(i) instanceof SDPMongoOrderElement) {
@@ -308,7 +310,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			OrderByExpression paramOrderByExpression, String paramString,
 			List<Object> paramList) {
 		out.append("visitOrderByExpression\n");
-		
+
 		BasicDBList ret=new BasicDBList();
 		for (int i =0;paramList!=null && i<paramList.size() ; i++) {
 			if (paramList.get(i) instanceof BasicDBObject) {
@@ -322,24 +324,24 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 	@Override
 	public Object visitOrder(OrderExpression paramOrderExpression,
 			Object paramObject, SortOrder paramSortOrder) {
-		
-		
+
+
 		if (paramObject instanceof String ) {
 			String val= getFullFielName ((String)paramObject);
 			int order=1;
 			if (paramSortOrder.compareTo(SortOrder.asc)==0)  order= 1;
 			if (paramSortOrder.compareTo(SortOrder.desc)==0)  order= -1;
-			
+
 			return new SDPMongoOrderElement(val,order);
 		}  
-		
+
 		out.append("visitOrder\n");
 		return null;
 	}
 	public Object visitOrder_old(OrderExpression paramOrderExpression,
 			Object paramObject, SortOrder paramSortOrder) {
-		
-		
+
+
 		if (paramObject instanceof String ) {
 			String val= getFullFielName ((String)paramObject);
 			int order=1;
@@ -347,7 +349,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			if (paramSortOrder.compareTo(SortOrder.desc)==0)  order= -1;
 			return new BasicDBObject(val, order);
 		}  
-		
+
 		out.append("visitOrder\n");
 		return null;
 	}
@@ -410,14 +412,14 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
 
 				return data;
-				
+
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
 			}
 		} else if(EdmSimpleTypeKind.DateTimeOffset.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
 			try {
 				String dataStrIn=paramEdmLiteral.getLiteral();
-				
+
 				String dataStr=dataStrIn;
 				if (dataStrIn.length()==29 || dataStrIn.length()==25) {
 					String dataPrima=dataStrIn.substring(0,dataStrIn.length()-5);
@@ -425,8 +427,8 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 					timeZ=timeZ.replace(":", "");
 					dataStr=dataPrima+timeZ;
 				}
-				
-				
+
+
 				Date data =null;
 				SimpleDateFormat dateFormatA = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 				SimpleDateFormat dateFormatB = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -439,6 +441,42 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 				SimpleDateFormat dateFormatH = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
 				
+				dateFormatA.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatB.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatC.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatD.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatE.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatF.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatG.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				dateFormatH.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+
+
+				//				try  {
+				//					data = dateFormatE.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data = dateFormatF.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data = dateFormatG.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data = dateFormatH.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data =  dateFormatA.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data = dateFormatB.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data = dateFormatC.parse(dataStr);
+				//				} catch (Exception e) {}
+				//				try  {
+				//					if (data==null) data = dateFormatD.parse(dataStr);
+				//				} catch (Exception e) {}
+
+
 				try  {
 					data = dateFormatE.parse(dataStr);
 				} catch (Exception e) {}
@@ -452,23 +490,33 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 					if (data==null) data = dateFormatH.parse(dataStr);
 				} catch (Exception e) {}
 				try  {
-					if (data==null) data =  dateFormatA.parse(dataStr);
-				} catch (Exception e) {}
-				try  {
 					if (data==null) data = dateFormatB.parse(dataStr);
 				} catch (Exception e) {}
 				try  {
-					if (data==null) data = dateFormatC.parse(dataStr);
+					if (data==null) data =  dateFormatA.parse(dataStr);
 				} catch (Exception e) {}
 				try  {
 					if (data==null) data = dateFormatD.parse(dataStr);
 				} catch (Exception e) {}
+				try  {
+					if (data==null) data = dateFormatC.parse(dataStr);
+				} catch (Exception e) {}
 
-//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-//				System.out.println("---------------      "+data.getTimezoneOffset());
-//				System.out.println("---------------      |"+dateFormat.format(data)+"|");
-//				SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-//				System.out.println("---------------      |"+dateFormat2.format(data)+"|");
+
+
+
+
+
+
+
+
+
+
+				//				SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				//				System.out.println("---------------      "+data.getTimezoneOffset());
+				//				System.out.println("---------------      |"+dateFormat.format(data)+"|");
+				//				SimpleDateFormat dateFormat2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				//				System.out.println("---------------      |"+dateFormat2.format(data)+"|");
 
 
 
@@ -477,7 +525,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
 
 				return data;
-				
+
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
 			}
@@ -497,7 +545,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
 			return ret;
 		}
-		
+
 
 
 
@@ -665,7 +713,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".internalId" ,"_id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".internalId" ,"_id");
-		
+
 
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".year" ,"_id.year");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".month" ,"_id.month");
@@ -675,11 +723,11 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".hour" ,"_id.hour");
 		//YUCCA-346
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.minute");
-		
+
 		//YUCCA-388
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.retweetparentid");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".minute" ,"_id.iduser");
-		
+
 
 	}
 
