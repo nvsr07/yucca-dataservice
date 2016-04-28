@@ -6,11 +6,14 @@ import java.io.Reader;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,6 +25,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -36,11 +41,16 @@ import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
 import org.csi.yucca.dataservice.ingest.dao.MongoDBBinaryDAO;
 import org.csi.yucca.dataservice.ingest.dao.MongoDBMetadataDAO;
+import org.csi.yucca.dataservice.ingest.dao.MongoDBStreamDAO;
+import org.csi.yucca.dataservice.ingest.dao.MongoDBTenantDAO;
 import org.csi.yucca.dataservice.ingest.model.api.MyApi;
 import org.csi.yucca.dataservice.ingest.model.metadata.BinaryData;
+import org.csi.yucca.dataservice.ingest.model.metadata.Info;
 import org.csi.yucca.dataservice.ingest.model.metadata.Metadata;
+import org.csi.yucca.dataservice.ingest.model.metadata.Stream;
 import org.csi.yucca.dataservice.ingest.mongo.singleton.Config;
 import org.csi.yucca.dataservice.ingest.mongo.singleton.MongoSingleton;
+import org.csi.yucca.dataservice.ingest.util.AccountingLog;
 import org.xml.sax.SAXException;
 
 import com.mongodb.MongoClient;
@@ -48,21 +58,54 @@ import com.mongodb.MongoClient;
 //import org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils;
 import org.csi.yucca.dataservice.ingest.model.api.Dataset;
 
+
 @Path("/")
 public class BinaryService {
 
 	private final String MEDIA = "media";
 	private final String PATH_INTERNAL_HDFS = "/rawdata/files/";
 	private final Integer MAX_SIZE_FILE_ATTACHMENT = 154857601;
-
-	static Logger log = Logger.getLogger(BinaryService.class);
 	
-	@GET
-	//@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	private final String PATH_RAWDATA = "/rawdata";
+
+	static Logger LOG = Logger.getLogger(BinaryService.class);
+	static Logger LOGACCOUNT = Logger.getLogger("sdpaccounting");
+
+	@Resource
+	WebServiceContext wsContext; 
+	
+	@GET //ok
 	@Produces({"text/csv"})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/binary/{apiCode}/download/{idDataSet}/{datasetVersion}")
-	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion) throws WebApplicationException, NumberFormatException, UnknownHostException {
+	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion, Object request) throws WebApplicationException, NumberFormatException, UnknownHostException {
+		
+		long startTime = System.currentTimeMillis();
+		
+		MessageContext mc = wsContext.getMessageContext();
+	    HttpServletRequest req = (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
+		
+		AccountingLog accountingLog = new AccountingLog();  //info.getClientIp()
+		accountingLog.setUniqueid(apiCode + "|" + idDataSet + "|" + datasetVersion);
+		accountingLog.setApicode(apiCode);
+		accountingLog.setQuerString("GET - downloadCSVFile");
+		
+		Enumeration<String> headerNames = req.getHeaderNames();
+		String headerName ="";
+		String headerValue ="";
+		String logAccountingMessage="";
+		
+		while (headerNames.hasMoreElements()) { 
+			headerName = headerNames.nextElement();
+			headerValue = req.getHeader(headerName);
+			
+			String uniqueid;
+			String forwardefor;
+			String jwt;
+			if ("UNIQUE_ID".equals(headerName)) uniqueid=headerValue;
+			else if ("X-Forwarded-For".equals(headerName)) forwardefor=headerValue;
+			else if ("X-JWT-Assertion".equals(headerName)) jwt=headerValue;
+		} 
 		
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
@@ -79,8 +122,9 @@ public class BinaryService {
 			ex.printStackTrace();
 		}
 		
-		Metadata mdMetadata = null;;
+		Metadata mdMetadata = null;
 		String tenantCode = api.getConfigData().getTenantCode();
+		accountingLog.setJwtData(tenantCode);
 		Integer dsVersion = null;
 		
 		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))){
@@ -98,7 +142,7 @@ public class BinaryService {
 								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
 								.build());
 					}
-					log.info("Richiesto caricamento ALL");
+					LOG.info("Richiesto caricamento ALL");
 					dsVersion = 0;
 					System.out.println("dsVersion b = " + dsVersion);
 				} else {
@@ -116,6 +160,7 @@ public class BinaryService {
 		
 		if (mdMetadata != null){
 			String datasetCode = mdMetadata.getDatasetCode();
+			accountingLog.setDatasetcode(datasetCode);
 			String hdfsDirectory = "";
 			String visibility = null;
 			String visDir;
@@ -154,6 +199,7 @@ public class BinaryService {
 					String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + "/" + visDir + "/" + hdfsDirectory + "/" + datasetCode + "/";
 					System.out.println("pathForUri = " + pathForUri);
 					Reader is = null;
+					accountingLog.setPath(pathForUri);
 					if (Config.getHdfsLibrary().equals("webhdfs")){ 
 						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), dsVersion);
 					} else if (Config.getHdfsLibrary().equals("hdfs")){
@@ -164,33 +210,234 @@ public class BinaryService {
 					System.out.println("InputStream letto");
 					
 					if (is != null){ 
+						accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+						//accountingLog.set
+						LOGACCOUNT.info(accountingLog.toString());
 						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv").build();
 						//return is;
 					} else { 
+						accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+						accountingLog.setErrore("Binary not found - this dataset does not exist");
+						LOGACCOUNT.info(accountingLog.toString());
 						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
 								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
 					}
 				} else {
+					accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+					accountingLog.setErrore("Dataset not found - this dataset does not exist");
+					LOGACCOUNT.info(accountingLog.toString());
 					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
 							.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116a\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
 				}
 			} else {
+				accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+				accountingLog.setErrore("Dataset not found - this dataset does not exist");
+				LOGACCOUNT.info(accountingLog.toString());
 				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
 						.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116b\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
 			}	
 		}
+		accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+		accountingLog.setErrore("Dataset not found - null is inconsistent");
+		LOGACCOUNT.info(accountingLog.toString());
+
+		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
+				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
+	}
+	
+
+	
+	@GET //ok
+	@Produces({"text/csv"})
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/binary/{apiCode}/download/{idDataSet}/{datasetVersion}")
+	public Response downloadCSVFileNew(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion, Object request) throws WebApplicationException, NumberFormatException, UnknownHostException {
+		
+		long startTime = System.currentTimeMillis();
+		
+		MessageContext mc = wsContext.getMessageContext();
+	    HttpServletRequest req = (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
+		
+		AccountingLog accountingLog = new AccountingLog();  //info.getClientIp()
+		accountingLog.setUniqueid(apiCode + "|" + idDataSet + "|" + datasetVersion);
+		accountingLog.setApicode(apiCode);
+		accountingLog.setQuerString("GET - downloadCSVFile");
+		
+		Enumeration<String> headerNames = req.getHeaderNames();
+		String headerName = "";
+		String headerValue = "";
+		String logAccountingMessage = "";
+		
+		while (headerNames.hasMoreElements()) { 
+			headerName = headerNames.nextElement();
+			headerValue = req.getHeader(headerName);
+			
+			String uniqueid = "";
+			String forwardefor = "";
+			String jwt = "";
+			if ("UNIQUE_ID".equals(headerName)) uniqueid = headerValue;
+			else if ("X-Forwarded-For".equals(headerName)) forwardefor = headerValue;
+			else if ("X-JWT-Assertion".equals(headerName)) jwt = headerValue;
+		} 
+		
+		MongoClient mongo = MongoSingleton.getMongoClient();
+		String supportDb = Config.getInstance().getDbSupport();
+		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
+		String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
+		String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
+		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
+		MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
+		MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
+		String supportApiCollection = Config.getInstance().getCollectionSupportApi();
+		
+		//Get tenantCode from ApiCode
+		org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO apiDAO = new org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO(mongo, supportDb, supportApiCollection);
+		MyApi api = null;
+		try {
+			api = apiDAO.readApiByCode(apiCode);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		Metadata mdMetadata = null;
+		String tenantCode = api.getConfigData().getTenantCode();
+		String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
+		accountingLog.setJwtData(tenantCode);
+		Integer dsVersion = null;
+		
+		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))){
+			System.out.println("Current");
+
+			mdMetadata = metadataDAO.getCurrentMetadaByBinaryID(idDataSet);
+			if (mdMetadata == null){ 
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+						.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117a\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}")
+						.build());
+			} else {
+				if (datasetVersion.equals("all")){
+					if (!mdMetadata.getConfigData().getSubtype().equals("bulkDataset")){
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
+								.build());
+					}
+					LOG.info("Richiesto caricamento ALL");
+					dsVersion = 0;
+					System.out.println("dsVersion b = " + dsVersion);
+				} else {
+					dsVersion = mdMetadata.getDatasetVersion();
+				}
+				System.out.println("dsVersion a = " + dsVersion);
+			}
+		} else {
+			System.out.println("Versione specifica");
+			dsVersion = Integer.parseInt(datasetVersion);
+			System.out.println("dsVersion b = " + dsVersion);
+			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
+		}
+
+		
+		if (mdMetadata != null){
+			String datasetCode = mdMetadata.getDatasetCode();
+			accountingLog.setDatasetcode(datasetCode);
+			
+			String typeDirectory = "";
+			String subTypeDirectory = "";
+			Boolean checkDataSet = false;
+			List<Dataset> myListDS = api.getDataset();
+			
+			//Verify if have a permission to download selected file (...)
+			for (Iterator<Dataset> itDS = myListDS.iterator(); itDS.hasNext();) {
+				
+				Dataset itemDS = itDS.next();
+				if(itemDS.getIdDataset().equals(idDataSet)){
+					checkDataSet = true;
+				}
+			}
+				
+			if (checkDataSet){
+				if (mdMetadata.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())) {
+					
+					String dataDomain = mdMetadata.getInfo().getDataDomain().toUpperCase();
+					
+					if (mdMetadata.getConfigData().getSubtype().equals("bulkDataset")){
+						typeDirectory = "db_" + mdMetadata.getConfigData().getTenantCode();
+						subTypeDirectory = datasetCode;
+					} else if (mdMetadata.getConfigData().getSubtype().equals("streamDataset")){
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, datasetVersion);
+						typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+						subTypeDirectory = tmp.getStreamCode();
+					} else if (mdMetadata.getConfigData().getSubtype().equals("socialDataset")){
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, datasetVersion);
+						typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+						subTypeDirectory = tmp.getStreamCode();
+					}
+					
+					System.out.println("mdFromMongo.subtype = " + mdMetadata.getConfigData().getSubtype());
+					System.out.println("typeDirectory = " + typeDirectory);
+					
+					if (typeDirectory.equals("")) {
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Metadata Wrong\", \"error_code\":\"E126\", \"output\":\"NONE\", \"message\":\"ther's an error in metadata configuration, or dataset is not bulk or stream\"}")
+								.build());
+					}
+					
+					String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
+					System.out.println("hdfsDirectory = " + hdfsDirectory);
+					Reader is = null;
+					accountingLog.setPath(hdfsDirectory);
+					if (Config.getHdfsLibrary().equals("webhdfs")){ 
+						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), hdfsDirectory, Config.getKnoxUrl(), dsVersion);
+					} else if (Config.getHdfsLibrary().equals("hdfs")){
+						is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readDir(Config.getHdfsUsername() + tenantCode, hdfsDirectory, dsVersion);
+					} else {
+						//is = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readDirFile(Config.getHdfsUsername() + tenantCode, pathForUri, datasetVersion);
+					}
+					System.out.println("InputStream letto");
+					
+					if (is != null){ 
+						accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+						//accountingLog.set
+						LOGACCOUNT.info(accountingLog.toString());
+						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv").build();
+						//return is;
+					} else { 
+						accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+						accountingLog.setErrore("Binary not found - this dataset does not exist");
+						LOGACCOUNT.info(accountingLog.toString());
+						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
+					}
+				} else {
+					accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+					accountingLog.setErrore("Dataset not found - this dataset does not exist");
+					LOGACCOUNT.info(accountingLog.toString());
+					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+							.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116a\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
+				}
+			} else {
+				accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+				accountingLog.setErrore("Dataset not found - this dataset does not exist");
+				LOGACCOUNT.info(accountingLog.toString());
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+						.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116b\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
+			}	
+		}
+		accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+		accountingLog.setErrore("Dataset not found - null is inconsistent");
+		LOGACCOUNT.info(accountingLog.toString());
 
 		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
 	}
 
-	@GET
+	@GET //ok
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/binary/{apiCode}/attachment/{idDataSet}/{datasetVersion}/{idBinary}")
 	public InputStream downloadFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
+		long startTime = System.currentTimeMillis();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
 		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
@@ -198,6 +445,9 @@ public class BinaryService {
 		String supportApiCollection = Config.getInstance().getCollectionSupportApi();
 		MongoDBBinaryDAO binaryDAO = null;
 		BinaryData binaryData = null;
+
+		System.out.println("apiCode = " + apiCode);
+		System.out.println("idBinary = " + idBinary);
 		
 		//Get tenantCode from ApiCode
 		org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO apiDAO = new org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO(mongo, supportDb, supportApiCollection);
@@ -216,8 +466,13 @@ public class BinaryService {
 
 			Metadata mdBinaryDataSet = null;
 			try { 
+				System.out.println("idDataSet = " + idDataSet);
+				System.out.println("datasetVersion = " + datasetVersion);
+				System.out.println("tenantCode = " + tenantCode);
 				mdBinaryDataSet = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, datasetVersion, tenantCode);
+				System.out.println("mdBinaryDataSet = " + mdBinaryDataSet.toJson());
 			} catch (Exception ex) {
+				System.out.println("DATASET NON TROVATO! return null");
 			}
 			
 			if (mdBinaryDataSet != null){
@@ -268,7 +523,7 @@ public class BinaryService {
 		return null;
 	}
 
-	@POST
+	@POST  //ok
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/binary/input/{tenant}/")
@@ -276,6 +531,7 @@ public class BinaryService {
 			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
 			UnknownHostException {
 
+		long startTime = System.currentTimeMillis();
 		//Get size for verify max size file upload (dirty) 
 		Integer sizeFileAttachment = null;
 		try {
@@ -298,12 +554,17 @@ public class BinaryService {
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
 		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
-		MongoDBBinaryDAO binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
+		String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
+		String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
+		MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
+		MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
 		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
+		MongoDBBinaryDAO binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
 
 		//Get idDataset from datasetCode, datasetVersion and tenantCode
 		Metadata mdFromMongo = null;
 		try {
+			//mdFromMongo è il DATASET di riferimento, quello BULK, STREAM O SOCIAL
 			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, datasetVersion, tenantCode);
 		} catch (Exception ex1) {
 			ex1.printStackTrace();
@@ -312,6 +573,7 @@ public class BinaryService {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity("{\"error_name\":\"Dataset unknown\", \"error_code\":\"E111\", \"output\":\"NONE\", \"message\":\"You could not find the specified dataset\"}").build();
 		}
+		
 		binaryData.setIdDataset(mdFromMongo.getInfo().getBinaryIdDataset());
 		binaryData.setIdBinary(idBinary);
 		binaryData.setAliasNameBinary(aliasFile);
@@ -319,8 +581,12 @@ public class BinaryService {
 		binaryData.setDatasetCode(datasetCode);
 		binaryData.setFilenameBinary(pathFile);
 		binaryData.setContentTypeBinary(attachment.getContentType().toString());
-
+		
+		System.out.println("BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
+		
+		//mdBinaryDataSet è il DATASET BINARY!!!!
 		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
+		System.out.println("mdBinaryDataSet => " + mdBinaryDataSet.getIdDataset());
 		
 		SimpleDateFormat sdfEndMongo = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 		Date dateE = new Date();
@@ -329,25 +595,65 @@ public class BinaryService {
 		System.out.println("Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
+			String typeDirectory = "";
+			String subTypeDirectory = "";
 
 			SimpleDateFormat sdfStartWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 			Date dateSWebHDFS = new Date();
 			System.out.println("start WebHDFS => " + sdfStartWebHDFS.format(dateSWebHDFS));
+
+			System.out.println("mdBinaryDataSet.getInfo() => " + mdFromMongo.getInfo().toJson().toString());
+			System.out.println("mdBinaryDataSet.getInfo().getDataDomain() => " + mdFromMongo.getInfo().getDataDomain());
 			
+			String dataDomain = mdFromMongo.getInfo().getDataDomain();
+			System.out.println("dataDomain => " + dataDomain);
+			dataDomain = dataDomain.toUpperCase();
+			
+			if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")){
+				typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
+				subTypeDirectory = datasetCode;
+			} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")){
+
+				/*
+				if (mdFromMongo.getConfigData().getDeleted().equals(1)){
+					return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+							.entity("{\"error_name\":\"Dataset deleted\", \"error_code\":\"E114\", \"output\":\"NONE\", \"message\":\"You find a deleted dataset\"}").build();
+				}
+				 */
+				Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), datasetVersion.toString());
+				typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+				subTypeDirectory = tmp.getStreamCode();
+			} else {
+				typeDirectory = "";
+			}
+
+			System.out.println("mdFromMongo.subtype = " + mdBinaryDataSet.getConfigData().getSubtype());
+			System.out.println("typeDirectory = " + typeDirectory);
+
+			String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
+			
+			if (typeDirectory.equals("")) {
+				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+						.entity("{\"error_name\":\"Metadata Wrong\", \"error_code\":\"E126\", \"output\":\"NONE\", \"message\":\"ther's an error in metadata configuration, or dataset is not bulk or stream\"}")
+						.build());
+			}
+			
+			String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/" + idBinary;
+			System.out.println("hdfsDirectory = " + hdfsDirectory);
 			
 			String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
-			binaryData.setPathHdfsBinary(pathForUri);
+			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
 				if (Config.getHdfsLibrary().equals("webhdfs")){
 					System.out.println("webhdfs = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.writeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), Config.getKnoxGroup(), attachment.getObject(InputStream.class), idBinary);
+					uri = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.writeFile(Config.getKnoxUser(), Config.getKnoxPwd(), hdfsDirectory, Config.getKnoxUrl(), Config.getKnoxGroup(), attachment.getObject(InputStream.class), idBinary);
 				} else if (Config.getHdfsLibrary().equals("hdfs")){
 					System.out.println("hdfs = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
+					uri = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, hdfsDirectory, attachment.getObject(InputStream.class));
 				} else {
 					System.out.println("LocalFSUtils = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, pathForUri, attachment.getObject(InputStream.class));
+					uri = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, hdfsDirectory, attachment.getObject(InputStream.class));
 				}
 				
 			} catch (Exception ex) {
@@ -377,11 +683,12 @@ public class BinaryService {
 		}
 	}
 
-	@PUT
+	@PUT  //OK
 	@Path("/binary/{tenantCode}/metadata/{datasetCode}/{datasetVersion}/{idBinary}")
 	public void updateMongo(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
+		long startTime = System.currentTimeMillis();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		MongoDBBinaryDAO binaryDAO = null;
 		BinaryData binaryData = null;
@@ -409,7 +716,10 @@ public class BinaryService {
 		//Get binaryObject
 		binaryData = binaryDAO.readCurrentBinaryDataByIdBinary(idBinary, idDataset);
 		String pathForUri = binaryData.getPathHdfsBinary();
-
+		System.out.println("updateMongo - idBinary = " + idBinary);
+		System.out.println("updateMongo - idDataset = " + idDataset);
+		System.out.println("updateMongo - pathForUri = " + pathForUri);
+		
 		//Get METADATA of selected file
 		//InputStream fileToParser = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd() , pathForUri, Config.getKnoxUrl());
 		InputStream fileToParser = null;
@@ -458,16 +768,27 @@ public class BinaryService {
 				.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
 	}
 
-	@DELETE
+	@DELETE //to do
 	@Path("/binary/{tenantCode}/clearMetadata/{datasetCode}")
 	public void clearMetadata(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
+		long startTime = System.currentTimeMillis();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 
+		String typeDirectory = "";
+		String subTypeDirectory = "";
+		
 		//Get idDataset from datasetCode 
 		String supportDb = Config.getInstance().getDbSupport();
 		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
+
+		String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
+		String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
+		MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
+		MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
 		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
+		MongoDBBinaryDAO binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
+		
 		Metadata mdFromMongo = null;
 		try {
 			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, tenantCode);
@@ -478,8 +799,26 @@ public class BinaryService {
 			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity("{\"error_name\":\"Dataset unknown\", \"error_code\":\"E111\", \"output\":\"NONE\", \"message\":\"You could not find the specified dataset\"}").build());
 		}
+
+		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
+		
+		String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
+		String dataDomain = mdBinaryDataSet.getInfo().getDataDomain().toUpperCase();
+		
+		if (mdBinaryDataSet.getConfigData().getSubtype().equals("bulkDataset")){
+			typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
+		} else if (mdBinaryDataSet.getConfigData().getSubtype().equals("streamDataset")){
+			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdBinaryDataSet.getDatasetVersion().toString());
+			typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+			subTypeDirectory = datasetCode;
+		} else if (mdBinaryDataSet.getConfigData().getSubtype().equals("socialDataset")){
+			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdBinaryDataSet.getDatasetVersion().toString());
+			typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+			subTypeDirectory = tmp.getStreamCode();
+		}
 		
 		//Get binaryObject
+		String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 		String pathForUri = "/pre-tenant/tnt-"+tenantCode+"/rawdata/files/"+datasetCode+"/";
 		pathForUri = "/tenant/tnt-sandbox/rawdata/files/"+datasetCode+"/";
 
@@ -503,9 +842,6 @@ public class BinaryService {
 					.entity("{\"error_name\":\"Dataset not attachment (METADATA not found) " + ex.getMessage() + "\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments " + ex.getCause() + "\"}").build());
 		}
 		if (resultDel){
-			MongoDBBinaryDAO binaryDAO = null;
-			binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
-			
 			Long idDataset = mdFromMongo.getIdDataset();
 			
 			//Get binaryObject

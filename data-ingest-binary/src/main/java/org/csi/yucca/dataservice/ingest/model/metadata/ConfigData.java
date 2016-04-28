@@ -17,6 +17,11 @@ public class ConfigData extends AbstractEntity {
 	private Integer current;
 	private Archive archive;
 
+	public static ConfigData fromJson(String json) {
+		Gson gson = JSonHelper.getInstance();
+		return gson.fromJson(json, ConfigData.class);
+	}
+
 	public ConfigData() {
 	}
 
