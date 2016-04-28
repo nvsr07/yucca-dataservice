@@ -25,11 +25,15 @@ public class SDPServiceFactory extends ODataServiceFactory {
 			String uri=odc.getPathInfo().getRequestUri().toString();
 			String root=odc.getPathInfo().getServiceRoot().toString();
 			String codiceApi=null;
+			String apacheUniqueId=null;
 			String queryUrl=odc.getPathInfo().getRequestUri().getQuery();
 			StringTokenizer st= new StringTokenizer(queryUrl, "&",false);
 			while (st.hasMoreTokens()) {
 				String curr=st.nextToken();
 				if (curr.indexOf("codiceApi")!=-1) codiceApi=curr.substring(curr.indexOf("=")+1);
+				if (curr.indexOf("apacheUniqueId")!=-1) apacheUniqueId=curr.substring(curr.indexOf("=")+1);
+				
+				
 			}
 
 
@@ -63,6 +67,7 @@ public class SDPServiceFactory extends ODataServiceFactory {
 			}
 			if (null!=webBaseUrl) singleProcessor.setBaseUrl(webBaseUrl+codiceApi+"/");
 			singleProcessor.setCodiceApi(codiceApi);
+			singleProcessor.setApacheUniqueId(apacheUniqueId);
 
 			return createODataSingleProcessorService((EdmProvider )edmProvider, singleProcessor);
 

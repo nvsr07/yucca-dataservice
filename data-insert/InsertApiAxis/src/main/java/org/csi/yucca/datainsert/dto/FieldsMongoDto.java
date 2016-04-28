@@ -114,6 +114,9 @@ public class FieldsMongoDto {
 
 
 	public boolean validateValue(String valueToCheck) {
+		if (this.datasetVersion!=1 && valueToCheck==null) return true ;
+		if (this.datasetVersion==1 && valueToCheck==null) return false ;
+		
 		if (DATA_TYPE_INT.equals(this.fieldType)) return validateInt(valueToCheck); 
 		if (DATA_TYPE_LONG.equals(this.fieldType)) return validateLong(valueToCheck); 
 		if (DATA_TYPE_DOUBLE.equals(this.fieldType)) return validateDouble(valueToCheck); 
@@ -231,6 +234,10 @@ public class FieldsMongoDto {
 	
 	public String getInsertJson (String value) {
 		String ret=this.fieldName+" : ";
+		if (value==null) {
+			ret+="null";
+			return ret;
+		}
 		if (DATA_TYPE_INT.equals(this.fieldType)) ret+=value;
 		if (DATA_TYPE_LONG.equals(this.fieldType)) ret+=value;
 		if (DATA_TYPE_DOUBLE.equals(this.fieldType)) ret+=value;

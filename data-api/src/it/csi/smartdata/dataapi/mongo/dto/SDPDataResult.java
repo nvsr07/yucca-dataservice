@@ -5,6 +5,23 @@ import java.util.Map;
 
 public class SDPDataResult {
 
+	private String tenant="-";
+	private String datasetCode="-";
+	
+	public String getTenant() {
+		return tenant;
+	}
+	public void setTenant(String tenant) {
+		this.tenant = tenant;
+	}
+	public String getDatasetCode() {
+		return datasetCode;
+	}
+	public void setDatasetCode(String datasetCode) {
+		this.datasetCode = datasetCode;
+	}
+
+
 	private List<Map<String, Object>> dati=null;
 	private int totalCount=-1;
 	public List<Map<String, Object>> getDati() {
@@ -21,9 +38,17 @@ public class SDPDataResult {
 	}
 	
 	
+	public SDPDataResult (List<Map<String, Object>> dati,int totalCount,String tenant,String datasetCode) {
+		this.setDati(dati);
+		this.setTotalCount(totalCount);
+		this.setTenant(tenant);
+		this.setDatasetCode(datasetCode);
+	}
 	public SDPDataResult (List<Map<String, Object>> dati,int totalCount) {
 		this.setDati(dati);
 		this.setTotalCount(totalCount);
+//		this.setTenant(tenant);
+//		this.setDatasetCode(datasetCode);
 	}
 	
 	
