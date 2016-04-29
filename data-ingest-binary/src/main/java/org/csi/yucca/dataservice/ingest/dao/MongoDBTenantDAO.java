@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.ingest.model.metadata.Metadata;
+import org.csi.yucca.dataservice.ingest.model.metadata.Tenant;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -16,13 +17,26 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
-public class MongoDBMetadataDAO {
+public class MongoDBTenantDAO {
 	private DBCollection collection;
 	static Logger log = Logger.getLogger(MongoDBMetadataDAO.class);
 
-	public MongoDBMetadataDAO(MongoClient mongo, String db, String collection) {
+	public MongoDBTenantDAO(MongoClient mongo, String db, String collection) {
 		this.collection = mongo.getDB(db).getCollection(collection);
 	}
+
+	public String getOrganizationByTenantCode(String tenantCode) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("tenantCode", tenantCode);
+
+		DBObject data = collection.find(searchQuery).one();
+		ObjectId id = (ObjectId) data.get("_id");
+		Tenant tenantLoaded = Tenant.fromJson(JSON.serialize(data));
+		tenantLoaded.setId(id.toString());
+		return tenantLoaded.getOrganizationCode();
+	}
+	
+	/*
 
 	public Metadata createMetadata(Metadata metadata, Long idDataset) {
 
@@ -164,8 +178,6 @@ public class MongoDBMetadataDAO {
 		DBObject data = collection.find(searchQuery).one();
 		ObjectId id = (ObjectId) data.get("_id");
 		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
-		System.out.println("---> Metadata = " + metadataLoaded.toJson());
-		System.out.println("---> Metadata.getConfigData = " + metadataLoaded.getConfigData().toJson());
 		metadataLoaded.setId(id.toString());
 		return metadataLoaded;
 	}
@@ -177,17 +189,16 @@ public class MongoDBMetadataDAO {
 		obj.add(new BasicDBObject("configData.tenantCode", tenantCode));
 		obj.add(new BasicDBObject("datasetVersion", datasetVersion));
 		searchQuery.put("$and", obj);
-		
-		System.out.println("searchQuery in getCurrentMetadaByBinaryID = " + searchQuery.toString());
 
 		DBObject data = collection.find(searchQuery).one();
-		if (data!=null){
-			ObjectId id = (ObjectId) data.get("_id");
+		if (data!=null)
+		{
+		ObjectId id = (ObjectId) data.get("_id");
 			Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
 			metadataLoaded.setId(id.toString());
-			System.out.println("metadataLoaded = " + metadataLoaded.toJson());
 			return metadataLoaded;
-		} else 
+		}
+		else 
 			return null;
 	}
 
@@ -225,5 +236,6 @@ public class MongoDBMetadataDAO {
 		metadataLoaded.setId(id.toString());
 		return metadataLoaded;
 	}
+	*/
 
 }
