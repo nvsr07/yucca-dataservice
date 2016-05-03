@@ -1,6 +1,10 @@
 package org.csi.yucca.dataservice.metadataapi.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Util {
 	public static String nvl(Object o) {
@@ -54,6 +58,17 @@ public class Util {
 
 	public static String cleanStringCamelCase(String in, int length) {
 		return safeSubstring(cleanStringCamelCase(in), length);
+	}
+
+	
+	public static String formatDateCkan(Date date) {
+		String formattedDate = null;
+		if (date != null) {
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+			df.setTimeZone(TimeZone.getTimeZone("UTC"));
+			formattedDate = df.format(date);
+		}
+		return formattedDate;
 	}
 
 	public static void main(String[] args) {

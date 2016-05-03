@@ -187,7 +187,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/int</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/int</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -196,8 +196,7 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>//csint1/dirtec/2014/Tecnologie e
-					attività/SmartDataPlatform/PropFiles/matadataapi/int/</webXmlPath>
+				<webXmlPath>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/int/</webXmlPath>
 			</properties>
 		</profile>
 		<profile>
@@ -205,7 +204,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/prod</directory>
+						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/prod</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -215,7 +214,7 @@
 			</build>
 			<properties>
 				<webXmlPath>//csint1/dirtec/2014/Tecnologie e
-					attività/SmartDataPlatform/PropFiles/matadataapi/prod/</webXmlPath>
+					attività/SmartDataPlatform/PropFiles/matadataapi/resources/prod/</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>

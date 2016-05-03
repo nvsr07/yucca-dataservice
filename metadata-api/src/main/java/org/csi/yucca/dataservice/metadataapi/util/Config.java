@@ -9,8 +9,13 @@ public class Config {
 	public static final String METADATAAPI_BASE_URL = "METADATAAPI_BASE_URL";
 
 	public static final String STORE_BASE_URL = "STORE_BASE_URL";
+	public static final String USERPORTAL_BASE_URL = "USERPORTAL_BASE_URL";
+
 	public static final String SERVICE_BASE_URL = "SERVICE_BASE_URL";
 	public static final String MANAGEMENT_BASE_URL = "MANAGEMENT_BASE_URL";
+	
+	public static final String EXPOSED_API_BASE_URL = "EXPOSED_API_BASE_URL";
+
 	public static final String OAUTH_BASE_URL = "OAUTH_BASE_URL";
 	public static final String OAUTH_USERNAME = "OAUTH_USERNAME";
 	public static final String OAUTH_PASSWORD = "OAUTH_PASSWORD";
@@ -24,8 +29,10 @@ public class Config {
 		ResourceBundle rb = ResourceBundle.getBundle("MetadataApiConfig");
 		params.put(METADATAAPI_BASE_URL, rb.getString(METADATAAPI_BASE_URL));
 		params.put(STORE_BASE_URL, rb.getString(STORE_BASE_URL));
+		params.put(USERPORTAL_BASE_URL, rb.getString(USERPORTAL_BASE_URL));
 		params.put(SERVICE_BASE_URL, rb.getString(SERVICE_BASE_URL));
 		params.put(MANAGEMENT_BASE_URL, rb.getString(MANAGEMENT_BASE_URL));
+		params.put(EXPOSED_API_BASE_URL, rb.getString(EXPOSED_API_BASE_URL));
 		params.put(OAUTH_BASE_URL, rb.getString(OAUTH_BASE_URL));
 		params.put(OAUTH_USERNAME, rb.getString(OAUTH_USERNAME));
 		ResourceBundle rbSecret = ResourceBundle.getBundle("MetadataApiSecret");
@@ -45,6 +52,10 @@ public class Config {
 
 	public String getStoreBaseUrl() {
 		return params.get(STORE_BASE_URL);
+	}
+
+	public String getUserportalBaseUrl() {
+		return params.get(USERPORTAL_BASE_URL);
 	}
 
 	public String getOauthBaseUrl() {
@@ -67,4 +78,8 @@ public class Config {
 		return params.get(MANAGEMENT_BASE_URL);
 	}
 
+	public String getExposedApiBaseUrl() {
+		return params.get(EXPOSED_API_BASE_URL);
+	}
+	
 }

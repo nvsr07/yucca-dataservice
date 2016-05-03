@@ -1,9 +1,14 @@
 package org.csi.yucca.dataservice.metadataapi.model.output;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.csi.yucca.dataservice.metadataapi.delegate.i18n.I18nDelegate;
+import org.csi.yucca.dataservice.metadataapi.model.ckan.ExtraV2;
+import org.csi.yucca.dataservice.metadataapi.model.ckan.Resource;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDoc;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.ConfigData;
@@ -43,6 +48,7 @@ public class Metadata {
 	private Boolean isopendata;
 	private String author;
 	private String language;
+	private Date registrationDate;
 	private Date datalastupdate; // FIXME non mettere
 	private String externalreference;
 	private Boolean ispublished; // FIXME non mettere
@@ -282,6 +288,14 @@ public class Metadata {
 		this.opendata = opendata;
 	}
 
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
 	public static String createCodeFromStream(String tenantCode, String smartobjectCode, String streamCode) {
 		return tenantCode + "." + smartobjectCode + "_" + streamCode;
 	}
@@ -289,7 +303,9 @@ public class Metadata {
 	public static Metadata createFromStoreSearchItem(StoreMetadataItem item, String lang) {
 
 		Metadata metadata = new Metadata();
-		metadata.setCode(item.getName().replaceAll("_odata", ""));
+		//metadata.setCode(item.getName().replaceAll("_odata", ""));
+		metadata.setCode(cleadMainCode(item.getName()));
+
 		metadata.setVersion(item.getVersion());
 		metadata.setName(item.getDescription());
 		metadata.setDescription(item.getExtraApiDescription());
@@ -308,6 +324,13 @@ public class Metadata {
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);
 			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/" + metadata.getCode());
+			Dataset dataset = new Dataset();
+
+			String[] nameSplitted = item.getName().split("_");
+			String datasetId = nameSplitted[nameSplitted.length - 2];
+			dataset.setDatasetId(new Long(datasetId));
+			metadata.setDataset(dataset);
+
 		} else if (item.getName().endsWith("_stream")) {
 			metadata.setType(METADATA_TYPE_STREAM);
 			metadata.setCode(item.getName().substring(0, item.getName().length() - 7));
@@ -348,6 +371,16 @@ public class Metadata {
 		return metadata;
 	}
 
+	
+	private static String cleadMainCode(String mainCode){
+		if(mainCode.endsWith("_odata"))
+			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
+		else if(mainCode.endsWith("_stream"))
+			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_stream"));
+		
+		return mainCode;
+		
+	}
 	public static Metadata createFromStoreDocStream(StoreDoc doc, String lang) {
 		Metadata metadata = new Metadata();
 		DocStreamContent content = DocStreamContent.fromJson(doc.getContent());
@@ -357,7 +390,9 @@ public class Metadata {
 			metadata.setType(METADATA_TYPE_STREAM);
 			org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Stream docStream = content.getStreams().getStream();
 
-			metadata.setCode(Metadata.createCodeFromStream(docStream.getCodiceTenant(), docStream.getCodiceVirtualEntity(), docStream.getCodiceStream()));
+			//metadata.setCode(Metadata.createCodeFromStream(docStream.getCodiceTenant(), docStream.getCodiceVirtualEntity(), docStream.getCodiceStream()));
+			metadata.setCode(cleadMainCode(doc.getApiName()));
+
 			metadata.setVersion("" + docStream.getDeploymentVersion());
 			metadata.setName(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName());
 			metadata.setDescription(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName() + " - " + docStream.getVirtualEntityDescription());
@@ -417,19 +452,19 @@ public class Metadata {
 			stream.setFps(docStream.getFps());
 			stream.setSavedata(docStream.getSaveData());
 			stream.setSmartobject(smartobject);
-			
+
 			if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null && docStream.getComponenti().getElement().size() > 0) {
 
 				StreamComponent[] components = new StreamComponent[docStream.getComponenti().getElement().size()];
 				int counter = 0;
 				for (Element element : docStream.getComponenti().getElement()) {
-					StreamComponent component  = new StreamComponent();
+					StreamComponent component = new StreamComponent();
 					component.setDatatype(element.getDataType());
 					component.setMeasureunit(element.getMeasureUnit());
 					component.setName(element.getNome());
 					component.setPhenomenon(element.getPhenomenon());
 					component.setTolerance(element.getTolerance());
-					components[counter]  = component;
+					components[counter] = component;
 					counter++;
 				}
 				stream.setComponents(components);
@@ -438,13 +473,13 @@ public class Metadata {
 
 			if (docStream.getSaveData()) {
 				Dataset dataset = new Dataset();
-				
+
 				String datasetType = Dataset.DATASET_TYPE_STREAM;
-				if(smartobject.getType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER))
+				if (smartobject.getType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER))
 					datasetType = Dataset.DATASET_TYPE_SOCIAL;
-				
+
 				dataset.setDatasetType(datasetType);
-				
+
 				if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null && docStream.getComponenti().getElement().size() > 0) {
 					DatasetColumn[] columns = new DatasetColumn[docStream.getComponenti().getElement().size()];
 
@@ -473,8 +508,7 @@ public class Metadata {
 		DocDatasetContent content = DocDatasetContent.fromJson(doc.getContent());
 
 		metadata.setType(METADATA_TYPE_DATASET);
-
-		metadata.setCode(content.getDatasetCode());
+		metadata.setCode(cleadMainCode(doc.getApiName()));
 		metadata.setVersion("" + content.getDatasetVersion());
 		ConfigData configData = content.getConfigData();
 		Info info = content.getInfo();
@@ -489,6 +523,7 @@ public class Metadata {
 		metadata.setDisclaimer(info.getDisclaimer());
 		metadata.setCopyright(info.getCopyright());
 		metadata.setTenantCode(configData.getTenantCode());
+		metadata.setRegistrationDate(content.getInfo().getRegistrationDate());
 		// metadata.setTenantName(docStream.getNomeTenant());//FIXME non viene
 		// restituito?
 
@@ -506,6 +541,9 @@ public class Metadata {
 		Dataset dataset = new Dataset();
 		dataset.setDatasetType(configData.getSubtype());
 		dataset.setCode(content.getDatasetCode());
+		dataset.setDatasetId(content.getIdDataset());
+		dataset.setImportFileType(content.getInfo().getImportFileType());
+
 		DatasetColumn[] columns = null;
 		if (info.getFields() != null && info.getFields().size() > 0) {
 			List<Field> fields = info.getFields();
@@ -540,4 +578,114 @@ public class Metadata {
 		}
 		return metadata;
 	}
+
+	public String getCkanPackageId() {
+		return "smartdatanet.it_" + getCode(); // + "_" + getVersion(); la versione è sempre 1.0 ????????????????
+	}
+
+	public static String getApiNameFromCkanPackageId(String packageId) {
+		return packageId.substring(packageId.indexOf("_") + 1);//, packageId.lastIndexOf("_"));
+
+	}
+
+//	public static String getVersionFromCkanPackageId(String packageId) {
+//		return packageId.substring(packageId.lastIndexOf("_") + 1);
+//
+//	}
+
+	public String toCkan() {
+		org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset = new org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset();
+		ckanDataset.setId(getCkanPackageId());
+		ckanDataset.setName(getCkanPackageId());
+		ckanDataset.setTitle(getName());
+		ckanDataset.setNotes(getDescription());
+		ckanDataset.setVersion(getVersion());
+
+		String metadataUrl = Config.getInstance().getUserportalBaseUrl() + "#/dataexplorer/dataset/" + getTenantCode() + "/" + getCode();
+
+		ckanDataset.setUrl(metadataUrl);
+
+		Resource resourceApiOdata = new Resource();
+		resourceApiOdata.setDescription("Api Odata");
+		resourceApiOdata.setFormat("ODATA");
+		String exposedApiBaseUrl = Config.getInstance().getExposedApiBaseUrl();
+		String apiOdataUrl = exposedApiBaseUrl + getCode();
+		resourceApiOdata.setUrl(apiOdataUrl);
+		ckanDataset.addResource(resourceApiOdata);
+
+		Resource resourceDownload = new Resource();
+		resourceDownload.setDescription("Csv download url");
+		resourceDownload.setFormat("CSV");
+
+		String downloadCsvUrl = exposedApiBaseUrl + getCode() + "/download/" + getDataset().getDatasetId() + "/";
+
+		if (METADATA_TYPE_DATASET.equals(getType()) && Dataset.DATASET_TYPE_BULK.equals(getDataset().getDatasetType())) {
+			downloadCsvUrl += "all";
+		} else {
+			downloadCsvUrl += "current";
+		}
+
+		resourceDownload.setUrl(downloadCsvUrl);
+		ckanDataset.addResource(resourceDownload);
+		ExtraV2 extras = new ExtraV2();
+		if (getDomain() != null) {
+			extras.setTopic(getDomain());
+			extras.setHidden_field(getDomain());
+		}
+
+		if (getOpendata() != null) {
+			ckanDataset.setAuthor(getOpendata().getAuthor());
+			if (getOpendata().getMetadaUpdateDate() != null)
+				ckanDataset.setMetadata_created(Util.formatDateCkan(getOpendata().getMetadaUpdateDate()));
+			if (getOpendata().getMetadaCreateDate() != null)
+				extras.setMetadata_created(Util.formatDateCkan(getOpendata().getMetadaCreateDate()));
+			if (getOpendata().getMetadaUpdateDate() != null)
+				extras.setMetadata_modified(Util.formatDateCkan(getOpendata().getMetadaUpdateDate()));
+			if (getRegistrationDate() != null)
+				extras.setPackage_created(Util.formatDateCkan(getRegistrationDate()));
+			if (getOpendata().getDataUpdateDate() != null)
+				extras.setPackage_modified(Util.formatDateCkan(new Date(getOpendata().getDataUpdateDate())));
+
+		}
+
+		ckanDataset.setLicense(getLicense());
+		ckanDataset.setIsopen(getOpendata()!=null && getOpendata().isOpendata());
+
+		if (getTags() != null) {
+			for (String tag : getTags()) {
+				ckanDataset.addTag(tag);
+			}
+		}
+
+		if (ckanDataset.getResources() != null) {
+			List<String> resourcesList = new LinkedList<String>();
+			for (Resource resource : ckanDataset.getResources()) {
+				resourcesList.add(resource.createResourceV2());
+
+			}
+			Map<String, List<String>> extrasList = new HashMap<String, List<String>>();
+			extrasList.put("resource", resourcesList);
+			ckanDataset.setExtrasList(extrasList);
+		}
+
+		if (getDataset().getImportFileType() != null)
+			extras.setPackage_type(getDataset().getImportFileType());
+		ckanDataset.setExtras(extras);
+		return ckanDataset.toJson();
+
+	}
+
+	public static void main(String[] args) {
+		String packageId = "smartdatanet.it_ds_Rumore_480";
+		System.out.println("1 " + (packageId));
+		System.out.println("2 " + getApiNameFromCkanPackageId(packageId));
+		//System.out.println("3 " + getVersionFromCkanPackageId(packageId));
+		
+		String mainCode = "sandbox.internal_33_odata";
+		mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
+		System.out.println("m " + mainCode);
+
+	
+	}
+
 }

@@ -10,9 +10,11 @@ public class Dataset {
 	public static final String DATASET_TYPE_STREAM = "streamDataset";
 	public static final String DATASET_TYPE_SOCIAL = "socialDataset";
 
+	private Long datasetId;
 	private String code;  // codice dataset
 	private String datasetType;
 	private DatasetColumn[] columns;
+	private String importFileType;
 
 	public Dataset() {
 
@@ -45,6 +47,22 @@ public class Dataset {
 
 	public void setDatasetType(String datasetType) {
 		this.datasetType = datasetType;
+	}
+
+	public Long getDatasetId() {
+		return datasetId;
+	}
+
+	public void setDatasetId(Long datasetId) {
+		this.datasetId = datasetId;
+	}
+
+	public String getImportFileType() {
+		return importFileType;
+	}
+
+	public void setImportFileType(String importFileType) {
+		this.importFileType = importFileType;
 	}
 
 

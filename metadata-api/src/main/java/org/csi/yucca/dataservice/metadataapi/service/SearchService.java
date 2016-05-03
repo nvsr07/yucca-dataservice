@@ -1,10 +1,8 @@
 package org.csi.yucca.dataservice.metadataapi.service;
 
 import java.net.UnknownHostException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +14,10 @@ import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreListResponse;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
 import org.csi.yucca.dataservice.metadataapi.service.response.ListResponse;
+import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
+import com.google.gson.Gson;
 
 @Path("/search")
 public class SearchService extends AbstractService {
@@ -31,54 +29,39 @@ public class SearchService extends AbstractService {
 	@GET
 	@Path("/full")
 	@Produces("application/json; charset=UTF-8")
-	public String search(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
-			@QueryParam("domain") Integer domain, @QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
+	public String searchFull(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start,
+			@QueryParam("end") Integer end, @QueryParam("tenant") String tenant, @QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
+			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
-		log.info("[SearchService::search] START - userAuth: " + userAuth);
 
-
-		Map<String, String> parameters = new HashMap<String, String>();
-
-		parameters.put("action", "searchAPIs");
-
-		if(userAuth!=null)
-			parameters.put("username", userAuth);
-
-		String query = "(" + q + ")";
-		if (domain != null) {
-			query += " && (domainStream=" + domain + " dataDomain=" + domain + ")";
-		}
-		
-		parameters.put("query", query);
-		if (start == null)
-			start = 0;
-
-		parameters.put("start", "" + start);
-		if (end == null)
-			end = 12;
-
-		parameters.put("end", "" + end);
-
-		String searchUrl = STORE_BASE_URL + "site/blocks/search/api-search/ajax/search.jag?";
-		// String params = "?start=0&query=rumore&action=searchAPIs&end=12";
-		// searchUrl += params;
-
-		String resultString = doPost(searchUrl, "application/json", null, parameters);
-
-		StoreListResponse storeResponse = StoreListResponse.fromJson(resultString);
-
-		List<Metadata> metadataList = new LinkedList<Metadata>();
-		if (storeResponse.getResult() != null) {
-			for (StoreMetadataItem storeItem : storeResponse.getResult()) {
-				metadataList.add(Metadata.createFromStoreSearchItem(storeItem, lang));
-			}
-		}
-
+		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, lang);
 		ListResponse response = new ListResponse();
 		response.setCount(metadataList.size());
 		response.setResult(metadataList);
 		return response.toJson();
 	}
+
+//	@GET
+//	@Path("/ckan")
+//	@Produces("application/json; charset=UTF-8")
+//	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start,
+//			@QueryParam("end") Integer end, @QueryParam("tenant") String tenant, @QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
+//			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
+//
+//		String userAuth = (String) request.getSession().getAttribute("userAuth");
+//		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, lang);
+//
+//		List<String> packageIds = new LinkedList<String>();
+//		for (Metadata metadata : metadataList) {
+//			if (metadata.getDataset() != null && metadata.getDataset().getDatasetId() != null)
+//				packageIds.add(metadata.getCkanPackageId());
+//		}
+//		Gson gson = JSonHelper.getInstance();
+//		return gson.toJson(packageIds);
+//	}
+
+
+
 
 }

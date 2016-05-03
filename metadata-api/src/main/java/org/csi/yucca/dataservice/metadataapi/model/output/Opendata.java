@@ -4,14 +4,17 @@ import java.util.Date;
 
 public class Opendata {
 
-
 	private String author;
 	private Long dataUpdateDate;
 	private Date metadaUpdateDate;
 	private String language;
-	
+
+	private boolean isOpendata;
+	private String sourceId;
+	private Date metadaCreateDate;
+
 	public Opendata() {
-	
+
 	}
 
 	public String getAuthor() {
@@ -44,6 +47,30 @@ public class Opendata {
 
 	public void setLanguage(String language) {
 		this.language = language;
+	}
+
+	public boolean isOpendata() {
+		return isOpendata;
+	}
+
+	public void setOpendata(boolean isOpendata) {
+		this.isOpendata = isOpendata;
+	}
+
+	public String getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public Date getMetadaCreateDate() {
+		return metadaCreateDate;
+	}
+
+	public void setMetadaCreateDate(Date metadaCreateDate) {
+		this.metadaCreateDate = metadaCreateDate;
 	}
 
 }
