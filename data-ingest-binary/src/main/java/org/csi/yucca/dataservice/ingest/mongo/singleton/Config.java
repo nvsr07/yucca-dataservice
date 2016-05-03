@@ -27,6 +27,7 @@ public class Config {
 	public static final String RESPONSE_OK = "RESPONSE_OK";
 	public static final String STORE_API_ADDRESS = "STORE_API_ADDRESS";
 	public static final String HDFS_ROOT_DIR = "HDFS_ROOT_DIR";
+	public static final String HDFS_OLD_ROOT_DIR = "HDFS_OLD_ROOT_DIR";
 	public static final String HDFS_USERNAME = "HDFS_USERNAME";
 	public static final String KNOX_URL = "KNOX_URL";
 	public static final String KNOX_PWD = "KNOX_PWD";

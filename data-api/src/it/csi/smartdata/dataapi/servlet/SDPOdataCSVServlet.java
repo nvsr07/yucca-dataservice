@@ -86,6 +86,10 @@ public class SDPOdataCSVServlet extends HttpServlet {
 				 JSONObject curObj=(JSONObject)docs.getJSONObject(i);
 				 Iterator<String> it= curObj.keySet().iterator();
 				 
+				 
+				 //START YUCCA-721
+				 int colCount=0;
+				 //END YUCCA-721
 				 while (it.hasNext()) {
 					 String curKey=it.next();
 					 if (!curKey.equalsIgnoreCase("__metadata") && 
@@ -93,7 +97,9 @@ public class SDPOdataCSVServlet extends HttpServlet {
 							 !curKey.equalsIgnoreCase("datasetVersion") && 
 							 !curKey.equalsIgnoreCase("idDataset") ) {
 						 String curVal=(curObj.isNull(curKey) ?  "" : ""+curObj.get(curKey) );
-						 rigaintestazione += (rigaintestazione.length()==0 ? curKey : ";"+curKey);
+						 //START YUCCA-721
+						 rigaintestazione += (colCount==0 ? curKey : ";"+curKey);
+						 //END YUCCA-721
 						 
 						 
 						 matcher = pattern.matcher(curVal);						 
@@ -129,7 +135,14 @@ public class SDPOdataCSVServlet extends HttpServlet {
 							 
 						 }
 						 
-						 curriga += (curriga.length()==0 ? curVal : ";"+curVal);
+						 //START YUCCA-721
+						 //curriga += (curriga.length()==0 ? curVal : ";"+curVal);
+						 curriga += (colCount==0 ? curVal : ";"+curVal);
+						 //START YUCCA-721
+						 
+						 //START YUCCA-721
+						 colCount++;
+						 //END YUCCA-721
 						 
 						 
 					 }

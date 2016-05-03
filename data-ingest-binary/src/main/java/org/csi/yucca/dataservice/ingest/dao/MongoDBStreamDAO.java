@@ -7,6 +7,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.ingest.model.metadata.Metadata;
+import org.csi.yucca.dataservice.ingest.model.metadata.Stream;
+import org.csi.yucca.dataservice.ingest.model.metadata.Tenant;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
@@ -16,13 +18,29 @@ import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.util.JSON;
 
-public class MongoDBMetadataDAO {
+public class MongoDBStreamDAO {
 	private DBCollection collection;
 	static Logger log = Logger.getLogger(MongoDBMetadataDAO.class);
 
-	public MongoDBMetadataDAO(MongoClient mongo, String db, String collection) {
+	public MongoDBStreamDAO(MongoClient mongo, String db, String collection) {
 		this.collection = mongo.getDB(db).getCollection(collection);
 	}
+
+	public Stream getStreamByDataset(Long idDataset, String datasetVersion) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
+		obj.add(new BasicDBObject("configData.idDataset", idDataset));
+		obj.add(new BasicDBObject("configData.datasetVersion", datasetVersion));
+		searchQuery.put("$and", obj);
+
+		DBObject data = collection.find(searchQuery).one();
+		ObjectId id = (ObjectId) data.get("_id");
+		Stream streamLoaded = Stream.fromJson(JSON.serialize(data));
+		streamLoaded.setId(id.toString());
+		return streamLoaded;
+	}
+	
+	/*
 
 	public Metadata createMetadata(Metadata metadata, Long idDataset) {
 
@@ -164,8 +182,6 @@ public class MongoDBMetadataDAO {
 		DBObject data = collection.find(searchQuery).one();
 		ObjectId id = (ObjectId) data.get("_id");
 		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
-		System.out.println("---> Metadata = " + metadataLoaded.toJson());
-		System.out.println("---> Metadata.getConfigData = " + metadataLoaded.getConfigData().toJson());
 		metadataLoaded.setId(id.toString());
 		return metadataLoaded;
 	}
@@ -177,17 +193,16 @@ public class MongoDBMetadataDAO {
 		obj.add(new BasicDBObject("configData.tenantCode", tenantCode));
 		obj.add(new BasicDBObject("datasetVersion", datasetVersion));
 		searchQuery.put("$and", obj);
-		
-		System.out.println("searchQuery in getCurrentMetadaByBinaryID = " + searchQuery.toString());
 
 		DBObject data = collection.find(searchQuery).one();
-		if (data!=null){
-			ObjectId id = (ObjectId) data.get("_id");
+		if (data!=null)
+		{
+		ObjectId id = (ObjectId) data.get("_id");
 			Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
 			metadataLoaded.setId(id.toString());
-			System.out.println("metadataLoaded = " + metadataLoaded.toJson());
 			return metadataLoaded;
-		} else 
+		}
+		else 
 			return null;
 	}
 
@@ -225,5 +240,6 @@ public class MongoDBMetadataDAO {
 		metadataLoaded.setId(id.toString());
 		return metadataLoaded;
 	}
+	*/
 
 }
