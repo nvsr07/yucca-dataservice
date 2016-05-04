@@ -303,7 +303,7 @@ public class Metadata {
 	public static Metadata createFromStoreSearchItem(StoreMetadataItem item, String lang) {
 
 		Metadata metadata = new Metadata();
-		//metadata.setCode(item.getName().replaceAll("_odata", ""));
+		// metadata.setCode(item.getName().replaceAll("_odata", ""));
 		metadata.setCode(cleadMainCode(item.getName()));
 
 		metadata.setVersion(item.getVersion());
@@ -371,26 +371,28 @@ public class Metadata {
 		return metadata;
 	}
 
-	
-	private static String cleadMainCode(String mainCode){
-		if(mainCode.endsWith("_odata"))
+	private static String cleadMainCode(String mainCode) {
+		if (mainCode.endsWith("_odata"))
 			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
-		else if(mainCode.endsWith("_stream"))
+		else if (mainCode.endsWith("_stream"))
 			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_stream"));
-		
+
 		return mainCode;
-		
+
 	}
+
 	public static Metadata createFromStoreDocStream(StoreDoc doc, String lang) {
 		Metadata metadata = new Metadata();
 		DocStreamContent content = DocStreamContent.fromJson(doc.getContent());
 
-		if (content.getStreams() != null && content.getStreams().getStream() != null) {
+		if (content != null && content.getStreams() != null && content.getStreams().getStream() != null) {
 
 			metadata.setType(METADATA_TYPE_STREAM);
 			org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Stream docStream = content.getStreams().getStream();
 
-			//metadata.setCode(Metadata.createCodeFromStream(docStream.getCodiceTenant(), docStream.getCodiceVirtualEntity(), docStream.getCodiceStream()));
+			// metadata.setCode(Metadata.createCodeFromStream(docStream.getCodiceTenant(),
+			// docStream.getCodiceVirtualEntity(),
+			// docStream.getCodiceStream()));
 			metadata.setCode(cleadMainCode(doc.getApiName()));
 
 			metadata.setVersion("" + docStream.getDeploymentVersion());
@@ -506,92 +508,90 @@ public class Metadata {
 	public static Metadata createFromStoreDocDataset(StoreDoc doc, String lang) {
 		Metadata metadata = new Metadata();
 		DocDatasetContent content = DocDatasetContent.fromJson(doc.getContent());
+		if (content != null) {
+			metadata.setType(METADATA_TYPE_DATASET);
+			metadata.setCode(cleadMainCode(doc.getApiName()));
+			metadata.setVersion("" + content.getDatasetVersion());
+			ConfigData configData = content.getConfigData();
+			Info info = content.getInfo();
+			metadata.setName(info.getDatasetName());
+			metadata.setDescription(info.getDescription());
 
-		metadata.setType(METADATA_TYPE_DATASET);
-		metadata.setCode(cleadMainCode(doc.getApiName()));
-		metadata.setVersion("" + content.getDatasetVersion());
-		ConfigData configData = content.getConfigData();
-		Info info = content.getInfo();
-		metadata.setName(info.getDatasetName());
-		metadata.setDescription(info.getDescription());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + configData.getTenantCode() + "/" + content.getDatasetCode());
 
-		metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + configData.getTenantCode() + "/" + content.getDatasetCode());
+			metadata.setDomain(I18nDelegate.translate(info.getDataDomain(), lang));
+			metadata.setVisibility(info.getVisibility());
+			metadata.setLicense(info.getLicense());
+			metadata.setDisclaimer(info.getDisclaimer());
+			metadata.setCopyright(info.getCopyright());
+			metadata.setTenantCode(configData.getTenantCode());
+			metadata.setRegistrationDate(content.getInfo().getRegistrationDate());
+			// metadata.setTenantName(docStream.getNomeTenant());//FIXME non
+			// viene
+			// restituito?
 
-		metadata.setDomain(I18nDelegate.translate(info.getDataDomain(), lang));
-		metadata.setVisibility(info.getVisibility());
-		metadata.setLicense(info.getLicense());
-		metadata.setDisclaimer(info.getDisclaimer());
-		metadata.setCopyright(info.getCopyright());
-		metadata.setTenantCode(configData.getTenantCode());
-		metadata.setRegistrationDate(content.getInfo().getRegistrationDate());
-		// metadata.setTenantName(docStream.getNomeTenant());//FIXME non viene
-		// restituito?
-
-		if (info.getTags() != null && info.getTags().size() > 0) {
-			String[] tagCodes = new String[info.getTags().size()];
-			int counter = 0;
-			for (Tag tagCode : info.getTags()) {
-				tagCodes[counter] = tagCode.getTagCode();
-				counter++;
+			if (info.getTags() != null && info.getTags().size() > 0) {
+				String[] tagCodes = new String[info.getTags().size()];
+				int counter = 0;
+				for (Tag tagCode : info.getTags()) {
+					tagCodes[counter] = tagCode.getTagCode();
+					counter++;
+				}
+				metadata.setTagCodes(tagCodes);
+				metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
 			}
-			metadata.setTagCodes(tagCodes);
-			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
-		}
 
-		Dataset dataset = new Dataset();
-		dataset.setDatasetType(configData.getSubtype());
-		dataset.setCode(content.getDatasetCode());
-		dataset.setDatasetId(content.getIdDataset());
-		dataset.setImportFileType(content.getInfo().getImportFileType());
+			Dataset dataset = new Dataset();
+			dataset.setDatasetType(configData.getSubtype());
+			dataset.setCode(content.getDatasetCode());
+			dataset.setDatasetId(content.getIdDataset());
+			dataset.setImportFileType(content.getInfo().getImportFileType());
 
-		DatasetColumn[] columns = null;
-		if (info.getFields() != null && info.getFields().size() > 0) {
-			List<Field> fields = info.getFields();
-			columns = new DatasetColumn[fields.size()];
-			int counter = 0;
-			for (Field field : fields) {
-				DatasetColumn column = new DatasetColumn();
-				column.setAlias(field.getFieldAlias());
-				column.setDatatype(field.getDataType());
-				column.setDateformat(field.getDataType());
-				column.setIskey(field.getIsKey());
-				// column.setMeasureunit(field.getMeasureunit()); //FIXME non
-				// viene restituito?
-				column.setName(field.getFieldName());
+			DatasetColumn[] columns = null;
+			if (info.getFields() != null && info.getFields().size() > 0) {
+				List<Field> fields = info.getFields();
+				columns = new DatasetColumn[fields.size()];
+				int counter = 0;
+				for (Field field : fields) {
+					DatasetColumn column = new DatasetColumn();
+					column.setAlias(field.getFieldAlias());
+					column.setDatatype(field.getDataType());
+					column.setDateformat(field.getDataType());
+					column.setIskey(field.getIsKey());
+					// column.setMeasureunit(field.getMeasureunit()); //FIXME
+					// non
+					// viene restituito?
+					column.setName(field.getFieldName());
 
-				columns[counter] = column;
-				counter++;
+					columns[counter] = column;
+					counter++;
+				}
 			}
-		}
-		dataset.setColumns(columns);
-		metadata.setDataset(dataset);
-		if (content.getOpendata() != null) {
-			metadata.setIsopendata(content.getOpendata().getIsOpendata());
+			dataset.setColumns(columns);
+			metadata.setDataset(dataset);
+			if (content.getOpendata() != null) {
+				metadata.setIsopendata(content.getOpendata().getIsOpendata());
 
-			Opendata opendata = new Opendata();
-			opendata.setAuthor(content.getOpendata().getAuthor());
-			opendata.setDataUpdateDate(content.getOpendata().getDataUpdateDate());
-			opendata.setLanguage(content.getOpendata().getLanguage());
-			opendata.setMetadaUpdateDate(content.getOpendata().getMetadaUpdateDate());
+				Opendata opendata = new Opendata();
+				opendata.setAuthor(content.getOpendata().getAuthor());
+				opendata.setDataUpdateDate(content.getOpendata().getDataUpdateDate());
+				opendata.setLanguage(content.getOpendata().getLanguage());
+				opendata.setMetadaUpdateDate(content.getOpendata().getMetadaUpdateDate());
 
-			metadata.setOpendata(opendata);
+				metadata.setOpendata(opendata);
+			}
 		}
 		return metadata;
 	}
 
 	public String getCkanPackageId() {
-		return "smartdatanet.it_" + getCode(); // + "_" + getVersion(); la versione è sempre 1.0 ????????????????
+		return "smartdatanet.it_" + getCode(); 
 	}
 
 	public static String getApiNameFromCkanPackageId(String packageId) {
-		return packageId.substring(packageId.indexOf("_") + 1);//, packageId.lastIndexOf("_"));
+		return packageId.substring(packageId.indexOf("_") + 1);
 
 	}
-
-//	public static String getVersionFromCkanPackageId(String packageId) {
-//		return packageId.substring(packageId.lastIndexOf("_") + 1);
-//
-//	}
 
 	public String toCkan() {
 		org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset = new org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset();
@@ -649,7 +649,7 @@ public class Metadata {
 		}
 
 		ckanDataset.setLicense(getLicense());
-		ckanDataset.setIsopen(getOpendata()!=null && getOpendata().isOpendata());
+		ckanDataset.setIsopen(getOpendata() != null && getOpendata().isOpendata());
 
 		if (getTags() != null) {
 			for (String tag : getTags()) {
@@ -679,13 +679,11 @@ public class Metadata {
 		String packageId = "smartdatanet.it_ds_Rumore_480";
 		System.out.println("1 " + (packageId));
 		System.out.println("2 " + getApiNameFromCkanPackageId(packageId));
-		//System.out.println("3 " + getVersionFromCkanPackageId(packageId));
-		
+
 		String mainCode = "sandbox.internal_33_odata";
 		mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
 		System.out.println("m " + mainCode);
 
-	
 	}
 
 }
