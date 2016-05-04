@@ -213,8 +213,7 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>//csint1/dirtec/2014/Tecnologie e
-					attività/SmartDataPlatform/PropFiles/matadataapi/resources/prod/</webXmlPath>
+				<webXmlPath>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/prod/</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
