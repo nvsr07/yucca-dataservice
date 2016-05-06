@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.metadataapi.service;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -9,6 +10,8 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDocResponse;
@@ -35,22 +38,23 @@ public abstract class AbstractService {
 		int resultCode = -1;
 		try {
 
-
 			if (contentType == null)
 				contentType = "application/json";
 			if (characterEncoding == null)
 				characterEncoding = "UTF-8";
 
 			log.debug("[AbstractService::doPost] - targetUrl: " + targetUrl);
-			
+
 			if (parameters != null) {
 				for (String key : parameters.keySet()) {
-					//post.addParameter(key, parameters.get(key));
-					targetUrl += key+"="+parameters.get(key)+"&";
+					// post.addParameter(key, parameters.get(key));
+					targetUrl += key + "=" + parameters.get(key).replaceAll(" ", "%20") + "&";
 				}
-			}
 
+			}
 			PostMethod post = new PostMethod(targetUrl);
+
+			contentType = "application/x-www-form-urlencoded";
 			post.setRequestHeader("Content-Type", contentType);
 
 			HttpClient httpclient = new HttpClient();
@@ -73,7 +77,7 @@ public abstract class AbstractService {
 		}
 		return result;
 	}
-	
+
 	protected List<Metadata> search(String userAuth, String q, Integer start, Integer end, String tenant, String domain, Boolean opendata, String lang)
 			throws NumberFormatException, UnknownHostException {
 
@@ -86,19 +90,30 @@ public abstract class AbstractService {
 		if (userAuth != null)
 			parameters.put("username", userAuth);
 
-		String query = "(" + q + ")";
+		String query = "";
+		if (q != null)
+			query += "(" + q + ")";
 		if (domain != null) {
-			query += " && (domainStream=" + domain + " dataDomain=" + domain + ")";
+			if (!query.equals(""))
+				query += " && ";
+			query += "(domainStream=" + domain + " dataDomain=" + domain + ")";
 		}
 
 		if (tenant != null && !tenant.trim().equals("")) {
-			query += " && (configData.tenantCode=" + tenant + " dataDomain=" + domain + ")";
+			if (!query.equals(""))
+				query += " && ";
+			query += "(configData.tenantCode=" + tenant + " streams.stream.codiceTenant) ";
 		}
 
-		if (opendata != null && opendata)
-			query += " && (opendata.isOpendata = true)";
+		if (opendata != null && opendata) {
+			if (!query.equals(""))
+				query += " && ";
+			query += "(opendata.isOpendata = 1)";
+		}
+		
+		if (!query.equals(""))
+			parameters.put("query", query);
 
-		parameters.put("query", query);
 		if (start == null)
 			start = 0;
 
@@ -125,16 +140,16 @@ public abstract class AbstractService {
 		return metadataList;
 
 	}
-	
-	protected String loadMetadata(String userAuth, String apiName, String version, String format,  String lang) {
+
+	protected String loadMetadata(String userAuth, String apiName, String version, String format, String lang) {
 
 		String docName = apiName + "_internal_content";
 		version = version == null ? "1.0" : version;
-		
-		//https://int-userportal.smartdatanet.it/store/site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=AllegatiCond_408_odata&version=1.0&docName=AllegatiCond_408_odata_internal_content&username=PRDCLD75D29A052V#
 
-		String searchUrl = STORE_BASE_URL + "site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=" + apiName + "&version="
-				+ version + "&docName=" + docName;
+		// https://int-userportal.smartdatanet.it/store/site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=AllegatiCond_408_odata&version=1.0&docName=AllegatiCond_408_odata_internal_content&username=PRDCLD75D29A052V#
+
+		String searchUrl = STORE_BASE_URL + "site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=" + apiName + "&version=" + version
+				+ "&docName=" + docName;
 
 		if (userAuth != null)
 			searchUrl += "&username=" + userAuth;
@@ -171,7 +186,7 @@ public abstract class AbstractService {
 				}
 
 			}
-			if(format!=null && format.equals(Constants.OUTPUT_FORMAT_CKAN))
+			if (format != null && format.equals(Constants.OUTPUT_FORMAT_CKAN))
 				result = metadata.toCkan();
 			else
 				result = metadata.toJson();
@@ -180,6 +195,5 @@ public abstract class AbstractService {
 
 		return result;
 	}
-
 
 }
