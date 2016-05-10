@@ -10,7 +10,25 @@ public class Stream extends AbstractEntity {
 	private Long idStream; 
 	private String streamCode;
 	private String streamName;
-	private String virtualEntitySlug;
+	
+	private StreamConfigData configData;
+	private Streams streams;
+
+	public StreamConfigData getConfigData() {
+		return configData;
+	}
+
+	public void setConfigData(StreamConfigData configData) {
+		this.configData = configData;
+	}
+
+	public Streams getStreams() {
+		return streams;
+	}
+
+	public void setStreams(Streams streams) {
+		this.streams = streams;
+	}
 
 	public static Stream fromJson(String json) {
 		Gson gson = JSonHelper.getInstance();
@@ -55,13 +73,5 @@ public class Stream extends AbstractEntity {
 
 	public void setStreamName(String streamName) {
 		this.streamName = streamName;
-	}
-
-	public String getVirtualEntitySlug() {
-		return virtualEntitySlug;
-	}
-
-	public void setVirtualEntitySlug(String virtualEntitySlug) {
-		this.virtualEntitySlug = virtualEntitySlug;
 	}
 }

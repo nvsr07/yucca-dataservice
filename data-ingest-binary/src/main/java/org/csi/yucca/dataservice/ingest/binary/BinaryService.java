@@ -78,34 +78,41 @@ public class BinaryService {
 	@Produces({"text/csv"})
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("/binary/{apiCode}/download/{idDataSet}/{datasetVersion}")
-	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion, Object request) throws WebApplicationException, NumberFormatException, UnknownHostException {
+	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion) throws WebApplicationException, NumberFormatException, UnknownHostException {
 		
+		System.out.println("downloadCSVFile!");
 		long startTime = System.currentTimeMillis();
 		
-		MessageContext mc = wsContext.getMessageContext();
-	    HttpServletRequest req = (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
+		//MessageContext mc = wsContext.getMessageContext();
+	    //HttpServletRequest req = (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
+	    
+		//System.out.println("accountingLog start!");
 		
-		AccountingLog accountingLog = new AccountingLog();  //info.getClientIp()
-		accountingLog.setUniqueid(apiCode + "|" + idDataSet + "|" + datasetVersion);
-		accountingLog.setApicode(apiCode);
-		accountingLog.setQuerString("GET - downloadCSVFile");
+		//AccountingLog accountingLog = new AccountingLog();  //info.getClientIp()
+		//accountingLog.setUniqueid(apiCode + "|" + idDataSet + "|" + datasetVersion);
+		//accountingLog.setApicode(apiCode);
+		//accountingLog.setQuerString("GET - downloadCSVFile");
 		
-		Enumeration<String> headerNames = req.getHeaderNames();
-		String headerName = "";
-		String headerValue = "";
-		String logAccountingMessage = "";
+		//System.out.println("accountingLog go!");
 		
-		while (headerNames.hasMoreElements()) { 
-			headerName = headerNames.nextElement();
-			headerValue = req.getHeader(headerName);
+		//Enumeration<String> headerNames = req.getHeaderNames();
+		//String headerName = "";
+		//String headerValue = "";
+		//String logAccountingMessage = "";
+		
+		//while (headerNames.hasMoreElements()) { 
+		//	headerName = headerNames.nextElement();
+		//	headerValue = req.getHeader(headerName);
 			
-			String uniqueid = "";
-			String forwardefor = "";
-			String jwt = "";
-			if ("UNIQUE_ID".equals(headerName)) uniqueid = headerValue;
-			else if ("X-Forwarded-For".equals(headerName)) forwardefor = headerValue;
-			else if ("X-JWT-Assertion".equals(headerName)) jwt = headerValue;
-		} 
+		//	String uniqueid = "";
+		//	String forwardefor = "";
+		//	String jwt = "";
+		//	if ("UNIQUE_ID".equals(headerName)) uniqueid = headerValue;
+		//	else if ("X-Forwarded-For".equals(headerName)) forwardefor = headerValue;
+		//	else if ("X-JWT-Assertion".equals(headerName)) jwt = headerValue;
+		//} 
+		
+		//System.out.println("accountingLog done!");
 		
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
@@ -117,6 +124,8 @@ public class BinaryService {
 		MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
 		String supportApiCollection = Config.getInstance().getCollectionSupportApi();
 		
+		System.out.println("set MONGODB!");
+		
 		//Get tenantCode from ApiCode
 		org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO apiDAO = new org.csi.yucca.dataservice.ingest.dao.MongoDBApiDAO(mongo, supportDb, supportApiCollection);
 		MyApi api = null;
@@ -126,11 +135,15 @@ public class BinaryService {
 			ex.printStackTrace();
 		}
 		
+		System.out.println("Get tenantCode from ApiCode! => " + api.getApiName());
+		
 		Metadata mdMetadata = null;
 		String tenantCode = api.getConfigData().getTenantCode();
 		String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
-		accountingLog.setJwtData(tenantCode);
+		//accountingLog.setJwtData(tenantCode);
 		Integer dsVersion = null;
+		
+		System.out.println("tenantCode! => " + tenantCode);
 		
 		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))){
 			System.out.println("Current");
@@ -165,7 +178,7 @@ public class BinaryService {
 		
 		if (mdMetadata != null){
 			String datasetCode = mdMetadata.getDatasetCode();
-			accountingLog.setDatasetcode(datasetCode);
+			//accountingLog.setDatasetcode(datasetCode);
 			
 			String typeDirectory = "";
 			String subTypeDirectory = "";
@@ -190,12 +203,12 @@ public class BinaryService {
 						typeDirectory = "db_" + mdMetadata.getConfigData().getTenantCode();
 						subTypeDirectory = datasetCode;
 					} else if (mdMetadata.getConfigData().getSubtype().equals("streamDataset")){
-						Stream tmp = streamDAO.getStreamByDataset(idDataSet, datasetVersion);
-						typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
+						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
 					} else if (mdMetadata.getConfigData().getSubtype().equals("socialDataset")){
-						Stream tmp = streamDAO.getStreamByDataset(idDataSet, datasetVersion);
-						typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
+						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
 					}
 					
@@ -211,7 +224,7 @@ public class BinaryService {
 					String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 					System.out.println("hdfsDirectory = " + hdfsDirectory);
 					Reader is = null;
-					accountingLog.setPath(hdfsDirectory);
+					//accountingLog.setPath(hdfsDirectory);
 					if (Config.getHdfsLibrary().equals("webhdfs")){ 
 						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), hdfsDirectory, Config.getKnoxUrl(), dsVersion);
 					} else if (Config.getHdfsLibrary().equals("hdfs")){
@@ -222,36 +235,36 @@ public class BinaryService {
 					System.out.println("InputStream letto");
 					
 					if (is != null){ 
-						accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+						//accountingLog.setElapsed(System.currentTimeMillis() - startTime);
 						//accountingLog.set
-						LOGACCOUNT.info(accountingLog.toString());
+						//LOGACCOUNT.info(accountingLog.toString());
 						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-" + datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv").build();
 						//return is;
 					} else { 
-						accountingLog.setElapsed(System.currentTimeMillis() - startTime);
-						accountingLog.setErrore("Binary not found - this dataset does not exist");
-						LOGACCOUNT.info(accountingLog.toString());
+						//accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+						//accountingLog.setErrore("Binary not found - this dataset does not exist");
+						//LOGACCOUNT.info(accountingLog.toString());
 						throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
+								.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this csv does not exist\"}").build());
 					}
 				} else {
-					accountingLog.setElapsed(System.currentTimeMillis() - startTime);
-					accountingLog.setErrore("Dataset not found - this dataset does not exist");
-					LOGACCOUNT.info(accountingLog.toString());
+					//accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+					//accountingLog.setErrore("Dataset not found - this dataset does not exist");
+					//LOGACCOUNT.info(accountingLog.toString());
 					throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
 							.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116a\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
 				}
 			} else {
-				accountingLog.setElapsed(System.currentTimeMillis() - startTime);
-				accountingLog.setErrore("Dataset not found - this dataset does not exist");
-				LOGACCOUNT.info(accountingLog.toString());
+				//accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+				//accountingLog.setErrore("Dataset not found - this dataset does not exist");
+				//LOGACCOUNT.info(accountingLog.toString());
 				throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
 						.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E116b\", \"output\":\"NONE\", \"message\":\"this dataset does not exist\"}").build());
 			}	
 		}
-		accountingLog.setElapsed(System.currentTimeMillis() - startTime);
-		accountingLog.setErrore("Dataset not found - null is inconsistent");
-		LOGACCOUNT.info(accountingLog.toString());
+		//accountingLog.setElapsed(System.currentTimeMillis() - startTime);
+		//accountingLog.setErrore("Dataset not found - null is inconsistent");
+		//LOGACCOUNT.info(accountingLog.toString());
 
 		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
@@ -447,8 +460,8 @@ public class BinaryService {
 							.entity("{\"error_name\":\"Dataset deleted\", \"error_code\":\"E114\", \"output\":\"NONE\", \"message\":\"You find a deleted dataset\"}").build();
 				}
 				 */
-				Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), datasetVersion.toString());
-				typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+				Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), datasetVersion);
+				typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 				subTypeDirectory = tmp.getStreamCode();
 			} else {
 				typeDirectory = "";
@@ -635,12 +648,12 @@ public class BinaryService {
 		if (mdBinaryDataSet.getConfigData().getSubtype().equals("bulkDataset")){
 			typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
 		} else if (mdBinaryDataSet.getConfigData().getSubtype().equals("streamDataset")){
-			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdBinaryDataSet.getDatasetVersion().toString());
-			typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdBinaryDataSet.getDatasetVersion());
+			typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 			subTypeDirectory = datasetCode;
 		} else if (mdBinaryDataSet.getConfigData().getSubtype().equals("socialDataset")){
-			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdBinaryDataSet.getDatasetVersion().toString());
-			typeDirectory = "so_" + tmp.getVirtualEntitySlug();
+			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdBinaryDataSet.getDatasetVersion());
+			typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 			subTypeDirectory = tmp.getStreamCode();
 		}
 		
