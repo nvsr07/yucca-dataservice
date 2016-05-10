@@ -56,9 +56,7 @@ public class CkanService extends AbstractService {
 		String result = "";
 		try {
 			String apiName = Metadata.getApiNameFromCkanPackageId(packageId) + "_odata";
-			//String version = Metadata.getVersionFromCkanPackageId(packageId);
-			String version = null;
-			String metadata = loadMetadata(userAuth, apiName, version, Constants.OUTPUT_FORMAT_CKAN, lang);
+			String metadata = loadMetadata(userAuth, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
 			
 			result = metadata;
 		} catch (Exception e) {

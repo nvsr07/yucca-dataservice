@@ -8,9 +8,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -118,7 +120,9 @@ public class SDPOdataCSVServlet extends HttpServlet {
 								  DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
 								  formatter.setCalendar(calendar);
 								  formatter.setTimeZone(TimeZone.getTimeZone("GMT"+segno+(offset/60)));
-								  String newTime = formatter.format(calendar.getTime());
+								  //String newTime = formatter.format(calendar.getTime());
+								  String newTime = formatter.format(getJSONDateTime(curVal));
+								  
 								  curVal=newTime;
 								 
 							 } catch (Exception e) {
@@ -211,4 +215,50 @@ public class SDPOdataCSVServlet extends HttpServlet {
 		    outputStream.flush();
 		  }
 	
+	  
+		private Date getJSONDateTime(String jsonDate) throws ParseException {
+
+			Pattern pt = Pattern.compile("\\/Date\\((\\d+)([\\-\\+]\\d+)\\)\\/");
+
+			Matcher mt = pt.matcher(jsonDate);
+
+			String smillis = null;
+			String tz = null;
+
+			if (mt.find() && mt.groupCount() == 2) {
+				smillis = mt.group(1);
+				tz = mt.group(2);
+			}
+
+			if (tz.isEmpty())
+				tz = "+0000";
+
+			String sign = tz.substring(0, 1);
+			int hh = Integer.parseInt(tz.substring(1, 3));
+			int mm = Integer.parseInt(tz.substring(3, 5));
+
+			long millis = Long.parseLong(smillis);
+
+			long offset_errato = hh * (60 ^ 2) * 1000 + mm * 60 * 1000;
+
+			long offset=Long.parseLong(tz.substring(1))*60*1000;
+			
+			
+			
+			Date dt = null;
+
+			if (sign.contains("+")) {
+
+				dt = new Date(millis - offset);
+			}
+
+			else if (sign.contains("-")) {
+
+				dt = new Date(millis + offset);
+			}
+
+			return dt;
+
+		}
+	  
 }
