@@ -26,12 +26,14 @@ public class MongoDBStreamDAO {
 		this.collection = mongo.getDB(db).getCollection(collection);
 	}
 
-	public Stream getStreamByDataset(Long idDataset, String datasetVersion) {
+	public Stream getStreamByDataset(Long idDataset, Integer datasetVersion) {
 		BasicDBObject searchQuery = new BasicDBObject();
 		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();
 		obj.add(new BasicDBObject("configData.idDataset", idDataset));
 		obj.add(new BasicDBObject("configData.datasetVersion", datasetVersion));
 		searchQuery.put("$and", obj);
+		
+		System.out.println("getStreamByDataset - searchQuery = " + searchQuery);
 
 		DBObject data = collection.find(searchQuery).one();
 		ObjectId id = (ObjectId) data.get("_id");
