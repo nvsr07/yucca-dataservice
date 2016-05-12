@@ -51,7 +51,7 @@ public class AuthorizationRequestFilter implements Filter {
 
 			String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
 
-			if (authorizationHeader != null && !authorizationHeader.startsWith("Bearer ")) {
+			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 
 				String token = authorizationHeader.substring("Bearer".length()).trim();
 				if (token != "") {
@@ -70,7 +70,7 @@ public class AuthorizationRequestFilter implements Filter {
 					String authorizedUser = response.getAuthorizedUser();
 					boolean isValidUser = response.getValid();
 
-					if (!isValidUser) {
+					if (isValidUser) {
 						httpRequest.getSession().setAttribute("userAuth", authorizedUser);
 					}
 				}
