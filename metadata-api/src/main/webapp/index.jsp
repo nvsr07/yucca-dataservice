@@ -113,13 +113,10 @@
 			</div>
 			<h2 id="auth">Autenticazione per stream/dataset privati</h2>
 			<div class='indent'>
-				<p>Per consultare i metadati degli stream privati &egrave; necessario authenticare la chiamata tramite <strong>token oAuth</strong> Di seguito i  seguenti passi</p>
-				<ol>
-					<li>Tramite la sezione <cite><strong>Sottoscrizioni</strong></cite> dello <a href='https://userportal.smartdatanet.it/userportal' target='_blank'>Userportal</a> (visibile solo dopo l'autenticazione)
-						sottoscrivere lo/gli stream/dataset che si intende consultare</li>
-					<li>Lo Userportal fornir&agrave; quindi il <strong>token oAuth</strong></li>
-					<li>Nell'header HTTP della chiamata ai servizi metadataAPI inserire l'attributo <pre><code>'Authorization'  'Bearer IlMioTokenOauth'</code></pre></li>
-				</ol>
+				<p>Per consultare i metadati degli stream/dataset privati &egrave; necessario utilizzare il <strong>token oAuth</strong>
+				 durante la chiamata inserendo nell'header HTTP  l'attributo <pre><code>'Authorization'  'Bearer IlMioTokenOauth'</code></pre>
+				E' sufficiente utilizzare un qualunque token recuperato da Userportal per poter trovare anche gli stream/dataset privati a cui l'utente associato al token &egrave; abilitato. </p>
+				<p>I token sono disponibili nella sezione <cite><strong>Sottoscrizioni</strong></cite> dello <a href='https://userportal.smartdatanet.it/userportal' target='_blank'>Userportal</a> (visibile solo dopo l'autenticazione)
 				<p>Ulterioni dettagli sul <a href='http://developer.smartdatanet.it/docs/utilizzo-dello-store-e-dei-token-oauth-2/' target='_blank'>Developer Center</a> nella sezione  
 				<strong>Come accedere ai servizi di lettura autenticandosi con Oauth</strong>
 			</div>

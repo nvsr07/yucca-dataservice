@@ -102,7 +102,7 @@ public abstract class AbstractService {
 		if (tenant != null && !tenant.trim().equals("")) {
 			if (!query.equals(""))
 				query += " && ";
-			query += "(configData.tenantCode=" + tenant + " streams.stream.codiceTenant) ";
+			query += "(tenantCode=" + tenant + " codiceTenant=" + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {

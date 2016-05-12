@@ -15,7 +15,7 @@
 			h2{margin-top: 2em; font-size: 32px;}
 			.indent{padding-left: 24px;}
 			.content{margin: 64px  auto; width: 80%; }
-			pre{display: block; padding: 1em; background-color: white; border: solid 1px #ebebeb; }
+			pre{display: block; padding: 1em; background-color: white; border: solid 1px #009640; }
 			table{display: block;  margin-top: 1em;border-collapse: collapse;font-size: 11pt; }
 			td, th{ border: solid 1px #ebebeb; padding: .7em;}
 			td{background-color: white; }
@@ -113,13 +113,10 @@
 			</div>
 			<h2 id="auth">Authentication for private stream/dataset </h2>
 			<div class='indent'>
-				<p>To view the metadata of private stream/dataset, is necessary authenticate the call with a <strong>token oAuth</strong>. Below the steps to follow</p>
-				<ol>
-					<li>In the section  <cite><strong>Subscriptions</strong></cite> in the   <a href='https://userportal.smartdatanet.it/userportal' target='_blank'>Userportal</a> (visible only if logged in)
-						subscribe  the stream/dataset</li>
-					<li>The Userportal will provide than the <strong>token oAuth</strong></li>
-					<li>In the HTTP header of the call, insert the attribute  <pre><code>'Authorization'  'Bearer IlMioTokenOauth'</code></pre></li>
-				</ol>
+				<p>To view the metadata of private stream/dataset, is necessary authenticate the call with a <strong>token oAuth</strong>, adding in the headet HTTP the attribute 
+				<pre><code>'Authorization'  'Bearer myTokenOauth'</code></pre>
+				Is possible to use any token recovered from Userportal to find private stream / dataset visible from the user owner of the token.
+				<p>The oAuth token are avaible in the section  <cite><strong>Subscriptions</strong></cite> in the   <a href='https://userportal.smartdatanet.it/userportal' target='_blank'>Userportal</a> (visible only if logged in)</p>
 				<p>More details on  the <a href='http://developer.smartdatanet.it/docs/utilizzo-dello-store-e-dei-token-oauth-2/' target='_blank'>Developer Center</a> in the section
 				<strong>Come accedere ai servizi di lettura autenticandosi con Oauth</strong>
 			</div>
