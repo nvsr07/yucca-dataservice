@@ -33,10 +33,12 @@ public class CkanService extends AbstractService {
 	@Produces("application/json; charset=UTF-8")
 	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start,
 			@QueryParam("end") Integer end, @QueryParam("tenant") String tenant, @QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
-			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
+			@QueryParam("geolocalized") Boolean geolocalized, @QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon,
+			@QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon, @QueryParam("lang") String lang) throws NumberFormatException,
+			UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
-		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, lang);
+		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang);
 
 		List<String> packageIds = new LinkedList<String>();
 		for (Metadata metadata : metadataList) {
@@ -57,11 +59,11 @@ public class CkanService extends AbstractService {
 		try {
 			String apiName = Metadata.getApiNameFromCkanPackageId(packageId) + "_odata";
 			String metadata = loadMetadata(userAuth, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
-			
+
 			result = metadata;
 		} catch (Exception e) {
 			ErrorResponse error = new ErrorResponse();
-			error.setErrorCode("Error with packageId " +packageId);
+			error.setErrorCode("Error with packageId " + packageId);
 			error.setMessage(e.getMessage());
 			result = error.toJson();
 

@@ -33,6 +33,9 @@ public class StoreMetadataItem {
 	private String extraApiDescription;
 	private String extraDomain;
 	private String Tags;
+	private Double extraLatitude;
+	private Double extraLongitude;
+    private Boolean extraVerifyCoord;
 
 	public StoreMetadataItem() {
 	}
@@ -256,6 +259,30 @@ public class StoreMetadataItem {
 
 	public void setTags(String Tags) {
 		this.Tags = Tags;
+	}
+
+	public Double getExtraLatitude() {
+		return extraLatitude;
+	}
+
+	public void setExtraLatitude(Double extraLatitude) {
+		this.extraLatitude = extraLatitude;
+	}
+
+	public Double getExtraLongitude() {
+		return extraLongitude;
+	}
+
+	public void setExtraLongitude(Double extraLongitude) {
+		this.extraLongitude = extraLongitude;
+	}
+
+	public Boolean getExtraVerifyCoord() {
+		return extraVerifyCoord;
+	}
+
+	public void setExtraVerifyCoord(Boolean extraVerifyCoord) {
+		this.extraVerifyCoord = extraVerifyCoord;
 	}
 
 }

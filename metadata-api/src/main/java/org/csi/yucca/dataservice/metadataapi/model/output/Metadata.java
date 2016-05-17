@@ -55,10 +55,14 @@ public class Metadata {
 	private String license;
 	private String disclaimer;
 	private String copyright;
+	private Double latitude;
+	private Double longitude;
 
 	private Stream stream;
 	private Dataset dataset;
 	private Opendata opendata;
+
+	private String detailUrl;
 
 	public Metadata() {
 	}
@@ -306,6 +310,11 @@ public class Metadata {
 		// metadata.setCode(item.getName().replaceAll("_odata", ""));
 		metadata.setCode(cleadMainCode(item.getName()));
 
+		// String detailUrl = Config.getInstance().getStoreBaseUrl() +
+		// "site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName="
+		// + item.getName() + "&version=" + item.getVersion()
+		// + "&docName=" + item.getName();
+
 		metadata.setVersion(item.getVersion());
 		metadata.setName(item.getDescription());
 		metadata.setDescription(item.getExtraApiDescription());
@@ -316,11 +325,14 @@ public class Metadata {
 		metadata.setCopyright(item.getExtraCopyright());
 		metadata.setTenantCode(item.getExtraCodiceTenant());
 		metadata.setTenantName(item.getExtraNomeTenant());
+		metadata.setLatitude(item.getExtraLatitude());
+		metadata.setLongitude(item.getExtraLongitude());
 
 		if (item.getTags() != null) {
 			metadata.setTagCodes(item.getTags().split("\\s*,\\s*"));
 			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
 		}
+		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "detail/" + item.getExtraCodiceTenant() + "/";
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);
 			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/" + metadata.getCode());
@@ -331,20 +343,27 @@ public class Metadata {
 			dataset.setDatasetId(new Long(datasetId));
 			metadata.setDataset(dataset);
 
+			detailUrl += metadata.getCode();
+
 		} else if (item.getName().endsWith("_stream")) {
 			metadata.setType(METADATA_TYPE_STREAM);
 			metadata.setCode(item.getName().substring(0, item.getName().length() - 7));
 			metadata.setName(item.getExtraCodiceStream() + " " + item.getExtraVirtualEntityCode());
 			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/"
 					+ item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream());
+
+			detailUrl += item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream();
+
 		}
+		metadata.setDetailUrl(detailUrl);
 
 		if (!Util.isEmpty(item.getExtraVirtualEntityCode())) {
 			Smartobject smartobject = new Smartobject();
 			smartobject.setCode(item.getExtraVirtualEntityCode());
 			smartobject.setName(item.getExtraVirtualEntityName());
 			smartobject.setDescription(item.getExtraVirtualEntityDescription());
-
+			smartobject.setLatitude(item.getExtraLatitude());
+			smartobject.setLongitude(item.getExtraLongitude());
 			Stream stream = metadata.getStream() == null ? new Stream() : metadata.getStream();
 			stream.setSmartobject(smartobject);
 			metadata.setStream(stream);
@@ -500,6 +519,18 @@ public class Metadata {
 				}
 				metadata.setDataset(dataset);
 			}
+			if (docStream.getOpendata() != null) {
+				metadata.setIsopendata(docStream.getOpendata().getIsOpendata());
+
+				Opendata opendata = new Opendata();
+				opendata.setAuthor(docStream.getOpendata().getAuthor());
+				opendata.setDataUpdateDate(docStream.getOpendata().getDataUpdateDate());
+				opendata.setLanguage(docStream.getOpendata().getLanguage());
+				opendata.setMetadaUpdateDate(docStream.getOpendata().getMetadaUpdateDate());
+
+				metadata.setOpendata(opendata);
+			}
+
 		}
 
 		return metadata;
@@ -585,7 +616,7 @@ public class Metadata {
 	}
 
 	public String getCkanPackageId() {
-		return "smartdatanet.it_" + getCode(); 
+		return "smartdatanet.it_" + getCode();
 	}
 
 	public static String getApiNameFromCkanPackageId(String packageId) {
@@ -684,6 +715,30 @@ public class Metadata {
 		mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
 		System.out.println("m " + mainCode);
 
+	}
+
+	public Double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(Double latitude) {
+		this.latitude = latitude;
+	}
+
+	public Double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Double longitude) {
+		this.longitude = longitude;
+	}
+
+	public String getDetailUrl() {
+		return detailUrl;
+	}
+
+	public void setDetailUrl(String detailUrl) {
+		this.detailUrl = detailUrl;
 	}
 
 }
