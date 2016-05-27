@@ -1,7 +1,6 @@
 package org.csi.yucca.dataservice.metadataapi.service;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,8 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.StringRequestEntity;
-import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDocResponse;
@@ -48,7 +45,8 @@ public abstract class AbstractService {
 			if (parameters != null) {
 				for (String key : parameters.keySet()) {
 					// post.addParameter(key, parameters.get(key));
-					targetUrl += key + "=" + parameters.get(key).replaceAll(" ", "%20") + "&";
+					targetUrl += key + "=" + parameters.get(key).replaceAll("  ", " ").replaceAll(" ", "%20").
+							replaceAll("\\[", "%5B").replaceAll("\\]", "%5D").replaceAll(">", "%3E").replaceAll("<", "%3C") + "&";
 				}
 
 			}
@@ -78,8 +76,8 @@ public abstract class AbstractService {
 		return result;
 	}
 
-	protected List<Metadata> search(String userAuth, String q, Integer start, Integer end, String tenant, String domain, Boolean opendata, String lang)
-			throws NumberFormatException, UnknownHostException {
+	protected List<Metadata> search(String userAuth, String q, Integer start, Integer end, String tenant, String domain, Boolean opendata,
+			Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, String lang) throws NumberFormatException, UnknownHostException {
 
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
 
@@ -95,22 +93,43 @@ public abstract class AbstractService {
 			query += "(" + q + ")";
 		if (domain != null) {
 			if (!query.equals(""))
-				query += " && ";
+				query += " AND ";
 			query += "(domainStream=" + domain + " dataDomain=" + domain + ")";
 		}
 
 		if (tenant != null && !tenant.trim().equals("")) {
 			if (!query.equals(""))
-				query += " && ";
-			query += "(tenantCode=" + tenant + " codiceTenant=" + tenant + ") ";
+				query += " AND ";
+			query += "(tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {
 			if (!query.equals(""))
-				query += " && ";
-			query += "(opendata.isOpendata = 1)";
+				query += " AND ";
+			query += "(isOpendata eq 1)";
 		}
 		
+		String extraLatitudeField  = "streams.stream.virtualEntityPositions.position[0].lat";
+		String extraLongitudeField  = "streams.stream.virtualEntityPositions.position[0].lon";
+
+		if (geolocalizated != null && geolocalizated) {
+			if (minLat==null)
+				minLat = -90.;
+			if (minLon==null)
+				minLon = -180.;
+			if (maxLat==null)
+				maxLat = 90.;
+			if (maxLon==null)
+				maxLon = 180.;
+		}
+
+		if (minLat != null && minLon != null && maxLat != null && maxLon != null) {
+			if (!query.equals(""))
+				query += " AND ";
+			query += "("+extraLatitudeField +">=" + minLat + 
+					" AND "+extraLatitudeField +"<=" + maxLat + " AND "+extraLongitudeField +">=" + minLon + " AND "+extraLongitudeField +"<=" + maxLon + ")";
+		}
+
 		if (!query.equals(""))
 			parameters.put("query", query);
 

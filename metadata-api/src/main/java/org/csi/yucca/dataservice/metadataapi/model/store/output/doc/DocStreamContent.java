@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 public class DocStreamContent {
 	private Streams streams;
 
+
 	public DocStreamContent() {
 		super();
 	}
@@ -23,5 +24,6 @@ public class DocStreamContent {
 	public void setStreams(Streams streams) {
 		this.streams = streams;
 	}
+
 
 }
