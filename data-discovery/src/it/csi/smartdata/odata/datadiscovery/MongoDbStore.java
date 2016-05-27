@@ -363,6 +363,7 @@ public class MongoDbStore {
 
 		String license = (String) info.get("license");
 		String dataDomain = (String) info.get("dataDomain");
+		String codSubDomain = (String) info.get("codSubDomain");
 		String description = (String) info.get("description");
 		Double fps = info.get("fps") == null ? null : ((Number) info.get("fps")).doubleValue();
 
@@ -450,6 +451,7 @@ public class MongoDbStore {
 		cur.put("tenantCode", tenant);
 		cur.put("tenantsharing", tenantsharing);
 		cur.put("dataDomain", dataDomain);
+		cur.put("codSubDomain", codSubDomain);
 		cur.put("license", license);
 		cur.put("description", description);
 
