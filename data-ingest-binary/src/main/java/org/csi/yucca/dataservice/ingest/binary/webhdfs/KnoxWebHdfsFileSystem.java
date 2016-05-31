@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
@@ -172,6 +174,8 @@ public class KnoxWebHdfsFileSystem extends FileSystem
 	  public synchronized void initialize(URI uri, Configuration conf
 	      ) throws IOException {
 	    super.initialize(uri, conf);
+	    CookieManager cookieManager = new CookieManager();
+	    CookieHandler.setDefault(cookieManager);
 	    setConf(conf);
 	    
 	    username = conf.get("knox.username");

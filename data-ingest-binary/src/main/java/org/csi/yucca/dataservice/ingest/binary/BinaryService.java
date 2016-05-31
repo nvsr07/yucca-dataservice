@@ -200,8 +200,21 @@ public class BinaryService {
 					String dataDomain = mdMetadata.getInfo().getDataDomain().toUpperCase();
 					
 					if (mdMetadata.getConfigData().getSubtype().equals("bulkDataset")){
-						typeDirectory = "db_" + mdMetadata.getConfigData().getTenantCode();
-						subTypeDirectory = datasetCode;
+						//typeDirectory = "db_" + mdMetadata.getConfigData().getTenantCode();
+						//subTypeDirectory = datasetCode;
+						
+						
+						if (mdMetadata.getInfo().getCodSubDomain().equals(null)){
+							System.out.println("CodSubDomain is null => " + mdMetadata.getInfo().getCodSubDomain());
+							typeDirectory = "db_" + mdMetadata.getConfigData().getTenantCode();
+						} else {
+							System.out.println("CodSubDomain => " + mdMetadata.getInfo().getCodSubDomain());
+							typeDirectory = "db_" + mdMetadata.getInfo().getCodSubDomain();
+						}
+						subTypeDirectory = mdMetadata.getDatasetCode();
+
+						System.out.println("typeDirectory => " + typeDirectory);
+						System.out.println("subTypeDirectory => " + subTypeDirectory);
 					} else if (mdMetadata.getConfigData().getSubtype().equals("streamDataset")){
 						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
@@ -225,7 +238,7 @@ public class BinaryService {
 					System.out.println("hdfsDirectory = " + hdfsDirectory);
 					Reader is = null;
 					//accountingLog.setPath(hdfsDirectory);
-					if (Config.getHdfsLibrary().equals("webhdfs")){ 
+					if (Config.getHdfsLibrary().equals("webhdfs")){  
 						is = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), hdfsDirectory, Config.getKnoxUrl(), dsVersion);
 					} else if (Config.getHdfsLibrary().equals("hdfs")){
 						is = org.csi.yucca.dataservice.ingest.binary.hdfs.HdfsFSUtils.readDir(Config.getHdfsUsername() + tenantCode, hdfsDirectory, dsVersion);
@@ -450,16 +463,18 @@ public class BinaryService {
 			dataDomain = dataDomain.toUpperCase();
 			
 			if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")){
-				typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
-				subTypeDirectory = mdBinaryDataSet.getDatasetCode();
-			} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")){
-
-				/*
-				if (mdFromMongo.getConfigData().getDeleted().equals(1)){
-					return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-							.entity("{\"error_name\":\"Dataset deleted\", \"error_code\":\"E114\", \"output\":\"NONE\", \"message\":\"You find a deleted dataset\"}").build();
+				if (mdBinaryDataSet.getInfo().getCodSubDomain().equals(null)){
+					System.out.println("CodSubDomain is null => " + mdBinaryDataSet.getInfo().getCodSubDomain());
+					typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
+				} else {
+					System.out.println("CodSubDomain => " + mdBinaryDataSet.getInfo().getCodSubDomain());
+					typeDirectory = "db_" + mdBinaryDataSet.getInfo().getCodSubDomain();
 				}
-				 */
+				subTypeDirectory = mdBinaryDataSet.getDatasetCode();
+
+				System.out.println("typeDirectory => " + typeDirectory);
+				System.out.println("subTypeDirectory => " + subTypeDirectory);
+			} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")){
 				Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), datasetVersion);
 				typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 				subTypeDirectory = tmp.getStreamCode();

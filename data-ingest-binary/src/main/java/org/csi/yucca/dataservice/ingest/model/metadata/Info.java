@@ -19,6 +19,7 @@ public class Info extends AbstractEntity {
 	private String requestorSurname;
 	private String requestornEmail;
 	private String dataDomain;
+	private String codSubDomain;
 	private Double fps;
 
 	private Date startIngestionDate;
@@ -128,6 +129,14 @@ public class Info extends AbstractEntity {
 
 	public void setDataDomain(String dataDomain) {
 		this.dataDomain = dataDomain;
+	}
+
+	public String getCodSubDomain() {
+		return codSubDomain;
+	}
+
+	public void setCodSubDomain(String codSubDomain) {
+		this.codSubDomain = codSubDomain;
 	}
 
 	public Double getFps() {
