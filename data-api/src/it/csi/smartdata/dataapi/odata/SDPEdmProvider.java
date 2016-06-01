@@ -109,7 +109,6 @@ public class SDPEdmProvider extends EdmProvider {
 
 
 
-
 	@Override
 	public List<Schema> getSchemas() throws ODataException {
 		log.debug("[SDPEdmProvider::getSchemas] BEGIN " );
