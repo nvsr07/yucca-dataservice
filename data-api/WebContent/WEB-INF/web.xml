@@ -32,6 +32,9 @@
 	<servlet>
 		<servlet-name>SDPOdataServiceServlet</servlet-name>
 		<servlet-class>org.apache.olingo.odata2.core.servlet.ODataServlet</servlet-class>
+		<!--  
+		<servlet-class>it.csi.smartdata.dataapi.servlet.SDPServletProva</servlet-class>
+		-->
 		<init-param>
 			<param-name>org.apache.olingo.odata2.service.factory</param-name>
 			<param-value>it.csi.smartdata.dataapi.odata.SDPServiceFactory</param-value>
