@@ -35,8 +35,30 @@ public class SDPOdataFilter implements Filter{
 		try { 
 			starTtime=System.currentTimeMillis();
 			
+			
+			// http://stackoverflow.com/questions/19598690/how-to-get-host-name-with-port-from-a-http-or-https-request
+			
+			
 			HttpServletRequest request = (HttpServletRequest) req;
 
+			
+//	    	System.out.println("------------> protocol --> "+request.getProtocol());  
+//	    	System.out.println("------------> remotehost --> "+request.getRemoteHost());  
+//	    	System.out.println("------------> remoteAddress --> "+request.getRemoteAddr());
+//	    	System.out.println("------------> remoteAddress --> "+request.getRequestURI());
+//	    	System.out.println("------------> remoteAddress --> "+request.getRequestURL());
+	    	
+	    	
+//	    	System.out.println("------------> x-forwarded-proto --> "+request.getHeader("x-forwarded-proto"));
+//	    	Enumeration <String> aa = request.getHeaderNames();
+//	    	while (aa.hasMoreElements()) {
+//	    		String kiave=aa.nextElement();
+//		    	System.out.println("------------> header("+kiave+") --> "+request.getHeader(kiave));
+//	    		
+//	    	
+//	    	}
+			
+			
 			/* LOG HEADER TMP */
 
 
