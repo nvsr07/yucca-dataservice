@@ -18,7 +18,9 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
+import com.mongodb.ReadPreference;
 import com.mongodb.ServerAddress;
 
 public class MongoTenantDbSingleton {
@@ -110,15 +112,20 @@ public class MongoTenantDbSingleton {
 				arrServerAddr.add(serverAddr);
 			}
 
+			
+			MongoClientOptions.Builder optionsBuilder = new MongoClientOptions.Builder();
+			optionsBuilder.readPreference(ReadPreference.secondaryPreferred());
+			MongoClientOptions options = optionsBuilder.build();
+			
 			MongoClient mongoClient = null;
 			if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
 					SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
 				MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
 						"admin", 
 						SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
-				mongoClient = new MongoClient(arrServerAddr,Arrays.asList(credential));
+				mongoClient = new MongoClient(arrServerAddr,Arrays.asList(credential),options);
 			} else {
-				mongoClient = new MongoClient(arrServerAddr);
+				mongoClient = new MongoClient(arrServerAddr,options);
 			}			
 
 			DB db = mongoClient.getDB(SDPDataApiConfig.getInstance().getMongoCfgDB(SDPDataApiConfig.MONGO_DB_CFG_TENANT));

@@ -56,10 +56,17 @@ public class SDPServiceFactory extends ODataServiceFactory {
 				if (!webBaseUrl.toLowerCase().startsWith("http") ){
 					if (!webBaseUrl.startsWith("/")) webBaseUrl="/"+webBaseUrl; 
 					
-					webBaseUrl=odc.getPathInfo().getServiceRoot().getScheme()+"://"+
+//					webBaseUrl=odc.getPathInfo().getServiceRoot().getScheme()+"://"+
+//					odc.getPathInfo().getServiceRoot().getHost()+":"+
+//					odc.getPathInfo().getServiceRoot().getPort()+webBaseUrl;
+					webBaseUrl="https://"+
 					odc.getPathInfo().getServiceRoot().getHost()+":"+
 					odc.getPathInfo().getServiceRoot().getPort()+webBaseUrl;
 				}
+				
+				
+				
+				webBaseUrl="https://"+SDPDataApiConfig.getInstance().getPubUri();
 				
 				
 			} catch (Exception e ) {

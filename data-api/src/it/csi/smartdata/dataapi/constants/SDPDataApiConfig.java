@@ -50,6 +50,7 @@ public class SDPDataApiConfig {
 		params.put("SDP_WEB_BASE_URL", rb.getString("SDP_WEB_BASE_URL"));
 		params.put("SDP_WEB_LOCALHOST_PORT", rb.getString("SDP_WEB_LOCALHOST_PORT"));
 		
+		params.put("SDP_WEB_PUB_URI", rb.getString("SDP_WEB_PUB_URI"));
 		
 		
 		
@@ -121,6 +122,9 @@ public class SDPDataApiConfig {
 		return params.get("SDP_WEB_LOCALHOST_PORT");
 	}
 	
+	public String getPubUri() {
+		return params.get("SDP_WEB_PUB_URI");
+	}
 	
 	public String getMongoCfgHost(String cfgType) {
 		if (MONGO_DB_CFG_DATASET.equals(cfgType)) {

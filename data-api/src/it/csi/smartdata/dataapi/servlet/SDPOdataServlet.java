@@ -7,8 +7,20 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.olingo.odata2.api.ODataService;
 import org.apache.olingo.odata2.api.ODataServiceFactory;
+import org.apache.olingo.odata2.api.commons.HttpHeaders;
+import org.apache.olingo.odata2.api.commons.ODataHttpMethod;
+import org.apache.olingo.odata2.api.exception.ODataException;
+import org.apache.olingo.odata2.api.exception.ODataNotAcceptableException;
+import org.apache.olingo.odata2.api.processor.ODataContext;
+import org.apache.olingo.odata2.api.processor.ODataRequest;
+import org.apache.olingo.odata2.api.processor.ODataResponse;
+import org.apache.olingo.odata2.core.ODataContextImpl;
+import org.apache.olingo.odata2.core.ODataRequestHandler;
+import org.apache.olingo.odata2.core.servlet.ODataExceptionWrapper;
 import org.apache.olingo.odata2.core.servlet.ODataServlet;
+import org.apache.olingo.odata2.core.servlet.RestUtil;
 public class SDPOdataServlet extends ODataServlet {
 	
 	// TODO Logger ... .verificare se questa classe serve o se si può usare la servlet di defaul
@@ -24,6 +36,8 @@ public class SDPOdataServlet extends ODataServlet {
 	}
 	
 		
+
+	
 	
 	 public String getInitParameter(String name) {
 		 String className=SDPDataApiConstants.SDP_ODATA_DEFAULT_SERVICE_FACTORY;

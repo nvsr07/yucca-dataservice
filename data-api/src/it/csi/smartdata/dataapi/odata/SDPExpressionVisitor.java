@@ -664,6 +664,13 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 	public Object visitMember(MemberExpression paramMemberExpression,
 			Object paramObject1, Object paramObject2) {
 		out.append("visitMember\n");
+		try {
+		if (			paramMemberExpression.getPath().getEdmType().getName().equals("BinaryRef") ) {
+			return paramObject1;
+		}
+		} catch (Exception e ) {
+			
+		}
 		return null;
 	}
 
