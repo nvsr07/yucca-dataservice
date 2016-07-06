@@ -204,7 +204,7 @@ public class BinaryService {
 						//subTypeDirectory = datasetCode;
 						
 						
-						if (mdMetadata.getInfo().getCodSubDomain().equals(null)){
+						if (mdMetadata.getInfo().getCodSubDomain() == null){
 							System.out.println("CodSubDomain is null => " + mdMetadata.getInfo().getCodSubDomain());
 							typeDirectory = "db_" + mdMetadata.getConfigData().getTenantCode();
 						} else {
@@ -463,7 +463,7 @@ public class BinaryService {
 			dataDomain = dataDomain.toUpperCase();
 			
 			if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")){
-				if (mdBinaryDataSet.getInfo().getCodSubDomain().equals(null)){
+				if (mdBinaryDataSet.getInfo().getCodSubDomain() == null){
 					System.out.println("CodSubDomain is null => " + mdBinaryDataSet.getInfo().getCodSubDomain());
 					typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
 				} else {
