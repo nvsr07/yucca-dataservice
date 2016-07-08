@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<resources>
-    <item>
-        <file>XSLTInsertApiRemoveNameSpaces.xslt</file>
-        <path>/_system/config/xsl</path>
-        <mediaType>application/xslt+xml</mediaType>
-    </item>
-</resources>
