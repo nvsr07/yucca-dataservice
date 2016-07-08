@@ -54,8 +54,8 @@
         <faultSequenceKey prettyName="Fault Sequence Reference" keyName="key" keyValue="/default/key" filters="ACED0005737200116A6176612E7574696C2E486173684D61700507DAC1C31660D103000246000A6C6F6164466163746F724900097468726573686F6C6478703F400000000000107708000000100000000078"/>
       </resources>
       <handlers className="org.csi.yucca.realtime.authhandler.ISAuthenticationHandler">
-        <properties name="isServerUrl" value="https://int-sso.smartdatanet.it"/>
-        <properties name="isAdminPassword" value="pi4KD0zI8a"/>
+        <properties name="isServerUrl" value="*****"/>
+        <properties name="isAdminPassword" value="****"/>
         <properties name="isAdminUsername" value="admin"/>
       </handlers>
     </children>
