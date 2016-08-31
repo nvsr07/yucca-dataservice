@@ -7,7 +7,10 @@
 	<version>1.0.0-003</version>
 	<packaging>war</packaging>
 	<name>metadataapi</name>
-
+	<scm>
+    	<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+  	</scm>
+  	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -18,10 +21,26 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<outputDirectory>D:/Portable/jboss-eap-6.2/standalone/deployments</outputDirectory>
 					<webXml>${webXmlPath}/web.xml</webXml>
 				</configuration>
 			</plugin>
+ 			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-scm-plugin</artifactId>
+		        <version>1.9.5</version>
+		        <configuration>
+		          <connectionType>connection</connectionType>
+		        </configuration>
+		        <executions>
+		        	<execution>
+		        		<id>1</id>
+		        		<phase>validate</phase>
+			            <goals>
+			              <goal>checkout</goal>
+			            </goals>
+			          </execution>
+			    </executions>
+		      </plugin>			
 		</plugins>
 	</build>
 	<repositories>
@@ -187,7 +206,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/int</directory>
+						<directory>${project.build.directory}/checkout/matadataapi/resources/int</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -196,7 +215,7 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/int/</webXmlPath>
+				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/int/</webXmlPath>
 			</properties>
 		</profile>
 		<profile>
@@ -204,7 +223,7 @@
 			<build>
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/prod</directory>
+						<directory>${project.build.directory}/checkout/matadataapi/resources/prod</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -213,7 +232,7 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/matadataapi/resources/prod/</webXmlPath>
+				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/prod/</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
