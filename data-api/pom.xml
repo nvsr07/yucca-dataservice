@@ -5,6 +5,9 @@
 	<artifactId>DataApi</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
+    <scm>
+       <connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+    </scm>	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<version.slf4j>1.7.1</version.slf4j>
@@ -205,14 +208,33 @@
 		<profile>
 			<id>integ</id>
 			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/dataapi/resources/integ</directory>
+						<directory>${project.build.directory}/checkout/dataapi/resources/integ</directory>
 					</resource>
 				</resources>
 				<testResources>
 					<testResource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/dataapi/test/integ</directory>
+						<directory>${project.build.directory}/checkout/dataapi/test/integ</directory>
 					</testResource>
 				</testResources>
 
