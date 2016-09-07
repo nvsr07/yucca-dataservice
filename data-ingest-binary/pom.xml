@@ -9,6 +9,10 @@
 	<packaging>war</packaging>
 	<name>data-ingest-binary</name>
 	<description>data-ingest-binary</description>
+    <scm>
+       <connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+    </scm>	
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -176,22 +180,62 @@
 				<activeByDefault>true</activeByDefault>
 			</activation>
 			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
+			
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/data_ingest_binary/int</directory>
+						<directory>${project.build.directory}/checkout/data_ingest_binary/int</directory>
 					</resource>
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/data_ingest_binary/int/</webXmlPath>
+				<webXmlPath>${project.build.directory}/checkout/data_ingest_binary/int/</webXmlPath>
 			</properties>
 		</profile>
 		<profile>
 			<id>prod</id>
 			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
+			
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/data_ingest_binary/prod</directory>
+						<directory>${project.build.directory}/checkout/data_ingest_binary/prod</directory>
 					</resource>
 				</resources>
 			</build>
