@@ -8,6 +8,9 @@
   <packaging>pom</packaging>
   <name>InsertApiESB</name>
   <description>InsertApiESB</description>
+    <scm>
+       <connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+    </scm>  
   <build>
     <directory>target/capp</directory>
     <plugins>
@@ -45,6 +48,25 @@
           </projectnatures>
         </configuration>
       </plugin>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>      
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
@@ -64,7 +86,7 @@
           <excludes>
             <exclude>${project.build.directory}/**/pom.xml</exclude>
           </excludes>
-          <tokenValueMap>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datainsert/InsertApiESB/resources/${profilo}.properties</tokenValueMap>
+          <tokenValueMap>${project.build.directory}/checkout/datainsert/InsertApiESB/resources/${profilo}.properties</tokenValueMap>
           <regex>false</regex>
           <escape>true</escape>
         </configuration>

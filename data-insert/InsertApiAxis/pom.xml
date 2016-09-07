@@ -9,6 +9,9 @@
 	<packaging>service/axis2</packaging>
 	<name>InsertApiAxis</name>
 	<description>InsertApiAxis</description>
+    <scm>
+       <connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+    </scm>	
 	<build>
 		<plugins>
 			<plugin>
@@ -89,9 +92,28 @@
 		<profile>
 			<id>integ</id>
 			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datainsert/InsertApiAxis/resources/integ</directory>
+						<directory>${project.build.directory}/checkout/datainsert/InsertApiAxis/resources/integ</directory>
 					</resource>
 				</resources>
 			</build>
@@ -109,9 +131,28 @@
 		<profile>
 			<id>prod</id>
 			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
 				<resources>
 					<resource>
-						<directory>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/datainsert/InsertApiAxis/resources/prod</directory>
+						<directory>/${project.build.directory}/checkout/datainsert/InsertApiAxis/resources/prod</directory>
 					</resource>
 				</resources>
 			</build>
