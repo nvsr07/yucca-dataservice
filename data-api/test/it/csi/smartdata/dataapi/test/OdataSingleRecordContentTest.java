@@ -44,7 +44,7 @@ public class OdataSingleRecordContentTest extends OdataTestBase{
 			rs = rs.auth().basic(dato.getString("odata.username"), dato.getString("odata.password"));
 		}	 
 
-		
+		rs.urlEncodingEnabled(false);
 		Response rsp = rs.when().get(makeUrl(dato,"json"));
 		JSONArray arrAtteso=(JSONArray)dato.get("odata.retdata.dataRecords");
 		JSONArray campi=(JSONArray)dato.get("odata.fieldstocheck");

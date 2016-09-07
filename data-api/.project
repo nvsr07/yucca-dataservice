@@ -45,5 +45,10 @@
 			<type>2</type>
 			<location>T:/PropFiles/dataapi/test/integ</location>
 		</link>
+		<link>
+			<name>integ-svn</name>
+			<type>2</type>
+			<location>D:/PROGETTI/ECLIPSE_KEPLER_04/SDP-propfiles-trunk/dataapi/test/integ</location>
+		</link>
 	</linkedResources>
 </projectDescription>

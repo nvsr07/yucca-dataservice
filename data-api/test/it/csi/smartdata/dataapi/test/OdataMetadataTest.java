@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ public class OdataMetadataTest extends OdataTestBase{
 		//verifica unicamente il conteggio totale dei record
 		
 		XmlConfig xmlConfig =new XmlConfig();
+		
 		RequestSpecification rs =  given().config(RestAssured.config().xmlConfig(xmlConfig.declareNamespace("edmx", "http://schemas.microsoft.com/ado/2007/06/edmx")));
 
 		if (StringUtils.isNotEmpty(dato.optString("odata.username")))
@@ -46,9 +48,10 @@ public class OdataMetadataTest extends OdataTestBase{
 		}	 
 
 
-		
+		rs.urlEncodingEnabled(false);
 		Response rsp = rs.when().get(makeUrl(dato,null)+"$metadata");
 
+		
 		
 		//rsp.then().assertThat().body(RestAssuredMatchers.matchesXsd(readFile("/schema001.xsd")));
 		
