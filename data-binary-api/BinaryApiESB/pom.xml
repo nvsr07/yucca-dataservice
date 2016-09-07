@@ -45,6 +45,24 @@
           </projectnatures>
         </configuration>
       </plugin>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+      
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
@@ -64,7 +82,7 @@
           <excludes>
             <exclude>${project.build.directory}/**/pom.xml</exclude>
           </excludes>
-          <tokenValueMap>//csint1/dirtec/2014/Tecnologie e attività/SmartDataPlatform/PropFiles/binaryapi/${profilo}.properties</tokenValueMap>
+          <tokenValueMap>${project.build.directory}/checkout/binaryapi/${profilo}.properties</tokenValueMap>
           <regex>false</regex>
           <escape>true</escape>
         </configuration>
