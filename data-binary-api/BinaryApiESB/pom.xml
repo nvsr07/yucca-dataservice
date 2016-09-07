@@ -8,6 +8,10 @@
   <packaging>pom</packaging>
   <name>BinaryApiESB</name>
   <description>BinaryApiESB</description>
+    <scm>
+       <connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+    </scm>	
+  
   <build>
     <directory>target/capp</directory>
     <plugins>
