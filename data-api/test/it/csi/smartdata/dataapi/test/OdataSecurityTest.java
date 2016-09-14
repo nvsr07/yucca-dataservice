@@ -36,7 +36,7 @@ public class OdataSecurityTest extends OdataTestBase{
 
 
 	@Test(dataProvider="json")
-	public void odataCheckServiceRoot(JSONObject dato) {
+	public void odataCheckServiceRootSecurity(JSONObject dato) {
 
 		//verifica unicamente il conteggio totale dei record
 
