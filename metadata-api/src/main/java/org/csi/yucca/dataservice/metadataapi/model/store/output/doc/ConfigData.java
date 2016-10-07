@@ -4,10 +4,15 @@ public class ConfigData {
 
 	private Long idTenant;
 	private String tenantCode;
+	private String collection;
+	private String database;
 	private String type;
 	private String subtype;
 	private String entityNameSpace;
+	private String datasetStatus;
 	private Integer current;
+	private Archive archive;
+	private Integer deleted;
 
 	public ConfigData() {
 
@@ -59,6 +64,46 @@ public class ConfigData {
 
 	public void setCurrent(Integer current) {
 		this.current = current;
+	}
+
+	public String getCollection() {
+		return collection;
+	}
+
+	public void setCollection(String collection) {
+		this.collection = collection;
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
+	}
+
+	public String getDatasetStatus() {
+		return datasetStatus;
+	}
+
+	public void setDatasetStatus(String datasetStatus) {
+		this.datasetStatus = datasetStatus;
+	}
+
+	public Archive getArchive() {
+		return archive;
+	}
+
+	public void setArchive(Archive archive) {
+		this.archive = archive;
+	}
+
+	public Integer getDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(Integer deleted) {
+		this.deleted = deleted;
 	}
 
 }

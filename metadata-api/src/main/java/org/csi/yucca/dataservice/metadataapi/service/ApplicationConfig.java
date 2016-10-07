@@ -17,6 +17,7 @@ public class ApplicationConfig extends Application {
 		singletons.add(new SearchService());
 		singletons.add(new CkanService());
 		singletons.add(new CacheService());
+		singletons.add(new DcatService());
 		singletons.add(new ResourceService());
 	}
 

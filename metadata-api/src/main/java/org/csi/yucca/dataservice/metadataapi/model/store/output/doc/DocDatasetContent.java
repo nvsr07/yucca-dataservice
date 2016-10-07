@@ -15,6 +15,16 @@ public class DocDatasetContent {
 	private Info info;
 	private Opendata opendata;
 
+	private DCAT dcat;
+
+	public DCAT getDcat() {
+		return dcat;
+	}
+
+	public void setDcat(DCAT dcat) {
+		this.dcat = dcat;
+	}
+
 	public DocDatasetContent() {
 		super();
 	}

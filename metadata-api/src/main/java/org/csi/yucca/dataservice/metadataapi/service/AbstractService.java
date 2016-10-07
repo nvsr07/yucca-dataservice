@@ -29,7 +29,8 @@ public abstract class AbstractService {
 	public AbstractService() {
 	}
 
-	protected String doPost(String targetUrl, String contentType, String characterEncoding, Map<String, String> parameters) {
+	protected String doPost(String targetUrl, String contentType, String characterEncoding,
+			Map<String, String> parameters) {
 		log.debug("[AbstractService::doPost] START");
 		String result = "";
 		int resultCode = -1;
@@ -45,8 +46,10 @@ public abstract class AbstractService {
 			if (parameters != null) {
 				for (String key : parameters.keySet()) {
 					// post.addParameter(key, parameters.get(key));
-					targetUrl += key + "=" + parameters.get(key).replaceAll("  ", " ").replaceAll(" ", "%20").
-							replaceAll("\\[", "%5B").replaceAll("\\]", "%5D").replaceAll(">", "%3E").replaceAll("<", "%3C") + "&";
+					targetUrl += key + "="
+							+ parameters.get(key).replaceAll("  ", " ").replaceAll(" ", "%20").replaceAll("\\[", "%5B")
+									.replaceAll("\\]", "%5D").replaceAll(">", "%3E").replaceAll("<", "%3C")
+							+ "&";
 				}
 
 			}
@@ -76,8 +79,9 @@ public abstract class AbstractService {
 		return result;
 	}
 
-	protected List<Metadata> search(String userAuth, String q, Integer start, Integer end, String tenant, String domain, Boolean opendata,
-			Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, String lang) throws NumberFormatException, UnknownHostException {
+	protected List<Metadata> search(String userAuth, String q, Integer start, Integer end, String tenant, String domain,
+			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon,
+			String lang, Boolean dCatReady) throws NumberFormatException, UnknownHostException {
 
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
 
@@ -97,37 +101,43 @@ public abstract class AbstractService {
 			query += "(domainStream=" + domain + " dataDomain=" + domain + ")";
 		}
 
+		if (dCatReady != null && dCatReady) {
+			if (!query.equals(""))
+				query += " AND ";
+			query += " (dcatReady) ";
+		}
+
 		if (tenant != null && !tenant.trim().equals("")) {
 			if (!query.equals(""))
 				query += " AND ";
-			query += "(tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
+			query += " (tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {
 			if (!query.equals(""))
 				query += " AND ";
-			query += "(isOpendata eq 1)";
+			query += " (isOpendata eq 1) ";
 		}
-		
-		String extraLatitudeField  = "streams.stream.virtualEntityPositions.position[0].lat";
-		String extraLongitudeField  = "streams.stream.virtualEntityPositions.position[0].lon";
+
+		String extraLatitudeField = "streams.stream.virtualEntityPositions.position[0].lat";
+		String extraLongitudeField = "streams.stream.virtualEntityPositions.position[0].lon";
 
 		if (geolocalizated != null && geolocalizated) {
-			if (minLat==null)
+			if (minLat == null)
 				minLat = -90.;
-			if (minLon==null)
+			if (minLon == null)
 				minLon = -180.;
-			if (maxLat==null)
+			if (maxLat == null)
 				maxLat = 90.;
-			if (maxLon==null)
+			if (maxLon == null)
 				maxLon = 180.;
 		}
 
 		if (minLat != null && minLon != null && maxLat != null && maxLon != null) {
 			if (!query.equals(""))
 				query += " AND ";
-			query += "("+extraLatitudeField +">=" + minLat + 
-					" AND "+extraLatitudeField +"<=" + maxLat + " AND "+extraLongitudeField +">=" + minLon + " AND "+extraLongitudeField +"<=" + maxLon + ")";
+			query += "(" + extraLatitudeField + ">=" + minLat + " AND " + extraLatitudeField + "<=" + maxLat + " AND "
+					+ extraLongitudeField + ">=" + minLon + " AND " + extraLongitudeField + "<=" + maxLon + ")";
 		}
 
 		if (!query.equals(""))
@@ -167,8 +177,9 @@ public abstract class AbstractService {
 
 		// https://int-userportal.smartdatanet.it/store/site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=AllegatiCond_408_odata&version=1.0&docName=AllegatiCond_408_odata_internal_content&username=PRDCLD75D29A052V#
 
-		String searchUrl = STORE_BASE_URL + "site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=" + apiName + "&version=" + version
-				+ "&docName=" + docName;
+		String searchUrl = STORE_BASE_URL
+				+ "site/blocks/secure/detail.jag?action=getInlineContent&provider=admin&apiName=" + apiName
+				+ "&version=" + version + "&docName=" + docName;
 
 		if (userAuth != null)
 			searchUrl += "&username=" + userAuth;
@@ -192,13 +203,15 @@ public abstract class AbstractService {
 
 			if (metadata.getDataset() != null && metadata.getDataset().getCode() == null) {
 				// http://localhost:8080/datamanagementapi/api/stream/datasetCode/sandbox/smartobject_twitter_saverino/stressTwt_06
-				if (metadata.getStream() != null && metadata.getStream().getCode() != null && metadata.getStream().getSmartobject() != null
+				if (metadata.getStream() != null && metadata.getStream().getCode() != null
+						&& metadata.getStream().getSmartobject() != null
 						&& metadata.getStream().getSmartobject().getCode() != null) {
 					String tenantCode = metadata.getTenantCode();
 					String smartObjectCode = metadata.getStream().getSmartobject().getCode();
 					String streamCode = metadata.getStream().getCode();
 
-					String datasetCodeUrl = MANAGEMENT_BASE_URL + "stream/datasetCode/" + tenantCode + "/" + smartObjectCode + "/" + streamCode;
+					String datasetCodeUrl = MANAGEMENT_BASE_URL + "stream/datasetCode/" + tenantCode + "/"
+							+ smartObjectCode + "/" + streamCode;
 
 					String datasetCode = HttpUtil.getInstance().doGet(datasetCodeUrl, "plain/text", null, null);
 					metadata.getDataset().setCode(datasetCode);

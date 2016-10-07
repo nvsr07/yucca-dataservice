@@ -38,7 +38,7 @@ public class CkanService extends AbstractService {
 			UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
-		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang);
+		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null);
 
 		List<String> packageIds = new LinkedList<String>();
 		for (Metadata metadata : metadataList) {

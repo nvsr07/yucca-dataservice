@@ -33,7 +33,7 @@ public class SearchService extends AbstractService {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
 
-		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata , geolocalized, minLat, minLon, maxLat, maxLon, lang);
+		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata , geolocalized, minLat, minLon, maxLat, maxLon, lang, null);
 		ListResponse response = new ListResponse();
 		response.setCount(metadataList.size());
 		response.setResult(metadataList);

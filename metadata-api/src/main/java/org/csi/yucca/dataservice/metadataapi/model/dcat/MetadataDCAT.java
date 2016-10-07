@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.metadataapi.model.output;
+package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import org.csi.yucca.dataservice.metadataapi.model.ckan.Resource;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDoc;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.ConfigData;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DCAT;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DocDatasetContent;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DocStreamContent;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Element;
@@ -26,305 +25,69 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
 
-public class Metadata {
+public class MetadataDCAT {
 	public static final String METADATA_TYPE_STREAM = "stream";
 	public static final String METADATA_TYPE_DATASET = "dataset";
 
-	private String name; // cerco logica usata per lo store
-	private String code; // codice da usare per il dettaglio
-	private String version;
-	private String description; // sempre dallo store se stream-> nome stream
-	private String type;
-	private String domain;
-	private String codsubdomain;
-	private String requestorname;
-	private String requestorsurname;
-	private String requestoremail;
-	private String tenantCode;
-	private String tenantName;
-	private String[] tagCodes;
-	private String[] tags;
-	private String icon;
-	private String visibility;
-	private String[] sharedtenants; // FIXME non mettere
-	private Boolean isopendata;
-	private String author;
-	private String language;
-	private Date registrationDate;
-	private Date datalastupdate; // FIXME non mettere
-	private String externalreference;
-	private Boolean ispublished; // FIXME non mettere
-	private String license;
-	private String disclaimer;
-	private String copyright;
-	private Double latitude;
-	private Double longitude;
-	private String fps;
-
-	private Stream stream;
-	private Dataset dataset;
-	private Opendata opendata;
-
-	private DCAT dcat;
-
-	public DCAT getDcat() {
-		return dcat;
+	private AgentDCAT agent; 
+	private CatalogDCAT catalog;
+	private DistributionDCAT distribution;
+	private String identifier; //dct:identifier
+	private String name; //foaf:name
+	private String versionInfo; //owl:versionInfo
+	private String Frequency; //dct:Frequency
+	private VcardDCAT vcard;
+	
+	public AgentDCAT getAgent() {
+		return agent;
 	}
-
-	public void setDcat(DCAT dcat) {
-		this.dcat = dcat;
+	public void setAgent(AgentDCAT agent) {
+		this.agent = agent;
 	}
-
-	public void setAuthor(String author) {
-		this.author = author;
+	public CatalogDCAT getCatalog() {
+		return catalog;
 	}
-
-	private String detailUrl;
-
-	public Metadata() {
+	public void setCatalog(CatalogDCAT catalog) {
+		this.catalog = catalog;
 	}
-
-	public String toJson() {
-		Gson gson = JSonHelper.getInstance();
-		return gson.toJson(this);
+	public DistributionDCAT getDistribution() {
+		return distribution;
 	}
-
+	public void setDistribution(DistributionDCAT distribution) {
+		this.distribution = distribution;
+	}
+	public String getIdentifier() {
+		return identifier;
+	}
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getDomain() {
-		return domain;
+	public String getVersionInfo() {
+		return versionInfo;
 	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
+	public void setVersionInfo(String versionInfo) {
+		this.versionInfo = versionInfo;
 	}
-
-	public String getCodsubdomain() {
-		return codsubdomain;
+	public String getFrequency() {
+		return Frequency;
 	}
-
-	public void setCodsubdomain(String codsubdomain) {
-		this.codsubdomain = codsubdomain;
+	public void setFrequency(String frequency) {
+		Frequency = frequency;
 	}
-
-	public String getRequestorname() {
-		return requestorname;
+	public VcardDCAT getVcard() {
+		return vcard;
 	}
-
-	public void setRequestorname(String requestorname) {
-		this.requestorname = requestorname;
+	public void setVcard(VcardDCAT vcard) {
+		this.vcard = vcard;
 	}
-
-	public String getRequestorsurname() {
-		return requestorsurname;
-	}
-
-	public void setRequestorsurname(String requestorsurname) {
-		this.requestorsurname = requestorsurname;
-	}
-
-	public String getRequestoremail() {
-		return requestoremail;
-	}
-
-	public void setRequestoremail(String requestoremail) {
-		this.requestoremail = requestoremail;
-	}
-
-	public String[] getTagCodes() {
-		return tagCodes;
-	}
-
-	public void setTagCodes(String[] tagCodes) {
-		this.tagCodes = tagCodes;
-	}
-
-	public String[] getTags() {
-		return tags;
-	}
-
-	public void setTags(String[] tags) {
-		this.tags = tags;
-	}
-
-	public String getIcon() {
-		return icon;
-	}
-
-	public void setIcon(String icon) {
-		this.icon = icon;
-	}
-
-	public String getVisibility() {
-		return visibility;
-	}
-
-	public void setVisibility(String visibility) {
-		this.visibility = visibility;
-	}
-
-	public String[] getSharedtenants() {
-		return sharedtenants;
-	}
-
-	public void setSharedtenants(String[] sharedtenants) {
-		this.sharedtenants = sharedtenants;
-	}
-
-	public Boolean getIsopendata() {
-		return isopendata;
-	}
-
-	public void setIsopendata(Boolean isopendata) {
-		this.isopendata = isopendata;
-	}
-
-	public String getAuthor() {
-		return author;
-	}
-
-	public String getLanguage() {
-		return language;
-	}
-
-	public void setLanguage(String language) {
-		this.language = language;
-	}
-
-	public Date getDatalastupdate() {
-		return datalastupdate;
-	}
-
-	public void setDatalastupdate(Date datalastupdate) {
-		this.datalastupdate = datalastupdate;
-	}
-
-	public String getExternalreference() {
-		return externalreference;
-	}
-
-	public void setExternalreference(String externalreference) {
-		this.externalreference = externalreference;
-	}
-
-	public Boolean getIspublished() {
-		return ispublished;
-	}
-
-	public void setIspublished(Boolean ispublished) {
-		this.ispublished = ispublished;
-	}
-
-	public String getLicense() {
-		return license;
-	}
-
-	public void setLicense(String license) {
-		this.license = license;
-	}
-
-	public String getDisclaimer() {
-		return disclaimer;
-	}
-
-	public void setDisclaimer(String disclaimer) {
-		this.disclaimer = disclaimer;
-	}
-
-	public String getCopyright() {
-		return copyright;
-	}
-
-	public void setCopyright(String copyright) {
-		this.copyright = copyright;
-	}
-
-	public Stream getStream() {
-		return stream;
-	}
-
-	public void setStream(Stream stream) {
-		this.stream = stream;
-	}
-
-	public Dataset getDataset() {
-		return dataset;
-	}
-
-	public void setDataset(Dataset dataset) {
-		this.dataset = dataset;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getTenantCode() {
-		return tenantCode;
-	}
-
-	public void setTenantCode(String tenantCode) {
-		this.tenantCode = tenantCode;
-	}
-
-	public String getTenantName() {
-		return tenantName;
-	}
-
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
-
-	public Opendata getOpendata() {
-		return opendata;
-	}
-
-	public void setOpendata(Opendata opendata) {
-		this.opendata = opendata;
-	}
-
-	public Date getRegistrationDate() {
-		return registrationDate;
-	}
-
-	public void setRegistrationDate(Date registrationDate) {
-		this.registrationDate = registrationDate;
-	}
-
+	
+/*
 	public static String createCodeFromStream(String tenantCode, String smartobjectCode, String streamCode) {
 		return tenantCode + "." + smartobjectCode + "_" + streamCode;
 	}
@@ -352,7 +115,6 @@ public class Metadata {
 		metadata.setTenantName(item.getExtraNomeTenant());
 		metadata.setLatitude(item.getExtraLatitude());
 		metadata.setLongitude(item.getExtraLongitude());
-		metadata.setFps(item.getRates());
 
 		if (item.getTags() != null) {
 			metadata.setTagCodes(item.getTags().split("\\s*,\\s*"));
@@ -361,8 +123,7 @@ public class Metadata {
 		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "detail/" + item.getExtraCodiceTenant() + "/";
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);
-			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/"
-					+ item.getExtraCodiceTenant() + "/" + metadata.getCode());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/" + metadata.getCode());
 			Dataset dataset = new Dataset();
 
 			String[] nameSplitted = item.getName().split("_");
@@ -376,9 +137,8 @@ public class Metadata {
 			metadata.setType(METADATA_TYPE_STREAM);
 			metadata.setCode(item.getName().substring(0, item.getName().length() - 7));
 			metadata.setName(item.getExtraCodiceStream() + " " + item.getExtraVirtualEntityCode());
-			metadata.setIcon(
-					Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/"
-							+ item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/"
+					+ item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream());
 
 			detailUrl += item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream();
 
@@ -435,8 +195,7 @@ public class Metadata {
 		if (content != null && content.getStreams() != null && content.getStreams().getStream() != null) {
 
 			metadata.setType(METADATA_TYPE_STREAM);
-			org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Stream docStream = content.getStreams()
-					.getStream();
+			org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Stream docStream = content.getStreams().getStream();
 
 			// metadata.setCode(Metadata.createCodeFromStream(docStream.getCodiceTenant(),
 			// docStream.getCodiceVirtualEntity(),
@@ -445,12 +204,10 @@ public class Metadata {
 
 			metadata.setVersion("" + docStream.getDeploymentVersion());
 			metadata.setName(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName());
-			metadata.setDescription(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName() + " - "
-					+ docStream.getVirtualEntityDescription());
+			metadata.setDescription(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName() + " - " + docStream.getVirtualEntityDescription());
 
-			metadata.setIcon(
-					Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + docStream.getCodiceTenant() + "/"
-							+ docStream.getCodiceVirtualEntity() + "/" + docStream.getCodiceStream());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + docStream.getCodiceTenant() + "/"
+					+ docStream.getCodiceVirtualEntity() + "/" + docStream.getCodiceStream());
 
 			metadata.setDomain(I18nDelegate.translate(docStream.getDomainStream(), lang));
 			metadata.setVisibility(docStream.getVisibility());
@@ -460,8 +217,7 @@ public class Metadata {
 			metadata.setTenantCode(docStream.getCodiceTenant());
 			metadata.setTenantName(docStream.getNomeTenant());
 
-			if (docStream.getStreamTags() != null && docStream.getStreamTags().getTag() != null
-					&& docStream.getStreamTags().getTag().size() > 0) {
+			if (docStream.getStreamTags() != null && docStream.getStreamTags().getTag() != null && docStream.getStreamTags().getTag().size() > 0) {
 				String[] tagCodes = new String[docStream.getStreamTags().getTag().size()];
 				int counter = 0;
 				for (Tag tagCode : docStream.getStreamTags().getTag()) {
@@ -489,8 +245,7 @@ public class Metadata {
 				smartobject.setTwtLang(docStream.getTwtLang());
 			}
 
-			if (docStream.getVirtualEntityPositions() != null
-					&& docStream.getVirtualEntityPositions().getPosition() != null
+			if (docStream.getVirtualEntityPositions() != null && docStream.getVirtualEntityPositions().getPosition() != null
 					&& docStream.getVirtualEntityPositions().getPosition().size() > 0) {
 				Position position = docStream.getVirtualEntityPositions().getPosition().get(0);
 				smartobject.setAltitude(position.getElevation());
@@ -507,8 +262,7 @@ public class Metadata {
 			stream.setSavedata(docStream.getSaveData());
 			stream.setSmartobject(smartobject);
 
-			if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null
-					&& docStream.getComponenti().getElement().size() > 0) {
+			if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null && docStream.getComponenti().getElement().size() > 0) {
 
 				StreamComponent[] components = new StreamComponent[docStream.getComponenti().getElement().size()];
 				int counter = 0;
@@ -535,8 +289,7 @@ public class Metadata {
 
 				dataset.setDatasetType(datasetType);
 
-				if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null
-						&& docStream.getComponenti().getElement().size() > 0) {
+				if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null && docStream.getComponenti().getElement().size() > 0) {
 					DatasetColumn[] columns = new DatasetColumn[docStream.getComponenti().getElement().size()];
 
 					int counter = 0;
@@ -583,19 +336,15 @@ public class Metadata {
 			metadata.setName(info.getDatasetName());
 			metadata.setDescription(info.getDescription());
 
-			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/"
-					+ configData.getTenantCode() + "/" + content.getDatasetCode());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + configData.getTenantCode() + "/" + content.getDatasetCode());
 
 			metadata.setDomain(I18nDelegate.translate(info.getDataDomain(), lang));
-			metadata.setCodsubdomain(info.getCodSubDomain());
 			metadata.setVisibility(info.getVisibility());
 			metadata.setLicense(info.getLicense());
 			metadata.setDisclaimer(info.getDisclaimer());
 			metadata.setCopyright(info.getCopyright());
 			metadata.setTenantCode(configData.getTenantCode());
 			metadata.setRegistrationDate(content.getInfo().getRegistrationDate());
-			DCAT dcat = content.getDcat();
-			metadata.setDcat(dcat);
 			// metadata.setTenantName(docStream.getNomeTenant());//FIXME non
 			// viene
 			// restituito?
@@ -671,8 +420,7 @@ public class Metadata {
 		ckanDataset.setNotes(getDescription());
 		ckanDataset.setVersion(getVersion());
 
-		String metadataUrl = Config.getInstance().getUserportalBaseUrl() + "#/dataexplorer/dataset/" + getTenantCode()
-				+ "/" + getCode();
+		String metadataUrl = Config.getInstance().getUserportalBaseUrl() + "#/dataexplorer/dataset/" + getTenantCode() + "/" + getCode();
 
 		ckanDataset.setUrl(metadataUrl);
 
@@ -690,8 +438,7 @@ public class Metadata {
 
 		String downloadCsvUrl = exposedApiBaseUrl + getCode() + "/download/" + getDataset().getDatasetId() + "/";
 
-		if (METADATA_TYPE_DATASET.equals(getType())
-				&& Dataset.DATASET_TYPE_BULK.equals(getDataset().getDatasetType())) {
+		if (METADATA_TYPE_DATASET.equals(getType()) && Dataset.DATASET_TYPE_BULK.equals(getDataset().getDatasetType())) {
 			downloadCsvUrl += "all";
 		} else {
 			downloadCsvUrl += "current";
@@ -746,47 +493,6 @@ public class Metadata {
 		return ckanDataset.toJson();
 
 	}
+*/
 
-	public static void main(String[] args) {
-		String packageId = "smartdatanet.it_ds_Rumore_480";
-		System.out.println("1 " + (packageId));
-		System.out.println("2 " + getApiNameFromCkanPackageId(packageId));
-
-		String mainCode = "sandbox.internal_33_odata";
-		mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
-		System.out.println("m " + mainCode);
-
-	}
-
-	public Double getLatitude() {
-		return latitude;
-	}
-
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
-	}
-
-	public Double getLongitude() {
-		return longitude;
-	}
-
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
-	}
-
-	public String getFps() {
-		return fps;
-	}
-
-	public void setFps(String fps) {
-		this.fps = fps;
-	}
-
-	public String getDetailUrl() {
-		return detailUrl;
-	}
-
-	public void setDetailUrl(String detailUrl) {
-		this.detailUrl = detailUrl;
-	}
 }
