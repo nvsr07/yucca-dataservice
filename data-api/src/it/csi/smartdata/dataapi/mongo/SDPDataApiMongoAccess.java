@@ -24,6 +24,13 @@ import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.provider.Facets;
 import org.apache.olingo.odata2.api.edm.provider.Property;
 import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.SortClause;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.util.NamedList;
 import org.bson.types.ObjectId;
 
 import com.mongodb.AggregationOptions;
@@ -1940,17 +1947,17 @@ public class SDPDataApiMongoAccess {
 
 			/** nuovi controlli skip e limit **/
 			if (skip<0) skip=0;
-			
+
 			//controlli sui valoris massimi ammessi 
 			if(skip>0 && skip>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
 			if(limit> 0 && limit>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
-			
+
 
 			//se lo skip porta oltre il numero di risultati eccezione
 			if (skip>cnt) throw new SDPPageSizeException("skip value out of range: max document in query result = "+cnt,Locale.UK);
 
 			if (limit<0) {
-				
+
 				// se limit non valorizzato si restituisce tutto il resultset (limit=cnt) e si solleva eccezione se il resulset supera il numero massimo di risultati per pagina
 				if ((cnt>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())) throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
 				limit=cnt;
@@ -2138,6 +2145,571 @@ public class SDPDataApiMongoAccess {
 		return outres;
 	}		
 
+	
+	public BasicDBList getMetadataComponents(DBObject streamMetadata) {
+		List<Property> compPropsTot=new ArrayList<Property>();
+		
+		List<Property> compPropsCur=new ArrayList<Property>();			
+
+		Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
+		BasicDBList lista=new BasicDBList();
+
+		BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
+		for (int k=0;k<campiDbList.size();k++) {
+			boolean present=false;
+			compPropsCur=getDatasetFiledsOdataPros(campiDbList.get(k));
+			for (int i=0;i<compPropsTot.size();i++) {
+				if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
+
+			}
+			// TODO nel caso in cui present= true si potrebbe verficare il tipo che abbiamo in compsproptot con quello in  campiDbList.get(k)
+			// sollevando eccezione se son diversi
+			if (!present) {
+				compPropsTot.add(compPropsCur.get(0));
+				lista.add(campiDbList.get(k));
+			}
+		}
+		
+		return lista;
+	}
+
+	public SDPDataResult getMeasuresPerStreamNewLimitSolr(String codiceTenant, String nameSpace, EdmEntityContainer entityContainer,DBObject streamMetadata,String internalId,String datatType,Object userQuery, Object userOrderBy,
+			int skipI,
+			int limitI
+			) throws SDPOrderBySizeException,SDPPageSizeException {
+		String collection=null;
+		//		String sensore=null;
+		//		String stream=null;
+		String idDataset=null;
+		String datasetCode=null;
+		String datasetToFindVersion=null;
+		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
+		long cnt = 0;
+        long skipL=skipI;
+        long limitL=limitI;
+        
+
+		// TODO YUCCA-74 odata evoluzione
+
+		try {
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] BEGIN");
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] codiceTenant="+codiceTenant);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] nameSpace="+nameSpace);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] entityContainer="+entityContainer);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] internalId="+internalId);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] datatType="+datatType);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] userQuery="+userQuery);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] streamMetadata="+streamMetadata);
+			String solrCollection= codiceTenant;
+
+			List<Property> compPropsTot=new ArrayList<Property>();
+			List<Property> compPropsCur=new ArrayList<Property>();			
+
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] limit_init --> "+skipL);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] skip_init --> "+skipL);
+
+
+
+			// TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero di collencion,host, port, db specifici per il dataset
+			//       - modificare eventualmente la logica di recupero dell'idDataset
+			//INVARIATO!!
+
+			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
+			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
+			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
+			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
+			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
+			datasetCode=takeNvlValues(streamMetadata.get("datasetCode"));
+
+			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
+
+
+			// TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 */
+
+			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
+			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
+
+			if (null==collection || collection.trim().length()<=0) {
+				DbConfDto tanantDbCfg=new DbConfDto();
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
+					
+					codiceTenant+="_measures";
+					
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
+					codiceTenant+="_data";
+				}  
+				collection=tanantDbCfg.getCollection();
+				host=tanantDbCfg.getHost();
+				port=""+tanantDbCfg.getPort();
+				dbcfg=tanantDbCfg.getDataBase();
+			}
+
+			if (null==dbcfg || dbcfg.trim().length()<=0) {
+				DbConfDto tanantDbCfg=new DbConfDto();
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
+				}  
+				dbcfg=tanantDbCfg.getDataBase();
+			}
+
+
+			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
+			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
+
+			// TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero dell'elenco dei campi che contiene il join di info.fuields di tutte le versioni di quel dataset
+			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
+
+			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
+			for (int k=0;k<campiDbList.size();k++) {
+				boolean present=false;
+				compPropsCur=getDatasetFiledsOdataPros(campiDbList.get(k));
+				for (int i=0;i<compPropsTot.size();i++) {
+					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
+
+				}
+				// TODO nel caso in cui present= true si potrebbe verficare il tipo che abbiamo in compsproptot con quello in  campiDbList.get(k)
+				// sollevando eccezione se son diversi
+				if (!present) {
+					compPropsTot.add(compPropsCur.get(0));
+				}
+			}
+
+			if (collection==null)  return null;
+
+			DBCursor cursor=null;
+
+			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+			DB db = mongoClient.getDB(dbcfg);
+
+			DBCollection collMisure = db.getCollection(collection);
+			
+			
+			String queryTotSolr="(idDataset_l:"+idDataset+")";
+			String queryTotCntSolr="(idDataset_l:"+idDataset+")";
+			
+			
+			
+//			BasicDBList queryTot=new BasicDBList();
+//			BasicDBList queryTotCnt=new BasicDBList();
+
+//			queryTot.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
+//			queryTotCnt.add( new BasicDBObject("idDataset",new Integer(new Double(idDataset).intValue())));
+
+
+			ArrayList<Integer> vals = new ArrayList<Integer>();
+
+			List<DBObject> listDatasetVersion = (List<DBObject>) streamMetadata.get("listDatasetVersion");
+			Iterator<DBObject> listaIterator = listDatasetVersion.iterator();
+			while (listaIterator.hasNext()) {
+				DBObject el = listaIterator.next();
+				Integer tmpVersDSCode = (Integer) el.get("datasetVersion"+datasetCode);
+				vals.add(tmpVersDSCode);
+			}
+
+			//queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$gt", 0)));
+
+			queryTotSolr+= " AND (datasetVersion_l : [ 0 TO * ])";
+
+			if (null!=internalId) {
+//				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
+//				queryTotCnt.add( new BasicDBObject("_id",new ObjectId(internalId)));
+				queryTotSolr += "AND (id : "+internalId+")";
+
+			}
+			if (null != userQuery) {
+				log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] userQuery="+userQuery);
+				queryTotSolr += "AND ("+userQuery+")";
+				queryTotCntSolr += "AND ("+userQuery+")";
+
+				//query.append("$and", userQuery);
+			}
+
+			String  query = queryTotSolr;
+
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query ="+query);
+
+			
+			
+			
+			
+			HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
+			SolrQuery solrQuery = new SolrQuery();
+			solrQuery.setQuery("*:*");
+			solrQuery.setFilterQueries(queryTotCntSolr);
+			solrQuery.setRows(1);
+			
+
+			
+			long starTtime=0;
+			long deltaTime=-1;
+
+
+			starTtime=System.currentTimeMillis();
+			QueryResponse rsp = solrServer.query(solrQuery);
+			//cnt = collMisure.find( new BasicDBObject("$and", queryTotCnt)).count();
+			
+			SolrDocumentList aaa = (SolrDocumentList)rsp.getResponse().get("response");
+			
+			cnt = aaa.getNumFound();		
+			
+			
+			
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query COUNT executed in --> "+deltaTime);
+
+
+			starTtime=0;
+			deltaTime=-1;
+
+
+			/** nuovi controlli skip e limit **/
+			if (skipL<0) skipL=0;
+
+			//controlli sui valoris massimi ammessi 
+			if(skipL>0 && skipL>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+			if(limitL> 0 && limitL>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+
+
+			//se lo skip porta oltre il numero di risultati eccezione
+			if (skipL>cnt) throw new SDPPageSizeException("skip value out of range: max document in query result = "+cnt,Locale.UK);
+
+			if (limitL<0) {
+
+				// se limit non valorizzato si restituisce tutto il resultset (limit=cnt) e si solleva eccezione se il resulset supera il numero massimo di risultati per pagina
+				if ((cnt>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())) throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+				limitL=cnt;
+			} 
+
+
+			if (limitL>0 && limitL>(cnt-skipL)) limitL=cnt-skipL;
+
+
+
+
+
+			ArrayList<SortClause> orderSolr=null;
+
+
+			if (null!=userOrderBy) {
+
+				boolean orderByAllowed=false;
+				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
+					orderByAllowed=true;
+				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
+
+					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("userId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("_id")) orderByAllowed=true;
+				} else if (DATA_TYPE_DATA.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
+					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("_id")) orderByAllowed=true;
+				}
+
+
+				if (!orderByAllowed) throw new SDPOrderBySizeException("too many documents for order clause;",Locale.UK);
+
+				BasicDBObject dbObjUserOrder=null;
+
+				for (int kkk=0;kkk<((ArrayList<String>)userOrderBy).size();kkk++) {
+					if (null==orderSolr) orderSolr=new ArrayList<SortClause>();
+
+					orderSolr.add(((ArrayList<SortClause>)userOrderBy).get(kkk));
+				}
+				
+				
+				
+				starTtime=System.currentTimeMillis();
+				//cursor = collMisure.find(query).sort(dbObjUserOrder).skip(skip).limit(limit);
+				try {
+					deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
+			}
+			else {
+				starTtime=System.currentTimeMillis();
+				//cursor = collMisure.find(query).skip(skip).limit(limit);
+				try {
+					deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
+
+			}
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query executed in --> "+deltaTime);
+			//log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] count --> "+cursor.count());
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] limit --> "+limitL);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] skip --> "+skipL);
+
+			
+			
+			
+			
+			solrQuery = new SolrQuery();
+			solrQuery.setQuery("*:*");
+			solrQuery.setFilterQueries(queryTotSolr);
+			solrQuery.setRows(new Integer( new Long(limitL).intValue()));			
+			solrQuery.setStart(new Integer( new Long(skipL).intValue()));			
+			if (null!=orderSolr) solrQuery.setSorts(orderSolr);
+			
+			
+
+
+			DBObject obj=null;
+			starTtime=System.currentTimeMillis();
+
+			rsp = solrServer.query(solrQuery);
+			SolrDocumentList results = rsp.getResults();
+			SolrDocument curSolrDoc=null;
+			try {
+			    for (int j = 0; j < results.size(); ++j) {
+			    	curSolrDoc=results.get(j);
+	
+	
+					String internalID=curSolrDoc.get("id").toString();
+					String datasetVersion=takeNvlValues(curSolrDoc.get("datasetVersion_l"));
+					Map<String, Object> misura = new HashMap<String, Object>();
+					misura.put("internalId",  internalID);
+	
+					if (DATA_TYPE_MEASURE.equals(datatType)) {
+						String streamId=curSolrDoc.get("streamCode_s").toString();
+						String sensorId=curSolrDoc.get("sensor_s").toString();
+						misura.put("streamCode", streamId);
+						misura.put("sensor", sensorId);
+						misura.put("time",  curSolrDoc.get("time_dt"));
+					}					
+					String iddataset=takeNvlValues(curSolrDoc.get("idDataset_l"));
+					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
+					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
+
+					
+					ArrayList<String> elencoBinaryId=new ArrayList<String>();
+					for (int i=0;i<compPropsTot.size();i++) {
+
+						String chiave=compPropsTot.get(i).getName();
+						String chiaveL=getPropertyName(compPropsTot.get(i));
+
+						
+						
+						
+						
+						if (curSolrDoc.keySet().contains(chiaveL) ) {
+
+							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
+							if (null!=valore) {
+								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
+									misura.put(chiave, Boolean.valueOf(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
+									misura.put(chiave, valore);
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
+									misura.put(chiave, Integer.parseInt(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
+									misura.put(chiave, Long.parseLong(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
+									misura.put(chiave, Double.parseDouble(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+									Object dataObj=obj.get(chiave);
+									misura.put(chiave, dataObj);
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
+									//Sun Oct 19 07:01:17 CET 1969
+									//EEE MMM dd HH:mm:ss zzz yyyy
+									Object dataObj=obj.get(chiave);
+
+									//System.out.println("------------------------------"+dataObj.getClass().getName());
+
+									misura.put(chiave, dataObj);
+
+
+									//																 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+									//															     Date data = dateFormat.parse(valore);								
+									//																	misura.put(chiave, data);
+
+
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
+									//comppnenti.put(chiave, Float.parseFloat(valore));
+									misura.put(chiave, Double.parseDouble(valore));
+								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Binary)) {
+									Map<String, Object> mappaBinaryRef=new HashMap<String, Object>();
+									mappaBinaryRef.put("idBinary", (String)valore);
+									misura.put(chiave, mappaBinaryRef);
+									elencoBinaryId.add((String)valore);
+
+								}
+							}
+						} else {
+							String a = "bb";
+							String b= a;
+						}
+					}					
+					if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);					
+					
+					
+					
+					ret.add(misura);
+			    }
+			
+//				while (cursor.hasNext() ) {
+//
+//					//log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] ciclo  recCount--> "+recCount);
+//
+//					obj=cursor.next();
+//
+//
+//
+//
+//					String internalID=obj.get("_id").toString();
+//					String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
+//					//					String current=takeNvlValues(obj.get("current"));
+//
+//
+//
+//					Map<String, Object> misura = new HashMap<String, Object>();
+//					misura.put("internalId",  internalID);
+//
+//					if (DATA_TYPE_MEASURE.equals(datatType)) {
+//						String streamId=obj.get("streamCode").toString();
+//						String sensorId=obj.get("sensor").toString();
+//						misura.put("streamCode", streamId);
+//						misura.put("sensor", sensorId);
+//						misura.put("time",  obj.get("time"));
+//					}					
+//
+//
+//					String iddataset=takeNvlValues(obj.get("idDataset"));
+//					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
+//					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
+//
+//
+//
+//					ArrayList<String> elencoBinaryId=new ArrayList<String>();
+//					for (int i=0;i<compPropsTot.size();i++) {
+//
+//						String chiave=compPropsTot.get(i).getName();
+//						if (obj.keySet().contains(chiave) ) {
+//							String  valore=takeNvlValues(obj.get(chiave));
+//							if (null!=valore) {
+//								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
+//									misura.put(chiave, Boolean.valueOf(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
+//									misura.put(chiave, valore);
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
+//									misura.put(chiave, Integer.parseInt(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
+//									misura.put(chiave, Long.parseLong(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
+//									misura.put(chiave, Double.parseDouble(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+//									Object dataObj=obj.get(chiave);
+//									misura.put(chiave, dataObj);
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
+//									//Sun Oct 19 07:01:17 CET 1969
+//									//EEE MMM dd HH:mm:ss zzz yyyy
+//									Object dataObj=obj.get(chiave);
+//
+//									//System.out.println("------------------------------"+dataObj.getClass().getName());
+//
+//									misura.put(chiave, dataObj);
+//
+//
+//									//																 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//									//															     Date data = dateFormat.parse(valore);								
+//									//																	misura.put(chiave, data);
+//
+//
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
+//									//comppnenti.put(chiave, Float.parseFloat(valore));
+//									misura.put(chiave, Double.parseDouble(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Binary)) {
+//									Map<String, Object> mappaBinaryRef=new HashMap<String, Object>();
+//									mappaBinaryRef.put("idBinary", (String)valore);
+//									misura.put(chiave, mappaBinaryRef);
+//									elencoBinaryId.add((String)valore);
+//
+//								}
+//							}
+//						}
+//					}					
+//					if (elencoBinaryId.size()>0) misura.put("____binaryIdsArray", elencoBinaryId);
+//
+//					ret.add(misura);
+//
+//
+//
+//				}	
+
+				try {
+					deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total fetch in --> "+deltaTime);
+
+
+			} catch (Exception e) {
+				throw e;
+			}  finally {
+				//cursor.close();			
+			} 
+
+
+		} catch (SDPOrderBySizeException e) {
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] SDPOrderBySizeException",e);
+			throw (SDPOrderBySizeException)e;
+		} catch (SDPPageSizeException e) {
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] SDPPageSizeException",e);
+			throw (SDPPageSizeException)e;
+		} catch (Exception e) {
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] GenericException",e);
+			log.error("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] INGORED" +e);
+		} finally {
+			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] END");
+		}
+
+
+		SDPDataResult outres= new SDPDataResult(ret, cnt);
+		return outres;
+	}					
+
+	
+	
+	private String getPropertyName(Property prop) {
+		String chiave=prop.getName();
+		if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Boolean)) {
+			return chiave+"_b";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.String)) {
+			return chiave+"_s";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Int32)) {
+			return chiave+"_i";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Int64)) {
+			return chiave+"_i";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Double)) {
+			//return chiave+"_d";
+			return chiave+"_f";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+			return chiave+"_dt";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.DateTime)) {
+			return chiave+"_dt";
+
+
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Decimal)) {
+			return chiave+"_d";
+		} else if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Binary)) {
+			return chiave+"_by";
+
+
+		}	
+		return chiave; }
 
 	private int [] checkPagesData(Integer skip,Integer top, int resultSize) throws Exception{
 		int startindex=0;

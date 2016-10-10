@@ -10,6 +10,7 @@ import it.csi.smartdata.dataapi.util.AccountingLog;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +42,8 @@ import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
 import org.apache.olingo.odata2.core.uri.expression.FilterParserImpl;
+
+import com.mongodb.BasicDBList;
 
 public class SDPSingleProcessor extends ODataSingleProcessor {
 	static Logger log = Logger.getLogger(SDPSingleProcessor.class.getPackage().getName());
@@ -238,19 +241,39 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 				Object userQuery=null;
 				Object orderQuery=null;
+				Object userQuerySolr = null;
+				Object orderQuerySolr=null;
 				FilterExpression fe = uriInfo.getFilter();
 				OrderByExpression oe=uriInfo.getOrderBy();
+				
+				HashMap<String, String> mappaCampi=new SDPMongoOdataCast().getDatasetMetadata (this.codiceApi);
 				if (fe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
 					userQuery = fe.accept(ev);
 					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
+					
+					
+					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
+					evs.setEntitySetName(entitySet.getName());
+					evs.setMappaCampi(mappaCampi);
+					userQuerySolr = fe.accept(evs);
+					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuerySolr);
+					
 				}
 				if (oe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
 					orderQuery=oe.accept(ev);
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
+
+					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
+					evs.setEntitySetName(entitySet.getName());
+					evs.setMappaCampi(mappaCampi);
+					orderQuerySolr = oe.accept(evs);
+					log.debug("[SDPSingleProcessor::readEntitySet] orderQuerySolr="+orderQuerySolr);
+				
+				
 				}
 				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
 				
@@ -317,7 +340,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
-									.inlineCount(dataRes.getTotalCount())
+									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
 									.expandSelectTree(expandSelectTreeNode)
 									.build());
 
@@ -336,7 +359,9 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 					int skip=skiptop[0];
 					int top=skiptop[1];
-					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
+					//SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,skip,top);
+					
 			
 					accLog.setDataOut(dataRes.getDati().size());
 					accLog.setTenantcode(dataRes.getTenant());
@@ -366,7 +391,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
-									.inlineCount(dataRes.getTotalCount())
+									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
 									.expandSelectTree(expandSelectTreeNode)
 									.build());
 
@@ -408,7 +433,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
-									.inlineCount(dataRes.getTotalCount())
+									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
 									.expandSelectTree(expandSelectTreeNode)
 									.build()
 									);
@@ -451,7 +476,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							EntityProviderWriteProperties.serviceRoot(
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
-									.inlineCount(dataRes.getTotalCount())
+									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
 									.expandSelectTree(expandSelectTreeNode)
 									.build()
 							);
@@ -558,7 +583,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 								EntityProviderWriteProperties.serviceRoot(
 										newUri)
 										.inlineCountType(InlineCount.ALLPAGES)
-										.inlineCount(dataResTarget.getTotalCount())
+										.inlineCount(new Long(dataRes.getTotalCount()).intValue())
 										.expandSelectTree(expandSelectTreeNode)
 										.build()
 								);
