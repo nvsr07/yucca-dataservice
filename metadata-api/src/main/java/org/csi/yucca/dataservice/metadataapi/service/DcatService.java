@@ -128,9 +128,9 @@ public class DcatService extends AbstractService {
 			}
 		}
 		String json = gson.toJson(catalog)
-				.replaceAll("context", "@context")
-				.replaceAll("id", "@id")
-				.replaceAll("type", "@type");
+				.replaceAll("\"context\"", "\"@context\"")
+				.replaceAll("\"id\"", "\"@id\"")
+				.replaceAll("\"type\"", "\"@type\"");
 		return json;
 	}
 }
