@@ -104,8 +104,10 @@ public class DcatService extends AbstractService {
 					DistributionDCAT distr = new DistributionDCAT();
 					distr.setAccessURL(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadata.getTenantCode()
 							+ "/" + metadata.getCode());
-					distr.setDownloadURL(cfg.getUserportalBaseUrl() + "api/proxy/odata/" + metadata.getCode()
-							+ "/download/" + metadata.getCode() + "/all");
+					distr.setDownloadURL(cfg.getOauthBaseUrl() + "api/" + metadata.getCode()
+							+ "/download/" + metadataST.getDataset().getDatasetId() + "/all");
+					
+					//https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
 					distr.setLicense(metadata.getLicense());
 					distr.setIssued(metadata.getRegistrationDate());
 					dsDCAT.addDistribution(distr);

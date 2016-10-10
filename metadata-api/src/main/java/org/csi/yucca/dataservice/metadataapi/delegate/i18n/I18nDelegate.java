@@ -68,6 +68,17 @@ public class I18nDelegate {
 			translationMap.put(streamDomain.getCodDomain(), langMap);
 
 		}
+
+		StreamSubDomains streamSubDomains = loadStreamSubDomains();
+
+		for (SubDomainElement streamSubDomain : streamSubDomains.getElement()) {
+			Map<String, String> langMap = new HashMap<String, String>();
+			langMap.put("it", streamSubDomain.getLangIt());
+			langMap.put("en", streamSubDomain.getLangIt());
+
+			translationMap.put(streamSubDomain.getCodSubDomain(), langMap);
+
+		}
 	}
 
 	private static StreamTags loadStreamTags() {
@@ -75,7 +86,7 @@ public class I18nDelegate {
 		String targetUrl = Config.getInstance().getServiceBaseUrl() + "misc/streamtags/";
 		String tagsJson = HttpUtil.getInstance().doGet(targetUrl, null, null, null);
 		return StreamTagsContainer.fromJson(tagsJson).getStreamTags();
-	}
+	} 
 
 	public static void clearCache() {
 		translationMap = null;
@@ -90,6 +101,13 @@ public class I18nDelegate {
 		String targetUrl = Config.getInstance().getServiceBaseUrl() + "misc/streamdomains/";
 		String domainsJson = HttpUtil.getInstance().doGet(targetUrl, null, null, null);
 		return StreamDomainsContainer.fromJson(domainsJson).getStreamDomains();
+	}
+
+	private static StreamSubDomains loadStreamSubDomains() {
+
+		String targetUrl = Config.getInstance().getServiceBaseUrl() + "misc/streamsubdomains/";
+		String subDomainsJson = HttpUtil.getInstance().doGet(targetUrl, null, null, null);
+		return StreamSubDomainsContainer.fromJson(subDomainsJson).getStreamSubDomains();
 	}
 
 	private static String safeLanguage(String lang) {

@@ -587,7 +587,7 @@ public class Metadata {
 					+ configData.getTenantCode() + "/" + content.getDatasetCode());
 
 			metadata.setDomain(I18nDelegate.translate(info.getDataDomain(), lang));
-			metadata.setCodsubdomain(info.getCodSubDomain());
+			metadata.setCodsubdomain(I18nDelegate.translate(info.getCodSubDomain(), lang));
 			metadata.setVisibility(info.getVisibility());
 			metadata.setLicense(info.getLicense());
 			metadata.setDisclaimer(info.getDisclaimer());
@@ -612,9 +612,10 @@ public class Metadata {
 			}
 
 			Dataset dataset = new Dataset();
+			Long idDataset = Long.parseLong(metadata.getCode().substring(metadata.getCode().lastIndexOf("_") + 1));
+			dataset.setDatasetId(idDataset);
 			dataset.setDatasetType(configData.getSubtype());
 			dataset.setCode(content.getDatasetCode());
-			dataset.setDatasetId(content.getIdDataset());
 			dataset.setImportFileType(content.getInfo().getImportFileType());
 
 			DatasetColumn[] columns = null;

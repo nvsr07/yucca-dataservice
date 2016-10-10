@@ -8,9 +8,9 @@
 	<packaging>war</packaging>
 	<name>metadataapi</name>
 	<scm>
-    	<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
-  	</scm>
-  	
+		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+	</scm>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -145,6 +145,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>com.github.jsonld-java</groupId>
+			<artifactId>jsonld-java</artifactId>
+			<version>0.8.3</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -170,25 +175,25 @@
 		<profile>
 			<id>int</id>
 			<build>
-				  <plugins>
+				<plugins>
 					<plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-scm-plugin</artifactId>
-			        <version>1.9.5</version>
-			        <configuration>
-			          <connectionType>connection</connectionType>
-			        </configuration>
-			        <executions>
-			        	<execution>
-			        		<id>1</id>
-			        		<phase>validate</phase>
-				            <goals>
-				              <goal>checkout</goal>
-				            </goals>
-				          </execution>
-				    </executions>
-			      	</plugin>			
-				  </plugins>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/matadataapi/resources/int</directory>
@@ -206,25 +211,25 @@
 		<profile>
 			<id>prod</id>
 			<build>
-				  <plugins>
+				<plugins>
 					<plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-scm-plugin</artifactId>
-			        <version>1.9.5</version>
-			        <configuration>
-			          <connectionType>connection</connectionType>
-			        </configuration>
-			        <executions>
-			        	<execution>
-			        		<id>1</id>
-			        		<phase>validate</phase>
-				            <goals>
-				              <goal>checkout</goal>
-				            </goals>
-				          </execution>
-				    </executions>
-			      	</plugin>			
-				  </plugins>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/matadataapi/resources/prod</directory>
