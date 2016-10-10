@@ -28,6 +28,7 @@ import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
+import com.github.jsonldjava.core.JsonLdOptions;
 import com.google.gson.Gson;
 
 @Path("/dcat")
@@ -39,7 +40,7 @@ public class DcatService extends AbstractService {
 
 	@GET
 	@Path("/dataset_list")
-	@Produces("application/json; charset=UTF-8")
+	@Produces("'application/ld+json; charset=UTF-8")
 	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q,
 			@QueryParam("page") Integer page, @QueryParam("tenant") String tenant,
 			@QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
@@ -126,6 +127,10 @@ public class DcatService extends AbstractService {
 				//}
 			}
 		}
-		return gson.toJson(catalog);
+		String json = gson.toJson(catalog)
+				.replaceAll("context", "@context")
+				.replaceAll("id", "@id")
+				.replaceAll("type", "@type");
+		return json;
 	}
 }
