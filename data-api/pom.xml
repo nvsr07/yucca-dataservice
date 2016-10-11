@@ -56,6 +56,19 @@
                   </plugin>
 		</plugins>
 	</build>
+  <repositories>
+    <repository>
+      <id>wso2-maven2-repository</id>
+      <name>WSO2 Maven2 Repository</name>
+      <url>http://dist.wso2.org/maven2</url>
+    </repository>
+    <repository>
+    <id>HDPReleases</id>
+        <name>HDP Releases</name>
+        <url>http://repo.hortonworks.com/content/repositories/releases/</url>
+        <layout>default</layout>
+     </repository>
+  </repositories>	
 	<dependencies>
 	<dependency>
       <groupId>org.testng</groupId>
@@ -134,9 +147,24 @@
 	<artifactId>json</artifactId>
 	<version>20140107</version>
 </dependency>
-
-		
-		
+	<dependency>
+		<groupId>org.apache.phoenix</groupId>
+		<artifactId>phoenix-server-client</artifactId>
+		<version>4.4.0.2.4.2.0-258</version>
+	</dependency>
+<!--          <dependency>
+               <artifactId>solr-solrj</artifactId>
+               <groupId>org.apache.solr</groupId>
+               <version>1.4.0</version>
+               <type>jar</type>
+               <scope>compile</scope>
+        </dependency>-->		
+		<dependency>
+    <groupId>org.apache.solr</groupId>
+    <artifactId>solr-solrj</artifactId>
+    <version>5.5.3</version>
+               <type>jar</type>
+</dependency>
 	</dependencies>
 	<profiles>
 

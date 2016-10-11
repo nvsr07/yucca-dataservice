@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
+import org.apache.olingo.odata2.api.edm.EdmType;
 
 public interface SDPDataApiConstants {
 
@@ -127,6 +128,48 @@ public interface SDPDataApiConstants {
 		
 		
 	}};
+
+	public static final Map<String,String> SDP_DATATYPE_SOLRSUFFIX = new HashMap<String, String>() {{
+		put("Boolean" ,"_b");
+		put("boolean" ,"_b");
+		put("String"  ,"_s");
+		put("string"  ,"_s");
+		put("Int"     ,"_i");
+		put("int"     ,"_i");
+		put("Long"    ,"_l");
+		put("long"    ,"_l");
+		put("Double"  ,"_d");
+		put("double"  ,"_d");
+		put("Data"    ,"_dt");
+		put("data"    ,"_dt");
+		put("Date"    ,"_dt");
+		put("date"    ,"_dt");
+		put("DatetimeOffset"    ,"_dt");
+		put("datetimeoffset"    ,"_dt");
+		put("DateTime"    ,"_dt");
+		put("datetime"    ,"_dt");
+		put("dateTime"    ,"_dt");
+		put("Time"    ,"_dt");
+		put("time"     ,"_dt");
+//		put("Float"    ,EdmSimpleTypeKind.Decimal);
+//		put("float"    ,EdmSimpleTypeKind.Decimal);
+		put("Float"    ,"_f");
+		put("float"    ,"_f");
+
+
+		put("longitude"    ,"_d");
+		put("latitude"    ,"_d");
+		
+		
+		//1.2 binary
+		put("binary"    ,"__todo");
+		
+		
+		
+	}};
+	
+	
+
 	
 	
 	public static final ArrayList<String> SDP_STATISTICS_OPERATIONS = new ArrayList<String>(Arrays.asList(

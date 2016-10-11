@@ -23,17 +23,20 @@ public class SDPDataResult {
 
 
 	private List<Map<String, Object>> dati=null;
-	private int totalCount=-1;
+	private long totalCount=-1;
 	public List<Map<String, Object>> getDati() {
 		return dati;
 	}
 	public void setDati(List<Map<String, Object>> dati) {
 		this.dati = dati;
 	}
-	public int getTotalCount() {
+	public long getTotalCount() {
 		return totalCount;
 	}
 	public void setTotalCount(int totalCount) {
+		this.totalCount = totalCount;
+	}
+	public void setTotalCount(long totalCount) {
 		this.totalCount = totalCount;
 	}
 	
@@ -45,6 +48,12 @@ public class SDPDataResult {
 		this.setDatasetCode(datasetCode);
 	}
 	public SDPDataResult (List<Map<String, Object>> dati,int totalCount) {
+		this.setDati(dati);
+		this.setTotalCount(totalCount);
+//		this.setTenant(tenant);
+//		this.setDatasetCode(datasetCode);
+	}
+	public SDPDataResult (List<Map<String, Object>> dati,long totalCount) {
 		this.setDati(dati);
 		this.setTotalCount(totalCount);
 //		this.setTenant(tenant);

@@ -6,6 +6,7 @@ import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -973,6 +974,28 @@ public class SDPMongoOdataCast {
 		}		
 	}	
 
+	
+	
+	public HashMap<String, String> getDatasetMetadata (String codiceApi) throws Exception{
+		initDbObject(codiceApi);
+		List<DBObject> elencoDataset = orderNestDS(mongoDataAccess.getDatasetPerApi(codiceApi));
+		
+		BasicDBList elencoCampi= mongoDataAccess.getMetadataComponents(elencoDataset.get(0));
+		HashMap<String, String> mappaCampi=new HashMap<String, String>();
+		
+		for (int i=0; i<elencoCampi.size();i++) {
+			BasicDBObject cur= (BasicDBObject)elencoCampi.get(i);
+			String nome=cur.getString("fieldName");
+			String tipo=cur.getString("dataType");
+			mappaCampi.put(nome, tipo);
+			
+		}
+		
+		
+		return mappaCampi;
+	}
+	
+	
 	/**
 	 * DATI
 	 * @param codiceApi
@@ -1043,7 +1066,7 @@ public class SDPMongoOdataCast {
 				
 //				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
 //						,userOrderBy,skip,limit);
-				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimit(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimitSolr(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
 						,userOrderBy,skip,limit);
 				
 				
@@ -1281,9 +1304,11 @@ public class SDPMongoOdataCast {
 				
 //				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
 //						,userOrderBy,skip,limit);
-				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimit(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
-						,userOrderBy,skip,limit);
+//				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimit(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+//						,userOrderBy,skip,limit);
 				
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimitSolr(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_DATA, userQuery
+						,userOrderBy,skip,limit);
 				
 				
 				List<Map<String, Object>> misureCur = cur.getDati();
