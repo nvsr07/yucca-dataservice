@@ -124,6 +124,11 @@ public class DcatService extends AbstractService {
 					publisher.setHasURL(metadataST.getDcat().getUrlOrg());
 					publisher.setOrganizationName(metadataST.getDcat().getNomeOrg());
 					dsDCAT.setContactPoint(publisher);
+					
+					if (metadataST.getIsopendata())
+						dsDCAT.getRightsHolder().setName(metadataST.getOpendata().getAuthor());
+					else 
+						dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
 
 					catalog.getDataset().add(dsDCAT);
 				//}

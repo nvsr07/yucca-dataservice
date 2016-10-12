@@ -8,7 +8,7 @@ public class DistributionDCAT {
 								// a runtime)
 	private String format = "http://publications.europa.eu/resource/authority/file-type/CSV";
 	private String license; // lo prendi dal campo license del Dataset
-	private Integer byteSize = 0; // fisso
+	//private Integer byteSize = 0; // fisso
 	private String downloadURL; // link per il download del dataset in csv (da
 								// valorizzare a runtime)
 	private String language = "http://publications.europa.eu/resource/authority/language/ITA";
@@ -36,9 +36,9 @@ public class DistributionDCAT {
 		this.license = license;
 	}
 
-	public Integer getByteSize() {
+	/*public Integer getByteSize() {
 		return byteSize;
-	}
+	}*/
 
 	public String getDownloadURL() {
 		return downloadURL;

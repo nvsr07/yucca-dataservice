@@ -11,7 +11,7 @@ public class DatasetDCAT {
 	private VcardDCAT contactPoint = new VcardDCAT();
 	private ArrayList<String> keyword = new ArrayList<String>(); // metadata.info.tags
 																	// []
-	private AgentDCAT publisher = new AgentDCAT(); // dct:publisher
+	private AgentDSDCAT publisher = new AgentDSDCAT(); // dct:publisher
 	private String theme; // metadata.info.dataDomain
 	private String accessRights; // metadata.info.visibility
 	private String accrualPeriodicity; // metadata.info.fps
@@ -19,13 +19,13 @@ public class DatasetDCAT {
 								// metadata.datasetVersion
 	private String landingPage; // url su portale del dataset (da valorizzare a
 								// runtime)
-	private String spatial = "WGS84/UTM 32N";
+	//private String spatial = "WGS84/UTM 32N";
 	private String type = "dcat:Dataset"; // oppure metadata.configData.type ??
 	private Long modified; // opendata.dataUpdateDate
 	private String versionInfo; // metadata.datasetVersion
 	private String subTheme; // metadata.info.codSubDomain
-	private String rightsHolder = "CSI PIEMONTE";
-	private String creator = "CSI PIEMONTE";
+	private AgentDSDCAT rightsHolder = new AgentDSDCAT();;
+	//private String creator = "CSI PIEMONTE";
 
 	private List<DistributionDCAT> distribution = new ArrayList<DistributionDCAT>();
 
@@ -77,7 +77,7 @@ public class DatasetDCAT {
 		this.keyword.add(keyword);
 	}
 
-	public AgentDCAT getPublisher() {
+	public AgentDSDCAT getPublisher() {
 		return publisher;
 	}
 
@@ -121,9 +121,9 @@ public class DatasetDCAT {
 		this.landingPage = landingPage;
 	}
 
-	public String getSpatial() {
+	/*public String getSpatial() {
 		return spatial;
-	}
+	}*/
 
 	public String getType() {
 		return type;
@@ -153,11 +153,11 @@ public class DatasetDCAT {
 		this.subTheme = subTheme;
 	}
 
-	public String getRightsHolder() {
+	public AgentDSDCAT getRightsHolder() {
 		return rightsHolder;
 	}
 
-	public String getCreator() {
+	/*public String getCreator() {
 		return creator;
-	}
+	}*/
 }

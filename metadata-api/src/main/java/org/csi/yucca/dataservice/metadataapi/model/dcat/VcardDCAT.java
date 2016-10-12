@@ -2,13 +2,17 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
 public class VcardDCAT {
 
+	private String type = "v:VCard";
 	private String description; //dct:description
 	private String Kind; //vcard:Kind
 	private String organizationName; //vcard:organizationName
 	private String hasEmail; //vcard:hasEmail
 	private String hasTelephone; //vcard:hasTelephone
 	private String hasURL; //vcard:hasURL
-	
+
+	public String getType() {
+		return type;
+	}
 	public String getDescription() {
 		return description;
 	}
