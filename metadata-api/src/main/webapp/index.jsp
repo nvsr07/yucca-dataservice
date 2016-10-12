@@ -62,7 +62,7 @@
 					<strong>URL Base ricerca in formato CKAN</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/ckan/2/package_list?</code></pre>
 				</p>
 				<p>
-					<strong>URL Base ricerca per generazione di Data Catalog Interoperability Protocol (DCAT-IP) in formato JSON+LD</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/dcat/dataset_list</code></pre>
+					<strong>URL Base per generazione di Data Catalog Interoperability Protocol (DCAT-IP) in formato JSON+LD</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/dcat/dataset_list?</code></pre>
 				</p>
 				<strong>Parametri</strong> 
 				<table>
