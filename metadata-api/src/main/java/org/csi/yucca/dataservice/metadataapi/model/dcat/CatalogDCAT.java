@@ -6,7 +6,7 @@ import java.util.List;
 public class CatalogDCAT {
 
 	private String context = "https://raw.githubusercontent.com/insideout10/open_data_dcat_ap/develop/data/v1.01/context.it.jsonld";
-	private String id = "http://www.dati.gov.it/dcat.json";
+	private String id = " https://api.smartdatanet.it/metadataapi/api/dcat/dataset_list";
 	private String type = "dcat:Catalog";
 	
 	private String description;

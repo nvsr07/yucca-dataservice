@@ -50,7 +50,7 @@ public class DcatService extends AbstractService {
 			throws NumberFormatException, UnknownHostException {
 
 		CatalogDCAT catalog = new CatalogDCAT();
-		catalog.setDescription("Catalogo Start Data Piemonte");
+		catalog.setDescription("Catalogo Smart Data Piemonte");
 		catalog.setTitle("CATALOGO SMART DATA");
 		catalog.setHomepage("http://userportal.smartdatanet.it");
 
