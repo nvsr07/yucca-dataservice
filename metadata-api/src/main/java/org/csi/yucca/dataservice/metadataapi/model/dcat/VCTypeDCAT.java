@@ -4,9 +4,9 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
 
-public class VCardTypeDCAT extends TypeDCAT {
+public class VCTypeDCAT extends TypeDCAT {
 	
-	public VCardTypeDCAT(){
+	public VCTypeDCAT(){
 		
 	}
 

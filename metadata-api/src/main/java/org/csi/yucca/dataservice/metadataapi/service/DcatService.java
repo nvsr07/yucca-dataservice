@@ -19,7 +19,7 @@ import org.csi.yucca.dataservice.metadataapi.model.dcat.CatalogDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DatasetDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DistributionDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.LicenceTypeDCAT;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.VCardTypeDCAT;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.VCTypeDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.VcardDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DCAT;
@@ -40,7 +40,7 @@ public class DcatService extends AbstractService {
 
 	@GET
 	@Path("/dataset_list")
-	@Produces("'application/ld+json; charset=UTF-8")
+	@Produces("application/ld+json; charset=UTF-8")
 	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q,
 			@QueryParam("page") Integer page, @QueryParam("tenant") String tenant,
 			@QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
@@ -54,8 +54,11 @@ public class DcatService extends AbstractService {
 		catalog.setTitle("CATALOGO SMART DATA");
 		catalog.setHomepage("http://userportal.smartdatanet.it");
 
-		AgentDCAT agentCatalog = new AgentDCAT();
-		agentCatalog.setName("CSI PIEMONTE"); 
+		catalog.getPublisher().setName("CSI PIEMONTE");
+
+		LicenceTypeDCAT lic = new LicenceTypeDCAT();
+		//catalog.setLicense(lic.getjson());
+		catalog.setLicense(lic);
 		
 		if (page == null)
 			page = 1;
@@ -82,8 +85,10 @@ public class DcatService extends AbstractService {
 				//if (metadataST.getDcat().isDcatReady()) {
 					DatasetDCAT dsDCAT = new DatasetDCAT();
 
-					VCardTypeDCAT type = new VCardTypeDCAT();
-					dsDCAT.setContactPoint(type.getjson());
+					if (metadataST.getIsopendata())
+						dsDCAT.getPublisher().setName(metadataST.getOpendata().getAuthor());
+					else 
+						dsDCAT.getPublisher().setName("CSI PIEMONTE");
 					
 					dsDCAT.setDescription(metadata.getDescription());
 					dsDCAT.setTitle(metadata.getName());
@@ -118,10 +123,7 @@ public class DcatService extends AbstractService {
 					publisher.setHasTelephone(metadataST.getDcat().getTelOrg());
 					publisher.setHasURL(metadataST.getDcat().getUrlOrg());
 					publisher.setOrganizationName(metadataST.getDcat().getNomeOrg());
-					dsDCAT.setPublisher(publisher);
-
-					LicenceTypeDCAT lic = new LicenceTypeDCAT();
-					catalog.setLicense(lic.getjson());
+					dsDCAT.setContactPoint(publisher);
 
 					catalog.getDataset().add(dsDCAT);
 				//}

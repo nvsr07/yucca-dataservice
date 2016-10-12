@@ -645,6 +645,7 @@ public class Metadata {
 
 				Opendata opendata = new Opendata();
 				opendata.setAuthor(content.getOpendata().getAuthor());
+				opendata.setOpendata(content.getOpendata().getIsOpendata());
 				opendata.setDataUpdateDate(content.getOpendata().getDataUpdateDate());
 				opendata.setLanguage(content.getOpendata().getLanguage());
 				opendata.setMetadaUpdateDate(content.getOpendata().getMetadaUpdateDate());

@@ -19,9 +19,9 @@ public class CatalogDCAT {
 	
 	private String themes = "http://eurovoc.europa.eu";
 	private String spatial = "http://publications.europa.eu/resource/authority/country/ITA"; 
-	private String license = "";
+	private LicenceTypeDCAT license = new LicenceTypeDCAT();
 
-	private AgentDCAT publisher; 
+	private AgentDCAT publisher = new AgentDCAT(); 
 	
 	private List<DatasetDCAT> dataset = new ArrayList<DatasetDCAT>();
 
@@ -97,11 +97,11 @@ public class CatalogDCAT {
 		return spatial;
 	}
 
-	public String getLicense() {
+	public LicenceTypeDCAT getLicense() {
 		return license;
 	}
 	
-	public void setLicense(String lic){
+	public void setLicense(LicenceTypeDCAT lic){
 		this.license = lic;
 	}
 

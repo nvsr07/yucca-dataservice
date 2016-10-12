@@ -2,10 +2,14 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
 public class AgentDCAT {
 
-	private String name;
+	private String name = null;
 	private String type = "foaf:Agent";
 	private String id = "http://spcdata.digitpa.gov.it/Amministrazione/agid";
 	private String publisherType = "http://purl.org/adms/publishertype/NationalAuthority";
+	
+	public AgentDCAT(){
+		
+	}
 
 	public String getName() {
 		return name;

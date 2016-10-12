@@ -2,15 +2,16 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.VCTypeDCAT;
 
 public class DatasetDCAT {
 
 	private String description; // metadata.info.description
 	private String title; // metadata.info.datasetName
-	private String contactPoint = "";
+	private VcardDCAT contactPoint = new VcardDCAT();
 	private ArrayList<String> keyword = new ArrayList<String>(); // metadata.info.tags
 																	// []
-	private VcardDCAT publisher; // dct:publisher
+	private AgentDCAT publisher = new AgentDCAT(); // dct:publisher
 	private String theme; // metadata.info.dataDomain
 	private String accessRights; // metadata.info.visibility
 	private String accrualPeriodicity; // metadata.info.fps
@@ -44,11 +45,11 @@ public class DatasetDCAT {
 		this.title = title;
 	}
 
-	public String getContactPoint() {
+	public VcardDCAT getContactPoint() {
 		return contactPoint;
 	}
 	
-	public void setContactPoint(String contactPoint){
+	public void setContactPoint(VcardDCAT contactPoint){
 		this.contactPoint = contactPoint;
 	}
 
@@ -76,12 +77,8 @@ public class DatasetDCAT {
 		this.keyword.add(keyword);
 	}
 
-	public VcardDCAT getPublisher() {
+	public AgentDCAT getPublisher() {
 		return publisher;
-	}
-
-	public void setPublisher(VcardDCAT publisher) {
-		this.publisher = publisher;
 	}
 
 	public String getTheme() {
