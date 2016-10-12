@@ -4,8 +4,6 @@ import java.util.Date;
 
 public class DistributionDCAT {
 
-	public String ITA_LANG = "http://publications.europa.eu/resource/authority/language/ITA";
-
 	private String accessURL; // url su portale SDP del dataset (da valorizzare
 								// a runtime)
 	private String format = "http://publications.europa.eu/resource/authority/file-type/CSV";
@@ -13,7 +11,7 @@ public class DistributionDCAT {
 	private Integer byteSize = 0; // fisso
 	private String downloadURL; // link per il download del dataset in csv (da
 								// valorizzare a runtime)
-	private String language = ITA_LANG;
+	private String language = "http://publications.europa.eu/resource/authority/language/ITA";
 	private Date issued; // metadata.info.registrationDate
 	private String modified; // opendata.dataUpdateDate
 	private String type = "dcat:Distribution";
