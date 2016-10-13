@@ -51,6 +51,8 @@ public class Stream {
 	private VirtualEntityPositions virtualEntityPositions;
 	private Tenantssharing tenantssharing;
 	private Opendata opendata;
+	
+	private DCAT dcat;
 
 	public Stream() {
 		super();
@@ -382,6 +384,14 @@ public class Stream {
 
 	public void setOpendata(Opendata opendata) {
 		this.opendata = opendata;
+	}
+
+	public DCAT getDcat() {
+		return dcat;
+	}
+
+	public void setDcat(DCAT dcat) {
+		this.dcat = dcat;
 	}
 
 	public String getLicence() {

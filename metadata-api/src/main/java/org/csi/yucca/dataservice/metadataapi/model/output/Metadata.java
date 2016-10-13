@@ -565,7 +565,11 @@ public class Metadata {
 
 				metadata.setOpendata(opendata);
 			}
-
+			
+			if (docStream.getDcat() != null) {
+				DCAT dcat = docStream.getDcat();
+				metadata.setDcat(dcat);
+			}
 		}
 
 		return metadata;
