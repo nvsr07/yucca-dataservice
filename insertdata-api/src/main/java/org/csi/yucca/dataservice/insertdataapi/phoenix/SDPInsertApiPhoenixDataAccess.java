@@ -5,27 +5,24 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import net.minidev.json.JSONObject;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
-import org.csi.yucca.dataservice.insertdataapi.util.JSONCallbackTimeZone;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.BulkWriteOperation;
 import com.mongodb.BulkWriteResult;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 public class SDPInsertApiPhoenixDataAccess {
+
+	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 
 	 Connection conn = null;
      Statement stmt = null;
@@ -54,18 +51,22 @@ public class SDPInsertApiPhoenixDataAccess {
 
 			String schema = "DB_"+tenant.toUpperCase();
 			
-			String table = "SOCIAL";
+			String 	table = "DATA";
+			String campiSQL="iddataset, datasetversion, ids, objectid ";
+			String valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_DATA ,?  "; 
 			if (dati.getDatasetType().equals("streamDataset"))
-				table = "MEASURES_SALT";
-			else if (dati.getDatasetType().equals("bulkDataset"))
-				table = "DATA";
-			
-			String campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
-			String valuesSql= "(?, ?,NEXT VALUE FOR DB_TST_ARPA_RUMORE.SEQ_MEASURES ,? ,? ,? ,? ";  // TODO da correggere
-			if (dati.getDatasetType().equals("bulkDataset"))
 			{
-				campiSQL="iddataset, datasetversion, ids, objectid ";
-				valuesSql= "(?, ?, NEXT VALUE FOR DB_TST_ARPA_RUMORE.SEQ_MEASURES ,?  ";				
+				table = "MEASURES";
+				campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
+				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_MEASURES ,? ,? ,? ,? ";  
+				
+			}
+			else if (dati.getDatasetType().equals("socialDataset"))
+			{
+				table = "SOCIAL";
+				campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
+				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_SOCIAL ,? ,? ,? ,? "; 
+				
 			}
 			
 	        Iterator<Entry<String, FieldsMongoDto>> fieldIter = dati.getFieldsType().entrySet().iterator();
@@ -189,7 +190,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	            stmt.executeBatch();
 	            conn.commit();            
 	        } catch (Exception e) {	
-	        	e.printStackTrace();
+	        	log.error("Insert Phoenix Error", e);
+	        	conn.rollback();
 	        } finally {
 	        	 stmt.close();
 	        	 conn.close();

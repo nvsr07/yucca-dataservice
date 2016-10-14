@@ -100,10 +100,7 @@ public class InsertApiLogic {
 		}
 		//System.out.println(" TIMETIME insertManager -- fine inserimento bulk --> "+System.currentTimeMillis());
 		mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins", datiToIns);
-		
 		//System.out.println(" TIMETIME insertManager -- end --> "+System.currentTimeMillis());
-		
-		
 		return datiToIns;
 
 	}	
