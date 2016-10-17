@@ -38,7 +38,11 @@ public class DateUtil {
                     format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
                     o = format.parse(dataString, new ParsePosition(0));
                 }
-            
+                if (o == null) {
+					// try isoDate with JAXB
+					Calendar cal = DatatypeConverter.parseDateTime(dataString);
+					o = cal.getTime();
+				}
                 
             }
         }
