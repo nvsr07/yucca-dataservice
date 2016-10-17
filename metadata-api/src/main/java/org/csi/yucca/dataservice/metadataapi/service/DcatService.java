@@ -85,10 +85,13 @@ public class DcatService extends AbstractService {
 				//if (metadataST.getDcat().isDcatReady()) {
 					DatasetDCAT dsDCAT = new DatasetDCAT();
 
-					if (metadataST.getIsopendata())
+					if ((metadataST.getIsopendata() != null) && (metadataST.getIsopendata())){
 						dsDCAT.getPublisher().setName(metadataST.getOpendata().getAuthor());
-					else 
+						dsDCAT.getRightsHolder().setName(metadataST.getOpendata().getAuthor());
+					} else { 
 						dsDCAT.getPublisher().setName("CSI PIEMONTE");
+						dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
+					}
 					
 					dsDCAT.setDescription(metadata.getDescription());
 					dsDCAT.setTitle(metadata.getName());
@@ -125,11 +128,6 @@ public class DcatService extends AbstractService {
 					publisher.setOrganizationName(metadataST.getDcat().getNomeOrg());
 					dsDCAT.setContactPoint(publisher);
 					
-					if (metadataST.getIsopendata())
-						dsDCAT.getRightsHolder().setName(metadataST.getOpendata().getAuthor());
-					else 
-						dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
-
 					catalog.getDataset().add(dsDCAT);
 				//}
 			}
