@@ -169,6 +169,35 @@
 			<artifactId>jsonld-java-jena</artifactId>
 			<version>0.4.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>3.0.0</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/junit/junit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -222,6 +251,11 @@
 						<targetPath>.</targetPath>
 					</resource>
 				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/matadataapi/test/integ</directory>
+					</testResource>
+				</testResources>
 			</build>
 			<properties>
 				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/int/</webXmlPath>
