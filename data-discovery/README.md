@@ -2,4 +2,4 @@ data-discovery
 ===================
 
 
-data-discovery is depracated and not necesary from yucca 1.4.8 .
+data-discovery is deprecated and not necessary from yucca 1.4.8 .
