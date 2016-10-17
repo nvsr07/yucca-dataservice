@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.edm.EdmException;
 import org.apache.olingo.odata2.api.edm.EdmLiteral;
@@ -20,6 +21,7 @@ import org.apache.olingo.odata2.api.edm.EdmType;
 import org.apache.olingo.odata2.api.edm.EdmTyped;
 import org.apache.olingo.odata2.api.uri.expression.BinaryExpression;
 import org.apache.olingo.odata2.api.uri.expression.BinaryOperator;
+import org.apache.olingo.odata2.api.uri.expression.CommonExpression;
 import org.apache.olingo.odata2.api.uri.expression.ExpressionVisitor;
 import org.apache.olingo.odata2.api.uri.expression.FilterExpression;
 import org.apache.olingo.odata2.api.uri.expression.LiteralExpression;
@@ -37,6 +39,7 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
 
 import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 
 public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 	static Logger log = Logger.getLogger(SDPExpressionVisitor.class.getPackage().getName());
@@ -97,35 +100,168 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 	  switch (operator) {
 	  case EQ:
 	    sqlOperator = "=";
-	    ret = actualLeftSide + " : " + actualRightSide;
+	    
+	    
+		ret = actualLeftSide + " : " + actualRightSide;
+	    
+		if (binaryExpression.getLeftOperand() instanceof PropertyExpression && binaryExpression.getRightOperand() instanceof LiteralExpression) {
+			ret = actualLeftSide + " : " + actualRightSide;
+		} else if (binaryExpression.getLeftOperand() instanceof  LiteralExpression && binaryExpression.getRightOperand() instanceof PropertyExpression) {
+			ret = actualRightSide + " : " + actualLeftSide;
+		} else   
+	    
+	    if (leftSide instanceof Myobj && binaryExpression.getRightOperand() instanceof LiteralExpression ) {
+			//A sx ho una query mongo, a dx un literal ... se la query mongo deriva da una function allora 
+			//prima verifica: se il literal e' un boolean ed e' un true, dovrebbe andare bene cosi'
+			//                se il literal e' un boolean ed e' false, richiamo la parte che genera la query passando il false
+
+			ret = ((Myobj)leftSide).getData();
+	    	
+			if (binaryExpression.getRightOperand().getEdmType().toString().equals("Edm.Boolean") &&
+					binaryExpression.getLeftOperand() instanceof MethodExpression) {
+				if (((Boolean)rightSide).booleanValue()==false) {
+					ret = "!"+ret;
+				}
+//					paramObject1=revertMethodAndBoolean(paramObject1,
+//							paramObject2,
+//							paramBinaryExpression.getLeftOperand(),
+//							paramBinaryExpression.getRightOperand(),
+//							true);
+
+					//paramObject1=visitMethod(paramMethodExpression, paramMethodOperator, paramList)
+				}	
+	    }  else if (rightSide instanceof Myobj && binaryExpression.getLeftOperand() instanceof LiteralExpression ) {
+			//A sx ho una query mongo, a dx un literal ... se la query mongo deriva da una function allora 
+			//prima verifica: se il literal e' un boolean ed e' un true, dovrebbe andare bene cosi'
+			//                se il literal e' un boolean ed e' false, richiamo la parte che genera la query passando il false
+	    	ret = ((Myobj)rightSide).getData();
+			if (binaryExpression.getLeftOperand().getEdmType().toString().equals("Edm.Boolean") &&
+					binaryExpression.getRightOperand() instanceof MethodExpression) {
+				
+				if (((Boolean)leftSide).booleanValue()==false) {
+					ret = "!"+ret;
+
+					//paramObject1=visitMethod(paramMethodExpression, paramMethodOperator, paramList)
+				}					
+				
+			}
+
+		}  
+	    
 	    break;
 	  case NE:
 	    sqlOperator = "<>";
-	    ret = "!("+actualLeftSide + " : " + actualRightSide +")";
+	    ret = "!"+actualLeftSide + " : " + actualRightSide +"";
+	    
+		if (binaryExpression.getLeftOperand() instanceof PropertyExpression && binaryExpression.getRightOperand() instanceof LiteralExpression) {
+		    ret = "!"+actualLeftSide + " : " + actualRightSide +"";
+		    if (binaryExpression.getRightOperand().getEdmType().toString().equals("Edm.Boolean") ) {
+			    ret = actualLeftSide + " : " + !((Boolean)rightSide).booleanValue() +"";
+		    	
+		    }
+		} else if (binaryExpression.getLeftOperand() instanceof  LiteralExpression && binaryExpression.getRightOperand() instanceof PropertyExpression) {
+		    ret = "!"+actualRightSide + " : " + actualLeftSide +"";
+		    if (binaryExpression.getLeftOperand().getEdmType().toString().equals("Edm.Boolean") ) {
+			    ret = actualRightSide + " : " + !((Boolean)leftSide).booleanValue() +"";
+		    }
+		} else   
+	    
+	    
+	    if (leftSide instanceof Myobj && binaryExpression.getRightOperand() instanceof LiteralExpression ) {
+			//A sx ho una query mongo, a dx un literal ... se la query mongo deriva da una function allora 
+			//prima verifica: se il literal e' un boolean ed e' un true, dovrebbe andare bene cosi'
+			//                se il literal e' un boolean ed e' false, richiamo la parte che genera la query passando il false
+
+			ret = "!"+((Myobj)leftSide).getData()+"";
+	    	
+			if (binaryExpression.getRightOperand().getEdmType().toString().equals("Edm.Boolean") &&
+					binaryExpression.getLeftOperand() instanceof MethodExpression) {
+				if (((Boolean)rightSide).booleanValue()==false) {
+					ret = ((Myobj)leftSide).getData();
+				} else {
+					
+				}
+
+				}	
+	    }  else if (rightSide instanceof Myobj && binaryExpression.getLeftOperand() instanceof LiteralExpression ) {
+			//A sx ho una query mongo, a dx un literal ... se la query mongo deriva da una function allora 
+			//prima verifica: se il literal e' un boolean ed e' un true, dovrebbe andare bene cosi'
+			//                se il literal e' un boolean ed e' false, richiamo la parte che genera la query passando il false
+			ret = "!"+((Myobj)rightSide).getData()+"";
+			if (binaryExpression.getLeftOperand().getEdmType().toString().equals("Edm.Boolean") &&
+					binaryExpression.getRightOperand() instanceof MethodExpression) {
+				
+				if (((Boolean)leftSide).booleanValue()==false) {
+					ret = ((Myobj)rightSide).getData();
+				}					
+				
+			}
+
+		}  	    
+	    
+	    
 	    break;
 	  case OR:
 	    sqlOperator = "OR";
-	    ret = actualLeftSide + " OR " + actualRightSide;
-	    break;
+	    
+	    if (leftSide instanceof SDPOdataFilterExpression ) actualLeftSide= "("+actualLeftSide+")";
+	    if (rightSide instanceof SDPOdataFilterExpression ) actualRightSide= "("+actualRightSide+")";
+	    return new SDPOdataFilterExpression(actualLeftSide + " OR " + actualRightSide);
+//	    
+//	    ret = actualLeftSide + " OR " + actualRightSide;
+//	    break;
 	  case AND:
 	    sqlOperator = "AND";
-	    ret = actualLeftSide + " AND " + actualRightSide;
-	    break;
+	    if (leftSide instanceof SDPOdataFilterExpression ) actualLeftSide= "("+actualLeftSide+")";
+	    if (rightSide instanceof SDPOdataFilterExpression ) actualRightSide= "("+actualRightSide+")";
+	    return new SDPOdataFilterExpression(actualLeftSide + " AND " + actualRightSide);
+	    //ret = actualLeftSide + " AND " + actualRightSide;
+	    //break;
 	  case GE:
 	    sqlOperator = ">=";
-	    ret = actualLeftSide + " : [ " + actualRightSide +" TO * ]";
+	    
+		if (binaryExpression.getLeftOperand() instanceof PropertyExpression && binaryExpression.getRightOperand() instanceof LiteralExpression) {
+		    ret = actualLeftSide + " : [ " + actualRightSide +" TO * ]";
+		} else if (binaryExpression.getLeftOperand() instanceof  LiteralExpression && binaryExpression.getRightOperand() instanceof PropertyExpression) {
+			//minore uguale
+		    //ret = actualRightSide + " : [ " + actualLeftSide +" TO * ]";
+		    ret = actualRightSide + " : [ * TO " + actualLeftSide +"]";
+		}  
+	    
+	    
+	    //ret = actualLeftSide + " : [ " + actualRightSide +" TO * ]";
 	    break;
 	  case GT:
 	    sqlOperator = ">";
-	    ret = actualLeftSide + " : { " + actualRightSide +" TO * }";
+		if (binaryExpression.getLeftOperand() instanceof PropertyExpression && binaryExpression.getRightOperand() instanceof LiteralExpression) {
+		    ret = actualLeftSide + " : { " + actualRightSide +" TO * }";
+		} else if (binaryExpression.getLeftOperand() instanceof  LiteralExpression && binaryExpression.getRightOperand() instanceof PropertyExpression) {
+			//minore 
+		    ret = actualRightSide + " : { * TO " + actualLeftSide +"}";
+		    //ret = actualRightSide + " : { " + actualLeftSide +" TO * }";
+		}  
+	    //ret = actualLeftSide + " : { " + actualRightSide +" TO * }";
 	    break;
 	  case LE:
 	    sqlOperator = "<=";
-	    ret = actualLeftSide + " : [ * TO " + actualRightSide +"]";
+		if (binaryExpression.getLeftOperand() instanceof PropertyExpression && binaryExpression.getRightOperand() instanceof LiteralExpression) {
+		    ret = actualLeftSide + " : [ * TO " + actualRightSide +"]";
+		} else if (binaryExpression.getLeftOperand() instanceof  LiteralExpression && binaryExpression.getRightOperand() instanceof PropertyExpression) {
+			//maggiore uguale
+		    ret = actualRightSide + " : [ " + actualLeftSide +" TO * ]";
+		    //ret = actualRightSide + " : [ * TO " + actualLeftSide +"]";
+		}  
 	    break;
 	  case LT:
 	    sqlOperator = "<";
-	    ret = actualLeftSide + " : { * TO " + actualRightSide +"}";
+		if (binaryExpression.getLeftOperand() instanceof PropertyExpression && binaryExpression.getRightOperand() instanceof LiteralExpression) {
+		    ret = actualLeftSide + " : { * TO " + actualRightSide +"}";
+		} else if (binaryExpression.getLeftOperand() instanceof  LiteralExpression && binaryExpression.getRightOperand() instanceof PropertyExpression) {
+			//maggiore uguale
+		    ret = actualRightSide + " : { " + actualLeftSide +" TO * }";
+		    //ret = actualRightSide + " : { * TO " + actualLeftSide +"}";
+		}  
+	    //ret = actualLeftSide + " : { * TO " + actualRightSide +"}";
 	    break;
 	  default:
 	    //Other operators are not supported for SQL  Statements
@@ -133,9 +269,31 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 	  }
 
 	  //return the binary statement
-	  return"("+ret+")";
+	  return ret;
 	}
 
+	private Object revertMethodAndBoolean(Object paramObjectLeft,Object paramObjectRight, CommonExpression leftExpression, CommonExpression rightExpression,boolean forceToFalse) {
+		List<CommonExpression> actualParameters=  ((MethodExpression)leftExpression).getParameters();
+		ArrayList<Object> retParameters = new ArrayList<Object>();
+		try {
+			for (CommonExpression parameter : actualParameters) {
+
+				Object retParameter = parameter.accept(this);
+				retParameters.add(retParameter);
+			}	
+			paramObjectLeft=(Myobj)visitMethod((MethodExpression)leftExpression,
+					((MethodExpression)leftExpression).getMethod(),
+					retParameters,
+					forceToFalse);
+
+		} catch (Exception e ) {
+			e.printStackTrace();
+		}
+		return paramObjectLeft;
+
+	}
+	
+	
 	@Override
 	public Object visitOrderByExpression(
 			OrderByExpression paramOrderByExpression, String paramString,
@@ -194,7 +352,31 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
 			return ret;
 		} else if(EdmSimpleTypeKind.String.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
-			Object ret = new String(paramEdmLiteral.getLiteral());
+//			String retStr =StringUtils.replace(new String(paramEdmLiteral.getLiteral()), " ", "\\ ");
+//			retStr =StringUtils.replace(retStr, "+", "\\+");
+//			retStr =StringUtils.replace(retStr, "-", "\\-");
+//			retStr =StringUtils.replace(retStr, "&&", "\\&&");
+//			retStr =StringUtils.replace(retStr, "||", "\\||");
+//			retStr =StringUtils.replace(retStr, "!", "\\!");
+//			retStr =StringUtils.replace(retStr, "(", "\\(");
+//			retStr =StringUtils.replace(retStr, ")", "\\)");
+//			retStr =StringUtils.replace(retStr, "{", "\\{");
+//			retStr =StringUtils.replace(retStr, "}", "\\}");
+//			retStr =StringUtils.replace(retStr, "[", "\\[");
+//			retStr =StringUtils.replace(retStr, "]", "\\]");
+//			retStr =StringUtils.replace(retStr, "^", "\\^");
+//			retStr =StringUtils.replace(retStr, "\"", "\\\"");
+//			retStr =StringUtils.replace(retStr, "~", "\\~");
+//			retStr =StringUtils.replace(retStr, "*", "\\*");
+//			retStr =StringUtils.replace(retStr, "?", "\\?");
+//			retStr =StringUtils.replace(retStr, ":", "\\:");
+//			retStr =StringUtils.replace(retStr, "\\", "\\\\");
+			Object ret=StringUtils.replaceEach(new String(paramEdmLiteral.getLiteral()), 
+						new String [] { "\\"   ," "  , "+"  ,"-"  ,":"  , "?"  ,"*"   ,"~"  ,"^"  , "]"  , "["  ,"{"  , "}"  , "("   , ")"  ,"!"  , "||"  , "&&"  , "\""} , 
+						new String [] { "\\\\" ,"\\ ", "\\+","\\-","\\:", "\\?","\\*" ,"\\~","\\^", "\\]", "\\[","\\{", "\\}", "\\(" , "\\)","\\!", "\\||", "\\&&", "\\\""} );
+			 
+			
+			
 			//TODO levare apici inizio e fine???
 			return ret;
 		} else if(EdmSimpleTypeKind.Double.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
@@ -343,7 +525,16 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 
 				// per deprecation da sostituire con (Calendar.get(Calendar.ZONE_OFFSET) + Calendar.get(Calendar.DST_OFFSET))
 
-				return data;
+				//return data;
+				
+				SimpleDateFormat dateFormatBB = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				SimpleDateFormat dateFormatEE = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+				String a = dateFormatBB.format(data);
+				String b = dateFormatEE.format(data);
+				String c = dateFormatB.format(data);
+				String d = dateFormatE.format(data);
+				
+				return c;
 
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
@@ -379,7 +570,7 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 			MethodOperator paramMethodOperator, List<Object> paramList, boolean forceToFalse) {
 		out.append("visitMethod\n");
 
-		String clause=null;
+		Myobj clause=null;
 
 
 		//		int left=-1;
@@ -405,29 +596,60 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 
 		switch (paramMethodOperator) {
 		case STARTSWITH:
-			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			regex = Pattern.compile("^"+(String)paramList.get(1)+".*");
-			clause = paramList.get(0).toString() + " :  ";
-			if (forceToFalse) clause=" !("+clause +""+regex+")"; 
-			else clause=clause+regex;
+//			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+//			regex = Pattern.compile("^"+(String)paramList.get(1)+".*");
+//			clause = paramList.get(0).toString() + " :  ";
+//			if (forceToFalse) clause=" !("+clause +""+regex+")"; 
+//			else clause=clause+regex;
+			
+			clause = new Myobj (paramList.get(0).toString() + " : "+paramList.get(1).toString()+"*");
+			
 			break;
 		case ENDSWITH:
-			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			regex = Pattern.compile((String)paramList.get(1)+"$");
-			if (forceToFalse) clause=" !("+clause +""+regex+")"; 
-			else clause=clause+regex;
+//			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMet)hodOperator.toUriLiteral());
+//			regex = Pattern.compile((String)paramList.get(1)+"$");
+//			if (forceToFalse) clause=" !("+clause +""+regex+")"; 
+//			else clause=clause+regex;
+			clause = new Myobj (paramList.get(0).toString() + " : *"+paramList.get(1).toString()+"");
 			break;
 		case SUBSTRINGOF:
-			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
-			regex = Pattern.compile((String)paramList.get(0));
-			if (forceToFalse) clause=" !("+clause +""+regex+")"; 
-			else clause=clause+regex;
+//			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+//			regex = Pattern.compile((String)paramList.get(0));
+//			if (forceToFalse) clause=" !("+clause +""+regex+")"; 
+//			else clause=clause+regex;
+			clause = new Myobj (paramList.get(1).toString() + " : *"+paramList.get(0).toString()+"*");
 			break;
 		default:
 			throw new UnsupportedOperationException("Unsupported operator: " + paramMethodOperator.toUriLiteral());
 		}
 
-		return "("+clause+")";
+		
+//		switch (paramMethodOperator) {
+//		case STARTSWITH:
+//			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+//			regex = Pattern.compile("^"+(String)paramList.get(1)+".*");
+//			clause = paramList.get(0).toString() + " :  ";
+//			if (forceToFalse) clause=" !("+clause +"\""+regex+"\")"; 
+//			else clause=clause+"\""+regex+"\"";
+//			break;
+//		case ENDSWITH:
+//			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+//			regex = Pattern.compile((String)paramList.get(1)+"$");
+//			if (forceToFalse) clause=" !("+clause +"\""+regex+"\")"; 
+//			else clause=clause+"\""+regex+"\"";
+//			break;
+//		case SUBSTRINGOF:
+//			if (paramList.size()!=2) throw new java.lang.UnsupportedOperationException("Unsupported parematers for: " + paramMethodOperator.toUriLiteral());
+//			regex = Pattern.compile((String)paramList.get(0));
+//			if (forceToFalse) clause=" !("+clause +"\""+regex+"\")"; 
+//			else clause=clause+"\""+regex+"\"";
+//			break;
+//		default:
+//			throw new UnsupportedOperationException("Unsupported operator: " + paramMethodOperator.toUriLiteral());
+//		}
+		
+		
+		return clause;
 	}	
 
 	@Override
@@ -435,7 +657,7 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 			MethodOperator paramMethodOperator, List<Object> paramList) {
 		out.append("visitMethod\n");
 
-		String clause=null;
+		Myobj clause=null;
 
 
 
@@ -443,13 +665,13 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 
 		switch (paramMethodOperator) {
 		case ENDSWITH:
-			clause=(String)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
+			clause=(Myobj)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
 			break;
 		case STARTSWITH:
-			clause=(String)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
+			clause=(Myobj)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
 			break;
 		case SUBSTRINGOF:
-			clause=(String)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
+			clause=(Myobj)visitMethod(paramMethodExpression,paramMethodOperator,paramList,false);
 			break;
 		default:
 			throw new UnsupportedOperationException("Unsupported operator: " + paramMethodOperator.toUriLiteral());
@@ -458,6 +680,21 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		return clause;
 	}
 
+	class Myobj {
+		public String getData() {
+			return data;
+		}
+		public void setData(String data) {
+			this.data = data;
+		}
+		String data=null;
+		public Myobj () {
+			
+		}
+		public Myobj (String data) {
+			this.data = data;
+		}
+	}
 	@Override
 	public Object visitMember(MemberExpression paramMemberExpression,
 			Object paramObject1, Object paramObject2) {
@@ -508,7 +745,7 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		if ("id".equals(ret)) return ret;
 		
 		String tipo=this.mappaCampi.get(ret);
-		ret += SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo);
+		ret += (SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)!=null ? SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo) : "");
 
 		if (ret!=null) return ret;
 		else return fieldNameInput;
@@ -519,6 +756,8 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 	static {
 		fieldAppendMap = new HashMap<String,String>();
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".datasetVersion" ,"datasetVersion_l");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceStream" ,"streams.stream.codiceStream");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceTenant" ,"streams.stream.codiceTenant");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".nomeStream" ,"streams.stream.nomeStream");

@@ -15,7 +15,7 @@ import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-public class ProvaTest extends it.csi.smartdata.dataapi.test.OdataTestBase {
+public class ProvaTstOld extends it.csi.smartdata.dataapi.test.OdataTestBase {
 
 	@BeforeClass
 	public void setUpSecretObject() throws IOException {

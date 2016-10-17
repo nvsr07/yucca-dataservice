@@ -8,6 +8,7 @@ import it.csi.smartdata.dataapi.mongo.dto.SDPMongoOrderElement;
 import it.csi.smartdata.dataapi.mongo.exception.SDPCustomQueryOptionException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
+import it.csi.smartdata.dataapi.odata.SDPOdataFilterExpression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.RangeFacet.Date;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.util.NamedList;
@@ -2272,10 +2274,15 @@ public class SDPDataApiMongoAccess {
 			//       - modificare eventualmente la logica di recupero dell'elenco dei campi che contiene il join di info.fuields di tutte le versioni di quel dataset
 			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
 
+			
+			HashMap<String, String> campoTipoMetadato= new HashMap<String, String>();
+			
+			BasicDBList lista=new BasicDBList();
 			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
 			for (int k=0;k<campiDbList.size();k++) {
 				boolean present=false;
 				compPropsCur=getDatasetFiledsOdataPros(campiDbList.get(k));
+				
 				for (int i=0;i<compPropsTot.size();i++) {
 					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
 
@@ -2284,9 +2291,16 @@ public class SDPDataApiMongoAccess {
 				// sollevando eccezione se son diversi
 				if (!present) {
 					compPropsTot.add(compPropsCur.get(0));
+					lista.add(campiDbList.get(k));
 				}
 			}
-
+			for (int i=0; i<lista.size();i++) {
+				BasicDBObject cur= (BasicDBObject)lista.get(i);
+				String nome=cur.getString("fieldName");
+				String tipo=cur.getString("dataType");
+				campoTipoMetadato.put(nome, tipo);
+				
+			}
 			if (collection==null)  return null;
 
 			DBCursor cursor=null;
@@ -2331,8 +2345,13 @@ public class SDPDataApiMongoAccess {
 			}
 			if (null != userQuery) {
 				log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] userQuery="+userQuery);
-				queryTotSolr += "AND ("+userQuery+")";
-				queryTotCntSolr += "AND ("+userQuery+")";
+				if (userQuery instanceof SDPOdataFilterExpression) {
+					queryTotSolr += "AND ("+userQuery+")";
+					queryTotCntSolr += "AND ("+userQuery+")";
+				} else {
+					queryTotSolr += "AND "+userQuery;
+					queryTotCntSolr += "AND "+userQuery;
+				}
 
 				//query.append("$and", userQuery);
 			}
@@ -2412,14 +2431,14 @@ public class SDPDataApiMongoAccess {
 					orderByAllowed=true;
 				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
 
-					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
-					if (elemOrder.getNomeCampo().equalsIgnoreCase("time")) orderByAllowed=true;
-					if (elemOrder.getNomeCampo().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
-					if (elemOrder.getNomeCampo().equalsIgnoreCase("userId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
-					if (elemOrder.getNomeCampo().equalsIgnoreCase("_id")) orderByAllowed=true;
+					SortClause elemOrder=(SortClause)((ArrayList<SortClause>)userOrderBy).get(0);
+					if (elemOrder.getItem().equalsIgnoreCase("time_dt")) orderByAllowed=true;
+					if (elemOrder.getItem().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
+					if (elemOrder.getItem().equalsIgnoreCase("userId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
+					if (elemOrder.getItem().equalsIgnoreCase("id")) orderByAllowed=true;
 				} else if (DATA_TYPE_DATA.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
 					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
-					if (elemOrder.getNomeCampo().equalsIgnoreCase("_id")) orderByAllowed=true;
+					if (elemOrder.getNomeCampo().equalsIgnoreCase("id")) orderByAllowed=true;
 				}
 
 
@@ -2489,7 +2508,11 @@ public class SDPDataApiMongoAccess {
 						String sensorId=curSolrDoc.get("sensor_s").toString();
 						misura.put("streamCode", streamId);
 						misura.put("sensor", sensorId);
-						misura.put("time",  curSolrDoc.get("time_dt"));
+						
+						
+						java.util.Date sddd=(java.util.Date)curSolrDoc.get("time_dt");
+						
+						misura.put("time", sddd );
 					}					
 					String iddataset=takeNvlValues(curSolrDoc.get("idDataset_l"));
 					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
@@ -2502,12 +2525,14 @@ public class SDPDataApiMongoAccess {
 						String chiave=compPropsTot.get(i).getName();
 						String chiaveL=getPropertyName(compPropsTot.get(i));
 
+						chiaveL=compPropsTot.get(i).getName()+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(compPropsTot.get(i).getName()));
 						
 						
 						
 						
 						if (curSolrDoc.keySet().contains(chiaveL) ) {
-
+							Object oo = curSolrDoc.get(chiaveL);
+							
 							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
 							if (null!=valore) {
 								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
@@ -2521,8 +2546,11 @@ public class SDPDataApiMongoAccess {
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
 									misura.put(chiave, Double.parseDouble(valore));
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
-									Object dataObj=obj.get(chiave);
-									misura.put(chiave, dataObj);
+									//Object dataObj=obj.get(chiave);
+									
+									java.util.Date dtSolr=(java.util.Date)oo; 
+									
+									misura.put(chiave, dtSolr);
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
 									//Sun Oct 19 07:01:17 CET 1969
 									//EEE MMM dd HH:mm:ss zzz yyyy

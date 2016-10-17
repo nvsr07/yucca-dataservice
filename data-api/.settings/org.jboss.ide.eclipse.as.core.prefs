@@ -1,2 +1,2 @@
 eclipse.preferences.version=1
-org.jboss.ide.eclipse.as.core.singledeployable.deployableList=src/it/csi/corsi/prove/ProvaJsonPath001.java\ntarget/DataApi.war\ntarget/DataApi.war\n
+org.jboss.ide.eclipse.as.core.singledeployable.deployableList=DataApi-1.3.6-001.war\n
