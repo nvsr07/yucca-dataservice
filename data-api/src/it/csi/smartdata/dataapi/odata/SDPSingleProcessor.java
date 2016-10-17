@@ -250,7 +250,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				if (fe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
-					userQuery = fe.accept(ev);
+					//userQuery = fe.accept(ev);
 					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
 					
 					
@@ -270,7 +270,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
 					evs.setEntitySetName(entitySet.getName());
 					evs.setMappaCampi(mappaCampi);
-					orderQuerySolr = oe.accept(evs);
+					//orderQuerySolr = oe.accept(evs);
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuerySolr="+orderQuerySolr);
 				
 				
@@ -404,8 +404,12 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 
 
+//					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+//							uriInfo.getEntityContainer(),null,userQuery,orderQuery,
+//							skiptop[0],
+//							skiptop[1]);
 					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
-							uriInfo.getEntityContainer(),null,userQuery,orderQuery,
+							uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,
 							skiptop[0],
 							skiptop[1]);
 

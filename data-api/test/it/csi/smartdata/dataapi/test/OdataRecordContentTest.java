@@ -49,8 +49,9 @@ public class OdataRecordContentTest extends OdataTestBase{
 		
 		Response rsp = rs.when().get(makeUrl(dato,"json"));
 		JSONArray arrAtteso=(JSONArray)dato.get("odata.retdata.dataRecords");
+
 		JSONArray campi=(JSONArray)dato.get("odata.fieldstocheck");
-		
+		System.out.println("---" +rsp.body());
 		if (dato.getInt("odata.retdata.resultCount") == 0) {
 			System.out.println(rsp.body());
 		}
