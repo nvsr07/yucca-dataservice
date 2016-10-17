@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -13,6 +14,7 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
@@ -89,9 +91,9 @@ public class SDPInsertApiPhoenixDataAccess {
 	            } else if ("string".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" VARCHAR";
 	            } else if ("boolean".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" BOOLEAN";
+	                campiSQL+=" TINYINT";
 	            } else if ("datetime".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" DATE";
+	                campiSQL+=" TIMESTAMP";
 	            } else if ("longitude".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" DOUBLE";
 	            } else if ("latitude".equalsIgnoreCase(tipo)) {
@@ -147,8 +149,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	                } else if ("string".equalsIgnoreCase(tipo)) {
 	                    stmt.setString(pos, value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.BOOLEAN);
-	                    else stmt.setBoolean(pos, (Boolean.getBoolean(value.toString())));
+	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TINYINT);
+	                    else stmt.setInt(pos, Boolean.parseBoolean(value.toString())?1:0);
 	                } else if ("datetime".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TIMESTAMP);
 	                    stmt.setTimestamp(pos,new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
@@ -192,6 +194,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	        } catch (Exception e) {	
 	        	log.error("Insert Phoenix Error", e);
 	        	conn.rollback();
+	        	throw new Exception(e);
 	        } finally {
 	        	 stmt.close();
 	        	 conn.close();
