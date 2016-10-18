@@ -28,7 +28,7 @@ public class SDPInsertApiSolrDataAccess {
 	CloudSolrClient server = null;	
 
 	public SDPInsertApiSolrDataAccess() throws ClassNotFoundException {
-        server = new CloudSolrClient(SDPInsertApiConfig.getInstance().getSolrUrl());
+        server = CloudSolrSingleton.INSTANCE.getClient();
 	}
 
 
@@ -38,16 +38,16 @@ public class SDPInsertApiSolrDataAccess {
 		BulkWriteResult result=null;
 		try {
 			
-			String 	collection = "data";
+			String 	collection = tenant+"_data";
 			if (dati.getDatasetType().equals("streamDataset"))
 			{
-				collection = "measures";
+				collection = tenant+"_measures";
 			}
 			else if (dati.getDatasetType().equals("socialDataset"))
 			{
-				collection = "social";
+				collection = tenant+"_social";
 			}
-        	server.setDefaultCollection(tenant+"_"+collection);
+			
 			
             Collection<SolrInputDocument> list =new ArrayList<SolrInputDocument>();
             Iterator<Entry<String, FieldsMongoDto>> fieldIter =null;
@@ -108,14 +108,13 @@ public class SDPInsertApiSolrDataAccess {
                 list.add(doc);
 		      }
 	        try {
-                server.add(list);
+                server.add(collection,list);
                 server.commit();
                 list.clear();
 	        } catch (Exception e) {	
 	        	log.error("Insert Phoenix Error", e);
 	        	throw new Exception(e);
 	        } finally {
-	        	server.close();	        
 	        }
 	       
 	    
