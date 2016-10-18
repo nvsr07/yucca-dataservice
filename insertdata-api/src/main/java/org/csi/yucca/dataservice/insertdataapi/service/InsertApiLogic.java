@@ -76,9 +76,9 @@ public class InsertApiLogic {
 				curBulkToIns.setGlobalReqId(idRequest);
 
 				//int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns,indiceDaCReare);
-				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert ");
+				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert "+System.currentTimeMillis());
 				phoenixAccess.insertBulk(tenant, curBulkToIns);
-				log.info("[InsertApiLogic::insertManager] END phoenixInsert ");
+				log.info("[InsertApiLogic::insertManager] END phoenixInsert "+System.currentTimeMillis());
 				
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
@@ -87,9 +87,9 @@ public class InsertApiLogic {
 				datiToIns.put(key, curBulkToIns);
 				
 				try {
-					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ");
+					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert "+System.currentTimeMillis());
 					solrAccess.insertBulk(tenant,curBulkToIns );
-					log.info("[InsertApiLogic::insertManager] END SOLRInsert ");
+					log.info("[InsertApiLogic::insertManager] END SOLRInsert "+System.currentTimeMillis());
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
 					datiToIns.put(key, curBulkToIns);
 				} catch (Exception e)
@@ -409,20 +409,20 @@ public class InsertApiLogic {
 					" - field "+jsonField+" ("+insStrConst+"): "+valore);
 			
 			
-			log.info("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
-			log.info("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
-			log.info("[InsertApiLogic::parseCompnents] valore: "+valore);
+			log.finer("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
+			log.finer("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
+			log.finer("[InsertApiLogic::parseCompnents] valore: "+valore);
 			if (campoMongoV1!=null) {
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
+				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
+				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
+				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
 				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
 				numCampiInV1++;
 			}
-			log.info("[InsertApiLogic::parseCompnents] .................");
-			log.info("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
-			log.info("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
-			log.info("[InsertApiLogic::parseCompnents]          valore="+valore);
+			log.finer("[InsertApiLogic::parseCompnents] .................");
+			log.finer("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
+			log.finer("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
+			log.finer("[InsertApiLogic::parseCompnents]          valore="+valore);
 			
 			
 			if (null!=campoMongoV1 && !campoMongoV1.validateValue(valore))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,

@@ -69,9 +69,10 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset] BEGIN ");
 
 			//System.out.println(" TIMETIME insertApiDataset -- inizio --> "+System.currentTimeMillis());
-
+			
+			log.info( "[InsertApi::insertApiDataset] BEGIN Parsing and validation"+System.currentTimeMillis());
 			HashMap<String, DatasetBulkInsert> mapAttributes = parseJsonInput(codTenant,jsonData);
-			//System.out.println(" TIMETIME insertApiDataset -- parsing --> "+System.currentTimeMillis());
+			log.info( "[InsertApi::insertApiDataset] END Parsing and validation"+System.currentTimeMillis());
 
 
 			outData=inserimentoGeneralizzato(codTenant, mapAttributes);
@@ -86,9 +87,9 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset]       error code      --> " +(outData.getInsertException()!=null ? outData.getInsertException().getErrorCode() : "NONE" ));
 			log.info( "[InsertApi::insertApiDataset]       Numero Blocchi  --> " +(outData.getDataBLockreport()!=null ? outData.getDataBLockreport().size() : "WARNING: NONE" ));
 			for (int i=0;outData.getDataBLockreport()!=null && i<outData.getDataBLockreport().size(); i++) {
-				log.info( "[InsertApi::insertApiDataset]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
-				log.info( "[InsertApi::insertApiDataset]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
-				log.info( "[InsertApi::insertApiDataset]            blocco("+i+") getRequestId            --> " +outData.getDataBLockreport().get(i).getRequestId());
+				log.debug("[InsertApi::insertApiDataset]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
+				log.debug( "[InsertApi::insertApiDataset]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
+				log.debug( "[InsertApi::insertApiDataset]            blocco("+i+") getRequestId            --> " +outData.getDataBLockreport().get(i).getRequestId());
 				accLog1.setDataIn(outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				accLog1.setDatasetcode(outData.getDataBLockreport().get(i).getIdDataset()+":"+outData.getDataBLockreport().get(i).getDatasetVersion());
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
