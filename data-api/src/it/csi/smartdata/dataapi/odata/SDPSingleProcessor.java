@@ -264,13 +264,13 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				if (oe != null) {
 					SDPExpressionVisitor ev = new SDPExpressionVisitor();
 					ev.setEntitySetName(entitySet.getName());
-					orderQuery=oe.accept(ev);
+					//orderQuery=oe.accept(ev);
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 
 					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
 					evs.setEntitySetName(entitySet.getName());
 					evs.setMappaCampi(mappaCampi);
-					//orderQuerySolr = oe.accept(evs);
+					orderQuerySolr = oe.accept(evs);
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuerySolr="+orderQuerySolr);
 				
 				
