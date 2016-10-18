@@ -28,7 +28,7 @@ public class SDPInsertApiSolrDataAccess {
 	CloudSolrClient server = null;	
 
 	public SDPInsertApiSolrDataAccess() throws ClassNotFoundException {
-        server = CloudSolrSingleton.INSTANCE.getClient();
+        server = CloudSolrSingleton.getServer();
 	}
 
 
