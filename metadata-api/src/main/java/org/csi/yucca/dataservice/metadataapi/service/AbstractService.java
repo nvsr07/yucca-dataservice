@@ -107,10 +107,10 @@ public abstract class AbstractService {
 			query += " (dcatReady) ";
 		}
 
-		if (tenant != null && !tenant.trim().equals("")) {
+		if (tenant != null && !tenant.trim().equals("")) { 
 			if (!query.equals(""))
 				query += " AND ";
-			query += " (tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
+			query += " (tenantCode eq " + tenant + " AND codiceTenant eq " + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {
