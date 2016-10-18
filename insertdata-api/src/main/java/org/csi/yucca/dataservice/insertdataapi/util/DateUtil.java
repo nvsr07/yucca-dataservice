@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -15,6 +16,7 @@ public class DateUtil {
     public static final String _msDateFormat_TZ = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     public static final String _secDateFormat_TZ = "yyyy-MM-dd'T'HH:mm:ssZ";
     
+    private static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     
     public static Date multiParseDate(String dataString)
     {
@@ -48,5 +50,13 @@ public class DateUtil {
         }
          
         return o;
+    }
+    
+    public static String convertToStd(String dataString)
+    {
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        return sdf.format(multiParseDate(dataString));
+        
     }
 }

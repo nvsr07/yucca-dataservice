@@ -20,11 +20,11 @@ public class DatasetBulkInsert {
 	public static final String STATUS_END_INS="end_ins";
 	public static final String STATUS_KO_INS="ins_KO";
 
+	public static final String STATUS_START_INDEX="start_index";
+	public static final String STATUS_END_INDEX="end_index";
+	public static final String STATUS_KO_INDEX="index_KO";
 	
-	public static final String STATUS_START_COPY="start_copy";
-	public static final String STATUS_END_COPY="end_copy";
-	public static final String STATUS_KO_COPY="copy_KO";
-	
+
 	
 	private long idDataset=-1;
 	private long datasetVersion=-1;

@@ -18,6 +18,7 @@ import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
+import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BulkWriteResult;
 import com.mongodb.DBObject;
@@ -47,7 +48,7 @@ public class SDPInsertApiPhoenixDataAccess {
 		BulkWriteResult result=null;
 		try {
 			//System.out.println("###########################################");
-			conn = DriverManager.getConnection("jdbc:phoenix:thin:url=http://sdnet-zeppelin1.sdp.csi.it:8765;serialization=PROTOBUF");
+			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
 			  
 			conn.setAutoCommit(false);
 
@@ -114,7 +115,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	            
 	            stmt.setInt(1,  (Integer.parseInt(Long.toString(dati.getIdDataset()))));
 	            stmt.setInt(2,  (Integer.parseInt(Long.toString(dati.getDatasetVersion()))));
-	            stmt.setString(3, ObjectId.get().toString());
+	            stmt.setString(3, json.get("objectid").toString());
 	            
 	            int pos=4;
 	            if (!dati.getDatasetType().equals("bulkDataset"))

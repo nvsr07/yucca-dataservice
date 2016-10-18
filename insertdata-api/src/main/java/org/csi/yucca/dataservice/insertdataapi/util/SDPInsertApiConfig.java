@@ -15,6 +15,10 @@ public class SDPInsertApiConfig {
 	public static final String MONGO_DB_CFG_STATUS="MONGO_DB_CFG_STATUS";
 	public static final String MONGO_DB_DEFAULT="MONGO_DB_DEFAULT";
 
+	
+	public static final String PHOENIX_URL="PHOENIX_URL";
+	public static final String SOLR_URL="SOLR_URL";
+	
 
 	public static SDPInsertApiConfig instance=null;
 	private static int anno_init = 0;
@@ -34,7 +38,7 @@ public class SDPInsertApiConfig {
 		else if (curGiorno > giorno_init)return true;
 		return false;
 	}
-	public synchronized static SDPInsertApiConfig getInstance() throws Exception{
+	public synchronized static SDPInsertApiConfig getInstance() {
 		if(instance == null || singletonToRefresh()) {
 			instance = new SDPInsertApiConfig();
 			anno_init = Calendar.getInstance().get(Calendar.YEAR);
@@ -44,8 +48,8 @@ public class SDPInsertApiConfig {
 		return instance;
 	}
 
-	private SDPInsertApiConfig() throws Exception{
-		ResourceBundle rb= ResourceBundle.getBundle("SDPInsertApiConfig");
+	private SDPInsertApiConfig() {
+		ResourceBundle rb= ResourceBundle.getBundle("InsertdataApiConfig");
 		params = new HashMap<String, String>();
 		//params.put("SDP_WEB_FILTER_PATTERN", rb.getString("SDP_WEB_FILTER_PATTERN"));
 		//params.put("SDP_WEB_SERVLET_URL", rb.getString("SDP_WEB_SERVLET_URL"));
@@ -71,6 +75,8 @@ public class SDPInsertApiConfig {
 		params.put("SDP_MONGO_CFG_DEFAULT_PORT", rb.getString("SDP_MONGO_CFG_DEFAULT_PORT"));
 
 
+		params.put(PHOENIX_URL, rb.getString(PHOENIX_URL));
+		params.put(SOLR_URL, rb.getString(SOLR_URL));
 
 	}
 //MONGO_DB_DEFAULT
@@ -132,6 +138,14 @@ public class SDPInsertApiConfig {
 		} else return -1;
 	}	
 
+	public String getSolrUrl() {
+		return params.get(SOLR_URL);
+	}
+
+	public String getPhoenixUrl() {
+		return params.get(PHOENIX_URL);
+	}
+	
 	public String getMongoDefaultUser() {
 		return params.get("SDP_MONGO_CFG_DEFAULT_USER");
 	}
