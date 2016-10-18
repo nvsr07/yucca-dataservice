@@ -70,9 +70,10 @@ public abstract class AbstractService {
 
 			//System.out.println(" TIMETIME insertApiDataset -- inizio --> "+System.currentTimeMillis());
 			
-			log.info( "[InsertApi::insertApiDataset] BEGIN Parsing and validation"+System.currentTimeMillis());
+			Long starTtimeX=System.currentTimeMillis();
+			log.info( "[InsertApi::insertApiDataset] BEGIN Parsing and validation ..");
 			HashMap<String, DatasetBulkInsert> mapAttributes = parseJsonInput(codTenant,jsonData);
-			log.info( "[InsertApi::insertApiDataset] END Parsing and validation"+System.currentTimeMillis());
+			log.info( "[InsertApi::insertApiDataset] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtimeX)+"]");
 
 
 			outData=inserimentoGeneralizzato(codTenant, mapAttributes);

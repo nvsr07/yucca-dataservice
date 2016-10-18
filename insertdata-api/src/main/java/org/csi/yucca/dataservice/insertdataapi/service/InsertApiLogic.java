@@ -76,9 +76,10 @@ public class InsertApiLogic {
 				curBulkToIns.setGlobalReqId(idRequest);
 
 				//int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns,indiceDaCReare);
-				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert "+System.currentTimeMillis());
+				Long startTimeX = System.currentTimeMillis();
+				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
 				phoenixAccess.insertBulk(tenant, curBulkToIns);
-				log.info("[InsertApiLogic::insertManager] END phoenixInsert "+System.currentTimeMillis());
+				log.info("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 				
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
@@ -87,9 +88,10 @@ public class InsertApiLogic {
 				datiToIns.put(key, curBulkToIns);
 				
 				try {
-					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert "+System.currentTimeMillis());
+					startTimeX = System.currentTimeMillis();
+					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
 					solrAccess.insertBulk(tenant,curBulkToIns );
-					log.info("[InsertApiLogic::insertManager] END SOLRInsert "+System.currentTimeMillis());
+					log.info("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
 					datiToIns.put(key, curBulkToIns);
 				} catch (Exception e)
@@ -416,7 +418,7 @@ public class InsertApiLogic {
 				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
 				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
 				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
-				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
+				if (null!=campoMongoV1) log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
 				numCampiInV1++;
 			}
 			log.finer("[InsertApiLogic::parseCompnents] .................");
