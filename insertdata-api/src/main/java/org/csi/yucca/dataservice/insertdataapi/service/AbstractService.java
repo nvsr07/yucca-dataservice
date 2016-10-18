@@ -8,13 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertIOperationReport;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
 import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
-import org.csi.yucca.dataservice.insertdataapi.util.Config;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -23,8 +21,6 @@ public abstract class AbstractService {
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	private static final Log logAccounting=LogFactory.getLog("sdpaccounting");
 
-	protected String STORE_BASE_URL = Config.getInstance().getStoreBaseUrl();
-	protected String MANAGEMENT_BASE_URL = Config.getInstance().getManagementBaseUrl();
 
 
 	public AbstractService() {

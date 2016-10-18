@@ -59,6 +59,7 @@ public class InsertApiLogic {
 		
 		//System.out.println(" TIMETIME insertManager -- fine ciclo UNO --> "+System.currentTimeMillis());
 		
+		
 		String idRequest=mongoAccess.insertStatusRecordArray(tenant,datiToIns);
 
 		//System.out.println(" TIMETIME insertManager -- fine inserimento start ins --> "+System.currentTimeMillis());
@@ -75,8 +76,9 @@ public class InsertApiLogic {
 				curBulkToIns.setGlobalReqId(idRequest);
 
 				//int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns,indiceDaCReare);
-				//System.out.println(" TIMETIME insertManager -- insert bulk blocco "+cnt+"--> "+System.currentTimeMillis());
+				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert ");
 				phoenixAccess.insertBulk(tenant, curBulkToIns);
+				log.info("[InsertApiLogic::insertManager] END phoenixInsert ");
 				
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
@@ -85,7 +87,9 @@ public class InsertApiLogic {
 				datiToIns.put(key, curBulkToIns);
 				
 				try {
+					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ");
 					solrAccess.insertBulk(tenant,curBulkToIns );
+					log.info("[InsertApiLogic::insertManager] END SOLRInsert ");
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
 					datiToIns.put(key, curBulkToIns);
 				} catch (Exception e)
