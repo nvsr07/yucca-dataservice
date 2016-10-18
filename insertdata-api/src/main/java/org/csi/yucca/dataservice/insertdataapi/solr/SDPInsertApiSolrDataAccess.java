@@ -109,7 +109,7 @@ public class SDPInsertApiSolrDataAccess {
 		      }
 	        try {
                 server.add(collection,list);
-                server.commit();
+                server.commit(collection);
                 list.clear();
 	        } catch (Exception e) {	
 	        	log.error("Insert Phoenix Error", e);
