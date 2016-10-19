@@ -51,8 +51,88 @@ public class Stream {
 	private VirtualEntityPositions virtualEntityPositions;
 	private Tenantssharing tenantssharing;
 	private Opendata opendata;
-	
-	private DCAT dcat;
+
+	private int dcatReady;
+	private String dcatCreatorName;
+	private String dcatCreatorType;
+	private String dcatCreatorId;
+	private String dcatRightsHolderName;
+	private String dcatRightsHolderType;
+	private String dcatRightsHolderId;
+	private String dcatNomeOrg;
+	private String dcatEmailOrg;
+
+	public int getDcatReady() {
+		return dcatReady;
+	}
+
+	public void setDcatReady(int dcatReady) {
+		this.dcatReady = dcatReady;
+	}
+
+	public String getDcatCreatorName() {
+		return dcatCreatorName;
+	}
+
+	public void setDcatCreatorName(String dcatCreatorName) {
+		this.dcatCreatorName = dcatCreatorName;
+	}
+
+	public String getDcatCreatorType() {
+		return dcatCreatorType;
+	}
+
+	public void setDcatCreatorType(String dcatCreatorType) {
+		this.dcatCreatorType = dcatCreatorType;
+	}
+
+	public String getDcatCreatorId() {
+		return dcatCreatorId;
+	}
+
+	public void setDcatCreatorId(String dcatCreatorId) {
+		this.dcatCreatorId = dcatCreatorId;
+	}
+
+	public String getDcatRightsHolderName() {
+		return dcatRightsHolderName;
+	}
+
+	public void setDcatRightsHolderName(String dcatRightsHolderName) {
+		this.dcatRightsHolderName = dcatRightsHolderName;
+	}
+
+	public String getDcatRightsHolderType() {
+		return dcatRightsHolderType;
+	}
+
+	public void setDcatRightsHolderType(String dcatRightsHolderType) {
+		this.dcatRightsHolderType = dcatRightsHolderType;
+	}
+
+	public String getDcatRightsHolderId() {
+		return dcatRightsHolderId;
+	}
+
+	public void setDcatRightsHolderId(String dcatRightsHolderId) {
+		this.dcatRightsHolderId = dcatRightsHolderId;
+	}
+
+	public String getDcatNomeOrg() {
+		return dcatNomeOrg;
+	}
+
+	public void setDcatNomeOrg(String dcatNomeOrg) {
+		this.dcatNomeOrg = dcatNomeOrg;
+	}
+
+	public String getDcatEmailOrg() {
+		return dcatEmailOrg;
+	}
+
+	public void setDcatEmailOrg(String dcatEmailOrg) {
+		this.dcatEmailOrg = dcatEmailOrg;
+	}
 
 	public Stream() {
 		super();
@@ -384,14 +464,6 @@ public class Stream {
 
 	public void setOpendata(Opendata opendata) {
 		this.opendata = opendata;
-	}
-
-	public DCAT getDcat() {
-		return dcat;
-	}
-
-	public void setDcat(DCAT dcat) {
-		this.dcat = dcat;
 	}
 
 	public String getLicence() {

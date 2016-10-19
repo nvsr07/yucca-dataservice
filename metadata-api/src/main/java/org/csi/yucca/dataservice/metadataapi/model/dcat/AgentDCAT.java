@@ -2,9 +2,9 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
 public class AgentDCAT {
 
-	private String name = null;
+	private String name = "CSI PIEMONTE";
 	private String type = "foaf:Agent";
-	private String id = "http://www.csipiemonte.it";
+	private String id = "01995120019";
 	private String publisherType = "http://purl.org/adms/publishertype/Company";
 	
 	public AgentDCAT(){
@@ -13,10 +13,6 @@ public class AgentDCAT {
 
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getType() {

@@ -3,8 +3,8 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 public class AgentDSDCAT {
 
 	private String name = null;
-	private String type = "foaf:Agent";
-	private String id = "http://www.csipiemonte.it";
+	private String type = null;
+	private String id = null;
 	
 	public AgentDSDCAT(){
 		
@@ -22,7 +22,15 @@ public class AgentDSDCAT {
 		return type;
 	}
 
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public String getId() {
 		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }

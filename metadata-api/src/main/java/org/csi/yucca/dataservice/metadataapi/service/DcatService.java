@@ -54,8 +54,6 @@ public class DcatService extends AbstractService {
 		catalog.setTitle("CATALOGO SMART DATA");
 		catalog.setHomepage("http://userportal.smartdatanet.it");
 
-		catalog.getPublisher().setName("CSI PIEMONTE");
-
 		LicenceTypeDCAT lic = new LicenceTypeDCAT();
 		//catalog.setLicense(lic.getjson());
 		catalog.setLicense(lic);
@@ -82,15 +80,42 @@ public class DcatService extends AbstractService {
 						loadMetadata(userAuth, metadata.getCode() + "_odata", null, Constants.OUTPUT_FORMAT_JSON, lang),
 						Metadata.class);
 
-				//if (metadataST.getDcat().isDcatReady()) {
 					DatasetDCAT dsDCAT = new DatasetDCAT();
 
-					if ((metadataST.getIsopendata() != null) && (metadataST.getIsopendata())){
-						dsDCAT.getPublisher().setName(metadataST.getOpendata().getAuthor());
-						dsDCAT.getRightsHolder().setName(metadataST.getOpendata().getAuthor());
+					if (metadataST.getDcatCreatorName() != null){
+						dsDCAT.getCreator().setName(metadataST.getDcatCreatorName());
 					} else { 
-						dsDCAT.getPublisher().setName("CSI PIEMONTE");
+						dsDCAT.getCreator().setName("CSI PIEMONTE");
+					}
+					
+					if (metadataST.getDcatCreatorType() != null){
+						dsDCAT.getCreator().setType(metadataST.getDcatCreatorType());
+					} else { 
+						dsDCAT.getCreator().setType("http://purl.org/adms/publishertype/Company");
+					}
+
+					if (metadataST.getDcatCreatorId() != null){
+						dsDCAT.getCreator().setId(metadataST.getDcatCreatorId());
+					} else { 
+						dsDCAT.getCreator().setId("01995120019");
+					}
+					
+					if (metadataST.getDcatRightsHolderName() != null){
+						dsDCAT.getRightsHolder().setName(metadataST.getDcatRightsHolderName());
+					} else { 
 						dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
+					}
+
+					if (metadataST.getDcatRightsHolderType() != null){
+						dsDCAT.getRightsHolder().setType(metadataST.getDcatRightsHolderType());
+					} else { 
+						dsDCAT.getRightsHolder().setType("http://purl.org/adms/publishertype/Company");
+					}
+					
+					if (metadataST.getDcatRightsHolderId() != null){
+						dsDCAT.getRightsHolder().setId(metadataST.getDcatRightsHolderId());
+					} else { 
+						dsDCAT.getRightsHolder().setId("01995120019");
 					}
 					
 					dsDCAT.setDescription(metadata.getDescription());
@@ -122,10 +147,8 @@ public class DcatService extends AbstractService {
 					dsDCAT.addDistribution(distr);
 
 					VcardDCAT publisher = new VcardDCAT();
-					publisher.setHasEmail(metadataST.getDcat().getEmailOrg());
-					publisher.setHasTelephone(metadataST.getDcat().getTelOrg());
-					publisher.setHasURL(metadataST.getDcat().getUrlOrg());
-					publisher.setOrganizationName(metadataST.getDcat().getNomeOrg());
+					publisher.setHasEmail(metadataST.getDcatEmailOrg());
+					publisher.setHasTelephone(metadataST.getDcatEmailOrg());
 					dsDCAT.setContactPoint(publisher);
 					
 					catalog.getDataset().add(dsDCAT);

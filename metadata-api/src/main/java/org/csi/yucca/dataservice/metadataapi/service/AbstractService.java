@@ -110,7 +110,7 @@ public abstract class AbstractService {
 		if (tenant != null && !tenant.trim().equals("")) { 
 			if (!query.equals(""))
 				query += " AND ";
-			query += " (tenantCode eq " + tenant + " AND codiceTenant eq " + tenant + ") ";
+			query += " (tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {
@@ -141,7 +141,7 @@ public abstract class AbstractService {
 		}
 
 		if (!query.equals(""))
-			parameters.put("query", query);
+			parameters.put("query", "(" + query + ")");
 
 		if (start == null)
 			start = 0;

@@ -11,7 +11,7 @@ public class DatasetDCAT {
 	private VcardDCAT contactPoint = new VcardDCAT();
 	private ArrayList<String> keyword = new ArrayList<String>(); // metadata.info.tags
 																	// []
-	private AgentDSDCAT publisher = new AgentDSDCAT(); // dct:publisher
+	private AgentDSDCAT creator = new AgentDSDCAT(); // dct:publisher
 	private String theme; // metadata.info.dataDomain
 	private String accessRights; // metadata.info.visibility
 	private String accrualPeriodicity; // metadata.info.fps
@@ -24,7 +24,7 @@ public class DatasetDCAT {
 	private Long modified; // opendata.dataUpdateDate
 	private String versionInfo; // metadata.datasetVersion
 	private String subTheme; // metadata.info.codSubDomain
-	private AgentDSDCAT rightsHolder = new AgentDSDCAT();;
+	private AgentDSDCAT rightsHolder = new AgentDSDCAT();
 	//private String creator = "CSI PIEMONTE";
 
 	private List<DistributionDCAT> distribution = new ArrayList<DistributionDCAT>();
@@ -77,8 +77,8 @@ public class DatasetDCAT {
 		this.keyword.add(keyword);
 	}
 
-	public AgentDSDCAT getPublisher() {
-		return publisher;
+	public AgentDSDCAT getCreator() {
+		return creator;
 	}
 
 	public String getTheme() {
