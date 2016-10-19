@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -31,9 +32,12 @@ public class StreamService extends AbstractService {
 	@Consumes("application/json")
 	public DatasetBulkInsertOutput dataInsert(@Context HttpServletRequest request, String jsonData,
 			@PathParam(value="codTenant") String codTenant, @HeaderParam(value="UNIQUE_ID")String uniqueid,
-			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo) throws InsertApiBaseException  {
+			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
+			 @Context final HttpServletResponse response) throws InsertApiBaseException  {
 		
-		return super.dataInsert(request,jsonData,codTenant,uniqueid,forwardfor,authInfo);
+		super.authenticate(request, codTenant);
+		
+		return super.dataInsert(request,response,jsonData,codTenant,uniqueid,forwardfor,authInfo);
 	}
 
 	@Override

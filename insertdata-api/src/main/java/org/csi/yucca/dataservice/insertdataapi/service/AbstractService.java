@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,10 +42,12 @@ public abstract class AbstractService {
 	}
 
 	public DatasetBulkInsertOutput dataInsert(HttpServletRequest request,
-			String jsonData, String codTenant, String uniqueid,
+			HttpServletResponse response, String jsonData, String codTenant, String uniqueid,
 			String forwardfor, String authInfo) {
 		System.out.println("codiceTenant"+codTenant);
-		// TODO  basic authentication
+	
+		
+		
 		if (!validationJsonFormat(jsonData))
 		{
 			throw new InsertApiBaseException("E012");
@@ -94,7 +98,6 @@ public abstract class AbstractService {
 				accLog1.setDataIn(outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				accLog1.setDatasetcode(outData.getDataBLockreport().get(i).getIdDataset()+":"+outData.getDataBLockreport().get(i).getDatasetVersion());
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
-			//	logAccounting.info(accLog1.toString());	
 				inData+=outData.getDataBLockreport().get(i).getNumRowToInsFromJson();
 				
 			}
@@ -121,6 +124,7 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset] END --> elapsed: "+deltaTime);
 		}
 
+		response.setStatus(Status.ACCEPTED.getStatusCode());
 		return outData;
 
 	}
@@ -195,5 +199,12 @@ public abstract class AbstractService {
 		}
 
 		return outData;
+	}
+
+
+
+	public void authenticate(HttpServletRequest request, String codTenant) {
+		// TODO Auto-generated method stub
+		
 	}
 }
