@@ -259,7 +259,7 @@ public class SDPExpressionVisitor implements ExpressionVisitor {
 			if (paramBinaryExpression.getLeftOperand() instanceof PropertyExpression && paramBinaryExpression.getRightOperand() instanceof LiteralExpression) {
 				clause = new BasicDBObject(paramObject1.toString(),new BasicDBObject("$gt",paramObject2));
 			} else if (paramBinaryExpression.getLeftOperand() instanceof  LiteralExpression && paramBinaryExpression.getRightOperand() instanceof PropertyExpression) {
-				clause = new BasicDBObject(paramObject2.toString(),new BasicDBObject("$le",paramObject1));
+				clause = new BasicDBObject(paramObject2.toString(),new BasicDBObject("$lt",paramObject1));
 			}  
 			break;
 		case LE:
