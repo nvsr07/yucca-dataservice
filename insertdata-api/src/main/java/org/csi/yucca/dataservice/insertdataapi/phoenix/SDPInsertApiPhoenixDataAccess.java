@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import net.minidev.json.JSONObject;
 
+import org.apache.calcite.avatica.remote.Service.ConnectionSyncRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -49,14 +50,7 @@ public class SDPInsertApiPhoenixDataAccess {
 		try {
 			//System.out.println("###########################################");
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
-			if (!conn.isValid(5))
-			{
-				log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Try to reconnect");
-				try {
-					conn.commit();
-				} catch (Exception e) {log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Exception catched");}
-				
-			}
+			try {conn.commit();} catch (Exception e) {log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Exception catched");}
 					
 			  
 			conn.setAutoCommit(false);
