@@ -102,7 +102,9 @@ public class SDPInsertApiPhoenixDataAccess {
 	                campiSQL+=" DOUBLE";
 	            } else if ("latitude".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" DOUBLE";
-	            } 
+	            } else if ("binary".equalsIgnoreCase(tipo)) {
+	                campiSQL+=" VARCHAR";
+	            }
 	            
 	            
 	            valuesSql+=",?";
@@ -151,6 +153,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.FLOAT);
 	                    else stmt.setFloat(pos, (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
+	                    stmt.setString(pos, value.toString());
+	                } else if ("binary".equalsIgnoreCase(tipo)) {
 	                    stmt.setString(pos, value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TINYINT);
