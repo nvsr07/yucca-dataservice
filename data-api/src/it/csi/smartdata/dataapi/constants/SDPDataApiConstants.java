@@ -162,7 +162,7 @@ public interface SDPDataApiConstants {
 		
 		
 		//1.2 binary
-		put("binary"    ,"__todo");
+		put("binary"    ,"_s");
 		
 		
 		

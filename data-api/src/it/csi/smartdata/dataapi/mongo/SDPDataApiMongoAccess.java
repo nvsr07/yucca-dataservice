@@ -714,11 +714,11 @@ public class SDPDataApiMongoAccess {
 
 			DBCursor cursor=null;
 
-			//MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
-			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
-			DB db = mongoClient.getDB(dbcfg);
-
-			DBCollection collMisure = db.getCollection(collection);
+			//MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+//			DB db = mongoClient.getDB(dbcfg);
+//			MongoClient mongoClient = null;			
+//			DB db = null;
+			DBCollection collMisure =null;
 			BasicDBList queryTot=new BasicDBList();
 			BasicDBList queryTotCnt=new BasicDBList();
 
@@ -1113,7 +1113,8 @@ public class SDPDataApiMongoAccess {
 
 
 			//MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
-			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+			//MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+			MongoClient mongoClient = null;			
 
 
 			DB db = mongoClient.getDB(dbcfg);
@@ -1873,10 +1874,11 @@ public class SDPDataApiMongoAccess {
 			DBCursor cursor=null;
 
 			//MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
-			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
-			DB db = mongoClient.getDB(dbcfg);
+			//MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+			MongoClient mongoClient = null;			
+			//DB db = mongoClient.getDB(dbcfg);
 
-			DBCollection collMisure = db.getCollection(collection);
+			DBCollection collMisure = null;
 			BasicDBList queryTot=new BasicDBList();
 			BasicDBList queryTotCnt=new BasicDBList();
 
@@ -2305,11 +2307,11 @@ public class SDPDataApiMongoAccess {
 
 			DBCursor cursor=null;
 
-			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
-			DB db = mongoClient.getDB(dbcfg);
+			//MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+//			DB db = mongoClient.getDB(dbcfg);
+//			DBCollection collMisure = db.getCollection(collection);
 
-			DBCollection collMisure = db.getCollection(collection);
-			
+			DBCollection collMisure =null;
 			
 			String queryTotSolr="(idDataset_l:"+idDataset+")";
 			String queryTotCntSolr="(idDataset_l:"+idDataset+")";
