@@ -138,7 +138,9 @@ public class InsertApiLogic {
 		int reqVersion=-1;
 		
 		int totalDocumentsToIns=0;
-		
+		if (JsonPath.read(jsonInput, "$["+i+"]")==null)
+			jsonInput = "["+jsonInput+"]";
+
 		while (i<100000 && !endArray) {
 			try {
 				//System.out.println(" TIMETIME parseJsonInputDataset -- inizio blocco "+i+"--> "+System.currentTimeMillis());
@@ -242,6 +244,9 @@ public class InsertApiLogic {
 		String stream=null;
 		String streamToFind=null;
 		String sensorToFind=null;
+		if (JsonPath.read(jsonInput, "$["+i+"]")==null)
+			jsonInput = "["+jsonInput+"]";
+		
 		while (i<100000 && !endArray) {
 			try {
 				ooo = JsonPath.read(jsonInput, "$["+i+"]");
@@ -497,7 +502,7 @@ public class InsertApiLogic {
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_APPLICATION && application==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")"); 
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_SENSOR && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_INTERNAL || 
-					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET || 
+//					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET || 
 					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
 			
 			log.info("[InsertApiLogic::parseMisura]      OK --------------");
