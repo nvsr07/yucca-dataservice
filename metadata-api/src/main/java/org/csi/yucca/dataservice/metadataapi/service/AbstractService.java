@@ -104,14 +104,14 @@ public abstract class AbstractService {
 		if (dCatReady != null && dCatReady) {
 			if (!query.equals(""))
 				query += " AND ";
-			query += " (\"\\\"dcatReady\\\" : 0\") ";
+			query += " (dcatReady) ";
 			//("\"dcatReady\" : 0") AND ("\"tenantCode\" : \"tst_csp\"" OR "\"codTenant\" : \"tst_csp\"")
 		}
 
 		if (tenant != null && !tenant.trim().equals("")) { 
 			if (!query.equals(""))
 				query += " AND ";
-			query += " (\"\\\"tenantCode\\\" : \\\"" + tenant + "\\\"\" \"\\\"codiceTenant\\\" : \\\"" + tenant + "\\\"\") ";
+			query += " (tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {
