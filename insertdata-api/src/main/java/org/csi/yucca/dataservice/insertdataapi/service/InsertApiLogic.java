@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
+import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
@@ -20,6 +21,7 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.phoenix.SDPInsertApiPhoenixDataAccess;
+import org.csi.yucca.dataservice.insertdataapi.solr.SDPInsertApiSolrDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.jayway.jsonpath.JsonPath;
@@ -36,6 +38,7 @@ public class InsertApiLogic {
 		//System.out.println(" TIMETIME insertManager -- start --> "+System.currentTimeMillis());
 
 		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
+		SDPInsertApiSolrDataAccess solrAccess=new SDPInsertApiSolrDataAccess();
 		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
 		DatasetBulkInsert curBulkToIns=null;
 
@@ -56,14 +59,10 @@ public class InsertApiLogic {
 		
 		//System.out.println(" TIMETIME insertManager -- fine ciclo UNO --> "+System.currentTimeMillis());
 		
+		
 		String idRequest=mongoAccess.insertStatusRecordArray(tenant,datiToIns);
 
 		//System.out.println(" TIMETIME insertManager -- fine inserimento start ins --> "+System.currentTimeMillis());
-
-
-
-
-
 
 		iter= datiToIns.keySet().iterator();
 
@@ -77,14 +76,36 @@ public class InsertApiLogic {
 				curBulkToIns.setGlobalReqId(idRequest);
 
 				//int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns,indiceDaCReare);
-				//System.out.println(" TIMETIME insertManager -- insert bulk blocco "+cnt+"--> "+System.currentTimeMillis());
+				Long startTimeX = System.currentTimeMillis();
+				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
 				phoenixAccess.insertBulk(tenant, curBulkToIns);
+				log.info("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 				
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
 //				indiceDaCReare=false;
 
 				datiToIns.put(key, curBulkToIns);
+				
+				try {
+					startTimeX = System.currentTimeMillis();
+					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
+					solrAccess.insertBulk(tenant,curBulkToIns );
+					log.info("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
+					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
+					datiToIns.put(key, curBulkToIns);
+				} catch (Exception e)
+				{
+					log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException "+e);
+					log.log(Level.WARNING, "[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId="+idRequest + "    blockRequestId="+curBulkToIns.getRequestId() );
+					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+					try {
+						curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+
+					} catch (Exception k) {
+
+					}
+				}
 			} catch (Exception e) {
 				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] GenericException "+e);
 				log.log(Level.WARNING, "[InsertApiLogic::insertManager] Fallito inserimento blocco --> globalRequestId="+idRequest + "    blockRequestId="+curBulkToIns.getRequestId() );
@@ -320,8 +341,9 @@ public class InsertApiLogic {
 				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
 				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
+				components.put("objectid", ObjectId.get().toString());
 				listJson.add(components);
-				
+
 				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") parse componenti--> "+System.currentTimeMillis());
 
 				
@@ -355,7 +377,8 @@ public class InsertApiLogic {
 	
 	
 	//private String parseComponents (JSONObject components,String insStrConst,ArrayList<FieldsMongoDto> elencoCampi) throws Exception {
-	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo,HashMap<String, FieldsMongoDto> campiMongoV1) throws Exception {		
+	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo,
+			HashMap<String, FieldsMongoDto> campiMongoV1) throws Exception {		
 		Iterator<String> itCampiJson=components.keySet().iterator();
 
 		String currRigaIns=null;
@@ -388,20 +411,20 @@ public class InsertApiLogic {
 					" - field "+jsonField+" ("+insStrConst+"): "+valore);
 			
 			
-			log.info("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
-			log.info("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
-			log.info("[InsertApiLogic::parseCompnents] valore: "+valore);
+			log.finer("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
+			log.finer("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
+			log.finer("[InsertApiLogic::parseCompnents] valore: "+valore);
 			if (campoMongoV1!=null) {
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
-				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
+				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
+				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
+				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
+				if (null!=campoMongoV1) log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
 				numCampiInV1++;
 			}
-			log.info("[InsertApiLogic::parseCompnents] .................");
-			log.info("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
-			log.info("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
-			log.info("[InsertApiLogic::parseCompnents]          valore="+valore);
+			log.finer("[InsertApiLogic::parseCompnents] .................");
+			log.finer("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
+			log.finer("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
+			log.finer("[InsertApiLogic::parseCompnents]          valore="+valore);
 			
 			
 			if (null!=campoMongoV1 && !campoMongoV1.validateValue(valore))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
@@ -557,7 +580,7 @@ public class InsertApiLogic {
 				
 				rigadains.add(parseComponents(components, insStrConstBase+", time: {$date :\""+timeStamp+"\"} ", campiMongo,campiMongoV1));
 				//System.out.println(" TIMETIME parseMisura -- valore ("+i+") parsing components--> "+System.currentTimeMillis());
-				
+				components.put("objectid", ObjectId.get().toString());
 				components.put("time", timeStamp);
 				listJson.add(components);
 				i++;
@@ -580,102 +603,9 @@ public class InsertApiLogic {
 
 	}		
 	
-	
-
-
-	public void copyData(String tenantCode,String globlalRequestId) throws Exception {
-		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
-		boolean startCopy= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_START_COPY,DatasetBulkInsert.STATUS_END_INS) ;
-		if (startCopy==false) throw new Exception("richiesta non trovata o in stato non corretto");
-
-		ArrayList<DatasetBulkInsert> datiRibalta= mongoAccess.getElencoRichiesteByGlobRequestId(globlalRequestId);
-		if (null==datiRibalta || datiRibalta.size()<=0)  throw new Exception("nessun blocco da elaborare per la richiesta "+globlalRequestId);
-
-
-
-		boolean allOk=true;
-		for (int i = 0; i<datiRibalta.size();i++) {
-
-			boolean curblockOk=true;
-			log.log(Level.INFO, "[InsertApiLogic::copyData]**** Start Elaboration block: "+i);
-			log.log(Level.INFO, "[InsertApiLogic::copyData]               datasetId:"+datiRibalta.get(i).getIdDataset());
-			log.log(Level.INFO, "[InsertApiLogic::copyData]               datasetVersion:"+datiRibalta.get(i).getDatasetVersion());
-			log.log(Level.INFO, "[InsertApiLogic::copyData]               requestId:"+datiRibalta.get(i).getRequestId());
-			log.log(Level.INFO, "[InsertApiLogic::copyData]               numberofDocs:"+datiRibalta.get(i).getNumRowToInsFromJson());
-			log.log(Level.INFO, "[InsertApiLogic::copyData]               startstatus:"+datiRibalta.get(i).getStatus());
-			if (!DatasetBulkInsert.STATUS_END_INS.equals(datiRibalta.get(i).getStatus())) {
-				log.log(Level.INFO, "[InsertApiLogic::copyData]               ERROR:incorrect status");
-				allOk=false;
-			} else {
-				curblockOk= copyBlock(datiRibalta.get(i),globlalRequestId,tenantCode);
-			}
-			log.log(Level.INFO, "[InsertApiLogic::copyData] end copy block --> " +curblockOk);
-
-			if(!curblockOk) allOk=false;
-
+	public static void main(String[] args) {
+		for (int i = 0; i < 100; i++) {
+			System.out.println(ObjectId.get().toString());
 		}
-
-
-		boolean fineOp=false;
-		if (allOk) {
-			fineOp=mongoAccess.dropCollection(tenantCode, globlalRequestId);
-			fineOp= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_END_COPY,DatasetBulkInsert.STATUS_START_COPY) ;
-		} else { 
-			fineOp= mongoAccess.updateGlobalRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_KO_COPY,DatasetBulkInsert.STATUS_START_COPY) ;
-		}
-
-
-
 	}
-	private boolean copyBlock(DatasetBulkInsert blockInfo,String globlalRequestId,String tenantCode) throws Exception {
-		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
-		//TODO okkio... .ragioniamo solo 
-		
-		MongoDatasetInfo infoDataset = null;
-		
-		try {
-			log.log(Level.INFO, "[InsertApiLogic::copyBlock] blockInfo --> "+blockInfo);
-			log.log(Level.INFO, "[InsertApiLogic::copyBlock] blockInfogetDatasetCode --> "+blockInfo.getDatasetCode());
-			log.log(Level.INFO, "[InsertApiLogic::copyBlock] blockInfogetDatasetVersion --> "+blockInfo.getDatasetVersion());
-			log.log(Level.INFO, "[InsertApiLogic::copyBlock] tenantCode --> "+tenantCode);
-			infoDataset=mongoAccess.getInfoDataset(blockInfo.getDatasetCode(), blockInfo.getDatasetVersion(),tenantCode);
-		} catch (Exception e ) {
-			log.log(Level.WARNING, "[InsertApiLogic::copyBlock] errore nel recupero di info dataset "+e);
-		}
-		
-		DbConfDto dbConfgi= null;
-		if (null != infoDataset && "bulkDataset".equals(infoDataset.getDatasetSubType())) {
-			dbConfgi= SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(SDPInsertApiMongoConnectionSingleton.DB_DATA, tenantCode);	
-			
-		} else {
-			dbConfgi= SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(SDPInsertApiMongoConnectionSingleton.DB_MESURES, tenantCode);	
-		}
-
-		
-		log.log(Level.INFO, "[InsertApiLogic::copyBlock] DBTARGET-->"+ dbConfgi.getDataBase());
-		log.log(Level.INFO, "[InsertApiLogic::copyBlock] COLLECTION-->"+ dbConfgi.getCollection());
-		
-		try {
-
-			boolean startCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_START_COPY,blockInfo.getRequestId()) ;
-			if (!startCopyExecuted) throw new Exception("error in setting start copy for blocrk "+blockInfo.getRequestId());
-
-
-			int documnetsCopied=mongoAccess.copyRecords(tenantCode, globlalRequestId, blockInfo, dbConfgi);
-
-			if (documnetsCopied!=blockInfo.getNumRowToInsFromJson()) {
-				boolean KoCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_KO_COPY,blockInfo.getRequestId()) ;
-				if (!KoCopyExecuted) throw new Exception("error in setting ko copy for blocrk "+blockInfo.getRequestId());
-				return  false;
-			} else {
-				boolean endtCopyExecuted = mongoAccess.updateSingleArreayRequestStatus(globlalRequestId, DatasetBulkInsert.STATUS_END_COPY,blockInfo.getRequestId()) ;
-				if (!endtCopyExecuted) throw new Exception("error in setting end copy for blocrk "+blockInfo.getRequestId());
-			}
-			return true;
-		} catch (Exception e ) {
-			log.log(Level.SEVERE, "[InsertApiLogic::copyBlock] errore nel recupero di info dataset "+e);
-			return false;
-		}
-	}	
-
 }

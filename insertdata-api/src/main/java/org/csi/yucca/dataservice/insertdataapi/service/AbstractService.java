@@ -5,16 +5,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertIOperationReport;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
 import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
-import org.csi.yucca.dataservice.insertdataapi.util.Config;
 
 import com.jayway.jsonpath.JsonPath;
 
@@ -23,8 +23,6 @@ public abstract class AbstractService {
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	private static final Log logAccounting=LogFactory.getLog("sdpaccounting");
 
-	protected String STORE_BASE_URL = Config.getInstance().getStoreBaseUrl();
-	protected String MANAGEMENT_BASE_URL = Config.getInstance().getManagementBaseUrl();
 
 
 	public AbstractService() {
@@ -44,10 +42,12 @@ public abstract class AbstractService {
 	}
 
 	public DatasetBulkInsertOutput dataInsert(HttpServletRequest request,
-			String jsonData, String codTenant, String uniqueid,
+			HttpServletResponse response, String jsonData, String codTenant, String uniqueid,
 			String forwardfor, String authInfo) {
 		System.out.println("codiceTenant"+codTenant);
-		// TODO  basic authentication
+	
+		
+		
 		if (!validationJsonFormat(jsonData))
 		{
 			throw new InsertApiBaseException("E012");
@@ -73,9 +73,11 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset] BEGIN ");
 
 			//System.out.println(" TIMETIME insertApiDataset -- inizio --> "+System.currentTimeMillis());
-
+			
+			Long starTtimeX=System.currentTimeMillis();
+			log.info( "[InsertApi::insertApiDataset] BEGIN Parsing and validation ..");
 			HashMap<String, DatasetBulkInsert> mapAttributes = parseJsonInput(codTenant,jsonData);
-			//System.out.println(" TIMETIME insertApiDataset -- parsing --> "+System.currentTimeMillis());
+			log.info( "[InsertApi::insertApiDataset] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtimeX)+"]");
 
 
 			outData=inserimentoGeneralizzato(codTenant, mapAttributes);
@@ -90,13 +92,12 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset]       error code      --> " +(outData.getInsertException()!=null ? outData.getInsertException().getErrorCode() : "NONE" ));
 			log.info( "[InsertApi::insertApiDataset]       Numero Blocchi  --> " +(outData.getDataBLockreport()!=null ? outData.getDataBLockreport().size() : "WARNING: NONE" ));
 			for (int i=0;outData.getDataBLockreport()!=null && i<outData.getDataBLockreport().size(); i++) {
-				log.info( "[InsertApi::insertApiDataset]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
-				log.info( "[InsertApi::insertApiDataset]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
-				log.info( "[InsertApi::insertApiDataset]            blocco("+i+") getRequestId            --> " +outData.getDataBLockreport().get(i).getRequestId());
+				log.debug("[InsertApi::insertApiDataset]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
+				log.debug( "[InsertApi::insertApiDataset]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
+				log.debug( "[InsertApi::insertApiDataset]            blocco("+i+") getRequestId            --> " +outData.getDataBLockreport().get(i).getRequestId());
 				accLog1.setDataIn(outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				accLog1.setDatasetcode(outData.getDataBLockreport().get(i).getIdDataset()+":"+outData.getDataBLockreport().get(i).getDatasetVersion());
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
-			//	logAccounting.info(accLog1.toString());	
 				inData+=outData.getDataBLockreport().get(i).getNumRowToInsFromJson();
 				
 			}
@@ -123,6 +124,7 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset] END --> elapsed: "+deltaTime);
 		}
 
+		response.setStatus(Status.ACCEPTED.getStatusCode());
 		return outData;
 
 	}
@@ -197,5 +199,12 @@ public abstract class AbstractService {
 		}
 
 		return outData;
+	}
+
+
+
+	public void authenticate(HttpServletRequest request, String codTenant) {
+		// TODO Auto-generated method stub
+		
 	}
 }

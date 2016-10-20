@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import net.minidev.json.JSONObject;
 
+import org.apache.calcite.avatica.remote.Service.ConnectionSyncRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
@@ -18,6 +19,7 @@ import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
+import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BulkWriteResult;
 import com.mongodb.DBObject;
@@ -47,7 +49,9 @@ public class SDPInsertApiPhoenixDataAccess {
 		BulkWriteResult result=null;
 		try {
 			//System.out.println("###########################################");
-			conn = DriverManager.getConnection("jdbc:phoenix:thin:url=http://sdnet-zeppelin1.sdp.csi.it:8765;serialization=PROTOBUF");
+			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
+			try {conn.commit();} catch (Exception e) {log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Exception catched");}
+					
 			  
 			conn.setAutoCommit(false);
 
@@ -98,7 +102,9 @@ public class SDPInsertApiPhoenixDataAccess {
 	                campiSQL+=" DOUBLE";
 	            } else if ("latitude".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" DOUBLE";
-	            } 
+	            } else if ("binary".equalsIgnoreCase(tipo)) {
+	                campiSQL+=" VARCHAR";
+	            }
 	            
 	            
 	            valuesSql+=",?";
@@ -114,7 +120,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	            
 	            stmt.setInt(1,  (Integer.parseInt(Long.toString(dati.getIdDataset()))));
 	            stmt.setInt(2,  (Integer.parseInt(Long.toString(dati.getDatasetVersion()))));
-	            stmt.setString(3, ObjectId.get().toString());
+	            stmt.setString(3, json.get("objectid").toString());
 	            
 	            int pos=4;
 	            if (!dati.getDatasetType().equals("bulkDataset"))
@@ -147,6 +153,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.FLOAT);
 	                    else stmt.setFloat(pos, (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
+	                    stmt.setString(pos, value.toString());
+	                } else if ("binary".equalsIgnoreCase(tipo)) {
 	                    stmt.setString(pos, value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TINYINT);
