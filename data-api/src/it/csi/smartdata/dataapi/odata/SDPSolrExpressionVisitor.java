@@ -694,6 +694,9 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		public Myobj (String data) {
 			this.data = data;
 		}
+		public String toString() {
+			return this.data;
+		}
 	}
 	@Override
 	public Object visitMember(MemberExpression paramMemberExpression,
