@@ -204,7 +204,7 @@ public abstract class AbstractService {
 
 
 	public void authenticate(HttpServletRequest request, String codTenant) {
-		// TODO Auto-generated method stub
+		// not used: authentication made on api manager
 		
 	}
 }
