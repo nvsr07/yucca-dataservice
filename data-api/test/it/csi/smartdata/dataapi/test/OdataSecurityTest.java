@@ -48,34 +48,37 @@ public class OdataSecurityTest extends OdataTestBase{
 		
 		RequestSpecification rs =  given().config(RestAssured.config().xmlConfig(xmlConfig));
 
-		if (StringUtils.isNotEmpty(dato.optString("odata.username")) && StringUtils.isNotEmpty(dato.optString("odata."+dato.optString("odata.username")+".user")))
-		{
-			rs = rs.auth().basic(dato.getString("odata."+dato.optString("odata.username")+".user"), dato.getString("odata."+dato.optString("odata.username")+".token"));
-			ArrayList<Header> hl=new ArrayList<Header>();
-			hl.add(new Header("Authorization", "Bearer "+dato.getString("odata."+dato.optString("odata.username")+".token")));
-			Headers hs=new Headers(hl);
-			rs.headers(hs);
-			
-		}	 
+		
+		if (!(StringUtils.isNotEmpty(dato.optString("odata.skipTest")) && ("1".equals(dato.optString("odata.skipTest"))) ) ) {   
+		
+			if (StringUtils.isNotEmpty(dato.optString("odata.username")) && StringUtils.isNotEmpty(dato.optString("odata."+dato.optString("odata.username")+".user")))
+			{
+				rs = rs.auth().basic(dato.getString("odata."+dato.optString("odata.username")+".user"), dato.getString("odata."+dato.optString("odata.username")+".token"));
+				ArrayList<Header> hl=new ArrayList<Header>();
+				hl.add(new Header("Authorization", "Bearer "+dato.getString("odata."+dato.optString("odata.username")+".token")));
+				Headers hs=new Headers(hl);
+				rs.headers(hs);
+				
+			}	 
+	
+	
+	
+			Response rsp = rs.when().get(makeUrl(dato,null));
+	
+	
+			if (dato.getString("odata.apiType").equals("Measures")) {
+				//rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.hasItems(Matchers.equalTo(operand)"Measures","MeasuresStats") );
+				//rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.hasItem(Matchers.equalTo("Measuresaa")) );
+				rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.containsInAnyOrder("Measures","MeasuresStats") );
+			} else if (dato.getString("odata.apiType").equals("DataEntities")) {
+				rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.equalTo("DataEntities") );
+			} else if (dato.getString("odata.apiType").equals("InvalidCredentials")) {
+				rsp.then().assertThat().body("fault.message" , Matchers.equalTo("Invalid Credentials") );
+			} else if (dato.getString("odata.apiType").equals("MissingCredentials")) {
+				rsp.then().assertThat().body("fault.message" , Matchers.equalTo("Missing Credentials") );
+			}
 
-
-
-		Response rsp = rs.when().get(makeUrl(dato,null));
-
-
-		if (dato.getString("odata.apiType").equals("Measures")) {
-			//rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.hasItems(Matchers.equalTo(operand)"Measures","MeasuresStats") );
-			//rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.hasItem(Matchers.equalTo("Measuresaa")) );
-			rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.containsInAnyOrder("Measures","MeasuresStats") );
-		} else if (dato.getString("odata.apiType").equals("DataEntities")) {
-			rsp.then().assertThat().body("service.workspace.collection.@href" , Matchers.equalTo("DataEntities") );
-		} else if (dato.getString("odata.apiType").equals("InvalidCredentials")) {
-			rsp.then().assertThat().body("fault.message" , Matchers.equalTo("Invalid Credentials") );
-		} else if (dato.getString("odata.apiType").equals("MissingCredentials")) {
-			rsp.then().assertThat().body("fault.message" , Matchers.equalTo("Missing Credentials") );
-		}
-
-
+		} 
 
 		
 
