@@ -230,7 +230,7 @@
 				  </plugins>
 				<resources>
 					<resource>
-						<directory>${project.build.directory}/checkout/binaryapi/resources/int</directory>
+						<directory>${project.build.directory}/checkout/binary-api/resources/int</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -239,7 +239,7 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>${project.build.directory}/checkout/binaryapi/resources/int/</webXmlPath>
+				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/int/</webXmlPath>
 			</properties>
 		</profile>
 		<profile>
@@ -266,7 +266,7 @@
 				  </plugins>
 				<resources>
 					<resource>
-						<directory>${project.build.directory}/checkout/binaryapi/resources/prod</directory>
+						<directory>${project.build.directory}/checkout/binary-api/resources/prod</directory>
 					</resource>
 					<resource>
 						<directory>conf</directory>
@@ -275,7 +275,7 @@
 				</resources>
 			</build>
 			<properties>
-				<webXmlPath>${project.build.directory}/checkout/binaryapi/resources/prod/</webXmlPath>
+				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/prod/</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
