@@ -523,9 +523,7 @@ public class InsertApiLogic {
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_APPLICATION && application==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")"); 
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_SENSOR && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
-			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_INTERNAL || 
-//					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET || 
-					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
+			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
 			
 			log.info("[InsertApiLogic::parseMisura]      OK --------------");
 			
@@ -533,6 +531,10 @@ public class InsertApiLogic {
 			{
 				isVerOneRequired = false;
 				datasetType = "socialDataset";
+			}
+			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_INTERNAL)
+			{
+				isVerOneRequired = false;
 			}
 		}
 		
