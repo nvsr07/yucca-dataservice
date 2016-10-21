@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.insertdataapi.phoenix;
+package org.csi.yucca.dataservice.binaryapi.phoenix;
 
 import java.beans.Statement;
 import java.sql.Connection;
@@ -15,11 +15,11 @@ import org.apache.calcite.avatica.remote.Service.ConnectionSyncRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
-import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
-import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
-import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
+import org.csi.yucca.dataservice.binaryapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsert;
+import org.csi.yucca.dataservice.binaryapi.model.output.FieldsMongoDto;
+import org.csi.yucca.dataservice.binaryapi.util.DateUtil;
+import org.csi.yucca.dataservice.binaryapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BulkWriteResult;
 import com.mongodb.DBObject;
@@ -153,11 +153,9 @@ public class SDPInsertApiPhoenixDataAccess {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.FLOAT);
 	                    else stmt.setFloat(pos, (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.VARCHAR);
-	                	else stmt.setString(pos, value.toString());
+	                    stmt.setString(pos, value.toString());
 	                } else if ("binary".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.VARCHAR);
-	                	else stmt.setString(pos, value.toString());
+	                    stmt.setString(pos, value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TINYINT);
 	                    else stmt.setInt(pos, Boolean.parseBoolean(value.toString())?1:0);

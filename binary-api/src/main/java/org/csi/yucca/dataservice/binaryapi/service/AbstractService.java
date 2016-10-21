@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.insertdataapi.service;
+package org.csi.yucca.dataservice.binaryapi.service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,11 +10,11 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertIOperationReport;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
-import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
+import org.csi.yucca.dataservice.binaryapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsert;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsertIOperationReport;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsertOutput;
+import org.csi.yucca.dataservice.binaryapi.util.AccountingLog;
 
 import com.jayway.jsonpath.JsonPath;
 

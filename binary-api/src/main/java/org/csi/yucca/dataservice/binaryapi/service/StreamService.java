@@ -1,0 +1,51 @@
+package org.csi.yucca.dataservice.binaryapi.service;
+
+import java.util.HashMap;
+
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+
+import org.apache.log4j.Logger;
+import org.csi.yucca.dataservice.binaryapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsert;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsertOutput;
+import org.csi.yucca.dataservice.binaryapi.util.AccountingLog;
+
+@Path("/stream")
+public class StreamService extends AbstractService {
+
+	@Context
+	ServletContext context;
+	static Logger log = Logger.getLogger(StreamService.class);
+
+	@POST
+	@Path("/input/{codTenant}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public DatasetBulkInsertOutput dataInsert(@Context HttpServletRequest request, String jsonData,
+			@PathParam(value="codTenant") String codTenant, @HeaderParam(value="UNIQUE_ID")String uniqueid,
+			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
+			 @Context final HttpServletResponse response) throws InsertApiBaseException  {
+		
+		super.authenticate(request, codTenant);
+		
+		return super.dataInsert(request,response,jsonData,codTenant,uniqueid,forwardfor,authInfo);
+	}
+
+	@Override
+	protected HashMap<String, DatasetBulkInsert> parseJsonInput(
+			String codTenant, String jsonData) throws Exception {
+		return new InsertApiLogic().parseJsonInputStream(codTenant, jsonData);
+	}
+
+
+	
+}

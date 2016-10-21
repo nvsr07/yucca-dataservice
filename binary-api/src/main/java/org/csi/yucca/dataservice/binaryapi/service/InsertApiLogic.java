@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.insertdataapi.service;
+package org.csi.yucca.dataservice.binaryapi.service;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,17 +12,17 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import org.bson.types.ObjectId;
-import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
-import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
-import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
-import org.csi.yucca.dataservice.insertdataapi.phoenix.SDPInsertApiPhoenixDataAccess;
-import org.csi.yucca.dataservice.insertdataapi.solr.SDPInsertApiSolrDataAccess;
-import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
+import org.csi.yucca.dataservice.binaryapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.binaryapi.model.output.DatasetBulkInsert;
+import org.csi.yucca.dataservice.binaryapi.model.output.DbConfDto;
+import org.csi.yucca.dataservice.binaryapi.model.output.FieldsMongoDto;
+import org.csi.yucca.dataservice.binaryapi.model.output.MongoDatasetInfo;
+import org.csi.yucca.dataservice.binaryapi.model.output.MongoStreamInfo;
+import org.csi.yucca.dataservice.binaryapi.mongo.SDPInsertApiMongoConnectionSingleton;
+import org.csi.yucca.dataservice.binaryapi.mongo.SDPInsertApiMongoDataAccess;
+import org.csi.yucca.dataservice.binaryapi.phoenix.SDPInsertApiPhoenixDataAccess;
+import org.csi.yucca.dataservice.binaryapi.solr.SDPInsertApiSolrDataAccess;
+import org.csi.yucca.dataservice.binaryapi.util.SDPInsertApiConfig;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
@@ -293,7 +293,7 @@ public class InsertApiLogic {
 				datiToins.setStream(streamToFind);
 				datiToins.setSensor(sensorToFind);
 				datiToins.setStatus(DatasetBulkInsert.STATUS_SYNTAX_CHECKED);
-//				datiToins.setDatasetType("streamDataset");
+				datiToins.setDatasetType("streamDataset");
 				
 				totalDocumentsToIns=totalDocumentsToIns+datiToins.getNumRowToInsFromJson();
 				if (totalDocumentsToIns>SDPInsertApiConfig.MAX_DOCUMENTS_IN_REQUEST) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_MAXRECORDS);
@@ -514,7 +514,7 @@ public class InsertApiLogic {
 		if (elencoStream==null || elencoStream.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 		
 		boolean isVerOneRequired = true;
-		String datasetType = "streamDataset";
+		
 		for (int i = 0 ; i< elencoStream.size(); i++) {
 			
 			
@@ -523,19 +523,14 @@ public class InsertApiLogic {
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_APPLICATION && application==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")"); 
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_SENSOR && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
-			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
+			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_INTERNAL || 
+//					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET || 
+					elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
 			
 			log.info("[InsertApiLogic::parseMisura]      OK --------------");
 			
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET)
-			{
 				isVerOneRequired = false;
-				datasetType = "socialDataset";
-			}
-			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_INTERNAL)
-			{
-				isVerOneRequired = false;
-			}
 		}
 		
 		
@@ -626,7 +621,6 @@ public class InsertApiLogic {
 		}
 		ret= new DatasetBulkInsert();
 		ret.setDatasetVersion(datasetVersionTrovato);
-		ret.setDatasetType(datasetType);
 		ret.setIdDataset(idDatasetTrovato);
 		ret.setNumRowToInsFromJson(i);
 		ret.setRowsToInsert(rigadains);

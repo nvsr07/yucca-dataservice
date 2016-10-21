@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.insertdataapi.model.output;
+package org.csi.yucca.dataservice.binaryapi.model.output;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
