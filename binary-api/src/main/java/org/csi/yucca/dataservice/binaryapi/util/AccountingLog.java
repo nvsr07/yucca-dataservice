@@ -38,6 +38,12 @@ public class AccountingLog {
 		
 	}
 	
+	public AccountingLog(String uniqueid, String jwtData, String forwardefor){
+		setUniqueid(uniqueid);
+		setJwtData(jwtData);
+		setForwardefor(forwardefor);
+	}
+	
 	public String getJwtData() {
 		return jwtData;
 	}
