@@ -285,12 +285,11 @@ public class BinaryService {
 	@GET //ok
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/binary/{apiCode}/testMethod/{idDataSet}/{datasetVersion}/{idBinary}")
-	public InputStream testMethod(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") Integer datasetVersion,
-			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
+	@Path("/testMethod/")
+	public InputStream testMethod() throws WebApplicationException, NumberFormatException, UnknownHostException {
 		
 		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON) 
-				.entity("{\"error_name\":\"API Code = "+apiCode+"\", \"idDataSet\" = \""+idDataSet+"\", \"datasetVersion\" = \""+datasetVersion+"\", \"idBinary\" = \""+idBinary+"\", \"output\":\"NONE\", \"message\":\"ok funziona tutto!!\"}").build());
+				.entity("{\"ok\":\"API Code\", \"output\":\"NONE\", \"message\":\"ok funziona tutto!!\"}").build());
 	}
 
 
