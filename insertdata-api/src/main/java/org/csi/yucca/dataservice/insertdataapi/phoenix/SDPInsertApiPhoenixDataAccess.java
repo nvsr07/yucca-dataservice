@@ -154,10 +154,10 @@ public class SDPInsertApiPhoenixDataAccess {
 	                    else stmt.setFloat(pos, (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.VARCHAR);
-	                    stmt.setString(pos, value.toString());
+	                	else stmt.setString(pos, value.toString());
 	                } else if ("binary".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.VARCHAR);
-	                    stmt.setString(pos, value.toString());
+	                	else stmt.setString(pos, value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TINYINT);
 	                    else stmt.setInt(pos, Boolean.parseBoolean(value.toString())?1:0);
