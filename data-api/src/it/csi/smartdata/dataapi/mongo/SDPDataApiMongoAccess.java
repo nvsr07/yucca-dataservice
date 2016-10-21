@@ -55,6 +55,7 @@ public class SDPDataApiMongoAccess {
 
 	public static final String DATA_TYPE_MEASURE="measures";
 	public static final String DATA_TYPE_DATA="data";
+	public static final String DATA_TYPE_SOCIAL="social";
 
 	public SDPDataApiMongoAccess (String codiceApi) {
 		this.initConfDbObject(codiceApi);
@@ -1497,8 +1498,8 @@ public class SDPDataApiMongoAccess {
 	public SDPDataResult getBinary(String codiceTenant, String nameSpace, EdmEntityContainer entityContainer,DBObject streamMetadata,String internalId,String datatType,Object userQuery, Object userOrderBy,
 			ArrayList<String> elencoIdBinary,
 			String codiceApi,
-			int skip,
-			int limit
+			int skipI,
+			int limitI
 			) {
 
 
@@ -1512,7 +1513,9 @@ public class SDPDataApiMongoAccess {
 		//		String idDataset=null;
 		//		String datasetToFindVersion=null;
 		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
-		int cnt = -1;
+		long cnt = -1;
+        long skipL=skipI;
+        long limitL=limitI;
 		try {
 			log.debug("[SDPDataApiMongoAccess::getBinary] BEGIN");
 			log.debug("[SDPDataApiMongoAccess::getBinary] codiceTenant="+codiceTenant);
@@ -1586,7 +1589,17 @@ public class SDPDataApiMongoAccess {
 			compPropsTot.add(new SimpleProperty().setName("urlDownloadBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 			compPropsTot.add(new SimpleProperty().setName("metadataBinary").setType(EdmSimpleTypeKind.String).setFacets(new Facets().setNullable(true)));
 
-
+			HashMap<String, String> campoTipoMetadato= new HashMap<String, String>();
+			campoTipoMetadato.put("internalId", "id");
+			campoTipoMetadato.put("datasetVersion", "datasetVersion_l");
+			campoTipoMetadato.put("idDataset", "idDataset_l");
+			campoTipoMetadato.put("idBinary", "idBinary_s");
+			campoTipoMetadato.put("aliasNameBinary", "aliasNameBinary_s");
+			campoTipoMetadato.put("sizeBinary", "sizeBinary_l");
+			campoTipoMetadato.put("contentTypeBinary", "contentTypeBinary_s");
+			campoTipoMetadato.put("urlDownloadBinary", "urlDownloadBinary_s");
+			campoTipoMetadato.put("metadataBinary", "metadataBinary_s");
+			
 
 			if (collection==null)  return null;
 
@@ -1595,100 +1608,138 @@ public class SDPDataApiMongoAccess {
 
 
 			//MongoClient mongoClient = new MongoClient(host,Integer.parseInt(port));
-			MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
+			//MongoClient mongoClient = getMongoClient(host,Integer.parseInt(port));			
 
 
-			DB db = mongoClient.getDB(dbcfg);
+			//DB db = mongoClient.getDB(dbcfg);
 
 
-			DBCollection collMisure = db.getCollection(collection);
+			//DBCollection collMisure = db.getCollection(collection);
+			
+			DBCollection collMisure =null;
 			BasicDBList queryTot=new BasicDBList();
 
 			//queryTot.add( new BasicDBObject("idDataset",idDataset));
-			queryTot.add( new BasicDBObject("idDataset",idDatasetBinary));
-
-			queryTot.add( new BasicDBObject("datasetVersion",binaryDatasetVersion));
+			
+			
+			String queryTotSolr="(idDataset_l:"+idDatasetBinary+" AND datasetVersion_l : "+binaryDatasetVersion+" ";
+			
+			
+			
+//			queryTot.add( new BasicDBObject("idDataset",idDatasetBinary));
+//
+//			queryTot.add( new BasicDBObject("datasetVersion",binaryDatasetVersion));
 
 
 
 			//BasicDBObject query = new BasicDBObject("idDataset",idDataset);
 			if (null!=internalId) {
 				//query.append("_id",new ObjectId(internalId));
-				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
+				//queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
+				queryTotSolr += "AND id : "+internalId+")";
+				
 
 			}
+			queryTotSolr += ")";
 			if (null != userQuery) {
 				log.debug("[SDPDataApiMongoAccess::getBinary] userQuery="+userQuery);
-				if (userQuery instanceof BasicDBList) {
-					queryTot.addAll((BasicDBList)userQuery);
-				} else if (userQuery instanceof BasicDBObject) {
-					queryTot.add((BasicDBObject)userQuery);
+				if (userQuery instanceof SDPOdataFilterExpression) {
+					queryTotSolr += "AND ("+userQuery+")";
+				} else {
+					queryTotSolr += "AND "+userQuery;
 				}
+
 
 				//query.append("$and", userQuery);
 			}
 
 
-			if (null!=elencoIdBinary && elencoIdBinary.size()>0) {
-				BasicDBObject inQuery = new BasicDBObject();
-				inQuery.put("idBinary", new BasicDBObject("$in", elencoIdBinary));
-				queryTot.add(inQuery);
+//			if (null!=elencoIdBinary && elencoIdBinary.size()>0) {
+//				BasicDBObject inQuery = new BasicDBObject();
+//				inQuery.put("idBinary", new BasicDBObject("$in", elencoIdBinary));
+//				queryTot.add(inQuery);
+//			}
+			String inClause=null;
+			for (int kki=0; null!=elencoIdBinary && kki<elencoIdBinary.size(); kki++ ) {
+				if (inClause==null) inClause="("+ elencoIdBinary.get(kki);
+				else inClause=","+ elencoIdBinary.get(kki);
 			}
-
-			BasicDBObject query = new BasicDBObject("$and", queryTot);
+			String  query = queryTotSolr;
+			if (inClause!=null) query+= " AND idBinary : " + inClause;
+			
+			//BasicDBObject query = new BasicDBObject("$and", queryTot);
 
 			log.info("[SDPDataApiMongoAccess::getBinary] total data query ="+query);
 			//cursor = collMisure.find(query);
 
-			cnt = collMisure.find(query).count();
+			//cnt = collMisure.find(query).count();
 
-			if (skip<0) skip=0;
-			if (limit<0) limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+			if (skipL<0) skipL=0;
+			if (limitL<0) limitL=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
 
 
 			// per ordinamento su max 
-			limit=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
-			skip=0;
+			limitL=SDPDataApiConfig.getInstance().getMaxDocumentPerPage()+SDPDataApiConfig.getInstance().getMaxSkipPages();
+			skipL=0;
 
+			
+			ArrayList<SortClause> orderSolr=null;
+			
+			for (int kkk=0;userOrderBy!=null && kkk<((ArrayList<String>)userOrderBy).size();kkk++) {
+				if (null==orderSolr) orderSolr=new ArrayList<SortClause>();
 
-			if (null!=userOrderBy) cursor = collMisure.find(query).skip(skip).limit(limit).sort((BasicDBList)userOrderBy);
-			else cursor = collMisure.find(query).skip(skip).limit(limit);
+				orderSolr.add(((ArrayList<SortClause>)userOrderBy).get(kkk));
+			}
+			
+			
+			
+			HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
+			SolrQuery solrQuery = new SolrQuery();
+			solrQuery.setQuery("*:*");
+			solrQuery.setFilterQueries(queryTotSolr);
+			solrQuery.setRows(new Integer( new Long(limitL).intValue()));			
+			solrQuery.setStart(new Integer( new Long(skipL).intValue()));			
+			if (null!=orderSolr) solrQuery.setSorts(orderSolr);
+
+			
+			
+			
+			QueryResponse rsp = solrServer.query(solrQuery);
+			SolrDocumentList results = rsp.getResults();
+			SolrDocument curSolrDoc=null;
+
+			cnt = results.getNumFound();	
+
+			
+			
+			
+			
 			try {
-				while (cursor.hasNext()) {
-
-
-
-					DBObject obj=cursor.next();
-					String internalID=obj.get("_id").toString();
-					String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
-					//					String current=takeNvlValues(obj.get("current"));
-
-
-
+			    for (int j = 0; j < results.size(); ++j) {
+			    	curSolrDoc=results.get(j);
+					String internalID=curSolrDoc.get("id").toString();
+					String datasetVersion=takeNvlValues(curSolrDoc.get("datasetVersion_l"));
 					Map<String, Object> misura = new HashMap<String, Object>();
 					misura.put("internalId",  internalID);
-
-					if (DATA_TYPE_MEASURE.equals(datatType)) {
-						String streamId=obj.get("streamCode").toString();
-						String sensorId=obj.get("sensor").toString();
-						misura.put("streamCode", streamId);
-						misura.put("sensor", sensorId);
-						misura.put("time",  obj.get("time"));
-					}					
-
-
-					String iddataset=takeNvlValues(obj.get("idDataset"));
+					String iddataset=takeNvlValues(curSolrDoc.get("idDataset_l"));
 					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 
-
-
-
+			
 					for (int i=0;i<compPropsTot.size();i++) {
 
 						String chiave=compPropsTot.get(i).getName();
-						if (obj.keySet().contains(chiave) ) {
-							String  valore=takeNvlValues(obj.get(chiave));
+						String chiaveL=getPropertyName(compPropsTot.get(i));
+
+						chiaveL=campoTipoMetadato.get(compPropsTot.get(i).getName());
+						
+						
+						
+						
+						if (curSolrDoc.keySet().contains(chiaveL) ) {
+							Object oo = curSolrDoc.get(chiaveL);
+							
+							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
 							if (null!=valore) {
 								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
 									misura.put(chiave, Boolean.valueOf(valore));
@@ -1701,16 +1752,19 @@ public class SDPDataApiMongoAccess {
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
 									misura.put(chiave, Double.parseDouble(valore));
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
-									Object dataObj=obj.get(chiave);
-									misura.put(chiave, dataObj);
+									//Object dataObj=obj.get(chiave);
+									
+									java.util.Date dtSolr=(java.util.Date)oo; 
+									
+									misura.put(chiave, dtSolr);
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
 									//Sun Oct 19 07:01:17 CET 1969
 									//EEE MMM dd HH:mm:ss zzz yyyy
-									Object dataObj=obj.get(chiave);
+									//Object dataObj=obj.get(chiave);
 
 									//System.out.println("------------------------------"+dataObj.getClass().getName());
 
-									misura.put(chiave, dataObj);
+									//misura.put(chiave, dataObj);
 
 
 									//																 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -1725,28 +1779,136 @@ public class SDPDataApiMongoAccess {
 									Map<String, Object> mappaBinaryRef=new HashMap<String, Object>();
 									mappaBinaryRef.put("idBinary", (String)valore);
 									misura.put(chiave, mappaBinaryRef);
-
+									//elencoBinaryId.add((String)valore);
 
 								}
 							}
+						} else {
+							String a = "bb";
+							String b= a;
 						}
-					}
-
-					///binary/{apiCode}/{dataSetCode}/{dataSetVersion}/{idBinary}
-
-
-
-					String path="/api/"+codiceApi+"/attachment/"+idDatasetBinary+"/"+binaryDatasetVersion+"/"+misura.get("idBinary");
-
-					misura.put("urlDownloadBinary", path);
-
+					}					
+					
 					ret.add(misura);
-				}	
+					
+			    }
+			
+			
+				try {
+					//deltaTime=System.currentTimeMillis()-starTtime;
+				} catch (Exception e) {}
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total fetch in --> nodata");
+
+
 			} catch (Exception e) {
 				throw e;
 			}  finally {
-				cursor.close();			
-			} 
+				//cursor.close();			
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			//			if (null!=userOrderBy) cursor = collMisure.find(query).skip(skip).limit(limit).sort((BasicDBList)userOrderBy);
+//			else cursor = collMisure.find(query).skip(skip).limit(limit);
+//			try {
+//				while (cursor.hasNext()) {
+//
+//
+//
+//					DBObject obj=cursor.next();
+//					String internalID=obj.get("_id").toString();
+//					String datasetVersion=takeNvlValues(obj.get("datasetVersion"));
+//					//					String current=takeNvlValues(obj.get("current"));
+//
+//
+//
+//					Map<String, Object> misura = new HashMap<String, Object>();
+//					misura.put("internalId",  internalID);
+//
+//					if (DATA_TYPE_MEASURE.equals(datatType)) {
+//						String streamId=obj.get("streamCode").toString();
+//						String sensorId=obj.get("sensor").toString();
+//						misura.put("streamCode", streamId);
+//						misura.put("sensor", sensorId);
+//						misura.put("time",  obj.get("time"));
+//					}					
+//
+//
+//					String iddataset=takeNvlValues(obj.get("idDataset"));
+//					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
+//					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
+//
+//
+//
+//
+//					for (int i=0;i<compPropsTot.size();i++) {
+//
+//						String chiave=compPropsTot.get(i).getName();
+//						if (obj.keySet().contains(chiave) ) {
+//							String  valore=takeNvlValues(obj.get(chiave));
+//							if (null!=valore) {
+//								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
+//									misura.put(chiave, Boolean.valueOf(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
+//									misura.put(chiave, valore);
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
+//									misura.put(chiave, Integer.parseInt(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
+//									misura.put(chiave, Long.parseLong(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
+//									misura.put(chiave, Double.parseDouble(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+//									Object dataObj=obj.get(chiave);
+//									misura.put(chiave, dataObj);
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
+//									//Sun Oct 19 07:01:17 CET 1969
+//									//EEE MMM dd HH:mm:ss zzz yyyy
+//									Object dataObj=obj.get(chiave);
+//
+//									//System.out.println("------------------------------"+dataObj.getClass().getName());
+//
+//									misura.put(chiave, dataObj);
+//
+//
+//									//																 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+//									//															     Date data = dateFormat.parse(valore);								
+//									//																	misura.put(chiave, data);
+//
+//
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
+//									//comppnenti.put(chiave, Float.parseFloat(valore));
+//									misura.put(chiave, Double.parseDouble(valore));
+//								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Binary)) {
+//									Map<String, Object> mappaBinaryRef=new HashMap<String, Object>();
+//									mappaBinaryRef.put("idBinary", (String)valore);
+//									misura.put(chiave, mappaBinaryRef);
+//
+//
+//								}
+//							}
+//						}
+//					}
+//
+//					///binary/{apiCode}/{dataSetCode}/{dataSetVersion}/{idBinary}
+//
+//
+//
+//					String path="/api/"+codiceApi+"/attachment/"+idDatasetBinary+"/"+binaryDatasetVersion+"/"+misura.get("idBinary");
+//
+//					misura.put("urlDownloadBinary", path);
+//
+//					ret.add(misura);
+//				}	
+//			} catch (Exception e) {
+//				throw e;
+//			}  finally {
+//				cursor.close();			
+//			} 
 
 
 		} catch (Exception e) {
@@ -2227,6 +2389,7 @@ public class SDPDataApiMongoAccess {
 			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
 			datasetCode=takeNvlValues(streamMetadata.get("datasetCode"));
 
+			
 			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
 
 
@@ -2236,40 +2399,41 @@ public class SDPDataApiMongoAccess {
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
-			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
-
-			if (null==collection || collection.trim().length()<=0) {
-				DbConfDto tanantDbCfg=new DbConfDto();
-
-				if (DATA_TYPE_MEASURE.equals(datatType)) {
-					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
-					
-					codiceTenant+="_measures";
-					
-				} else if (DATA_TYPE_DATA.equals(datatType)) {
-					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
-					codiceTenant+="_data";
-				}  
-				collection=tanantDbCfg.getCollection();
-				host=tanantDbCfg.getHost();
-				port=""+tanantDbCfg.getPort();
-				dbcfg=tanantDbCfg.getDataBase();
+		
+			
+			//TODO calcolarlo in base a stream subtype
+			if (DATA_TYPE_MEASURE.equals(datatType)) {
+				codiceTenant+="_measures";
+				
+			} else if (DATA_TYPE_DATA.equals(datatType)) {
+				codiceTenant+="_data";
+			} else if (DATA_TYPE_SOCIAL.equals(datatType)) {
+				codiceTenant+="_social";
 			}
 
-			if (null==dbcfg || dbcfg.trim().length()<=0) {
-				DbConfDto tanantDbCfg=new DbConfDto();
+//			if (null==collection || collection.trim().length()<=0) {
+//				DbConfDto tanantDbCfg=new DbConfDto();
+//
+//				collection=tanantDbCfg.getCollection();
+//				host=tanantDbCfg.getHost();
+//				port=""+tanantDbCfg.getPort();
+//				dbcfg=tanantDbCfg.getDataBase();
+//			}
+//
+//			if (null==dbcfg || dbcfg.trim().length()<=0) {
+//				DbConfDto tanantDbCfg=new DbConfDto();
+//
+//				if (DATA_TYPE_MEASURE.equals(datatType)) {
+//					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
+//				} else if (DATA_TYPE_DATA.equals(datatType)) {
+//					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
+//				}  
+//				dbcfg=tanantDbCfg.getDataBase();
+//			}
 
-				if (DATA_TYPE_MEASURE.equals(datatType)) {
-					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
-				} else if (DATA_TYPE_DATA.equals(datatType)) {
-					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
-				}  
-				dbcfg=tanantDbCfg.getDataBase();
-			}
 
-
-			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
-			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
+//			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
+//			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
@@ -2303,7 +2467,7 @@ public class SDPDataApiMongoAccess {
 				campoTipoMetadato.put(nome, tipo);
 				
 			}
-			if (collection==null)  return null;
+			
 
 			DBCursor cursor=null;
 
@@ -2505,7 +2669,7 @@ public class SDPDataApiMongoAccess {
 					Map<String, Object> misura = new HashMap<String, Object>();
 					misura.put("internalId",  internalID);
 	
-					if (DATA_TYPE_MEASURE.equals(datatType)) {
+					if (DATA_TYPE_MEASURE.equals(datatType) || DATA_TYPE_SOCIAL.equals(datatType)) {
 						String streamId=curSolrDoc.get("streamCode_s").toString();
 						String sensorId=curSolrDoc.get("sensor_s").toString();
 						misura.put("streamCode", streamId);

@@ -1006,7 +1006,8 @@ public class SDPMongoOdataCast {
 	 */
 	public SDPDataResult getMeasuresPerApi(String codiceApi, String nameSpace, EdmEntityContainer entityContainer, String internalId, Object userQuery,Object userOrderBy,
 			int skip,
-			int limit) throws Exception{
+			int limit,
+			String dataType) throws Exception{
 		
 		// TODO YUCCA-74 odata evoluzione
 		try {
@@ -1066,7 +1067,7 @@ public class SDPMongoOdataCast {
 				
 //				SDPDataResult cur=mongoDataAccess.getMeasuresPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
 //						,userOrderBy,skip,limit);
-				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimitSolr(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+				SDPDataResult cur=mongoDataAccess.getMeasuresPerStreamNewLimitSolr(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,dataType, userQuery
 						,userOrderBy,skip,limit);
 				
 				
