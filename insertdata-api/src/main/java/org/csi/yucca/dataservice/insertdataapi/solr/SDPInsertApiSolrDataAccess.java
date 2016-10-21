@@ -76,34 +76,34 @@ public class SDPInsertApiSolrDataAccess {
 		            Object value = json.get(nome);
 
 	                if ("int".equalsIgnoreCase(tipo)) {
-	                    if ( null== value ||  value instanceof String) doc.setField(nome+"_i",null);
+	                    if ( null== value ) doc.setField(nome+"_i",null);
 	                    else doc.setField(nome+"_i",Integer.parseInt(value.toString()));
 	                } else if ("long".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_l",null);
+	                    if ( null== value ) doc.setField(nome+"_l",null);
 	                    else doc.setField(nome+"_l",  Long.parseLong(value.toString()));
 	                } else if ("double".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_d",null);
+	                    if ( null== value ) doc.setField(nome+"_d",null);
 	                    else doc.setField(nome+"_d",  Double.parseDouble(value.toString()));
 	                } else if ("float".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_f",null);
+	                    if ( null== value ) doc.setField(nome+"_f",null);
 	                    else doc.setField(nome+"_f",  (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_s",null);
+	                    if ( null== value ) doc.setField(nome+"_s",null);
 	                    else doc.setField(nome+"_s", value.toString());
 	                } else if ("binary".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_s",null);
+	                    if ( null== value ) doc.setField(nome+"_s",null);
 	                    else doc.setField(nome+"_s", value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_b",null);
+	                    if ( null== value) doc.setField(nome+"_b",null);
 	                    else doc.setField(nome+"_b", Boolean.parseBoolean(value.toString()));
 	                } else if ("datetime".equalsIgnoreCase(tipo)) {
-	                	if ( null== value || value instanceof String) doc.setField(nome+"_dt",null);
+	                	if ( null== value) doc.setField(nome+"_dt",null);
 	                	else doc.setField(nome+"_dt", DateUtil.convertToStd(value.toString()));
 	                } else if ("longitude".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_d",null);
+	                    if ( null== value) doc.setField(nome+"_d",null);
 	                    else doc.setField(nome+"_d", Double.parseDouble(value.toString()));
 	                } else if ("latitude".equalsIgnoreCase(tipo)) {
-	                    if ( null== value || value instanceof String) doc.setField(nome+"_d",null);
+	                    if ( null== value) doc.setField(nome+"_d",null);
 	                    else doc.setField(nome+"_d", Double.parseDouble(value.toString()));
 	                } 
 	                

@@ -293,7 +293,7 @@ public class InsertApiLogic {
 				datiToins.setStream(streamToFind);
 				datiToins.setSensor(sensorToFind);
 				datiToins.setStatus(DatasetBulkInsert.STATUS_SYNTAX_CHECKED);
-				datiToins.setDatasetType("streamDataset");
+//				datiToins.setDatasetType("streamDataset");
 				
 				totalDocumentsToIns=totalDocumentsToIns+datiToins.getNumRowToInsFromJson();
 				if (totalDocumentsToIns>SDPInsertApiConfig.MAX_DOCUMENTS_IN_REQUEST) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_MAXRECORDS);
@@ -514,7 +514,7 @@ public class InsertApiLogic {
 		if (elencoStream==null || elencoStream.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 		
 		boolean isVerOneRequired = true;
-		
+		String datasetType = "streamDataset";
 		for (int i = 0 ; i< elencoStream.size(); i++) {
 			
 			
@@ -530,7 +530,10 @@ public class InsertApiLogic {
 			log.info("[InsertApiLogic::parseMisura]      OK --------------");
 			
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET)
+			{
 				isVerOneRequired = false;
+				datasetType = "socialDataset";
+			}
 		}
 		
 		
@@ -621,6 +624,7 @@ public class InsertApiLogic {
 		}
 		ret= new DatasetBulkInsert();
 		ret.setDatasetVersion(datasetVersionTrovato);
+		ret.setDatasetType(datasetType);
 		ret.setIdDataset(idDatasetTrovato);
 		ret.setNumRowToInsFromJson(i);
 		ret.setRowsToInsert(rigadains);
