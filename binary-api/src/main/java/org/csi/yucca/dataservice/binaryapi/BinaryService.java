@@ -72,7 +72,7 @@ public class BinaryService {
 
 	@Resource
 	WebServiceContext wsContext; 
-	
+
 	@GET //ok
 	@Produces({"text/csv"})
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -281,6 +281,18 @@ public class BinaryService {
 		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
 	}
+
+	@GET //ok
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/binary/{apiCode}/testMethod/{idDataSet}/{datasetVersion}/{idBinary}")
+	public InputStream testMethod(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") Integer datasetVersion,
+			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
+		
+		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON) 
+				.entity("{\"error_name\":\"API Code = "+apiCode+"\", \"idDataSet\" = \""+idDataSet+"\", \"datasetVersion\" = \""+datasetVersion+"\", \"idBinary\" = \""+idBinary+"\", \"output\":\"NONE\", \"message\":\"ok funziona tutto!!\"}").build());
+	}
+
 
 	@GET //ok
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
