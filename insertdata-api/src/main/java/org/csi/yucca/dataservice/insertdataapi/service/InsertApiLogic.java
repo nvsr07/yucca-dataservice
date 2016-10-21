@@ -435,20 +435,20 @@ public class InsertApiLogic {
 					" - field "+jsonField+" ("+insStrConst+"): "+valore);
 			
 			
-			log.finer("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
-			log.finer("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
-			log.finer("[InsertApiLogic::parseCompnents] valore: "+valore);
+			log.info("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
+			log.info("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
+			log.info("[InsertApiLogic::parseCompnents] valore: "+valore);
 			if (campoMongoV1!=null) {
-				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
-				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
-				log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
-				if (null!=campoMongoV1) log.finer("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore,isVerOneRequired));
+				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
+				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
+				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
+				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore,isVerOneRequired));
 				numCampiInV1++;
 			}
-			log.finer("[InsertApiLogic::parseCompnents] .................");
-			log.finer("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
-			log.finer("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
-			log.finer("[InsertApiLogic::parseCompnents]          valore="+valore);
+			log.info("[InsertApiLogic::parseCompnents] .................");
+			log.info("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
+			log.info("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
+			log.info("[InsertApiLogic::parseCompnents]          valore="+valore);
 			
 			
 			if (null!=campoMongoV1 && !campoMongoV1.validateValue(valore,isVerOneRequired))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
