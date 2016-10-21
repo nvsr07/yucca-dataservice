@@ -88,8 +88,10 @@ public class SDPInsertApiSolrDataAccess {
 	                    if ( null== value || value instanceof String) doc.setField(nome+"_f",null);
 	                    else doc.setField(nome+"_f",  (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
+	                    if ( null== value || value instanceof String) doc.setField(nome+"_s",null);
 	                	doc.setField(nome+"_s", value.toString());
 	                } else if ("binary".equalsIgnoreCase(tipo)) {
+	                    if ( null== value || value instanceof String) doc.setField(nome+"_s",null);
 	                	doc.setField(nome+"_s", value.toString());
 	                } else if ("boolean".equalsIgnoreCase(tipo)) {
 	                    if ( null== value || value instanceof String) doc.setField(nome+"_b",null);
