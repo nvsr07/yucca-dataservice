@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.insertdataapi.service;
+package org.csi.yucca.dataservice.binaryapi.service;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +13,8 @@ public class ApplicationConfig extends Application {
 	public ApplicationConfig() {
 		singletons.add(new StreamService());
 		singletons.add(new DatasetService());
+		singletons.add(new BinaryService());
+		
 	}
 
 	@Override
