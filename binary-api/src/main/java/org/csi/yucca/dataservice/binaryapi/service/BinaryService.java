@@ -58,7 +58,7 @@ import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
 
 
-@Path("/b")
+@Path("/")
 public class BinaryService {
 
 	private final String MEDIA = "media";
@@ -70,8 +70,6 @@ public class BinaryService {
 	static Logger LOG = Logger.getLogger(BinaryService.class);
 	static Logger LOGACCOUNT = Logger.getLogger("sdpaccounting");
 
-	@Resource
-	WebServiceContext wsContext; 
 
 	@GET //ok
 	@Produces({"text/csv"})
