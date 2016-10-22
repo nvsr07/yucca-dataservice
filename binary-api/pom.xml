@@ -72,7 +72,6 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-bundle</artifactId>
 			<version>2.7.7</version>
-			<scope>provided</scope>
 		</dependency>		
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -104,6 +103,10 @@
 						hadoop-mapreduce-client-jobclient
 					</artifactId>
 					<groupId>org.apache.hadoop</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>netty</artifactId>
+					<groupId>io.netty</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
