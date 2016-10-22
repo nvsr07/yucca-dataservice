@@ -58,7 +58,7 @@ import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
 
 
-@Path("/binary")
+@Path("/b")
 public class BinaryService {
 
 	private final String MEDIA = "media";
@@ -76,7 +76,7 @@ public class BinaryService {
 	@GET //ok
 	@Produces({"text/csv"})
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/{apiCode}/download/{idDataSet}/{datasetVersion}")
+	@Path("/binary/{apiCode}/download/{idDataSet}/{datasetVersion}")
 	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion) throws WebApplicationException, NumberFormatException, UnknownHostException {
 		
 		System.out.println("downloadCSVFile!");
@@ -296,7 +296,7 @@ public class BinaryService {
 	@GET //ok
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/{apiCode}/attachment/{idDataSet}/{datasetVersion}/{idBinary}")
+	@Path("/binary/{apiCode}/attachment/{idDataSet}/{datasetVersion}/{idBinary}")
 	public InputStream downloadFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
@@ -389,7 +389,7 @@ public class BinaryService {
 	@POST  //ok
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/input/{tenant}/")
+	@Path("/binary/input/{tenant}/")
 	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
 			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
 			UnknownHostException {
@@ -549,7 +549,7 @@ public class BinaryService {
 	}
 
 	@PUT  //OK
-	@Path("/{tenantCode}/metadata/{datasetCode}/{datasetVersion}/{idBinary}")
+	@Path("/binary/{tenantCode}/metadata/{datasetCode}/{datasetVersion}/{idBinary}")
 	public void updateMongo(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
@@ -634,7 +634,7 @@ public class BinaryService {
 	}
 
 	@DELETE //to do
-	@Path("/{tenantCode}/clearMetadata/{datasetCode}")
+	@Path("/binary/{tenantCode}/clearMetadata/{datasetCode}")
 	public void clearMetadata(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
 		long startTime = System.currentTimeMillis();
