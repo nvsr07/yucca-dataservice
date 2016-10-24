@@ -31,6 +31,7 @@ import javax.xml.ws.handler.MessageContext;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -381,9 +382,17 @@ public class BinaryService {
 	@POST  //ok
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenant}/")
-	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
+	/*public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
 			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
-			UnknownHostException {
+			UnknownHostException {*/
+	public Response uploadFile(MultipartBody body)  throws NumberFormatException, UnknownHostException {
+		
+		String aliasFile = body.getAttachmentObject("aliasFile", String.class);
+		String idBinary = body.getAttachmentObject("idBinary", String.class);
+		String tenantCode = body.getAttachmentObject("tenantCode", String.class);
+		String datasetCode = body.getAttachmentObject("datasetCode", String.class);
+		Integer datasetVersion = body.getAttachmentObject("datasetVersion", Integer.class);
+		Attachment attachment = body.getAttachmentObject("attachment", Attachment.class);
 
 		long startTime = System.currentTimeMillis();
 		//Get size for verify max size file upload (dirty) 
