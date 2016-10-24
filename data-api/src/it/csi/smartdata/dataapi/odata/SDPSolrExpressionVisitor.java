@@ -349,7 +349,8 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 			Object ret = new Integer(paramEdmLiteral.getLiteral());
 			return ret;
 		} else if(EdmSimpleTypeKind.Int64.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
-			Object ret = new Integer(paramEdmLiteral.getLiteral());
+			//Object ret = new Integer(paramEdmLiteral.getLiteral());
+			Object ret = new Long(paramEdmLiteral.getLiteral());
 			return ret;
 		} else if(EdmSimpleTypeKind.String.getEdmSimpleTypeInstance().equals(paramEdmLiteral.getType())) {
 //			String retStr =StringUtils.replace(new String(paramEdmLiteral.getLiteral()), " ", "\\ ");
