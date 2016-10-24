@@ -379,7 +379,6 @@ public class BinaryService {
 	}
 
 	@POST  //ok
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenant}/")
 	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
