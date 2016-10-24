@@ -760,7 +760,13 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap = new HashMap<String,String>();
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".internalId" ,"id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".idDataset" ,"idDataset_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".datasetVersion" ,"datasetVersion_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".datasetVersion" ,"datasetVersion_l");
+		
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceStream" ,"streams.stream.codiceStream");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceTenant" ,"streams.stream.codiceTenant");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".nomeStream" ,"streams.stream.nomeStream");
