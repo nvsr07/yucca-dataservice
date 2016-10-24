@@ -13,8 +13,11 @@ public class ApplicationConfig extends Application {
 	public ApplicationConfig() {
 		singletons.add(new StreamService());
 		singletons.add(new DatasetService());
+		singletons.add(new BinaryService());
+		
 	}
 
+	@Override
 	public Set<Object> getSingletons() {
 		return singletons;
 	}

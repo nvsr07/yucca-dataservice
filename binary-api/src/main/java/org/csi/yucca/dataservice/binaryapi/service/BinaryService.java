@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.binaryapi;
+package org.csi.yucca.dataservice.binaryapi.service;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +58,7 @@ import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
 
 
-@Path("/")
+@Path("/binary")
 public class BinaryService {
 
 	private final String MEDIA = "media";
@@ -70,8 +70,13 @@ public class BinaryService {
 	static Logger LOG = Logger.getLogger(BinaryService.class);
 	static Logger LOGACCOUNT = Logger.getLogger("sdpaccounting");
 
-	@Resource
-	WebServiceContext wsContext; 
+	
+	@GET
+	@Path("/hello")
+	public String hello() {
+		return "hello";
+	}
+	
 	
 	@GET //ok
 	@Produces({"text/csv"})
@@ -281,6 +286,17 @@ public class BinaryService {
 		throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 				.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}").build());
 	}
+
+	@GET //ok
+	@Produces(MediaType.APPLICATION_OCTET_STREAM)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Path("/testMethod/")
+	public InputStream testMethod() throws WebApplicationException, NumberFormatException, UnknownHostException {
+		
+		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON) 
+				.entity("{\"ok\":\"API Code\", \"output\":\"NONE\", \"message\":\"ok funziona tutto!!\"}").build());
+	}
+
 
 	@GET //ok
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)

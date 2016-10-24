@@ -15,6 +15,7 @@ public class ApplicationConfig extends Application {
 		singletons.add(new DatasetService());
 	}
 
+	@Override
 	public Set<Object> getSingletons() {
 		return singletons;
 	}

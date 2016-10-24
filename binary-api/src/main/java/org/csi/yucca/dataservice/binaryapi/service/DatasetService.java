@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,6 +26,12 @@ public class DatasetService extends AbstractService {
 
 	@Context
 	ServletContext context;
+
+	@GET
+	@Path("/hello")
+	public String hello() {
+		return "hello";
+	}
 
 	@POST
 	@Path("/input/{codTenant}")
