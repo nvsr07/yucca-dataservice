@@ -2595,7 +2595,7 @@ public class SDPDataApiMongoAccess {
 				boolean orderByAllowed=false;
 				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
 					orderByAllowed=true;
-				} else if (DATA_TYPE_MEASURE.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
+				} else if ((DATA_TYPE_MEASURE.equals(datatType) || DATA_TYPE_SOCIAL.equals(datatType) )&& ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
 
 					SortClause elemOrder=(SortClause)((ArrayList<SortClause>)userOrderBy).get(0);
 					if (elemOrder.getItem().equalsIgnoreCase("time_dt")) orderByAllowed=true;
