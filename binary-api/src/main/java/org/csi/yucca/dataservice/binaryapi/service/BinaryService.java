@@ -80,8 +80,7 @@ public class BinaryService {
 	
 	@GET //ok
 	@Produces({"text/csv"})
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/binary/{apiCode}/download/{idDataSet}/{datasetVersion}")
+	@Path("/{apiCode}/download/{idDataSet}/{datasetVersion}")
 	public Response downloadCSVFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") String datasetVersion) throws WebApplicationException, NumberFormatException, UnknownHostException {
 		
 		System.out.println("downloadCSVFile!");
@@ -289,19 +288,7 @@ public class BinaryService {
 
 	@GET //ok
 	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/testMethod/")
-	public InputStream testMethod() throws WebApplicationException, NumberFormatException, UnknownHostException {
-		
-		throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON) 
-				.entity("{\"ok\":\"API Code\", \"output\":\"NONE\", \"message\":\"ok funziona tutto!!\"}").build());
-	}
-
-
-	@GET //ok
-	@Produces(MediaType.APPLICATION_OCTET_STREAM)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/binary/{apiCode}/attachment/{idDataSet}/{datasetVersion}/{idBinary}")
+	@Path("/{apiCode}/attachment/{idDataSet}/{datasetVersion}/{idBinary}")
 	public InputStream downloadFile(@PathParam("apiCode") String apiCode, @PathParam("idDataSet") Long idDataSet, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
@@ -394,7 +381,7 @@ public class BinaryService {
 	@POST  //ok
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/binary/input/{tenant}/")
+	@Path("/input/{tenant}/")
 	public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
 			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
 			UnknownHostException {
@@ -554,7 +541,7 @@ public class BinaryService {
 	}
 
 	@PUT  //OK
-	@Path("/binary/{tenantCode}/metadata/{datasetCode}/{datasetVersion}/{idBinary}")
+	@Path("/{tenantCode}/metadata/{datasetCode}/{datasetVersion}/{idBinary}")
 	public void updateMongo(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
@@ -639,7 +626,7 @@ public class BinaryService {
 	}
 
 	@DELETE //to do
-	@Path("/binary/{tenantCode}/clearMetadata/{datasetCode}")
+	@Path("/{tenantCode}/clearMetadata/{datasetCode}")
 	public void clearMetadata(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
 		long startTime = System.currentTimeMillis();
