@@ -6,6 +6,10 @@ import com.google.gson.Gson;
 
 public class LicenceTypeDCAT extends TypeDCAT {
 	
+	public void setLicenseType(String licenseType) {
+		this.licenseType = licenseType;
+	}
+
 	private String licenseType = "http://purl.org/adms/licencetype/PublicDomain";
 	private String name = "";
 	private String version = "";
