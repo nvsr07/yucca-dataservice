@@ -56,7 +56,7 @@ public class DcatService extends AbstractService {
 		catalog.setHomepage("http://userportal.smartdatanet.it");
 
 		LicenceTypeDCAT lic = new LicenceTypeDCAT();
-		//catalog.setLicense(lic.getjson());
+		lic.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
 		catalog.setLicense(lic);
 		
 		if (page == null)
@@ -147,6 +147,7 @@ public class DcatService extends AbstractService {
 					LicenceTypeDCAT licDist = new LicenceTypeDCAT();
 					if (metadata.getLicense() != null){
 						licDist.setName(metadata.getLicense());
+
 						if (metadata.getLicense().equals("CC BY")){
 							licDist.setType("https://creativecommons.org/licenses/by/4.0/");
 							licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
@@ -154,6 +155,7 @@ public class DcatService extends AbstractService {
 						}
 						if (metadata.getLicense().equals("CC 0")){
 							licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
+							licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
 							licDist.setVersion("1.0");
 						}
 						distr.setLicense(licDist);

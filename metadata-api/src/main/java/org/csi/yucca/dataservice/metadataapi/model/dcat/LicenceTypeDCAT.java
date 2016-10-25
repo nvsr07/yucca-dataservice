@@ -10,9 +10,9 @@ public class LicenceTypeDCAT extends TypeDCAT {
 		this.licenseType = licenseType;
 	}
 
-	private String licenseType = "http://purl.org/adms/licencetype/PublicDomain";
+	private String licenseType;
 	private String name = "";
-	private String version = "";
+	private String version;
 	
 	public String getLicenseType() {
 		return licenseType;
