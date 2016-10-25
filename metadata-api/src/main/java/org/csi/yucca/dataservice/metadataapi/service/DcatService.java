@@ -145,15 +145,17 @@ public class DcatService extends AbstractService {
 					//https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
 					//distr.getLicense().setName(metadata.getLicense());
 					LicenceTypeDCAT licDist = new LicenceTypeDCAT();
-					licDist.setName(metadata.getLicense());
-					if (metadata.getLicense().equals("CC BY")){
-						licDist.setType("https://creativecommons.org/licenses/by/4.0/");
-						licDist.setVersion("4.0");
+					if (metadata.getLicense() != null){
+						licDist.setName(metadata.getLicense());
+						if (metadata.getLicense().equals("CC BY")){
+							licDist.setType("https://creativecommons.org/licenses/by/4.0/");
+							licDist.setVersion("4.0");
+						}
+						if (metadata.getLicense().equals("CC 0")){
+							licDist.setType("https://creativecommons.org/choose/zero/");
+						}
+						distr.setLicense(licDist);
 					}
-					if (metadata.getLicense().equals("CC 0")){
-						licDist.setType("https://creativecommons.org/choose/zero/");
-					}
-					distr.setLicense(licDist);
 					
 					distr.setIssued(metadata.getRegistrationDate());
 					dsDCAT.addDistribution(distr);
