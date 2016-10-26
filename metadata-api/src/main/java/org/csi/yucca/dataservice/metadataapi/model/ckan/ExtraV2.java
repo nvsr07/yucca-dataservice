@@ -22,6 +22,8 @@ public class ExtraV2 {
 	private String license_id;
 	private String package_type;
 	private List<String> resource;
+	private String disclaimer;
+	private String copyright;
 
 	public ExtraV2() {
 		super();
@@ -140,6 +142,22 @@ public class ExtraV2 {
 		if (resource == null)
 			resource = new LinkedList<String>();
 		resource.add("format=" + newResource.getFormat() + "||url=" + newResource.getUrl());
+	}
+
+	public String getDisclaimer() {
+		return disclaimer;
+	}
+
+	public void setDisclaimer(String disclaimer) {
+		this.disclaimer = disclaimer;
+	}
+
+	public String getCopyright() {
+		return copyright;
+	}
+
+	public void setCopyright(String copyright) {
+		this.copyright = copyright;
 	}
 
 }

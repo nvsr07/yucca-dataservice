@@ -738,6 +738,9 @@ public class Metadata {
 		}
 
 		ckanDataset.setLicense(getLicense());
+		extras.setDisclaimer(getDisclaimer());
+		extras.setCopyright(getCopyright());
+		
 		ckanDataset.setIsopen(getOpendata() != null && getOpendata().isOpendata());
 
 		if (getTags() != null) {
