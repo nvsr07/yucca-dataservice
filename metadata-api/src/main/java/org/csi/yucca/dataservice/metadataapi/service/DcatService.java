@@ -154,12 +154,13 @@ public class DcatService extends AbstractService {
 						licDist.setType("https://creativecommons.org/licenses/by/4.0/");
 						licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
 						licDist.setVersion("4.0");
-					}
-					if (metadata.getLicense().equals("CC 0 1.0")){
+					} else if (metadata.getLicense().equals("CC 0 1.0")){
 						licDist.setName("CC 0");
 						licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
 						licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
 						licDist.setVersion("1.0");
+					} else {
+						licDist.setName(metadata.getLicense());
 					}
 					distr.setLicense(licDist);
 				}
