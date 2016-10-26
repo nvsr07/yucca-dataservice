@@ -19,6 +19,7 @@ import org.csi.yucca.dataservice.metadataapi.model.dcat.CatalogDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DatasetDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DistributionDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.LicenceTypeDCAT;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.TypeDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.VCTypeDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.VcardDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
@@ -55,7 +56,7 @@ public class DcatService extends AbstractService {
 		catalog.setHomepage("http://userportal.smartdatanet.it");
 
 		LicenceTypeDCAT lic = new LicenceTypeDCAT();
-		//catalog.setLicense(lic.getjson());
+		lic.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
 		catalog.setLicense(lic);
 		
 		if (page == null)
@@ -142,7 +143,24 @@ public class DcatService extends AbstractService {
 							+ "/download/" + metadataST.getDataset().getDatasetId() + "/all");
 					
 					//https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
-					distr.setLicense(metadata.getLicense());
+					//distr.getLicense().setName(metadata.getLicense());
+					LicenceTypeDCAT licDist = new LicenceTypeDCAT();
+					if (metadata.getLicense() != null){
+						licDist.setName(metadata.getLicense());
+
+						if (metadata.getLicense().equals("CC BY")){
+							licDist.setType("https://creativecommons.org/licenses/by/4.0/");
+							licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
+							licDist.setVersion("4.0");
+						}
+						if (metadata.getLicense().equals("CC 0")){
+							licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
+							licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
+							licDist.setVersion("1.0");
+						}
+						distr.setLicense(licDist);
+					}
+					
 					distr.setIssued(metadata.getRegistrationDate());
 					dsDCAT.addDistribution(distr);
 
