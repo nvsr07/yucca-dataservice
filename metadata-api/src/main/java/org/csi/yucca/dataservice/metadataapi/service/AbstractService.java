@@ -18,6 +18,9 @@ import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
+import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
+
+import com.google.gson.Gson;
 
 public abstract class AbstractService {
 
@@ -154,6 +157,8 @@ public abstract class AbstractService {
 		parameters.put("end", "" + end);
 
 		String searchUrl = STORE_BASE_URL + "site/blocks/secure/search.jag?";
+		
+		log.info("[AbstractService::dopost] searchUrl: " + searchUrl + ", parameters: " + parameters);
 
 		String resultString = doPost(searchUrl, "application/json", null, parameters);
 
@@ -166,6 +171,10 @@ public abstract class AbstractService {
 				metadataList.add(Metadata.createFromStoreSearchItem(storeItem, lang));
 			}
 		}
+		
+		Gson gson = JSonHelper.getInstance();
+		String json = gson.toJson(metadataList);
+		log.info("[AbstractService::dopost] json: " + json);
 
 		return metadataList;
 
