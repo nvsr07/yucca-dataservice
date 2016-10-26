@@ -42,7 +42,7 @@ public class DcatService extends AbstractService {
 	@GET
 	@Path("/dataset_list")
 	@Produces("application/ld+json; charset=UTF-8")
-	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q,
+	public String searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q,
 			@QueryParam("page") Integer page, @QueryParam("tenant") String tenant,
 			@QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
 			@QueryParam("geolocalized") Boolean geolocalized, @QueryParam("minLat") Double minLat,
@@ -67,6 +67,9 @@ public class DcatService extends AbstractService {
 		Integer numElementForPage = 10;
 		Integer end = page * numElementForPage;
 		Integer start = (end - numElementForPage) + 1;
+		
+		log.info("[DcatService::searchDCAT] numElementForPage: " + numElementForPage + ", end: " + end + ", start: " + start);
+		log.info("[DcatService::searchDCAT] query: " + q);
 
 		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat,
 				minLon, maxLat, maxLon, lang, true);
