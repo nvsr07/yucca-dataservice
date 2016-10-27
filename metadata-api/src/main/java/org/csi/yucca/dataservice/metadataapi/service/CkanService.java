@@ -7,6 +7,7 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -66,7 +67,7 @@ public class CkanService extends AbstractService {
 			error.setErrorCode("Error with packageId " + packageId);
 			error.setMessage(e.getMessage());
 			result = error.toJson();
-
+			throw new InternalServerErrorException("Error with packageId " + packageId + " - " +e.getMessage());
 		}
 		return result;
 
