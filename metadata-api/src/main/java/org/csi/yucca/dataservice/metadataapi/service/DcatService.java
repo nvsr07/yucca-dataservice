@@ -42,7 +42,7 @@ public class DcatService extends AbstractService {
 	@GET
 	@Path("/dataset_list")
 	@Produces("application/ld+json; charset=UTF-8")
-	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q,
+	public String searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q,
 			@QueryParam("page") Integer page, @QueryParam("tenant") String tenant,
 			@QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata,
 			@QueryParam("geolocalized") Boolean geolocalized, @QueryParam("minLat") Double minLat,
@@ -67,6 +67,9 @@ public class DcatService extends AbstractService {
 		Integer numElementForPage = 10;
 		Integer end = page * numElementForPage;
 		Integer start = (end - numElementForPage) + 1;
+		
+		log.info("[DcatService::searchDCAT] numElementForPage: " + numElementForPage + ", end: " + end + ", start: " + start);
+		log.info("[DcatService::searchDCAT] query: " + q);
 
 		List<Metadata> metadataList = search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat,
 				minLon, maxLat, maxLon, lang, true);
@@ -77,100 +80,100 @@ public class DcatService extends AbstractService {
 		for (Metadata metadata : metadataList) {
 			if (metadata.getDataset() != null && metadata.getDataset().getDatasetId() != null) {
 
-				Metadata metadataST = gson.fromJson(
-						loadMetadata(userAuth, metadata.getCode() + "_odata", null, Constants.OUTPUT_FORMAT_JSON, lang),
+				Metadata metadataST = gson.fromJson(loadMetadata(userAuth, metadata.getCode() + "_odata", null, Constants.OUTPUT_FORMAT_JSON, lang),
 						Metadata.class);
 
-					DatasetDCAT dsDCAT = new DatasetDCAT();
+				DatasetDCAT dsDCAT = new DatasetDCAT();
 
-					if (metadataST.getDcatCreatorName() != null){
-						dsDCAT.getCreator().setName(metadataST.getDcatCreatorName());
-					} else { 
-						dsDCAT.getCreator().setName("CSI PIEMONTE");
-					}
-					
-					if (metadataST.getDcatCreatorType() != null){
-						dsDCAT.getCreator().setType(metadataST.getDcatCreatorType());
-					} else { 
-						dsDCAT.getCreator().setType("http://purl.org/adms/publishertype/Company");
-					}
+				if (metadataST.getDcatCreatorName() != null){
+					dsDCAT.getCreator().setName(metadataST.getDcatCreatorName());
+				} else { 
+					dsDCAT.getCreator().setName("CSI PIEMONTE");
+				}
+				
+				if (metadataST.getDcatCreatorType() != null){
+					dsDCAT.getCreator().setType(metadataST.getDcatCreatorType());
+				} else { 
+					dsDCAT.getCreator().setType("http://purl.org/adms/publishertype/Company");
+				}
 
-					if (metadataST.getDcatCreatorId() != null){
-						dsDCAT.getCreator().setId(metadataST.getDcatCreatorId());
-					} else { 
-						dsDCAT.getCreator().setId("01995120019");
-					}
-					
-					if (metadataST.getDcatRightsHolderName() != null){
-						dsDCAT.getRightsHolder().setName(metadataST.getDcatRightsHolderName());
-					} else { 
-						dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
-					}
+				if (metadataST.getDcatCreatorId() != null){
+					dsDCAT.getCreator().setId(metadataST.getDcatCreatorId());
+				} else { 
+					dsDCAT.getCreator().setId("01995120019");
+				}
+				
+				if (metadataST.getDcatRightsHolderName() != null){
+					dsDCAT.getRightsHolder().setName(metadataST.getDcatRightsHolderName());
+				} else { 
+					dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
+				}
 
-					if (metadataST.getDcatRightsHolderType() != null){
-						dsDCAT.getRightsHolder().setType(metadataST.getDcatRightsHolderType());
-					} else { 
-						dsDCAT.getRightsHolder().setType("http://purl.org/adms/publishertype/Company");
+				if (metadataST.getDcatRightsHolderType() != null){
+					dsDCAT.getRightsHolder().setType(metadataST.getDcatRightsHolderType());
+				} else { 
+					dsDCAT.getRightsHolder().setType("http://purl.org/adms/publishertype/Company");
+				}
+				
+				if (metadataST.getDcatRightsHolderId() != null){
+					dsDCAT.getRightsHolder().setId(metadataST.getDcatRightsHolderId());
+				} else { 
+					dsDCAT.getRightsHolder().setId("01995120019");
+				}
+				
+				dsDCAT.setDescription(metadata.getDescription());
+				dsDCAT.setTitle(metadata.getName());
+				String keyWords = "";
+				if (metadata.getTags() != null) {
+					for (String tag : metadata.getTags()) {
+						dsDCAT.addKeyword(tag);
 					}
-					
-					if (metadataST.getDcatRightsHolderId() != null){
-						dsDCAT.getRightsHolder().setId(metadataST.getDcatRightsHolderId());
-					} else { 
-						dsDCAT.getRightsHolder().setId("01995120019");
-					}
-					
-					dsDCAT.setDescription(metadata.getDescription());
-					dsDCAT.setTitle(metadata.getName());
-					String keyWords = "";
-					if (metadata.getTags() != null) {
-						for (String tag : metadata.getTags()) {
-							dsDCAT.addKeyword(tag);
-						}
-					}
-					dsDCAT.setTheme(metadata.getDomain());
-					dsDCAT.setAccessRights(metadata.getVisibility());
-					dsDCAT.setAccrualPeriodicity(metadata.getFps());
-					dsDCAT.setIdentifier(metadata.getCode() + "_" + metadata.getVersion());
-					if (metadata.getOpendata() != null)
-						dsDCAT.setModified(metadata.getOpendata().getDataUpdateDate());
-					dsDCAT.setVersionInfo(metadata.getVersion());
-					dsDCAT.setSubTheme(metadataST.getCodsubdomain());
+				}
+				dsDCAT.setTheme(metadata.getDomain());
+				dsDCAT.setAccessRights(metadata.getVisibility());
+				dsDCAT.setAccrualPeriodicity(metadata.getFps());
+				dsDCAT.setIdentifier(metadata.getCode() + "_" + metadata.getVersion());
+				if (metadata.getOpendata() != null)
+					dsDCAT.setModified(metadata.getOpendata().getDataUpdateDate());
+				dsDCAT.setVersionInfo(metadata.getVersion());
+				dsDCAT.setSubTheme(metadataST.getCodsubdomain());
 
-					DistributionDCAT distr = new DistributionDCAT();
-					distr.setAccessURL(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadata.getTenantCode()
-							+ "/" + metadata.getCode());
-					distr.setDownloadURL(cfg.getOauthBaseUrl() + "api/" + metadata.getCode()
-							+ "/download/" + metadataST.getDataset().getDatasetId() + "/all");
-					
-					//https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
-					//distr.getLicense().setName(metadata.getLicense());
-					LicenceTypeDCAT licDist = new LicenceTypeDCAT();
-					if (metadata.getLicense() != null){
+				DistributionDCAT distr = new DistributionDCAT();
+				distr.setAccessURL(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadata.getTenantCode()
+						+ "/" + metadata.getCode());
+				distr.setDownloadURL(cfg.getOauthBaseUrl() + "api/" + metadata.getCode()
+						+ "/download/" + metadataST.getDataset().getDatasetId() + "/all");
+				
+				//https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
+				//distr.getLicense().setName(metadata.getLicense());
+				LicenceTypeDCAT licDist = new LicenceTypeDCAT();
+				if (metadata.getLicense() != null){
+
+					if (metadata.getLicense().equals("CC BY 4.0")){
+						licDist.setName("CC BY");
+						licDist.setType("https://creativecommons.org/licenses/by/4.0/");
+						licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
+						licDist.setVersion("4.0");
+					} else if (metadata.getLicense().equals("CC 0 1.0")){
+						licDist.setName("CC 0");
+						licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
+						licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
+						licDist.setVersion("1.0");
+					} else {
 						licDist.setName(metadata.getLicense());
-
-						if (metadata.getLicense().equals("CC BY")){
-							licDist.setType("https://creativecommons.org/licenses/by/4.0/");
-							licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
-							licDist.setVersion("4.0");
-						}
-						if (metadata.getLicense().equals("CC 0")){
-							licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
-							licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
-							licDist.setVersion("1.0");
-						}
-						distr.setLicense(licDist);
 					}
-					
-					distr.setIssued(metadata.getRegistrationDate());
-					dsDCAT.addDistribution(distr);
+					distr.setLicense(licDist);
+				}
+				
+				distr.setIssued(metadata.getRegistrationDate());
+				dsDCAT.addDistribution(distr);
 
-					VcardDCAT publisher = new VcardDCAT();
-					publisher.setHasEmail(metadataST.getDcatEmailOrg());
-					publisher.setHasTelephone(metadataST.getDcatEmailOrg());
-					dsDCAT.setContactPoint(publisher);
-					
-					catalog.getDataset().add(dsDCAT);
-				//}
+				VcardDCAT publisher = new VcardDCAT();
+				publisher.setHasEmail(metadataST.getDcatEmailOrg());
+				publisher.setHasTelephone(metadataST.getDcatEmailOrg());
+				dsDCAT.setContactPoint(publisher);
+				
+				catalog.getDataset().add(dsDCAT);
 			}
 		}
 		String json = gson.toJson(catalog)
