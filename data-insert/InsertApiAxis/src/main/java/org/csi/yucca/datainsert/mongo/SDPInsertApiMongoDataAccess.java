@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.csi.yucca.datainsert.Log;
 import org.csi.yucca.datainsert.constants.SDPInsertApiConfig;
 import org.csi.yucca.datainsert.dto.DatasetBulkInsert;
 import org.csi.yucca.datainsert.dto.DbConfDto;
@@ -28,6 +29,7 @@ import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
 public class SDPInsertApiMongoDataAccess {
+	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 
 	private static String takeNvlValues(Object obj) {
 		if (null==obj) return null;
@@ -469,6 +471,8 @@ public class SDPInsertApiMongoDataAccess {
 
 		} catch (Exception e) {
 			//TODO
+			log.error( "[SDPInsertApiMongoDataAccess::getStreamInfoForDataset] GenericException ",e);
+
 		} finally {
 			try {
 				cursor.close();
@@ -542,7 +546,7 @@ public class SDPInsertApiMongoDataAccess {
 			}
 
 		} catch (Exception e) {
-			//TODO
+			log.error( "[SDPInsertApiMongoDataAccess::getStreamInfo] GenericException ",e);
 		} finally {
 			try {
 				cursor.close();
