@@ -760,8 +760,8 @@ public class Metadata {
 			ckanDataset.setExtrasList(extrasList);
 		}
 
-		if (getDataset().getImportFileType() != null)
-			extras.setPackage_type(getDataset().getImportFileType());
+		//if (getDataset().getImportFileType() != null)
+		extras.setPackage_type("CSV");
 		ckanDataset.setExtras(extras);
 		return ckanDataset.toJson();
 
