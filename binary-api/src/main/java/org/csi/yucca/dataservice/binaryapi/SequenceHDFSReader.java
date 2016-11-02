@@ -30,12 +30,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.hadoop.fs.FileSystem;
+import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
 
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
@@ -51,8 +48,7 @@ import au.com.bytecode.opencsv.CSVWriter;
  * @since JDK1.0
  */
 public class SequenceHDFSReader extends Reader {
-	Enumeration<? extends org.apache.hadoop.fs.Path> path;
-	FileSystem fs;
+	Enumeration<? extends String> paths;
 	Reader in;
 	StringReader buf;
 	CSVReader csvIn;
@@ -70,10 +66,9 @@ public class SequenceHDFSReader extends Reader {
 	 *            an enumeration of input streams.
 	 * @see java.util.Enumeration
 	 */
-	public SequenceHDFSReader(FileSystem fs,
-			Enumeration<? extends org.apache.hadoop.fs.Path> p) {
-		this.path = p;
-		this.fs = fs;
+	public SequenceHDFSReader(
+			Enumeration<? extends String> paths) {
+		this.paths = paths;
 		try {
 			firstPath();
 		} catch (IOException ex) {
@@ -90,12 +85,12 @@ public class SequenceHDFSReader extends Reader {
         	csvIn.close();
         }
 
-        if (path.hasMoreElements()) {
-        	org.apache.hadoop.fs.Path p = (org.apache.hadoop.fs.Path) path.nextElement();
+        if (paths.hasMoreElements()) {
+        	String p = (String) paths.nextElement();
             if (p == null)
                 throw new NullPointerException();
             
-            csvIn = new CSVReader(new InputStreamReader(fs.open(p)),',','"');
+            csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)),',','"');
             nextLine();
         }
         else csvIn = null;
@@ -110,13 +105,13 @@ public class SequenceHDFSReader extends Reader {
 			csvIn.close();
 		}
 
-		if (path.hasMoreElements()) {
-			org.apache.hadoop.fs.Path p = (org.apache.hadoop.fs.Path) path
+		if (paths.hasMoreElements()) {
+			String p = (String) paths
 					.nextElement();
 			if (p == null)
 				throw new NullPointerException();
 
-			csvIn = new CSVReader(new InputStreamReader(fs.open(p)), ',', '"', 1);
+			csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
 			nextLine();
 
 			

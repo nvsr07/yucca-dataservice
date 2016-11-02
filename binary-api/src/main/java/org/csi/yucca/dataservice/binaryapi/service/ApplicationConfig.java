@@ -11,8 +11,6 @@ public class ApplicationConfig extends Application {
 	private Set<Object> singletons = new HashSet<Object>();
 
 	public ApplicationConfig() {
-		singletons.add(new StreamService());
-		singletons.add(new DatasetService());
 		singletons.add(new BinaryService());
 		
 	}

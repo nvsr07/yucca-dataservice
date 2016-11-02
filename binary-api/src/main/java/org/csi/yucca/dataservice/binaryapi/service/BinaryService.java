@@ -49,6 +49,7 @@ import org.csi.yucca.dataservice.binaryapi.dao.MongoDBBinaryDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBStreamDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBTenantDAO;
+import org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils;
 import org.csi.yucca.dataservice.binaryapi.model.api.Dataset;
 import org.csi.yucca.dataservice.binaryapi.model.api.MyApi;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
@@ -241,13 +242,12 @@ public class BinaryService {
 					String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 					System.out.println("hdfsDirectory = " + hdfsDirectory);
 					Reader is = null;
-					//accountingLog.setPath(hdfsDirectory);
-					if (Config.getHdfsLibrary().equals("webhdfs")){  
-						is = org.csi.yucca.dataservice.binaryapi.webhdfs.HdfsFSUtils.readDir(Config.getKnoxUser(), Config.getKnoxPwd(), hdfsDirectory, Config.getKnoxUrl(), dsVersion);
-					} else if (Config.getHdfsLibrary().equals("hdfs")){
-						is = org.csi.yucca.dataservice.binaryapi.hdfs.HdfsFSUtils.readDir(Config.getHdfsUsername() + tenantCode, hdfsDirectory, dsVersion);
-					} else {
-						//is = org.csi.yucca.dataservice.ingest.binary.localfs.LocalFSUtils.readDirFile(Config.getHdfsUsername() + tenantCode, pathForUri, datasetVersion);
+					try {
+						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion);
+					} catch (Exception e) {
+						LOG.error("Internal error during READDIR", e);
+						throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
+								.entity("{\"error_name\":\"Internal error\", \"error_code\":\"\", \"output\":\"NONE\", \"message\":\""+e.getMessage()+"\"}").build());
 					}
 					System.out.println("InputStream letto");
 					
@@ -349,13 +349,13 @@ public class BinaryService {
 						} else {
 							String pathForUri = binaryData.getPathHdfsBinary();
 
-							InputStream is = null;
-							if (Config.getHdfsLibrary().equals("webhdfs")){
-								is = org.csi.yucca.dataservice.binaryapi.webhdfs.HdfsFSUtils.readFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
-							} else if (Config.getHdfsLibrary().equals("hdfs")){
-								is = org.csi.yucca.dataservice.binaryapi.hdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
-							} else {
-								is = org.csi.yucca.dataservice.binaryapi.localfs.LocalFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
+							InputStream is;
+							try {
+								is = HdfsFSUtils.readFile(pathForUri);
+							} catch (Exception e) {
+								LOG.error("Internal error during READFile", e);
+								throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
+										.entity("{\"error_name\":\"Internal error\", \"error_code\":\"\", \"output\":\"NONE\", \"message\":\""+e.getMessage()+"\"}").build());
 							}
 							if (is != null)
 								return is;
@@ -510,16 +510,7 @@ public class BinaryService {
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
-				if (Config.getHdfsLibrary().equals("webhdfs")){
-					System.out.println("webhdfs = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.binaryapi.webhdfs.HdfsFSUtils.writeFile(Config.getKnoxUser(), Config.getKnoxPwd(), hdfsDirectory, Config.getKnoxUrl(), Config.getKnoxGroup(), attachment.getObject(InputStream.class), idBinary);
-				} else if (Config.getHdfsLibrary().equals("hdfs")){
-					System.out.println("hdfs = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.binaryapi.hdfs.HdfsFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, hdfsDirectory, attachment.getObject(InputStream.class));
-				} else {
-					System.out.println("LocalFSUtils = " + Config.getHdfsLibrary());
-					uri = org.csi.yucca.dataservice.binaryapi.localfs.LocalFSUtils.writeFile(Config.getHdfsUsername() + tenantCode, hdfsDirectory, attachment.getObject(InputStream.class));
-				}
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, attachment.getObject(InputStream.class), idBinary);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -548,8 +539,6 @@ public class BinaryService {
 		}
 	}
 
-	@PUT  //OK
-	@Path("/{tenantCode}/metadata/{datasetCode}/{datasetVersion}/{idBinary}")
 	public void updateMongo(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode, @PathParam("datasetVersion") Integer datasetVersion,
 			@PathParam("idBinary") String idBinary) throws WebApplicationException, NumberFormatException, UnknownHostException {
 
@@ -588,13 +577,14 @@ public class BinaryService {
 		//Get METADATA of selected file
 		//InputStream fileToParser = HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, Config.getKnoxPwd() , pathForUri, Config.getKnoxUrl());
 		InputStream fileToParser = null;
-		if (Config.getHdfsLibrary().equals("webhdfs")){
-			fileToParser = org.csi.yucca.dataservice.binaryapi.webhdfs.HdfsFSUtils.readFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
-		} else if (Config.getHdfsLibrary().equals("hdfs")){
-			fileToParser = org.csi.yucca.dataservice.binaryapi.hdfs.HdfsFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri);
-		} else {
-			fileToParser = org.csi.yucca.dataservice.binaryapi.localfs.LocalFSUtils.readFile(Config.getHdfsUsername() + tenantCode, pathForUri); 
-		}
+
+		try {
+			fileToParser = HdfsFSUtils.readFile(pathForUri);
+		} catch (Exception e1) {
+			LOG.error("Internal error during READDIR", e1);
+			throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
+					.entity("{\"error_name\":\"Internal error\", \"error_code\":\"\", \"output\":\"NONE\", \"message\":\""+e1.getMessage()+"\"}").build());
+		} 
 		
 		System.out.println("fileToParser = " + fileToParser.toString());
 		
@@ -607,11 +597,7 @@ public class BinaryService {
 				
 				Long sizeFileLenght = 0L;
 				
-				if (Config.getHdfsLibrary().equals("webhdfs")){
-					sizeFileLenght = org.csi.yucca.dataservice.binaryapi.webhdfs.HdfsFSUtils.sizeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
-				} else {
-					sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
-				}
+				sizeFileLenght = new Long(HdfsFSUtils.statusFile(pathForUri).getLength());
 				
 				System.out.println("sizeFileLenght = " + sizeFileLenght.toString());
 				
@@ -633,6 +619,7 @@ public class BinaryService {
 				.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
 	}
 
+/*
 	@DELETE //to do
 	@Path("/{tenantCode}/clearMetadata/{datasetCode}")
 	public void clearMetadata(@PathParam("tenantCode") String tenantCode, @PathParam("datasetCode") String datasetCode) throws WebApplicationException, NumberFormatException, UnknownHostException {
@@ -723,7 +710,7 @@ public class BinaryService {
 			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND)
 					.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
 	}
-	
+	*/
 	public static Map<String, String> extractMetadata(InputStream is) {
 
 		//System.out.println("sizeFileLenght = " + sizeFileLenght.toString());

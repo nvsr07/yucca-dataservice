@@ -3,16 +3,16 @@ package org.csi.yucca.dataservice.binaryapi;
 import java.util.*;
 import java.io.*;
 
-public class ListOfFiles implements Enumeration<org.apache.hadoop.fs.Path> {
+public class ListOfFiles implements Enumeration<String> {
 
-    private List<org.apache.hadoop.fs.Path> listOfFiles;
+    private List<String> listOfFiles;
     private int current = 0;
 
-    public ListOfFiles(List<org.apache.hadoop.fs.Path> listOfFiles) {
+    public ListOfFiles(List<String> listOfFiles) {
         this.listOfFiles = listOfFiles;
     }
     
-    public void addElement(org.apache.hadoop.fs.Path element){
+    public void addElement(String element){
     	listOfFiles.add(element);
     }
 
@@ -23,8 +23,8 @@ public class ListOfFiles implements Enumeration<org.apache.hadoop.fs.Path> {
             return false;
     }
 
-    public org.apache.hadoop.fs.Path nextElement() {
-    	org.apache.hadoop.fs.Path nextElement = null;
+    public String nextElement() {
+    	String nextElement = null;
 
         if (!hasMoreElements())
             throw new NoSuchElementException("No more files.");
@@ -36,8 +36,8 @@ public class ListOfFiles implements Enumeration<org.apache.hadoop.fs.Path> {
         return nextElement;
     }
 
-    public org.apache.hadoop.fs.Path prevElement() {
-    	org.apache.hadoop.fs.Path prevElement = null;
+    public String prevElement() {
+    	String prevElement = null;
 
 		current--;
 		if (current < 0)
