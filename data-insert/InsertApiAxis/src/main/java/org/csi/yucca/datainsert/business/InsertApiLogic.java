@@ -148,7 +148,7 @@ public class InsertApiLogic {
 				insStrConst+= " , datasetVersion : "+infoDataset.getDatasetVersion();
 
 
-				// se dataset è stream, recupero info stream
+				// se dataset e' stream, recupero info stream
 				boolean isStream=false;
 				String streamCode=null;
 				String sensor=null;
@@ -164,7 +164,7 @@ public class InsertApiLogic {
 					sensor=infoStream.getSensorCode();
 					streamCode=infoStream.getStreamCode();
 				}
-				// se dataset è dataset va bene cosi' 
+				// se dataset e' dataset va bene cosi' 
 
 				if (ret.get(datasetCode)!=null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DUPLICATE, " for dataset "+datasetCode);
 				
