@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.csi.yucca.dataservice</groupId>
   <artifactId>data-insert</artifactId>
-  <version>1.0.0</version>
+  <version>1.4.0</version>
   <packaging>pom</packaging>
   <name>data-insert</name>
   <description>data-insert</description>
