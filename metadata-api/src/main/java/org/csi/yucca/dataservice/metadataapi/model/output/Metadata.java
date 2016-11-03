@@ -361,8 +361,7 @@ public class Metadata {
 		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "detail/" + item.getExtraCodiceTenant() + "/";
 		if (item.getName().endsWith("_odata")) {
 			metadata.setType(METADATA_TYPE_DATASET);
-			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/"
-					+ item.getExtraCodiceTenant() + "/" + metadata.getCode());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/" + metadata.getCode());
 			Dataset dataset = new Dataset();
 
 			String[] nameSplitted = item.getName().split("_");
@@ -376,9 +375,8 @@ public class Metadata {
 			metadata.setType(METADATA_TYPE_STREAM);
 			metadata.setCode(item.getName().substring(0, item.getName().length() - 7));
 			metadata.setName(item.getExtraCodiceStream() + " " + item.getExtraVirtualEntityCode());
-			metadata.setIcon(
-					Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/"
-							+ item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + item.getExtraCodiceTenant() + "/" + item.getExtraVirtualEntityCode() + "/"
+					+ item.getExtraCodiceStream());
 
 			detailUrl += item.getExtraVirtualEntityCode() + "/" + item.getExtraCodiceStream();
 
@@ -435,8 +433,7 @@ public class Metadata {
 		if (content != null && content.getStreams() != null && content.getStreams().getStream() != null) {
 
 			metadata.setType(METADATA_TYPE_STREAM);
-			org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Stream docStream = content.getStreams()
-					.getStream();
+			org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Stream docStream = content.getStreams().getStream();
 
 			// metadata.setCode(Metadata.createCodeFromStream(docStream.getCodiceTenant(),
 			// docStream.getCodiceVirtualEntity(),
@@ -445,12 +442,10 @@ public class Metadata {
 
 			metadata.setVersion("" + docStream.getDeploymentVersion());
 			metadata.setName(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName());
-			metadata.setDescription(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName() + " - "
-					+ docStream.getVirtualEntityDescription());
+			metadata.setDescription(docStream.getNomeStream() + " - " + docStream.getVirtualEntityName() + " - " + docStream.getVirtualEntityDescription());
 
-			metadata.setIcon(
-					Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + docStream.getCodiceTenant() + "/"
-							+ docStream.getCodiceVirtualEntity() + "/" + docStream.getCodiceStream());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + docStream.getCodiceTenant() + "/" + docStream.getCodiceVirtualEntity() + "/"
+					+ docStream.getCodiceStream());
 
 			metadata.setDomain(I18nDelegate.translate(docStream.getDomainStream(), lang));
 			metadata.setVisibility(docStream.getVisibility());
@@ -460,8 +455,7 @@ public class Metadata {
 			metadata.setTenantCode(docStream.getCodiceTenant());
 			metadata.setTenantName(docStream.getNomeTenant());
 
-			if (docStream.getStreamTags() != null && docStream.getStreamTags().getTag() != null
-					&& docStream.getStreamTags().getTag().size() > 0) {
+			if (docStream.getStreamTags() != null && docStream.getStreamTags().getTag() != null && docStream.getStreamTags().getTag().size() > 0) {
 				String[] tagCodes = new String[docStream.getStreamTags().getTag().size()];
 				int counter = 0;
 				for (Tag tagCode : docStream.getStreamTags().getTag()) {
@@ -489,8 +483,7 @@ public class Metadata {
 				smartobject.setTwtLang(docStream.getTwtLang());
 			}
 
-			if (docStream.getVirtualEntityPositions() != null
-					&& docStream.getVirtualEntityPositions().getPosition() != null
+			if (docStream.getVirtualEntityPositions() != null && docStream.getVirtualEntityPositions().getPosition() != null
 					&& docStream.getVirtualEntityPositions().getPosition().size() > 0) {
 				Position position = docStream.getVirtualEntityPositions().getPosition().get(0);
 				smartobject.setAltitude(position.getElevation());
@@ -507,8 +500,7 @@ public class Metadata {
 			stream.setSavedata(docStream.getSaveData());
 			stream.setSmartobject(smartobject);
 
-			if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null
-					&& docStream.getComponenti().getElement().size() > 0) {
+			if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null && docStream.getComponenti().getElement().size() > 0) {
 
 				StreamComponent[] components = new StreamComponent[docStream.getComponenti().getElement().size()];
 				int counter = 0;
@@ -535,8 +527,7 @@ public class Metadata {
 
 				dataset.setDatasetType(datasetType);
 
-				if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null
-						&& docStream.getComponenti().getElement().size() > 0) {
+				if (docStream.getComponenti() != null && docStream.getComponenti().getElement() != null && docStream.getComponenti().getElement().size() > 0) {
 					DatasetColumn[] columns = new DatasetColumn[docStream.getComponenti().getElement().size()];
 
 					int counter = 0;
@@ -591,8 +582,7 @@ public class Metadata {
 			metadata.setName(info.getDatasetName());
 			metadata.setDescription(info.getDescription());
 
-			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/"
-					+ configData.getTenantCode() + "/" + content.getDatasetCode());
+			metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + configData.getTenantCode() + "/" + content.getDatasetCode());
 
 			metadata.setDomain(I18nDelegate.translate(info.getDataDomain(), lang));
 			metadata.setCodsubdomain(I18nDelegate.translate(info.getCodSubDomain(), lang));
@@ -688,8 +678,7 @@ public class Metadata {
 		ckanDataset.setNotes(getDescription());
 		ckanDataset.setVersion(getVersion());
 
-		String metadataUrl = Config.getInstance().getUserportalBaseUrl() + "#/dataexplorer/dataset/" + getTenantCode()
-				+ "/" + getCode();
+		String metadataUrl = Config.getInstance().getUserportalBaseUrl() + "#/dataexplorer/dataset/" + getTenantCode() + "/" + getCode();
 
 		ckanDataset.setUrl(metadataUrl);
 
@@ -707,8 +696,7 @@ public class Metadata {
 
 		String downloadCsvUrl = exposedApiBaseUrl + getCode() + "/download/" + getDataset().getDatasetId() + "/";
 
-		if (METADATA_TYPE_DATASET.equals(getType())
-				&& Dataset.DATASET_TYPE_BULK.equals(getDataset().getDatasetType())) {
+		if (METADATA_TYPE_DATASET.equals(getType()) && Dataset.DATASET_TYPE_BULK.equals(getDataset().getDatasetType())) {
 			downloadCsvUrl += "all";
 		} else {
 			downloadCsvUrl += "current";
@@ -737,10 +725,19 @@ public class Metadata {
 
 		}
 
+		extras.setDcatCreatorName(getDcatCreatorName());
+		extras.setDcatCreatorType(getDcatCreatorType());
+		extras.setDcatCreatorId(getDcatCreatorId());
+		extras.setDcatRightsHolderName(getDcatRightsHolderName());
+		extras.setDcatRightsHolderType(getDcatRightsHolderType());
+		extras.setDcatRightsHolderId(getDcatRightsHolderId());
+		extras.setDcatNomeOrg(getDcatNomeOrg());
+		extras.setDcatEmailOrg(getDcatEmailOrg());
+
 		ckanDataset.setLicense(getLicense());
 		extras.setDisclaimer(getDisclaimer());
 		extras.setCopyright(getCopyright());
-		
+
 		ckanDataset.setIsopen(getOpendata() != null && getOpendata().isOpendata());
 
 		if (getTags() != null) {
@@ -760,7 +757,7 @@ public class Metadata {
 			ckanDataset.setExtrasList(extrasList);
 		}
 
-		//if (getDataset().getImportFileType() != null)
+		// if (getDataset().getImportFileType() != null)
 		extras.setPackage_type("CSV");
 		ckanDataset.setExtras(extras);
 		return ckanDataset.toJson();
