@@ -10,7 +10,9 @@ import org.apache.log4j.spi.RootLogger;
 import org.csi.yucca.dataservice.binaryapi.ListOfFiles;
 import org.csi.yucca.dataservice.binaryapi.SequenceHDFSReader;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatus;
+import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatuses;
+import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusesContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 
@@ -44,15 +46,15 @@ public class HdfsFSUtils {
 		Reader input = null;
 		try {
 
-			FileStatuses files = new KnoxWebHDFSConnection().listStatus(remotePath);
+			FileStatusesContainer filesc  = new KnoxWebHDFSConnection().listStatus(remotePath);
 			ListOfFiles list = new ListOfFiles(new ArrayList<String>());
 			
 			
 			Integer countFileIntoDir = 0;
 			
-			if (files!=null && files.getFileStatus()!=null) {
-				for (int i = 0; i < files.getFileStatus().length; i++) {
-					FileStatus currentFile = files.getFileStatus()[i];
+			if (filesc!=null && filesc.getFileStatuses()!=null && filesc.getFileStatuses().getFileStatus()!=null) {
+				for (int i = 0; i < filesc.getFileStatuses().getFileStatus().length; i++) {
+					FileStatus currentFile = filesc.getFileStatuses().getFileStatus()[i];
 					logger.info("[KnoxHdfsFSUtils::readDir] analyze:["+remotePath+"]+["+currentFile.getPathSuffix()+"]");
 					if (currentFile.getType().equals("FILE")) {
 						countFileIntoDir++;
@@ -90,7 +92,7 @@ public class HdfsFSUtils {
 		
 		try {
 			logger.info("[WriteFileHdfsAction::writeFile] check for file exists:["+remotePath+"]["+fileName+"]");
-			FileStatus fs = new KnoxWebHDFSConnection().getFileStatus(remotePath+"/"+fileName);
+			FileStatusContainer fs = new KnoxWebHDFSConnection().getFileStatus(remotePath+"/"+fileName);
 			if (fs!=null)
 				throw new Exception("File ["+remotePath+"/"+fileName+"] already exists!");
 		} 
@@ -125,7 +127,9 @@ public class HdfsFSUtils {
 		FileStatus fs = null;
 		try {
 			
-			fs = new KnoxWebHDFSConnection().getFileStatus(remotePath);
+			FileStatusContainer fsc = new KnoxWebHDFSConnection().getFileStatus(remotePath);
+			if (fsc!=null)
+				fs =fsc.getFileStatus();
 			logger.info("[KnoxHdfsFSUtils::readFile] info for path:["+remotePath+"] END");
 		} catch (Exception e) {
 			logger.error("[KnoxHdfsFSUtils::readFile] info for path:["+remotePath+"] Error", e);

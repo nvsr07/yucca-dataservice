@@ -28,7 +28,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatus;
+import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatuses;
+import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusesContainer;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.util.json.JSonHelper;
 import org.slf4j.Logger;
@@ -219,7 +221,7 @@ public class KnoxWebHDFSConnection {
 	 * @return
 	 * @throws Exception 
 	 */
-	public FileStatuses listStatus(String path) throws Exception {
+	public FileStatusesContainer listStatus(String path) throws Exception {
 		String spec = MessageFormat.format("{0}?op=LISTSTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox httpfsUrl:"+httpfsUrl);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox spec:"+spec);
@@ -250,13 +252,11 @@ public class KnoxWebHDFSConnection {
 
 		
 		Gson gson = JSonHelper.getInstance();
-		FileStatuses fs = gson.fromJson(responseString,FileStatuses.class);
+		FileStatusesContainer fs = gson.fromJson(responseString,FileStatusesContainer.class);
 		
 		logger.info("[KnoxWebHDFSConnection::listStatus] fs:"+fs);
 		if (fs!=null)
-			logger.info("[KnoxWebHDFSConnection::listStatus] fs.getFileStatus():"+fs.getFileStatus());
-		if (fs!=null && fs.getFileStatus()!=null)
-			logger.info("[KnoxWebHDFSConnection::listStatus] fs.getFileStatus()[0].getPathSuffix():"+fs.getFileStatus()[0].getPathSuffix());
+			logger.info("[KnoxWebHDFSConnection::listStatus] fs.getFileStatus():"+fs.getFileStatuses());
 		
 		return fs;
 	}
@@ -270,7 +270,7 @@ public class KnoxWebHDFSConnection {
 	 * @return
 	 * @throws Exception 
 	 */
-	public FileStatus getFileStatus(String path) throws Exception {
+	public FileStatusContainer getFileStatus(String path) throws Exception {
 		String spec = MessageFormat.format("{0}?op=GETFILESTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		HttpGet get;
 		try {
@@ -295,7 +295,7 @@ public class KnoxWebHDFSConnection {
 
 		
 		Gson gson = JSonHelper.getInstance();
-		FileStatus fs = gson.fromJson(responseString,FileStatus.class);
+		FileStatusContainer fs = gson.fromJson(responseString,FileStatusContainer.class);
 		
 		
 		return fs;
