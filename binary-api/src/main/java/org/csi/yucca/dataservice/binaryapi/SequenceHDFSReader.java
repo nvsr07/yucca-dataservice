@@ -72,7 +72,7 @@ public class SequenceHDFSReader extends Reader {
 		try {
 			firstPath();
 		} catch (IOException ex) {
-			// This should never happen
+			ex.printStackTrace();
 			throw new Error("panic");
 		}
 	}

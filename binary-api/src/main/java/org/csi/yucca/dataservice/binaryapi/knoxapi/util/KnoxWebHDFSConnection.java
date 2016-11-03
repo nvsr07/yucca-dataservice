@@ -161,7 +161,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws MalformedURLException
 	 */
 	public InputStream open(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("{0}?op=OPEN&user.name={2}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=OPEN&user.name={1}", URLUtil.encodePath(path), this.principal);
 
 		HttpGet get;
 		CloseableHttpClient client = null;
@@ -189,7 +189,7 @@ public class KnoxWebHDFSConnection {
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		} finally {
-			client.close();
+			//client.close();
 		}
 
 		
