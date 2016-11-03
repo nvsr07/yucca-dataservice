@@ -229,6 +229,10 @@ public class KnoxWebHDFSConnection {
 	 */
 	public FileStatuses listStatus(String path) throws Exception {
 		String spec = MessageFormat.format("/{0}?op=LISTSTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
+		logger.info("[KnoxWebHDFSConnection::listStatus] Knox httpfsUrl:"+httpfsUrl);
+		logger.info("[KnoxWebHDFSConnection::listStatus] Knox spec:"+spec);
+		logger.info("[KnoxWebHDFSConnection::listStatus] URI:"+new URL(new URL(httpfsUrl),spec).toURI());
+		
 		HttpGet get;
 		try {
 			get = new HttpGet(new URL(new URL(httpfsUrl),spec).toURI());
