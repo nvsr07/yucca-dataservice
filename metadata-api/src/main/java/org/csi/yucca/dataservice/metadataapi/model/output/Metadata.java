@@ -735,7 +735,7 @@ public class Metadata {
 		extras.setDcatEmailOrg(getDcatEmailOrg());
 
 		ckanDataset.setLicense(getLicense());
-		extras.setDisclaimer(getDisclaimer());
+		extras.setDisclaimer(getDisclaimer());	
 		extras.setCopyright(getCopyright());
 
 		ckanDataset.setIsopen(getOpendata() != null && getOpendata().isOpendata());
