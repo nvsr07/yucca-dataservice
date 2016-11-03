@@ -1,23 +1,14 @@
 package org.csi.yucca.dataservice.binaryapi.knoxapi.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
@@ -84,6 +75,9 @@ public class KnoxWebHDFSConnection {
 	private String principal = Config.getKnoxUser();
 	private String password = Config.getKnoxPwd();
 
+	static {
+		System.setProperty("jsse.enableSNIExtension", "false");
+	}
 	
 	private static CloseableHttpClient getHttpClientKnox() {
 		CloseableHttpClient client = HttpClientBuilder.create().build();
@@ -92,6 +86,7 @@ public class KnoxWebHDFSConnection {
 	}
 
 	private static CloseableHttpClient getHttpClientKnox(boolean disableRedirect) {
+		
 		if (disableRedirect)
 			return HttpClientBuilder.create().disableRedirectHandling().build();
 		else 
@@ -145,7 +140,6 @@ public class KnoxWebHDFSConnection {
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
-	 * @throws AuthenticationException
 	 */
 	public String getHomeDirectory() throws MalformedURLException, IOException {
 		String spec = MessageFormat.format("/?op=GETHOMEDIRECTORY&user.name={0}", this.principal);
@@ -161,7 +155,6 @@ public class KnoxWebHDFSConnection {
 	 * 
 	 * @param path
 	 * @param os
-	 * @throws AuthenticationException
 	 * @throws IOException
 	 * @throws MalformedURLException
 	 */
@@ -173,7 +166,7 @@ public class KnoxWebHDFSConnection {
 		HttpResponse response = null;
 		
 		try {
-			get = new HttpGet(new URL(new URL(httpfsUrl),spec).toURI());
+			get = new HttpGet(new URL(httpfsUrl+spec).toURI());
 			get.setHeader("Content-Type", "application/octet-stream");
 			client = getHttpClientKnox();
 			response = client.execute(get,getHttpContext());
@@ -210,7 +203,6 @@ public class KnoxWebHDFSConnection {
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
-	 * @throws AuthenticationException
 	 */
 	public String getContentSummary(String path) throws MalformedURLException, IOException {
 		String spec = MessageFormat.format("{0}?op=GETCONTENTSUMMARY&user.name={1}", URLUtil.encodePath(path), this.principal);
@@ -231,11 +223,11 @@ public class KnoxWebHDFSConnection {
 		String spec = MessageFormat.format("{0}?op=LISTSTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox httpfsUrl:"+httpfsUrl);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox spec:"+spec);
-		logger.info("[KnoxWebHDFSConnection::listStatus] URI:"+new URL(new URL(httpfsUrl),spec).toURI());
+		logger.info("[KnoxWebHDFSConnection::listStatus] URI:"+new URL(httpfsUrl+spec).toURI());
 		
 		HttpGet get;
 		try {
-			get = new HttpGet(new URL(new URL(httpfsUrl),spec).toURI());
+			get = new HttpGet(new URL(httpfsUrl+spec).toURI());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
@@ -276,7 +268,7 @@ public class KnoxWebHDFSConnection {
 		String spec = MessageFormat.format("{0}?op=GETFILESTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		HttpGet get;
 		try {
-			get = new HttpGet(new URL(new URL(httpfsUrl),spec).toURI());
+			get = new HttpGet(new URL(httpfsUrl+spec).toURI());
 		} catch (URISyntaxException e) {
 			throw new MalformedURLException(e.getMessage());
 		}
@@ -326,7 +318,7 @@ public class KnoxWebHDFSConnection {
 		HttpGet get;
 		CloseableHttpClient client = null;
 		try {
-			get = new HttpGet(new URL(new URL(httpfsUrl),spec).toURI());
+			get = new HttpGet(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox();
 			HttpResponse response = client.execute(get,getHttpContext());
 			return EntityUtils.toString(response.getEntity());
@@ -343,7 +335,7 @@ public class KnoxWebHDFSConnection {
 		HttpPut put;
 		CloseableHttpClient client = null;
 		try {
-			put = new HttpPut(new URL(new URL(httpfsUrl),spec).toURI());
+			put = new HttpPut(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox();
 			HttpResponse response = client.execute(put,getHttpContext());
 			if (response.getStatusLine().getStatusCode()>299)
@@ -362,7 +354,7 @@ public class KnoxWebHDFSConnection {
 		HttpDelete delete;
 		CloseableHttpClient client = null;
 		try {
-			delete = new HttpDelete(new URL(new URL(httpfsUrl),spec).toURI());
+			delete = new HttpDelete(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox(false);
 			HttpResponse response = client.execute(delete,getHttpContext());
 			return EntityUtils.toString(response.getEntity());
@@ -399,7 +391,7 @@ public class KnoxWebHDFSConnection {
 		CloseableHttpClient client = null;
 		HttpPut put;
 		try {
-			put = new HttpPut(new URL(new URL(httpfsUrl),spec).toURI());
+			put = new HttpPut(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox(true);
 			HttpResponse response = client.execute(put, getHttpContext());
 			
