@@ -37,6 +37,8 @@ public class FileStatusesContainer {
 		Gson gson = JSonHelper.getInstance();
 		FileStatusesContainer fs = gson.fromJson(resp,FileStatusesContainer.class);
 		
+		
+		System.out.println(fs.getFileStatuses().getFileStatus());
 	}
 	
 }
