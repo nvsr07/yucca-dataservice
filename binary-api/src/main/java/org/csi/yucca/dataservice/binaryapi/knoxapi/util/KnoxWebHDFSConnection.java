@@ -166,7 +166,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws MalformedURLException
 	 */
 	public InputStream open(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("/{0}?op=OPEN&user.name={2}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=OPEN&user.name={2}", URLUtil.encodePath(path), this.principal);
 
 		HttpGet get;
 		CloseableHttpClient client = null;
@@ -213,7 +213,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws AuthenticationException
 	 */
 	public String getContentSummary(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("/{0}?op=GETCONTENTSUMMARY&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=GETCONTENTSUMMARY&user.name={1}", URLUtil.encodePath(path), this.principal);
 		return genericGetForStringCall(spec);
 		
 	}
@@ -228,7 +228,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws Exception 
 	 */
 	public FileStatuses listStatus(String path) throws Exception {
-		String spec = MessageFormat.format("/{0}?op=LISTSTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=LISTSTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox httpfsUrl:"+httpfsUrl);
 		logger.info("[KnoxWebHDFSConnection::listStatus] Knox spec:"+spec);
 		logger.info("[KnoxWebHDFSConnection::listStatus] URI:"+new URL(new URL(httpfsUrl),spec).toURI());
@@ -273,7 +273,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws Exception 
 	 */
 	public FileStatus getFileStatus(String path) throws Exception {
-		String spec = MessageFormat.format("/{0}?op=GETFILESTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=GETFILESTATUS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		HttpGet get;
 		try {
 			get = new HttpGet(new URL(new URL(httpfsUrl),spec).toURI());
@@ -315,7 +315,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws IOException
 	 */
 	public String getFileCheckSum(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("/{0}?op=GETFILECHECKSUM&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=GETFILECHECKSUM&user.name={1}", URLUtil.encodePath(path), this.principal);
 		return genericGetForStringCall(spec);
 		
 		
@@ -394,7 +394,7 @@ public class KnoxWebHDFSConnection {
 	 */
 	public String create(String path, InputStream is) throws MalformedURLException, IOException{
 		String resp = null;
-		String spec = MessageFormat.format("/{0}?op=CREATE&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=CREATE&user.name={1}", URLUtil.encodePath(path), this.principal);
 		String redirectUrl = null;
 		CloseableHttpClient client = null;
 		HttpPut put;
@@ -449,7 +449,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String mkdirs(String path) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=MKDIRS&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=MKDIRS&user.name={1}", URLUtil.encodePath(path), this.principal);
 		return genericPutForStringCall(spec);
 	}
 
@@ -465,7 +465,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String createSymLink(String srcPath, String destPath) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=CREATESYMLINK&destination={1}&user.name={2}",
+		String spec = MessageFormat.format("{0}?op=CREATESYMLINK&destination={1}&user.name={2}",
 				URLUtil.encodePath(srcPath), URLUtil.encodePath(destPath), this.principal);
 		return genericPutForStringCall(spec);
 	}
@@ -482,7 +482,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String rename(String srcPath, String destPath) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=RENAME&destination={1}&user.name={2}",
+		String spec = MessageFormat.format("{0}?op=RENAME&destination={1}&user.name={2}",
 				URLUtil.encodePath(srcPath), URLUtil.encodePath(destPath), this.principal);
 		return genericPutForStringCall(spec);
 	}
@@ -499,7 +499,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String setPermission(String path, String permission) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=SETPERMISSION&permission={1}&user.name={2}", URLUtil.encodePath(path),permission, this.principal);
+		String spec = MessageFormat.format("{0}?op=SETPERMISSION&permission={1}&user.name={2}", URLUtil.encodePath(path),permission, this.principal);
 		return genericPutForStringCall(spec);
 	}
 
@@ -515,7 +515,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String setOwner(String path, String owner, String group) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=SETOWNER&owner={1}&group={2}&user.name={3}", URLUtil.encodePath(path), owner, group, this.principal);
+		String spec = MessageFormat.format("{0}?op=SETOWNER&owner={1}&group={2}&user.name={3}", URLUtil.encodePath(path), owner, group, this.principal);
 		return genericPutForStringCall(spec);
 	}
 
@@ -531,7 +531,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String setReplication(String path) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=SETREPLICATION&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=SETREPLICATION&user.name={1}", URLUtil.encodePath(path), this.principal);
 		return genericPutForStringCall(spec);
 	}
 
@@ -547,7 +547,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws ParseException 
 	 */
 	public String setTimes(String path) throws ParseException, Exception {
-		String spec = MessageFormat.format("/{0}?op=SETTIMES&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=SETTIMES&user.name={1}", URLUtil.encodePath(path), this.principal);
 		return genericPutForStringCall(spec);
 	}
 
@@ -622,7 +622,7 @@ public class KnoxWebHDFSConnection {
 	 * @throws MalformedURLException
 	 */
 	public String delete(String path) throws MalformedURLException, IOException {
-		String spec = MessageFormat.format("/{0}?op=DELETE&user.name={1}", URLUtil.encodePath(path), this.principal);
+		String spec = MessageFormat.format("{0}?op=DELETE&user.name={1}", URLUtil.encodePath(path), this.principal);
 		return genericDeleteForStringCall(spec);
 	}
 
