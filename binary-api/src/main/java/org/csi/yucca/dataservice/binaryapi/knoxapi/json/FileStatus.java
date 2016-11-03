@@ -5,31 +5,35 @@ import com.google.gson.annotations.Expose;
 public class FileStatus {
 
 	@Expose
-	private Integer accessTime;
+	private Long accessTime;
 	@Expose
-	private Integer blockSize;
+	private Long blockSize;
 	@Expose
 	private String  group;
 	@Expose
-	private Integer length;
+	private Long length;
 	@Expose
-	private Integer modificationTime;
+	private Long modificationTime;
 	@Expose
 	private String owner;
 	@Expose
 	private String pathSuffix;
-	
-	
-	public Integer getAccessTime() {
+	@Expose
+	private String permission;
+	@Expose
+	private Long replication;
+	@Expose
+	private String type;
+	public Long getAccessTime() {
 		return accessTime;
 	}
-	public void setAccessTime(Integer accessTime) {
+	public void setAccessTime(Long accessTime) {
 		this.accessTime = accessTime;
 	}
-	public Integer getBlockSize() {
+	public Long getBlockSize() {
 		return blockSize;
 	}
-	public void setBlockSize(Integer blockSize) {
+	public void setBlockSize(Long blockSize) {
 		this.blockSize = blockSize;
 	}
 	public String getGroup() {
@@ -38,16 +42,16 @@ public class FileStatus {
 	public void setGroup(String group) {
 		this.group = group;
 	}
-	public Integer getLength() {
+	public Long getLength() {
 		return length;
 	}
-	public void setLength(Integer length) {
+	public void setLength(Long length) {
 		this.length = length;
 	}
-	public Integer getModificationTime() {
+	public Long getModificationTime() {
 		return modificationTime;
 	}
-	public void setModificationTime(Integer modificationTime) {
+	public void setModificationTime(Long modificationTime) {
 		this.modificationTime = modificationTime;
 	}
 	public String getOwner() {
@@ -68,10 +72,10 @@ public class FileStatus {
 	public void setPermission(String permission) {
 		this.permission = permission;
 	}
-	public Integer getReplication() {
+	public Long getReplication() {
 		return replication;
 	}
-	public void setReplication(Integer replication) {
+	public void setReplication(Long replication) {
 		this.replication = replication;
 	}
 	public String getType() {
@@ -80,8 +84,5 @@ public class FileStatus {
 	public void setType(String type) {
 		this.type = type;
 	}
-	private String permission;
-	private Integer replication;
-	private String type;
 	
 }
