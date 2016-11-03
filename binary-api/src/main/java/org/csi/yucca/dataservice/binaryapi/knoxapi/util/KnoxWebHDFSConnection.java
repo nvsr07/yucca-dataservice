@@ -246,11 +246,17 @@ public class KnoxWebHDFSConnection {
 
 		HttpEntity entity = response.getEntity();
 		String responseString = EntityUtils.toString(entity, "UTF-8");
+		logger.info("[KnoxWebHDFSConnection::listStatus] responseString:"+responseString);
 
 		
 		Gson gson = JSonHelper.getInstance();
 		FileStatuses fs = gson.fromJson(responseString,FileStatuses.class);
 		
+		logger.info("[KnoxWebHDFSConnection::listStatus] fs:"+fs);
+		if (fs!=null)
+			logger.info("[KnoxWebHDFSConnection::listStatus] fs.getFileStatus():"+fs.getFileStatus());
+		if (fs!=null && fs.getFileStatus()!=null)
+			logger.info("[KnoxWebHDFSConnection::listStatus] fs.getFileStatus()[0].getPathSuffix():"+fs.getFileStatus()[0].getPathSuffix());
 		
 		return fs;
 	}

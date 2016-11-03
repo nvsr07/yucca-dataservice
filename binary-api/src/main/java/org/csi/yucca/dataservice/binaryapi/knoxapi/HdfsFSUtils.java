@@ -40,7 +40,7 @@ public class HdfsFSUtils {
 	}
 
 	public static Reader readDir(String remotePath, Integer version) throws Exception {
-		logger.info("[KnoxHdfsFSUtils::readFile] read directory:["+remotePath+"]");
+		logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"]");
 		Reader input = null;
 		try {
 
@@ -53,34 +53,34 @@ public class HdfsFSUtils {
 			if (files!=null && files.getFileStatus()!=null) {
 				for (int i = 0; i < files.getFileStatus().length; i++) {
 					FileStatus currentFile = files.getFileStatus()[i];
-					logger.info("[KnoxHdfsFSUtils::readFile] analyze:["+remotePath+"]+["+currentFile.getPathSuffix()+"]");
+					logger.info("[KnoxHdfsFSUtils::readDir] analyze:["+remotePath+"]+["+currentFile.getPathSuffix()+"]");
 					if (currentFile.getType().equals("FILE")) {
 						countFileIntoDir++;
 						String myFileName = currentFile.getPathSuffix();
 						if ((myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(version.toString()+".csv")) 
 								|| (version.equals(0))){
-							logger.info("[KnoxHdfsFSUtils::readFile] add element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
+							logger.info("[KnoxHdfsFSUtils::readDir] add element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
 							list.addElement(remotePath+"/"+currentFile.getPathSuffix());
 						} else {
-							logger.info("[KnoxHdfsFSUtils::readFile] SKIP element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
+							logger.info("[KnoxHdfsFSUtils::readDir] SKIP element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
 						}
 						
 						
 					} else 
 					{
-						logger.info("[KnoxHdfsFSUtils::readFile] SKIP element (directory?):["+remotePath+"]+["+currentFile.getPathSuffix()+"]");
+						logger.info("[KnoxHdfsFSUtils::readDir] SKIP element (directory?):["+remotePath+"]+["+currentFile.getPathSuffix()+"]");
 					}
 				}
 			}
 			if (countFileIntoDir.equals(0)){
-				logger.warn("[KnoxHdfsFSUtils::readFile] No elements found in :["+remotePath+"]");
+				logger.warn("[KnoxHdfsFSUtils::readDir] No elements found in :["+remotePath+"]");
 			}
 			
 			Reader sis = new SequenceHDFSReader(list);
-			logger.info("[KnoxHdfsFSUtils::readFile] read directory:["+remotePath+"] END");
+			logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"] END");
 			return sis;
 		} catch (Exception e) {
-			logger.error("[KnoxHdfsFSUtils::readFile] Unexpected Error ",e);
+			logger.error("[KnoxHdfsFSUtils::readDir] Unexpected Error ",e);
 			throw e;
 		}
 	}
