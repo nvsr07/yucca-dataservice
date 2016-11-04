@@ -6,32 +6,23 @@ import java.io.Reader;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.xml.ws.WebServiceContext;
-import javax.xml.ws.handler.MessageContext;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import org.apache.cxf.jaxrs.ext.multipart.Multipart;
-import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -40,11 +31,6 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
-import org.csi.yucca.dataservice.binaryapi.util.AccountingLog;
-import org.xml.sax.SAXException;
-
-import com.mongodb.MongoClient;
-
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBBinaryDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBStreamDAO;
@@ -53,11 +39,16 @@ import org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils;
 import org.csi.yucca.dataservice.binaryapi.model.api.Dataset;
 import org.csi.yucca.dataservice.binaryapi.model.api.MyApi;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
-import org.csi.yucca.dataservice.binaryapi.model.metadata.Info;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Metadata;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Stream;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
+import org.xml.sax.SAXException;
+
+import com.mongodb.MongoClient;
 
 
 @Path("/binary")
@@ -138,6 +129,12 @@ public class BinaryService {
 			api = apiDAO.readApiByCode(apiCode);
 		} catch (Exception ex) {
 			ex.printStackTrace();
+		}
+		
+		if (api == null){ 
+			throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+					.entity("{\"error_name\":\"Api not found\", \"error_code\":\"E117a\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}")
+					.build());
 		}
 		
 		System.out.println("Get tenantCode from ApiCode! => " + api.getApiName());
@@ -364,7 +361,7 @@ public class BinaryService {
 										.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E117b\", \"output\":\"NONE\", \"message\":\"this binary does not exist\"}").build());
 						}
 					} else {
-						throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+						throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 								.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}").build());
 					}
 				}
@@ -379,26 +376,57 @@ public class BinaryService {
 		return null;
 	}
 
+	@POST
+	@Path("/prova/")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+    public void put(MultipartFormDataInput input) throws IOException
+    {
+	int i = 0;
+       for (String key : input.getFormDataMap().keySet())
+       {
+    	   System.out.println(i+"-"+key);
+    	   
+    	   List<InputPart> list = input.getFormDataMap().get(key);
+    	   System.out.println(i+"-"+list.size());
+    	   System.out.println(i+"-"+list.get(0).getHeaders());
+       }
+		
+
+    }	
+	
+	
+	private String parseFileName(MultivaluedMap<String, String> headers) {
+		String[] contentDispositionHeader = headers.getFirst("Content-Disposition").split(";");
+		for (String name : contentDispositionHeader) {
+			if ((name.trim().startsWith("filename"))) {
+				String[] tmp = name.split("=");
+				String fileName = tmp[1].trim().replaceAll("\"","");
+				return fileName;
+			}
+		}
+		return "randomName";
+	}
+	
 	@POST  //ok
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenant}/")
-	/*public Response uploadFile(@Multipart("upfile") Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
-			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
-			UnknownHostException {*/
-	public Response uploadFile(MultipartBody body)  throws NumberFormatException, UnknownHostException {
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response uploadFile(MultipartFormDataInput body)  throws NumberFormatException, IOException {
 		
-		String aliasFile = body.getAttachmentObject("aliasFile", String.class);
-		String idBinary = body.getAttachmentObject("idBinary", String.class);
-		String tenantCode = body.getAttachmentObject("tenantCode", String.class);
-		String datasetCode = body.getAttachmentObject("datasetCode", String.class);
-		Integer datasetVersion = body.getAttachmentObject("datasetVersion", Integer.class);
-		Attachment attachment = body.getAttachmentObject("attachment", Attachment.class);
-
+		String aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
+		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
+		String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
+		String datasetCode = body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
+		Integer datasetVersion = Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
+		
+		InputPart fileInputPart = body.getFormDataMap().get("upfile").get(0);
+		String filename = parseFileName(fileInputPart.getHeaders());
+		
 		long startTime = System.currentTimeMillis();
 		//Get size for verify max size file upload (dirty) 
 		Integer sizeFileAttachment = null;
 		try {
-			sizeFileAttachment = attachment.getObject(InputStream.class).available();
+			sizeFileAttachment = fileInputPart.getBody(InputStream.class, null).available();
 		} catch (IOException ex2) {
 			ex2.printStackTrace();
 		}
@@ -412,7 +440,7 @@ public class BinaryService {
 		Date dateS = new Date();
 		System.out.println("start Mongo => " + sdfStartMongo.format(dateS));
 		
-		String pathFile = attachment.getContentDisposition().getParameter("filename");
+		String pathFile = filename;
 		BinaryData binaryData = new BinaryData();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
@@ -443,7 +471,7 @@ public class BinaryService {
 		binaryData.setTenantBinary(tenantCode);
 		binaryData.setDatasetCode(datasetCode);
 		binaryData.setFilenameBinary(pathFile);
-		binaryData.setContentTypeBinary(attachment.getContentType().toString());
+		binaryData.setContentTypeBinary(fileInputPart.getMediaType().getType());
 		
 		System.out.println("BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
 		
@@ -510,7 +538,7 @@ public class BinaryService {
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, attachment.getObject(InputStream.class), idBinary);
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), idBinary);
 				
 			} catch (Exception ex) {
 				ex.printStackTrace();
