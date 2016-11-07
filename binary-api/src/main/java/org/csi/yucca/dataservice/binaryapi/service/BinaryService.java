@@ -466,6 +466,24 @@ public class BinaryService {
 		System.out.printf("Incoming datasetVersion data: %s\n", uploadForm.getDatasetVersion());
 		System.out.printf("Incoming idBinary data: %s\n", uploadForm.getIdBinary());
 	    System.out.printf("Incoming upfile data: %s\n", uploadForm.getUpfile());
+	    
+	    for (InputPart part : ((MultipartInput) uploadForm).getParts()) {
+			System.out.println(i + " - part: " + part);
+			System.out.println(i + " - part(getHeaders): " + part.getHeaders());
+			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
+				String key = iterator.next();
+				System.out.println(i + " - header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
+				List<String> headers = part.getHeaders().get(key);
+				for (Iterator<String> it = headers.iterator(); it.hasNext(); ){
+					String head = it.next();
+					System.out.println(i + " - HEAD = " + head);
+				}
+			}
+			System.out.println(i + " - bodyasstring: " + part.getBodyAsString());
+			System.out.println(i + " - mediatype: " + part.getMediaType());
+			System.out.println(i + "==============================================");
+			i++;
+		}
 		
 	}
 
