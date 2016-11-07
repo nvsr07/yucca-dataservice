@@ -17,6 +17,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -434,11 +435,16 @@ public class BinaryService {
 	public void put(MultipartInput input) throws IOException {
 		int i = 0;
 		for (InputPart part : input.getParts()) {
-			System.out.println(i + "mediatype:" + part.getMediaType());
-			System.out.println(i + "bodyasstring:" + part.getBodyAsString());
+			System.out.println(i + " - mediatype: " + part.getMediaType());
+			System.out.println(i + " - bodyasstring: " + part.getBodyAsString());
 			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
 				String key = iterator.next();
-				System.out.println(i + "header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
+				System.out.println(i + " - header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
+				List<String> headers = part.getHeaders().get(key);
+				for (Iterator<String> it = headers.iterator(); it.hasNext(); ){
+					String head = it.next();
+					System.out.println(i + " - HEAD = " + head);
+				}
 			}
 			i++;
 
@@ -449,16 +455,29 @@ public class BinaryService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenant}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(MultipartFormDataInput body) throws NumberFormatException, IOException {
+	public Response uploadFile(MultipartInput input, @QueryParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
 
-		String aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
-		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
-		String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
-		String datasetCode = body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
-		Integer datasetVersion = Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
+		String aliasFile = null; //= body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
+		String idBinary = null; //= body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
+		String datasetCode = null; //= body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
+		Integer datasetVersion = null; //= Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
 
-		InputPart fileInputPart = body.getFormDataMap().get("upfile").get(0);
-		String filename = parseFileName(fileInputPart.getHeaders());
+		InputPart fileInputPart = null; //= body.getFormDataMap().get("upfile").get(0);
+		String filename = null; //= parseFileName(fileInputPart.getHeaders());
+		
+		int i = 0;
+		for (InputPart part : input.getParts()) {
+			MediaType mediaType = part.getMediaType();
+			System.out.println(i + "bodyasstring:" + part.getBodyAsString());
+			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
+				String key = iterator.next();
+				//List<String> idBinary = part.getHeaders().get(key);
+				
+				System.out.println(i + "header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
+			}
+			i++;
+
+		}
 
 		long startTime = System.currentTimeMillis();
 		// Get size for verify max size file upload (dirty)
