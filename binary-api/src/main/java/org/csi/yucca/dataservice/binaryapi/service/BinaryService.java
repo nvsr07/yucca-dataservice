@@ -41,6 +41,7 @@ import org.csi.yucca.dataservice.binaryapi.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBStreamDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBTenantDAO;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils;
+import org.csi.yucca.dataservice.binaryapi.model.api.DataUploadForm;
 import org.csi.yucca.dataservice.binaryapi.model.api.Dataset;
 import org.csi.yucca.dataservice.binaryapi.model.api.MyApi;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
@@ -48,6 +49,7 @@ import org.csi.yucca.dataservice.binaryapi.model.metadata.Metadata;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Stream;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
+import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
@@ -451,6 +453,20 @@ public class BinaryService {
 			System.out.println(i + "==============================================");
 			i++;
 		}
+	}
+
+	@POST
+	@Path("/provabis/")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public void provabis(@MultipartForm DataUploadForm uploadForm) throws IOException {
+		int i = 0;
+		
+		System.out.printf("Incoming alias data: %s\n", uploadForm.getAlias());
+		System.out.printf("Incoming datasetCode data: %s\n", uploadForm.getDatasetCode());
+		System.out.printf("Incoming datasetVersion data: %s\n", uploadForm.getDatasetVersion());
+		System.out.printf("Incoming idBinary data: %s\n", uploadForm.getIdBinary());
+	    System.out.printf("Incoming upfile data: %s\n", uploadForm.getUpfile());
+		
 	}
 
 	@POST // ok
