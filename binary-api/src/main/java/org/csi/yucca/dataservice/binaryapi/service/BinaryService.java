@@ -435,8 +435,8 @@ public class BinaryService {
 	public void put(MultipartInput input) throws IOException {
 		int i = 0;
 		for (InputPart part : input.getParts()) {
-			System.out.println(i + " - mediatype: " + part.getMediaType());
-			System.out.println(i + " - bodyasstring: " + part.getBodyAsString());
+			System.out.println(i + " - part: " + part);
+			System.out.println(i + " - part(getHeaders): " + part.getHeaders());
 			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
 				String key = iterator.next();
 				System.out.println(i + " - header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
@@ -446,8 +446,10 @@ public class BinaryService {
 					System.out.println(i + " - HEAD = " + head);
 				}
 			}
+			System.out.println(i + " - bodyasstring: " + part.getBodyAsString());
+			System.out.println(i + " - mediatype: " + part.getMediaType());
+			System.out.println(i + "==============================================");
 			i++;
-
 		}
 	}
 
