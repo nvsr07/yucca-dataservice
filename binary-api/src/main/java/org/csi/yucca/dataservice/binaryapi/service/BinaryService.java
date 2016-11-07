@@ -473,35 +473,18 @@ public class BinaryService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenant}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(MultipartInput input, @QueryParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
+	public Response uploadFile(@MultipartForm DataUploadForm uploadForm, @QueryParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
 
-		String aliasFile = null; //= body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
-		String idBinary = null; //= body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
-		String datasetCode = null; //= body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
-		Integer datasetVersion = null; //= Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
+		String aliasFile = uploadForm.getAlias();
+		String idBinary = uploadForm.getIdBinary();
+		String datasetCode = uploadForm.getDatasetCode();
+		Integer datasetVersion = Integer.valueOf(uploadForm.getDatasetVersion());
+		InputStream fileInputPart = uploadForm.getUpfile();
 
-		InputPart fileInputPart = null; //= body.getFormDataMap().get("upfile").get(0);
-		String filename = null; //= parseFileName(fileInputPart.getHeaders());
-		
-		int i = 0;
-		for (InputPart part : input.getParts()) {
-			MediaType mediaType = part.getMediaType();
-			System.out.println(i + "bodyasstring:" + part.getBodyAsString());
-			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
-				String key = iterator.next();
-				//List<String> idBinary = part.getHeaders().get(key);
-				
-				System.out.println(i + "header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
-			}
-			i++;
-
-		}
-
-		long startTime = System.currentTimeMillis();
 		// Get size for verify max size file upload (dirty)
 		Integer sizeFileAttachment = null;
 		try {
-			sizeFileAttachment = fileInputPart.getBody(InputStream.class, null).available();
+			sizeFileAttachment = ((InputPart) fileInputPart).getBody(InputStream.class, null).available();
 		} catch (IOException ex2) {
 			ex2.printStackTrace();
 		}
@@ -512,11 +495,6 @@ public class BinaryService {
 					.build();
 		}
 
-		SimpleDateFormat sdfStartMongo = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-		Date dateS = new Date();
-		LOG.info("[BinaryService::uploadFile] - start Mongo => " + sdfStartMongo.format(dateS));
-
-		String pathFile = filename;
 		BinaryData binaryData = new BinaryData();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
@@ -527,8 +505,7 @@ public class BinaryService {
 		// Get idDataset from datasetCode, datasetVersion and tenantCode
 		Metadata mdFromMongo = null;
 		try {
-			// mdFromMongo � il DATASET di riferimento, quello BULK, STREAM O
-			// SOCIAL
+			// mdFromMongo è il DATASET di riferimento, quello BULK, STREAM o SOCIAL
 			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, datasetVersion, tenantCode);
 		} catch (Exception ex1) {
 			ex1.printStackTrace();
@@ -544,14 +521,11 @@ public class BinaryService {
 		binaryData.setAliasNameBinary(aliasFile);
 		binaryData.setTenantBinary(tenantCode);
 		binaryData.setDatasetCode(datasetCode);
-		binaryData.setFilenameBinary(pathFile);
-		binaryData.setContentTypeBinary(fileInputPart.getMediaType().getType());
 
 		LOG.info("BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
 
 		// mdBinaryDataSet � il DATASET BINARY!!!!
-		LOG.info("[BinaryService::uploadFile] - mdFromMongo(getBinaryIdDataset()) => "
-				+ mdFromMongo.getInfo().getBinaryIdDataset());
+		LOG.info("[BinaryService::uploadFile] - mdFromMongo(getBinaryIdDataset()) => " + mdFromMongo.getInfo().getBinaryIdDataset());
 		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
 		LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet(getIdDataset()) => " + mdBinaryDataSet.getIdDataset());
 		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
@@ -566,7 +540,7 @@ public class BinaryService {
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), idBinary);
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, ((InputPart) fileInputPart).getBody(InputStream.class, null), idBinary);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
