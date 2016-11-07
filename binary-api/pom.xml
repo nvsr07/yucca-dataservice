@@ -8,8 +8,8 @@
 	<packaging>war</packaging>
 	<name>binaryapi</name>
 	<scm>
-    	<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
-  	</scm>
+		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+	</scm>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -41,11 +41,11 @@
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
-    		<id>HDPReleases</id>
-        	<name>HDP Releases</name>
-        	<url>http://repo.hortonworks.com/content/repositories/releases/</url>
-        	<layout>default</layout>
-     	</repository>
+			<id>HDPReleases</id>
+			<name>HDP Releases</name>
+			<url>http://repo.hortonworks.com/content/repositories/releases/</url>
+			<layout>default</layout>
+		</repository>
 	</repositories>
 	<dependencies>
 		<dependency>
@@ -76,7 +76,7 @@
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.3.1</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
 			<artifactId>jsr311-api</artifactId>
@@ -94,6 +94,13 @@
 			<artifactId>jaxrs-api</artifactId>
 			<version>3.0.2.Final</version>
 			<scope>compile</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.jboss.resteasy/resteasy-multipart-provider -->
+		<dependency>
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-multipart-provider</artifactId>
+			<version>2.1-beta-1</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
@@ -168,10 +175,10 @@
 			<version>4.4.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.jboss.resteasy</groupId>
-		    <artifactId>resteasy-multipart-provider</artifactId>
-		    <version>2.3.7.Final-redhat-2</version>
-		</dependency>		
+			<groupId>org.jboss.resteasy</groupId>
+			<artifactId>resteasy-multipart-provider</artifactId>
+			<version>2.3.7.Final-redhat-2</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -197,25 +204,25 @@
 		<profile>
 			<id>int</id>
 			<build>
-				  <plugins>
+				<plugins>
 					<plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-scm-plugin</artifactId>
-			        <version>1.9.5</version>
-			        <configuration>
-			          <connectionType>connection</connectionType>
-			        </configuration>
-			        <executions>
-			        	<execution>
-			        		<id>1</id>
-			        		<phase>validate</phase>
-				            <goals>
-				              <goal>checkout</goal>
-				            </goals>
-				          </execution>
-				    </executions>
-			      	</plugin>
-				  </plugins>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/binary-api/resources/int</directory>
@@ -233,25 +240,25 @@
 		<profile>
 			<id>prod</id>
 			<build>
-				  <plugins>
+				<plugins>
 					<plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-scm-plugin</artifactId>
-			        <version>1.9.5</version>
-			        <configuration>
-			          <connectionType>connection</connectionType>
-			        </configuration>
-			        <executions>
-			        	<execution>
-			        		<id>1</id>
-			        		<phase>validate</phase>
-				            <goals>
-				              <goal>checkout</goal>
-				            </goals>
-				          </execution>
-				    </executions>
-			      	</plugin>
-				  </plugins>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/binary-api/resources/prod</directory>
