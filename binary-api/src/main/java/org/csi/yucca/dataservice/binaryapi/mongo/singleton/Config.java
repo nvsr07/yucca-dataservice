@@ -34,6 +34,7 @@ public class Config {
 	public static final String KNOX_USER = "KNOX_USER";
 	public static final String KNOX_GROUP = "KNOX_GROUP";
 	public static final String HDFS_LIBRARY = "HDFS_LIBRARY";
+	public static final String INSERTAPI_URL = "INSERTAPI_URL";
 
 	private static Map<String, String> params = null;
 	private static Config instance = null;
