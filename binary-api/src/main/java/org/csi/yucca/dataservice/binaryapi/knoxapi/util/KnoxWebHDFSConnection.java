@@ -345,6 +345,9 @@ public class KnoxWebHDFSConnection {
 			put = new HttpPut(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox();
 			HttpResponse response = client.execute(put,getHttpContext());
+			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - response = " + response);
+			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusLine = " + response.getStatusLine());
+			logger.info("[KnoxWebHDFSConnection:genericPutForStringCall] - getStatusCode = " + response.getStatusLine().getStatusCode());
 			if (response.getStatusLine().getStatusCode()>299)
 				throw new Exception(EntityUtils.toString(response.getEntity()));
 			return EntityUtils.toString(response.getEntity());
@@ -513,6 +516,7 @@ public class KnoxWebHDFSConnection {
 	 */
 	public String setPermission(String path, String permission) throws ParseException, Exception {
 		String spec = MessageFormat.format("{0}?op=SETPERMISSION&permission={1}&user.name={2}", URLUtil.encodePath(path),permission, this.principal);
+		logger.info("[KnoxWebHDFSConnection:setPermission] - spec = " + spec);
 		return genericPutForStringCall(spec);
 	}
 
