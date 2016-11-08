@@ -519,9 +519,6 @@ public class BinaryService {
 						.build();
 			}
 
-			SimpleDateFormat sdfEndWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-			Date dateEWebHDFS = new Date();
-			LOG.info("[BinaryService::uploadFile] - end WebHDFS => " + sdfEndWebHDFS.format(dateEWebHDFS));
 			LOG.info("[BinaryService::uploadFile] - HDFS URI = " + uri);
 
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());

@@ -88,7 +88,7 @@ public class HdfsFSUtils {
 	}
 
 	public static String writeFile(String remotePath, InputStream is, String fileName) throws Exception {
-		logger.info("[KnoxHdfsFSUtils::statusFile] info for path:["+remotePath+"]["+fileName+"]");
+		logger.info("[KnoxHdfsFSUtils::writeFile] info for path:["+remotePath+"]["+fileName+"]");
 		
 		try {
 			logger.info("[WriteFileHdfsAction::writeFile] check for file exists:["+remotePath+"]["+fileName+"]");
@@ -136,9 +136,9 @@ public class HdfsFSUtils {
 			FileStatusContainer fsc = new KnoxWebHDFSConnection().getFileStatus(remotePath);
 			if (fsc != null)
 				fs = fsc.getFileStatus();
-			logger.info("[KnoxHdfsFSUtils::readFile] info for path:["+remotePath+"] END");
+			logger.info("[KnoxHdfsFSUtils::statusFile] info for path:["+remotePath+"] END");
 		} catch (Exception e) {
-			logger.error("[KnoxHdfsFSUtils::readFile] info for path:["+remotePath+"] Error", e);
+			logger.error("[KnoxHdfsFSUtils::statusFile] info for path:["+remotePath+"] Error", e);
 			throw e;
 		}
 		return fs;

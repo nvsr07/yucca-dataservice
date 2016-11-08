@@ -397,10 +397,15 @@ public class KnoxWebHDFSConnection {
 	public String create(String path, InputStream is) throws MalformedURLException, IOException{
 		String resp = null;
 		String spec = MessageFormat.format("{0}?op=CREATE&user.name={1}", URLUtil.encodePath(path), this.principal);
+
+		logger.info("[KnoxWebHDFSConnection:create] - httpfsUrl = " + httpfsUrl);
+		logger.info("[KnoxWebHDFSConnection:create] - spec = " + spec);
+		
 		String redirectUrl = null;
 		CloseableHttpClient client = null;
 		HttpPut put;
 		try {
+			logger.info("[KnoxWebHDFSConnection:create] - httpfsUrl+spec = " + httpfsUrl+spec);
 			put = new HttpPut(new URL(httpfsUrl+spec).toURI());
 			client = getHttpClientKnox(true);
 			HttpResponse response = client.execute(put, getHttpContext());
