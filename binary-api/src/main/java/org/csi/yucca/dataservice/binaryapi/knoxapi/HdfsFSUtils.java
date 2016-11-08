@@ -87,20 +87,23 @@ public class HdfsFSUtils {
 		}
 	}
 
-	public static String writeFile(String remotePath,InputStream is, String fileName) throws Exception {
+	public static String writeFile(String remotePath, InputStream is, String fileName) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::statusFile] info for path:["+remotePath+"]["+fileName+"]");
 		
 		try {
 			logger.info("[WriteFileHdfsAction::writeFile] check for file exists:["+remotePath+"]["+fileName+"]");
 			FileStatusContainer fs = new KnoxWebHDFSConnection().getFileStatus(remotePath+"/"+fileName);
-			if (fs!=null)
+			if (fs != null){
+				logger.error("[WriteFileHdfsAction::writeFile] FileNotFoundException Error = " + fs);
 				throw new Exception("File ["+remotePath+"/"+fileName+"] already exists!");
+			}
 		} 
-		catch (FileNotFoundException fe)
-		{} // correct that file doesn't exist
-		catch (Exception e)
-		{
-			logger.error("[WriteFileHdfsAction::writeFile] Error",e);
+		catch (FileNotFoundException fe){
+			logger.error("[WriteFileHdfsAction::writeFile] FileNotFoundException Error", fe);
+			throw fe;
+		} // correct that file doesn't exist
+		catch (Exception e){
+			logger.error("[WriteFileHdfsAction::writeFile] Exception Error",e);
 			throw e;
 		}
 		

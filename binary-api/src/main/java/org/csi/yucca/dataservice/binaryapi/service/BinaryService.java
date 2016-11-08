@@ -454,15 +454,14 @@ public class BinaryService {
 					.build();
 		}
 
-		String pathFile = filename;
 		BinaryData binaryData = new BinaryData();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
 		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
 		String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
 		String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
-		MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
-		MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
+		//MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
+		//MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
 		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
 		//MongoDBBinaryDAO binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
 
@@ -488,65 +487,17 @@ public class BinaryService {
 		binaryData.setAliasNameBinary(aliasFile);
 		binaryData.setTenantBinary(tenantCode);
 		binaryData.setDatasetCode(datasetCode);
-		binaryData.setFilenameBinary(pathFile);
+		binaryData.setFilenameBinary(filename);
 		binaryData.setContentTypeBinary(fileInputPart.getMediaType().getType());
 
 		LOG.info("[BinaryService::uploadFile] - BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
 
-		// mdBinaryDataSet ï¿½ il DATASET BINARY!!!!
+		// mdBinaryDataSet è il DATASET BINARY!!!!
 		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
 		LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet => " + mdBinaryDataSet.getIdDataset());
 		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
-			/*
-			String typeDirectory = "";
-			String subTypeDirectory = "";
-
-			LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet.getInfo() => " + mdFromMongo.getInfo().toJson().toString());
-			LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet.getInfo().getDataDomain() => " + mdFromMongo.getInfo().getDataDomain());
-
-			String dataDomain = mdFromMongo.getInfo().getDataDomain();
-			System.out.println("dataDomain => " + dataDomain);
-			dataDomain = dataDomain.toUpperCase();
-
-			if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")) {
-				if (mdBinaryDataSet.getInfo().getCodSubDomain() == null) {
-					LOG.info("[BinaryService::uploadFile] - CodSubDomain is null => " + mdBinaryDataSet.getInfo().getCodSubDomain());
-					typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
-				} else {
-					LOG.info("[BinaryService::uploadFile] - CodSubDomain => " + mdBinaryDataSet.getInfo().getCodSubDomain());
-					typeDirectory = "db_" + mdBinaryDataSet.getInfo().getCodSubDomain();
-				}
-				subTypeDirectory = mdBinaryDataSet.getDatasetCode();
-
-				LOG.info("[BinaryService::uploadFile] - typeDirectory => " + typeDirectory);
-				LOG.info("[BinaryService::uploadFile] - subTypeDirectory => " + subTypeDirectory);
-			} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")) {
-				Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), datasetVersion);
-				typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
-				subTypeDirectory = tmp.getStreamCode();
-			} else {
-				typeDirectory = "";
-			}
-
-			LOG.info("[BinaryService::uploadFile] - mdFromMongo.subtype = " + mdBinaryDataSet.getConfigData().getSubtype());
-			LOG.info("[BinaryService::uploadFile] - typeDirectory = " + typeDirectory);
-
-			String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
-
-			if (typeDirectory.equals("")) {
-				throw new WebApplicationException(
-						Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-								.entity("{\"error_name\":\"Metadata Wrong\", \"error_code\":\"E126\", \"output\":\"NONE\", \"message\":\"ther's an error in metadata configuration, or dataset is not bulk or stream\"}")
-								.build());
-			}
-			
-			String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/"
-					+ dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/" + idBinary;
-			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
-
-*/
 			String hdfsDirectory = getPathForHDFS(mdFromMongo, tenantCode, idBinary);
 			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
 			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
@@ -558,7 +509,7 @@ public class BinaryService {
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), idBinary);
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), filename);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -584,147 +535,6 @@ public class BinaryService {
 			return Response.ok().build();
 		} else {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}")
-					.build();
-		}
-	}
-
-	@POST // ok
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/inputbis/{tenant}/")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(@MultipartForm DataUploadForm uploadForm, @QueryParam("tenantCode") String tenantCode)
-			throws NumberFormatException, IOException {
-
-		String aliasFile = uploadForm.getAlias();
-		String idBinary = uploadForm.getIdBinary();
-		String datasetCode = uploadForm.getDatasetCode();
-		Integer datasetVersion = Integer.valueOf(uploadForm.getDatasetVersion());
-		InputStream fileInputPart = uploadForm.getUpfile();
-
-		// Get size for verify max size file upload (dirty)
-		Integer sizeFileAttachment = null;
-		try {
-			sizeFileAttachment = ((InputPart) fileInputPart).getBody(InputStream.class, null).available();
-		} catch (IOException ex2) {
-			ex2.printStackTrace();
-		}
-
-		if (sizeFileAttachment > MAX_SIZE_FILE_ATTACHMENT) {
-			return Response.status(413)
-					.entity("{\"error_name\":\"File too Big\", \"error_code\":\"E114\", \"output\":\"NONE\", \"message\":\"THE SIZE IS TOO BIG\"}")
-					.build();
-		}
-
-		BinaryData binaryData = new BinaryData();
-		MongoClient mongo = MongoSingleton.getMongoClient();
-		String supportDb = Config.getInstance().getDbSupport();
-		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
-		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
-		InsertAPIBinaryDAO binaryDAO = new InsertAPIBinaryDAO();
-
-		// Get idDataset from datasetCode, datasetVersion and tenantCode
-		Metadata mdFromMongo = null;
-		try {
-			// mdFromMongo è il DATASET di riferimento, quello BULK, STREAM o
-			// SOCIAL
-			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, datasetVersion, tenantCode);
-		} catch (Exception ex1) {
-			ex1.printStackTrace();
-		}
-		if (mdFromMongo == null) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity("{\"error_name\":\"Dataset unknown\", \"error_code\":\"E111\", \"output\":\"NONE\", \"message\":\"You could not find the specified dataset\"}")
-					.build();
-		}
-
-		binaryData.setIdDataset(mdFromMongo.getInfo().getBinaryIdDataset());
-		binaryData.setIdBinary(idBinary);
-		binaryData.setAliasNameBinary(aliasFile);
-		binaryData.setTenantBinary(tenantCode);
-		binaryData.setDatasetCode(datasetCode);
-
-		LOG.info("BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
-
-		// mdBinaryDataSet � il DATASET BINARY!!!!
-		LOG.info("[BinaryService::uploadFile] - mdFromMongo(getBinaryIdDataset()) => "
-				+ mdFromMongo.getInfo().getBinaryIdDataset());
-		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
-		LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet(getIdDataset()) => " + mdBinaryDataSet.getIdDataset());
-		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
-
-		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
-
-			String hdfsDirectory = getPathForHDFS(mdFromMongo, tenantCode, idBinary);
-			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
-			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
-					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
-
-			binaryData.setPathHdfsBinary(hdfsDirectory);
-			String uri = null;
-			try {
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, ((InputPart) fileInputPart).getBody(InputStream.class, null),
-						idBinary);
-
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
-						.entity("{\"error_name\":\"Dataset attachment wrong\", \"error_code\":\"E113\", \"output\":\"NONE\", \"message\":\""
-								+ ex.getMessage() + "\"}")
-						.build();
-			}
-
-			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
-			binaryData.setMetadataBinary("");
-			binaryData.setSizeBinary(0L);
-
-			InputStream fileToParser = null;
-
-			try {
-				fileToParser = HdfsFSUtils.readFile(hdfsDirectory);
-			} catch (Exception e) {
-				LOG.error("[BinaryService::updateMongo] - Internal error during READDIR", e);
-				throw new WebApplicationException(
-						Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
-								.entity("{\"error_name\":\"Internal error - can't read file into HDFS\", \"error_code\":\"E120\", \"output\":\"NONE\", \"message\":\""
-										+ e.getMessage() + "\"}")
-								.build());
-			}
-
-			LOG.info("[BinaryService::updateMongo] - fileToParser = " + fileToParser.toString());
-
-			if (fileToParser != null) {
-
-				Map<String, String> mapHS = null;
-				try {
-					mapHS = extractMetadata(fileToParser);
-					binaryData.setMetadataBinary(mapHS.toString());
-
-					Long sizeFileLenght = 0L;
-
-					sizeFileLenght = new Long(HdfsFSUtils.statusFile(hdfsDirectory).getLength());
-					LOG.info("[BinaryService::updateMongo] - sizeFileLenght = " + sizeFileLenght.toString());
-
-					binaryData.setSizeBinary(sizeFileLenght);
-					binaryDAO.createBinary(binaryData);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					try {
-						fileToParser.close();
-						throw new WebApplicationException(Response.ok().build());
-					} catch (IOException ex) {
-
-						ex.printStackTrace();
-					}
-				}
-			}
-			throw new WebApplicationException(
-					Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-							.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}")
-							.build());
-		} else {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 					.entity("{\"error_name\":\"Dataset not attachment\", \"error_code\":\"E112\", \"output\":\"NONE\", \"message\":\"this dataset does not accept attachments\"}")
 					.build();
 		}
