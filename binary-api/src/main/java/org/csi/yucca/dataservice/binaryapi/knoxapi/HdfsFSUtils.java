@@ -94,7 +94,7 @@ public class HdfsFSUtils {
 			logger.info("[WriteFileHdfsAction::writeFile] check for file exists:["+remotePath+"]["+fileName+"]");
 			FileStatusContainer fs = new KnoxWebHDFSConnection().getFileStatus(remotePath+"/"+fileName);
 			if (fs != null){
-				logger.error("[WriteFileHdfsAction::writeFile] FileNotFoundException Error = " + fs);
+				logger.error("[WriteFileHdfsAction::writeFile] FileNotFoundException Error getFileStatus = " + fs.getFileStatus());
 				throw new Exception("File ["+remotePath+"/"+fileName+"] already exists!");
 			}
 		} 
