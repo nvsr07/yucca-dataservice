@@ -509,7 +509,7 @@ public class BinaryService {
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), filename);
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), idBinary);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -599,8 +599,8 @@ public class BinaryService {
 							.build());
 		}
 
-		String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain
-				+ "/" + typeDirectory + "/" + subTypeDirectory + "/" + idBinary;
+		//String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/" + idBinary;
+		String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/" + dataDomain + "/" + typeDirectory + "/" + subTypeDirectory;
 
 		return hdfsDirectory;
 	}
