@@ -112,6 +112,7 @@ public class HdfsFSUtils {
 		try {
 			uri = new KnoxWebHDFSConnection().create(remotePath+"/"+fileName, is);
 			
+			logger.info("[WriteFileHdfsAction::writeFile] uri after create:["+uri+"]");
 			new KnoxWebHDFSConnection().setPermission(uri,"660");
 			new KnoxWebHDFSConnection().setOwner(uri, Config.KNOX_USER, Config.KNOX_GROUP);
 			
