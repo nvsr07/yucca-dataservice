@@ -538,6 +538,7 @@ public class KnoxWebHDFSConnection {
 	 */
 	public String setOwner(String path, String owner, String group) throws ParseException, Exception {
 		String spec = MessageFormat.format("{0}?op=SETOWNER&owner={1}&group={2}&user.name={3}", URLUtil.encodePath(path), owner, group, this.principal);
+		logger.info("[setOwner] - spec = " + spec);
 		return genericPutForStringCall(spec);
 	}
 
