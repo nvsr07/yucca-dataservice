@@ -404,21 +404,6 @@ public class BinaryService {
 		return null;
 	}
 
-	@POST
-	@Path("/prova/")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void put(MultipartFormDataInput input) throws IOException {
-		int i = 0;
-		for (String key : input.getFormDataMap().keySet()) {
-			System.out.println(i + "-" + key);
-
-			List<InputPart> list = input.getFormDataMap().get(key);
-			System.out.println(i + "-" + list.size());
-			System.out.println(i + "-" + list.get(0).getHeaders());
-		}
-
-	}
-
 	private String parseFileName(MultivaluedMap<String, String> headers) {
 		String[] contentDispositionHeader = headers.getFirst("Content-Disposition").split(";");
 		for (String name : contentDispositionHeader) {
@@ -432,62 +417,6 @@ public class BinaryService {
 	}
 
 	@POST
-	@Path("/prova/")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void put(MultipartInput input) throws IOException {
-		int i = 0;
-		for (InputPart part : input.getParts()) {
-			System.out.println(i + " - part: " + part);
-			System.out.println(i + " - part(getHeaders): " + part.getHeaders());
-			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
-				String key = iterator.next();
-				System.out.println(i + " - header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
-				List<String> headers = part.getHeaders().get(key);
-				for (Iterator<String> it = headers.iterator(); it.hasNext();) {
-					String head = it.next();
-					System.out.println(i + " - HEAD = " + head);
-				}
-			}
-			System.out.println(i + " - bodyasstring: " + part.getBodyAsString());
-			System.out.println(i + " - mediatype: " + part.getMediaType());
-			System.out.println(i + "==============================================");
-			i++;
-		}
-	}
-
-	@POST
-	@Path("/provabis/")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public void provabis(@MultipartForm DataUploadForm uploadForm) throws IOException {
-		int i = 0;
-
-		System.out.printf("Incoming alias data: %s\n", uploadForm.getAlias());
-		System.out.printf("Incoming datasetCode data: %s\n", uploadForm.getDatasetCode());
-		System.out.printf("Incoming datasetVersion data: %s\n", uploadForm.getDatasetVersion());
-		System.out.printf("Incoming idBinary data: %s\n", uploadForm.getIdBinary());
-		System.out.printf("Incoming upfile data: %s\n", uploadForm.getUpfile());
-
-		for (InputPart part : ((MultipartInput) uploadForm).getParts()) {
-			System.out.println(i + " - part: " + part);
-			System.out.println(i + " - part(getHeaders): " + part.getHeaders());
-			for (Iterator<String> iterator = part.getHeaders().keySet().iterator(); iterator.hasNext();) {
-				String key = iterator.next();
-				System.out.println(i + " - header[" + key + "]:[" + part.getHeaders().getFirst(key) + "]");
-				List<String> headers = part.getHeaders().get(key);
-				for (Iterator<String> it = headers.iterator(); it.hasNext();) {
-					String head = it.next();
-					System.out.println(i + " - HEAD = " + head);
-				}
-			}
-			System.out.println(i + " - bodyasstring: " + part.getBodyAsString());
-			System.out.println(i + " - mediatype: " + part.getMediaType());
-			System.out.println(i + "==============================================");
-			i++;
-		}
-
-	}
-
-	@POST // ok
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenantCode}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -501,8 +430,15 @@ public class BinaryService {
 
 		InputPart fileInputPart = body.getFormDataMap().get("upfile").get(0);
 		String filename = parseFileName(fileInputPart.getHeaders());
+		
+		LOG.info("[BinaryService::uploadFile] - aliasFile = " + aliasFile);
+		LOG.info("[BinaryService::uploadFile] - idBinary = " + idBinary);
+		LOG.info("[BinaryService::uploadFile] - tenantCode = " + tenantCode);
+		LOG.info("[BinaryService::uploadFile] - datasetCode = " + datasetCode);
+		LOG.info("[BinaryService::uploadFile] - datasetVersion = " + datasetVersion);
+		LOG.info("[BinaryService::uploadFile] - fileInputPart = " + fileInputPart);
+		LOG.info("[BinaryService::uploadFile] - filename = " + filename);
 
-		long startTime = System.currentTimeMillis();
 		// Get size for verify max size file upload (dirty)
 		Integer sizeFileAttachment = null;
 		try {
@@ -516,10 +452,6 @@ public class BinaryService {
 					.entity("{\"error_name\":\"File too Big\", \"error_code\":\"E114\", \"output\":\"NONE\", \"message\":\"THE SIZE IS TOO BIG\"}")
 					.build();
 		}
-
-		SimpleDateFormat sdfStartMongo = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-		Date dateS = new Date();
-		System.out.println("start Mongo => " + sdfStartMongo.format(dateS));
 
 		String pathFile = filename;
 		BinaryData binaryData = new BinaryData();
@@ -536,8 +468,10 @@ public class BinaryService {
 		// Get idDataset from datasetCode, datasetVersion and tenantCode
 		Metadata mdFromMongo = null;
 		try {
-			// mdFromMongo ï¿½ il DATASET di riferimento, quello BULK, STREAM O
-			// SOCIAL
+			// mdFromMongo è il DATASET di riferimento, quello BULK, STREAM o SOCIAL
+			LOG.info("[BinaryService::uploadFile] - datasetCode = " + datasetCode);
+			LOG.info("[BinaryService::uploadFile] - datasetVersion = " + datasetVersion);
+			LOG.info("[BinaryService::uploadFile] - tenantCode = " + tenantCode);
 			mdFromMongo = metadataDAO.readCurrentMetadataByTntAndDSCode(datasetCode, datasetVersion, tenantCode);
 		} catch (Exception ex1) {
 			ex1.printStackTrace();
@@ -556,28 +490,20 @@ public class BinaryService {
 		binaryData.setFilenameBinary(pathFile);
 		binaryData.setContentTypeBinary(fileInputPart.getMediaType().getType());
 
-		System.out.println("BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
+		LOG.info("[BinaryService::uploadFile] - BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
 
 		// mdBinaryDataSet ï¿½ il DATASET BINARY!!!!
 		Metadata mdBinaryDataSet = metadataDAO.getCurrentMetadaByBinaryID(mdFromMongo.getInfo().getBinaryIdDataset());
-		System.out.println("mdBinaryDataSet => " + mdBinaryDataSet.getIdDataset());
-
-		SimpleDateFormat sdfEndMongo = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-		Date dateE = new Date();
-		System.out.println("end Mongo => " + sdfEndMongo.format(dateE));
-
-		System.out.println("Subtype = " + mdFromMongo.getConfigData().getSubtype());
+		LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet => " + mdBinaryDataSet.getIdDataset());
+		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
+			/*
 			String typeDirectory = "";
 			String subTypeDirectory = "";
 
-			SimpleDateFormat sdfStartWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
-			Date dateSWebHDFS = new Date();
-			System.out.println("start WebHDFS => " + sdfStartWebHDFS.format(dateSWebHDFS));
-
-			System.out.println("mdBinaryDataSet.getInfo() => " + mdFromMongo.getInfo().toJson().toString());
-			System.out.println("mdBinaryDataSet.getInfo().getDataDomain() => " + mdFromMongo.getInfo().getDataDomain());
+			LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet.getInfo() => " + mdFromMongo.getInfo().toJson().toString());
+			LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet.getInfo().getDataDomain() => " + mdFromMongo.getInfo().getDataDomain());
 
 			String dataDomain = mdFromMongo.getInfo().getDataDomain();
 			System.out.println("dataDomain => " + dataDomain);
@@ -585,16 +511,16 @@ public class BinaryService {
 
 			if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")) {
 				if (mdBinaryDataSet.getInfo().getCodSubDomain() == null) {
-					System.out.println("CodSubDomain is null => " + mdBinaryDataSet.getInfo().getCodSubDomain());
+					LOG.info("[BinaryService::uploadFile] - CodSubDomain is null => " + mdBinaryDataSet.getInfo().getCodSubDomain());
 					typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
 				} else {
-					System.out.println("CodSubDomain => " + mdBinaryDataSet.getInfo().getCodSubDomain());
+					LOG.info("[BinaryService::uploadFile] - CodSubDomain => " + mdBinaryDataSet.getInfo().getCodSubDomain());
 					typeDirectory = "db_" + mdBinaryDataSet.getInfo().getCodSubDomain();
 				}
 				subTypeDirectory = mdBinaryDataSet.getDatasetCode();
 
-				System.out.println("typeDirectory => " + typeDirectory);
-				System.out.println("subTypeDirectory => " + subTypeDirectory);
+				LOG.info("[BinaryService::uploadFile] - typeDirectory => " + typeDirectory);
+				LOG.info("[BinaryService::uploadFile] - subTypeDirectory => " + subTypeDirectory);
 			} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")) {
 				Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), datasetVersion);
 				typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
@@ -603,8 +529,8 @@ public class BinaryService {
 				typeDirectory = "";
 			}
 
-			System.out.println("mdFromMongo.subtype = " + mdBinaryDataSet.getConfigData().getSubtype());
-			System.out.println("typeDirectory = " + typeDirectory);
+			LOG.info("[BinaryService::uploadFile] - mdFromMongo.subtype = " + mdBinaryDataSet.getConfigData().getSubtype());
+			LOG.info("[BinaryService::uploadFile] - typeDirectory = " + typeDirectory);
 
 			String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
 
@@ -614,13 +540,20 @@ public class BinaryService {
 								.entity("{\"error_name\":\"Metadata Wrong\", \"error_code\":\"E126\", \"output\":\"NONE\", \"message\":\"ther's an error in metadata configuration, or dataset is not bulk or stream\"}")
 								.build());
 			}
-
+			
 			String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/"
 					+ dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/" + idBinary;
-			System.out.println("hdfsDirectory = " + hdfsDirectory);
+			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
 
-			//String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS
-			//		+ mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
+*/
+			String hdfsDirectory = getPathForHDFS(mdFromMongo, mdBinaryDataSet, tenantCode, idBinary);
+			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
+			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
+					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
+
+			binaryData.setPathHdfsBinary(hdfsDirectory);
+
+			//String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			String uri = null;
 			try {
@@ -636,9 +569,8 @@ public class BinaryService {
 
 			SimpleDateFormat sdfEndWebHDFS = new SimpleDateFormat("MM/dd/yyyy h:mm:ss a");
 			Date dateEWebHDFS = new Date();
-			System.out.println("end WebHDFS => " + sdfEndWebHDFS.format(dateEWebHDFS));
-
-			System.out.println("HDFS URI = " + uri);
+			LOG.info("[BinaryService::uploadFile] - end WebHDFS => " + sdfEndWebHDFS.format(dateEWebHDFS));
+			LOG.info("[BinaryService::uploadFile] - HDFS URI = " + uri);
 
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
 			binaryData.setMetadataBinary("");

@@ -146,12 +146,17 @@ public class MongoDBMetadataDAO {
 		obj.add(new BasicDBObject("configData.tenantCode", tenantCode));
 		obj.add(new BasicDBObject("datasetVersion", dataSetVersion));
 		searchQuery.put("$and", obj);
+		
+		log.info("[MongoDBMetadataDAO::readCurrentMetadataByTntAndDSCode] - searchQuery => " + searchQuery);
 
 		DBObject data = collection.find(searchQuery).one();
-		ObjectId id = (ObjectId) data.get("_id");
-		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
-		metadataLoaded.setId(id.toString());
-		return metadataLoaded;
+		if (data!=null){
+			ObjectId id = (ObjectId) data.get("_id");
+			Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
+			metadataLoaded.setId(id.toString());
+			return metadataLoaded;
+		} else 
+			return null;
 	}
 
 	public Metadata getCurrentMetadaByBinaryID(Long binaryIdDataset) {
@@ -164,8 +169,8 @@ public class MongoDBMetadataDAO {
 		DBObject data = collection.find(searchQuery).one();
 		ObjectId id = (ObjectId) data.get("_id");
 		Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
-		System.out.println("---> Metadata = " + metadataLoaded.toJson());
-		System.out.println("---> Metadata.getConfigData = " + metadataLoaded.getConfigData().toJson());
+		log.info("[MongoDBMetadataDAO::getCurrentMetadaByBinaryID] - Metadata = " + metadataLoaded.toJson());
+		log.info("[MongoDBMetadataDAO::getCurrentMetadaByBinaryID] - Metadata.getConfigData = " + metadataLoaded.getConfigData().toJson());
 		metadataLoaded.setId(id.toString());
 		return metadataLoaded;
 	}
@@ -178,7 +183,7 @@ public class MongoDBMetadataDAO {
 		obj.add(new BasicDBObject("datasetVersion", datasetVersion));
 		searchQuery.put("$and", obj);
 		
-		System.out.println("searchQuery in getCurrentMetadaByBinaryID = " + searchQuery.toString());
+		log.info("[MongoDBMetadataDAO::getCurrentMetadaByBinaryID] - searchQuery in getCurrentMetadaByBinaryID = " + searchQuery.toString());
 
 		DBObject data = collection.find(searchQuery).one();
 		if (data!=null){
