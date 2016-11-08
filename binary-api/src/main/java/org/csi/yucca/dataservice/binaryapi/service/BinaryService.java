@@ -34,6 +34,7 @@ import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
 import org.xml.sax.SAXException;
 
+import com.google.gson.Gson;
 import com.mongodb.MongoClient;
 
 import org.csi.yucca.dataservice.binaryapi.dao.InsertAPIBinaryDAO;
@@ -742,29 +743,32 @@ public class BinaryService {
 		String typeDirectory = "";
 		String subTypeDirectory = "";
 
-		LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet.getInfo() => "
+		LOG.info("[BinaryService::getPathForHDFS] - mdBinaryDataSet.getInfo() => "
 				+ mdFromMongo.getInfo().toJson().toString());
-		LOG.info("[BinaryService::uploadFile] - mdBinaryDataSet.getInfo().getDataDomain() => "
+		LOG.info("[BinaryService::getPathForHDFS] - mdBinaryDataSet.getInfo().getDataDomain() => "
 				+ mdFromMongo.getInfo().getDataDomain());
 
 		String dataDomain = mdFromMongo.getInfo().getDataDomain();
-		LOG.info("[BinaryService::uploadFile] - dataDomain => " + dataDomain);
+		LOG.info("[BinaryService::getPathForHDFS] - dataDomain => " + dataDomain);
 		dataDomain = dataDomain.toUpperCase();
+		
+		Gson gson = new Gson();
+		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo => " + gson.toJson(mdFromMongo));
 
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")) {
 			if (mdBinaryDataSet.getInfo().getCodSubDomain() == null) {
-				LOG.info("[BinaryService::uploadFile] - CodSubDomain is null => "
+				LOG.info("[BinaryService::getPathForHDFS] - CodSubDomain is null => "
 						+ mdBinaryDataSet.getInfo().getCodSubDomain());
 				typeDirectory = "db_" + mdBinaryDataSet.getConfigData().getTenantCode();
 			} else {
 				LOG.info(
-						"[BinaryService::uploadFile] - CodSubDomain => " + mdBinaryDataSet.getInfo().getCodSubDomain());
+						"[BinaryService::getPathForHDFS] - CodSubDomain => " + mdBinaryDataSet.getInfo().getCodSubDomain());
 				typeDirectory = "db_" + mdBinaryDataSet.getInfo().getCodSubDomain();
 			}
 			subTypeDirectory = mdBinaryDataSet.getDatasetCode();
 
-			LOG.info("[BinaryService::uploadFile] - typeDirectory => " + typeDirectory);
-			LOG.info("[BinaryService::uploadFile] - subTypeDirectory => " + subTypeDirectory);
+			LOG.info("[BinaryService::getPathForHDFS] - typeDirectory => " + typeDirectory);
+			LOG.info("[BinaryService::getPathForHDFS] - subTypeDirectory => " + subTypeDirectory);
 		} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")) {
 			Stream tmp = streamDAO.getStreamByDataset(mdBinaryDataSet.getIdDataset(), mdFromMongo.getDatasetVersion());
 			typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
@@ -773,8 +777,8 @@ public class BinaryService {
 			typeDirectory = "";
 		}
 
-		LOG.info("[BinaryService::uploadFile] - mdFromMongo.subtype = " + mdBinaryDataSet.getConfigData().getSubtype());
-		LOG.info("[BinaryService::uploadFile] - typeDirectory = " + typeDirectory);
+		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo.subtype = " + mdBinaryDataSet.getConfigData().getSubtype());
+		LOG.info("[BinaryService::getPathForHDFS] - typeDirectory = " + typeDirectory);
 
 		String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
 
