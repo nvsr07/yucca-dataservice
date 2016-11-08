@@ -110,6 +110,8 @@ public class HdfsFSUtils {
 		
 		String uri = null;
 		try {
+			logger.info("[WriteFileHdfsAction::writeFile] InputStream:["+is+"]");
+			logger.info("[WriteFileHdfsAction::writeFile] path before create:["+remotePath+"/"+fileName+"]");
 			uri = new KnoxWebHDFSConnection().create(remotePath+"/"+fileName, is);
 			
 			logger.info("[WriteFileHdfsAction::writeFile] uri after create:["+uri+"]");
