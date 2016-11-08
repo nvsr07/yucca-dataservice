@@ -203,8 +203,5 @@ public abstract class AbstractService {
 
 
 
-	public void authenticate(HttpServletRequest request, String codTenant) {
-		// not used: authentication made on api manager
-		
-	}
+	
 }

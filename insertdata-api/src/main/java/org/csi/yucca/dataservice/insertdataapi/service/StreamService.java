@@ -35,7 +35,6 @@ public class StreamService extends AbstractService {
 			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
 			 @Context final HttpServletResponse response) throws InsertApiBaseException  {
 		
-		super.authenticate(request, codTenant);
 		
 		return super.dataInsert(request,response,jsonData,codTenant,uniqueid,forwardfor,authInfo);
 	}

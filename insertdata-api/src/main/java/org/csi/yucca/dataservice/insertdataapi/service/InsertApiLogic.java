@@ -150,16 +150,9 @@ public class InsertApiLogic {
 				if (null==ooo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DATA_NOTARRAY);
 				String datasetCode=(String)ooo.get("datasetCode");
 
-
-				// recuepro info dataset inclusi i campi
-				//datasetVersion=JsonPath.read(jsonInput, "$.datasetVersion");
 				datasetVersion=(Integer)ooo.get("$.datasetVersion");
 				reqVersion=(datasetVersion==null ? -1 : datasetVersion.intValue());
-				//System.out.println(" TIMETIME parseJsonInputDataset -- lettura oggetto--> "+System.currentTimeMillis());
 				infoDataset=mongoAccess.getInfoDataset(datasetCode, reqVersion,tenant);
-				//System.out.println(" TIMETIME parseJsonInputDataset -- recuperata info dataset--> "+System.currentTimeMillis());
-
-				
 				
 				if (null==infoDataset)  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, " for dataset "+datasetCode);
 				
@@ -326,6 +319,86 @@ public class InsertApiLogic {
 	}	
 
 
+
+	public HashMap<String, DatasetBulkInsert> parseJsonInputMedia(String tenant, String jsonInput) throws Exception {
+		int i =0;
+		boolean endArray=false;
+		JSONObject ooo=null;
+		HashMap<String, DatasetBulkInsert> ret= new HashMap<String, DatasetBulkInsert>();
+		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
+		MongoDatasetInfo infoDataset=null;
+		Integer datasetVersion=null;
+		int reqVersion=-1;
+		
+		int totalDocumentsToIns=0;
+		if (JsonPath.read(jsonInput, "$["+i+"]")==null)
+			jsonInput = "["+jsonInput+"]";
+
+		while (i<100000 && !endArray) {
+			try {
+				ooo = JsonPath.read(jsonInput, "$["+i+"]");
+				if (null==ooo) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DATA_NOTARRAY);
+				String datasetCode=(String)ooo.get("datasetCode");
+
+				datasetVersion=(Integer)ooo.get("$.datasetVersion");
+				reqVersion=(datasetVersion==null ? -1 : datasetVersion.intValue());
+				infoDataset=mongoAccess.getInfoDataset(datasetCode, reqVersion,tenant);
+				
+				if (null==infoDataset)  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, " for dataset "+datasetCode);
+				
+				if (!infoDataset.getDatasetSubType().equalsIgnoreCase("binaryDataset"))
+					throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, " for dataset "+datasetCode+". "
+							+ "Required binaryDataset, found "+infoDataset.getDatasetSubType());
+				
+				String insStrConst="";
+				insStrConst+= "  idDataset : "+infoDataset.getDatasetId();
+				insStrConst+= " , datasetVersion : "+infoDataset.getDatasetVersion();
+
+
+				// se dataset � dataset va bene cosi' 
+
+				if (ret.get(datasetCode)!=null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DUPLICATE, " for dataset "+datasetCode);
+				
+				
+				DatasetBulkInsert datiToins=parseMediaDataset(tenant, ooo, insStrConst, infoDataset);
+
+				//System.out.println(" TIMETIME parseJsonInputDataset -- parsificato dataset info--> "+System.currentTimeMillis());
+				datiToins.setDatasetCode(datasetCode);
+				datiToins.setStatus(DatasetBulkInsert.STATUS_SYNTAX_CHECKED);
+				datiToins.setDatasetType(infoDataset.getDatasetSubType());
+				
+				ret.put(datasetCode, datiToins);
+				totalDocumentsToIns=totalDocumentsToIns+datiToins.getNumRowToInsFromJson();
+				if (totalDocumentsToIns>SDPInsertApiConfig.MAX_DOCUMENTS_IN_REQUEST) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_MAXRECORDS);
+
+				i++;
+
+	
+			} catch (PathNotFoundException e) {
+				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) {
+					endArray=true;
+				} else {
+					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e );
+					throw e;
+				}
+			} catch (Exception ex) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex );
+				i++;
+				endArray=true;
+				throw ex;
+			} finally {
+				//System.out.println(" TIMETIME parseJsonInputDataset -- fine metodo--> "+System.currentTimeMillis());
+				
+				
+			}
+		}
+		return ret;
+
+	}	
+
+
+	
+	
 	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1,boolean isVerOneRequired) throws Exception {
 		//System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret=null;
@@ -397,19 +470,66 @@ public class InsertApiLogic {
 	}	
 	
 	
+	private DatasetBulkInsert parseMediaDataset(String tenant, JSONObject bloccoDaIns,String insStrConst,MongoDatasetInfo datasetMongoInfo) throws Exception {
+		//System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
+		DatasetBulkInsert ret=null;
+
+		JSONObject ooo=null;
+		JSONObject components=null;
+		boolean endArray=false;
+		ArrayList<String> rigadains= new ArrayList<String>();
+
+		ArrayList<FieldsMongoDto> elencoCampi=datasetMongoInfo.getCampi();
+
+		HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
+		for (int i = 0; i< elencoCampi.size();i++) {
+			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
+		}
+
+		campiMongo.remove("urlDownloadBinary");
+		FieldsMongoDto filePath = new FieldsMongoDto("pathHdfsBinary", FieldsMongoDto.DATA_TYPE_STRING);
+		campiMongo.put(filePath.getFieldName(),filePath);
+		
+		int i =0;
+		JSONArray arrayValori=(JSONArray)bloccoDaIns.get("values");
+		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
+		//System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
+		int numeroCampiMongo=elencoCampi.size();
+		while (!endArray && i<arrayValori.size()) {
+			try {
+				components=(JSONObject)arrayValori.get(i);
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongo, true));
+				components.put("objectid", ObjectId.get().toString());
+				listJson.add(components);
+				i++;
+			} catch (PathNotFoundException e) {
+				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) endArray=true;
+			}
+
+
+
+
+		}
+		//System.out.println(" TIMETIME parseGenericDataset -- fine ciclo controllo--> "+System.currentTimeMillis());
+		ret= new DatasetBulkInsert();
+		ret.setIdDataset(datasetMongoInfo.getDatasetId());
+		ret.setDatasetVersion(datasetMongoInfo.getDatasetVersion());
+		ret.setNumRowToInsFromJson(i);
+		ret.setRowsToInsert(rigadains);
+		ret.setFieldsType(campiMongo);
+		ret.setJsonRowsToInsert(listJson);
+		//System.out.println(" TIMETIME parseGenericDataset -- fine--> "+System.currentTimeMillis());
+		
+		return ret;
+	}	
 	
-	//private String parseComponents (JSONObject components,String insStrConst,ArrayList<FieldsMongoDto> elencoCampi) throws Exception {
+	
+	
 	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo,
 			HashMap<String, FieldsMongoDto> campiMongoV1, boolean isVerOneRequired) throws Exception {		
 		Iterator<String> itCampiJson=components.keySet().iterator();
 
 		String currRigaIns=null;
-//		HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
-//
-//
-//		for (int i = 0; i< elencoCampi.size();i++) {
-//			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
-//		}
 
 		int numCampiInV1=0;
 		while (itCampiJson.hasNext()) {
@@ -425,11 +545,6 @@ public class InsertApiLogic {
 			
 			String valore= null; 
 			if 	(null!=(components.get(jsonField))) valore= (components.get(jsonField)).toString();
-			
-			
-			
-			//value validation, to skip for twitter... not all field for V1 are required
-			//
 			
 			if (!campoMongo.validateValue(valore,isVerOneRequired))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
 					" - field "+jsonField+" ("+insStrConst+"): "+valore);
@@ -468,19 +583,11 @@ public class InsertApiLogic {
 		if (numCampiInV1!=campiMongoV1.size()) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INVALID_COMPONENTS,"fields present in dataset v1 definition must be not null");
 		
 		if (currRigaIns!=null) {
-			//currRigaIns = insStrConst+", time: {$date :\""+timeStamp+"\"} , "+currRigaIns;
 			currRigaIns = insStrConst+", "+currRigaIns;
-			//System.out.println(currRigaIns);
-			//rigadains.add(currRigaIns);
-
 		} else {
 			//System.out.println(       "OKKKKIOOOO riga vuota ???? ");
-
 		}
-
 		return currRigaIns;
-
-
 	}
 	
 	

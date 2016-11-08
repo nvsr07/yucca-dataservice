@@ -20,12 +20,14 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
 import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
 
-@Path("/dataset")
-public class DatasetService extends AbstractService {
+@Path("/media")
+public class MediaService extends AbstractService {
 
 	@Context
 	ServletContext context;
 
+	//http://int-sdnet-intapi.sdp.csi.it:90/insertdataapi/media/input/${tenant.code}
+	
 	@POST
 	@Path("/input/{codTenant}")
 	@Produces("application/json")
@@ -44,7 +46,7 @@ public class DatasetService extends AbstractService {
 	@Override
 	protected HashMap<String, DatasetBulkInsert> parseJsonInput(
 			String codTenant, String jsonData) throws Exception {
-		return new InsertApiLogic().parseJsonInputDataset(codTenant, jsonData);
+		return new InsertApiLogic().parseJsonInputMedia(codTenant, jsonData);
 	}
 	
 	
