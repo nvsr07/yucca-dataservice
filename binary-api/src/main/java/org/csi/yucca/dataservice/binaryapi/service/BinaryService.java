@@ -491,11 +491,11 @@ public class BinaryService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenantCode}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(MultipartFormDataInput body) throws NumberFormatException, IOException {
+	public Response uploadFile(MultipartFormDataInput body, @PathParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
 
 		String aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
 		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
-		String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
+		//String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
 		String datasetCode = body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
 		Integer datasetVersion = Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
 
