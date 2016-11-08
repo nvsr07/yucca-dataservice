@@ -21,6 +21,7 @@ import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -411,7 +412,21 @@ public class KnoxWebHDFSConnection {
 				try {
 					put2 = new HttpPut(redirectUrl);
 					InputStreamEntity entity = new InputStreamEntity(is, -1, ContentType.APPLICATION_OCTET_STREAM);
-					put2.setEntity(entity);
+					
+		            entity.setContentType("binary/octet-stream");
+		            entity.setChunked(true); 
+
+		            BufferedHttpEntity myEntity = null;
+		            try {
+		                myEntity = new BufferedHttpEntity(entity);
+		            } catch (IOException e) {
+		                // TODO Auto-generated catch block
+		                e.printStackTrace();
+		            }
+
+		            put2.setEntity(myEntity);
+					
+					//put2.setEntity(entity);
 					response2 = getHttpClientKnox().execute(put2,getHttpContext());
 					resp = response2.getFirstHeader("Location").getValue();
 				}
