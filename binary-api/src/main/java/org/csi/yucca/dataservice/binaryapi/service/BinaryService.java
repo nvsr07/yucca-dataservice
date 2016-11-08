@@ -489,7 +489,7 @@ public class BinaryService {
 
 	@POST // ok
 	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/input/{tenant}/")
+	@Path("/input/{tenantCode}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response uploadFile(MultipartFormDataInput body) throws NumberFormatException, IOException {
 
