@@ -93,7 +93,7 @@ public class HdfsFSUtils {
 		try {
 			logger.info("[WriteFileHdfsAction::writeFile] check for file exists:["+remotePath+"]["+fileName+"]");
 			FileStatusContainer fs = new KnoxWebHDFSConnection().getFileStatus(remotePath+"/"+fileName);
-			if (fs != null){
+			if (fs.getFileStatus() != null){
 				logger.error("[WriteFileHdfsAction::writeFile] FileNotFoundException Error getFileStatus = " + fs.getFileStatus());
 				throw new Exception("File ["+remotePath+"/"+fileName+"] already exists!");
 			}
@@ -116,11 +116,11 @@ public class HdfsFSUtils {
 			new KnoxWebHDFSConnection().setOwner(uri, Config.KNOX_USER, Config.KNOX_GROUP);
 			
 		} catch (Exception e) {
-			System.out.println("writeFile, Exception!");
+			logger.error("[WriteFileHdfsAction::writeFile] - writeFile, Exception!");
 			e.printStackTrace();
 			throw new Exception(e.getMessage());
 		}
-		System.out.println("uri in writeFile = " + uri);
+		logger.error("[WriteFileHdfsAction::writeFile] - uri in writeFile = " + uri);
 		return uri;
 	}
 	
@@ -131,8 +131,8 @@ public class HdfsFSUtils {
 		try {
 			
 			FileStatusContainer fsc = new KnoxWebHDFSConnection().getFileStatus(remotePath);
-			if (fsc!=null)
-				fs =fsc.getFileStatus();
+			if (fsc != null)
+				fs = fsc.getFileStatus();
 			logger.info("[KnoxHdfsFSUtils::readFile] info for path:["+remotePath+"] END");
 		} catch (Exception e) {
 			logger.error("[KnoxHdfsFSUtils::readFile] info for path:["+remotePath+"] Error", e);
