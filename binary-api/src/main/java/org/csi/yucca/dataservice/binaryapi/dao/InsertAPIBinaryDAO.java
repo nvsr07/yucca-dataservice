@@ -20,7 +20,7 @@ public class InsertAPIBinaryDAO {
 	public InsertAPIBinaryDAO() {
 	}
 
-	public void createBinary(BinaryData binary) {
+	public void createBinary(BinaryData binary, String binaryDatasetCode) {
 		try {
 			Gson gson = JSonHelper.getInstance();
 			MediaObject newObj = new MediaObject();
@@ -36,15 +36,14 @@ public class InsertAPIBinaryDAO {
 			newObj.setLastUpdateDateBinary(new java.util.Date().toString());
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - newObj = " + gson.toJson(newObj));
+			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + data);
+			
 			InsertObject data = new InsertObject();
-			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + gson.toJson(data));
-			data.setDatasetCode(binary.getDatasetCode());
-			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + gson.toJson(data));
+			data.setDatasetCode(binaryDatasetCode);
 			data.addMediaObject(newObj);
-			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + gson.toJson(data));
 			List<InsertObject> dataInsert = new ArrayList<InsertObject>();
-			log.info("[InsertAPIBinaryDAO:createBinary] - dataInsert = " + gson.toJson(dataInsert));
 			dataInsert.add(data);
+			
 			log.info("[InsertAPIBinaryDAO:createBinary] - dataInsert = " + gson.toJson(dataInsert));
 			
 			String tenantDetailUrl = Config.getInstance().getApiAdminServicesUrl() + "/tenants/" + binary.getTenantBinary();
