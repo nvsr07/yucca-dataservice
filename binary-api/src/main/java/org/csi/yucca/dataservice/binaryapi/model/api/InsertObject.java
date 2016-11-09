@@ -1,5 +1,6 @@
 package org.csi.yucca.dataservice.binaryapi.model.api;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
@@ -9,7 +10,7 @@ public class InsertObject {
     @Expose
     private String datasetCode;
     @Expose
-    private List<MediaObject> values;
+    private List<MediaObject> values = new ArrayList<MediaObject>();
     
 	public String getDatasetCode() {
 		return datasetCode;
