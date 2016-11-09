@@ -13,6 +13,7 @@ public class ApplicationConfig extends Application {
 	public ApplicationConfig() {
 		singletons.add(new StreamService());
 		singletons.add(new DatasetService());
+		singletons.add(new MediaService());
 	}
 
 	@Override
