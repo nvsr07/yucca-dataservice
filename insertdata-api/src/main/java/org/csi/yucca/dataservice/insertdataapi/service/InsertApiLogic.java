@@ -487,10 +487,13 @@ public class InsertApiLogic {
 		}
 
 		campiMongo.remove("urlDownloadBinary");
+		campiMongo.remove("idBinary");
 		FieldsMongoDto filePath = new FieldsMongoDto("pathHdfsBinary", FieldsMongoDto.DATA_TYPE_STRING);
 		campiMongo.put(filePath.getFieldName(),filePath);
 		FieldsMongoDto tenantBinary = new FieldsMongoDto("tenantBinary", FieldsMongoDto.DATA_TYPE_STRING);
 		campiMongo.put(tenantBinary.getFieldName(),tenantBinary);
+		FieldsMongoDto idBinary = new FieldsMongoDto("idBinary", FieldsMongoDto.DATA_TYPE_STRING);
+		campiMongo.put(idBinary.getFieldName(),idBinary);
 
 		
 		
