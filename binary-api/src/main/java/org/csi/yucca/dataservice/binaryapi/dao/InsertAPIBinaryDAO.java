@@ -1,7 +1,11 @@
 package org.csi.yucca.dataservice.binaryapi.dao;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.binaryapi.delegate.HttpDelegate;
+import org.csi.yucca.dataservice.binaryapi.model.api.InsertObject;
 import org.csi.yucca.dataservice.binaryapi.model.api.MediaObject;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
 import org.csi.yucca.dataservice.binaryapi.model.tenantin.TenantIn;
@@ -30,10 +34,14 @@ public class InsertAPIBinaryDAO {
 			newObj.setPathHdfsBinary(binary.getPathHdfsBinary());
 			newObj.setInsertDateBinary(new java.util.Date().toString());
 			newObj.setLastUpdateDateBinary(new java.util.Date().toString());
-			newObj.setIdDataset(binary.getIdDataset());
-			newObj.setDatasetVersion(binary.getDatasetVersion());
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - newObj = " + gson.toJson(newObj));
+			
+			InsertObject data = new InsertObject();
+			data.setDatasetCode(binary.getDatasetCode());
+			data.addMediaObject(newObj);
+			List<InsertObject> dataInsert = new ArrayList<InsertObject>();
+			dataInsert.add(data);
 			
 			String tenantDetailUrl = Config.getInstance().getApiAdminServicesUrl() + "/tenants/" + binary.getTenantBinary();
 			String tenantDetailString = HttpDelegate.executeGet(tenantDetailUrl, null, null, null);
@@ -43,7 +51,11 @@ public class InsertAPIBinaryDAO {
 
 			String insertApiUrl = Config.getInstance().getDataInsertBaseUrl() + binary.getTenantBinary();
 
-			String executePost = HttpDelegate.executePost(insertApiUrl, binary.getTenantBinary(), tenantPassword, null, null, null, gson.toJson(newObj));
+			log.info("[InsertAPIBinaryDAO:createBinary] - insertApiUrl = " + insertApiUrl);
+			log.info("[InsertAPIBinaryDAO:createBinary] - binary.getTenantBinary() = " + binary.getTenantBinary());
+			log.info("[InsertAPIBinaryDAO:createBinary] - tenantPassword = " + tenantPassword);
+
+			String executePost = HttpDelegate.executePost(insertApiUrl, binary.getTenantBinary(), tenantPassword, null, null, null, gson.toJson(dataInsert));
 
 			log.info("[InsertAPIBinaryDAO:createBinary] - executePost = " + executePost);
 			
