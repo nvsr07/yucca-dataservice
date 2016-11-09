@@ -1,7 +1,11 @@
 package org.csi.yucca.dataservice.binaryapi.dao;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.binaryapi.delegate.HttpDelegate;
@@ -24,6 +28,12 @@ public class InsertAPIBinaryDAO {
 		try {
 			Gson gson = JSonHelper.getInstance();
 			MediaObject newObj = new MediaObject();
+			
+			//2016-10-04T00:05:34.499Z
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); 
+			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			String requiredDate = sdf.format(new Date()).toString();
+			log.info("[InsertAPIBinaryDAO:createBinary] - requiredDate = " + requiredDate);
 
 			newObj.setTenantBinary(binary.getTenantBinary());
 			newObj.setFilenameBinary(binary.getFilenameBinary());
@@ -32,8 +42,8 @@ public class InsertAPIBinaryDAO {
 			newObj.setContentTypeBinary(binary.getContentTypeBinary());
 			newObj.setAliasNameBinary(binary.getAliasNameBinary());
 			newObj.setPathHdfsBinary(binary.getPathHdfsBinary());
-			newObj.setInsertDateBinary(new java.util.Date().toString());
-			newObj.setLastUpdateDateBinary(new java.util.Date().toString());
+			newObj.setInsertDateBinary(requiredDate);
+			newObj.setLastUpdateDateBinary(requiredDate);
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - newObj = " + gson.toJson(newObj));
 			log.info("[InsertAPIBinaryDAO:createBinary] - binaryDatasetCode = " + binaryDatasetCode);
