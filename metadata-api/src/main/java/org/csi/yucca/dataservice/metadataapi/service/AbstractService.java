@@ -111,16 +111,18 @@ public abstract class AbstractService {
 			//("\"dcatReady\" : 0") AND ("\"tenantCode\" : \"tst_csp\"" OR "\"codTenant\" : \"tst_csp\"")
 		}
 
+		
 		if (tenant != null && !tenant.trim().equals("")) { 
 			if (!query.equals(""))
 				query += " AND ";
-			query += " (tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
+			query += "(%22%5C%22tenantCode%5C%22+%3A+%5C%22" + tenant + "%5C%22%22 OR %22%5C%22codiceTenant%5C%22+%3A+%5C%22" + tenant + "%5C%22%22) ";
+			//query += " (tenantCode eq " + tenant + " codiceTenant eq " + tenant + ") ";
 		}
 
 		if (opendata != null && opendata) {
 			if (!query.equals(""))
 				query += " AND ";
-			query += " (isOpendata eq 1) ";
+			query += " (%22%5C%22isOpendata%5C%22%20%3A%20true%22) ";
 		}
 
 		String extraLatitudeField = "streams.stream.virtualEntityPositions.position[0].lat";
