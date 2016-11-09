@@ -533,6 +533,7 @@ public class BinaryService {
 			} finally {
 				try {
 					isForWriteFile.close();
+					LOG.info("[BinaryService::uploadFile] - InputStream 1 CLose");
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -546,6 +547,7 @@ public class BinaryService {
 			try {
 				mapHS = extractMetadata(isForAnalizeMetadata);
 				binaryData.setMetadataBinary(mapHS.toString());
+				LOG.info("[BinaryService::uploadFile] - MetadataBinary = " + mapHS.toString());
 				
 				Long sizeFileLenght = 0L;
 				
@@ -555,7 +557,7 @@ public class BinaryService {
 					sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
 				//}
 				
-				System.out.println("sizeFileLenght = " + sizeFileLenght.toString());
+				LOG.info("[BinaryService::uploadFile] - sizeFileLenght = " + sizeFileLenght.toString());
 				
 				binaryData.setSizeBinary(sizeFileLenght);
 			} catch (Exception e) {
@@ -563,12 +565,14 @@ public class BinaryService {
 			} finally {
 				try {
 					isForAnalizeMetadata.close();
+					LOG.info("[BinaryService::uploadFile] - InputStream 2 CLose");
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
 			}
 			
 			binaryDAO.createBinary(binaryData, mdBinaryDataSet.getDatasetCode());
+			LOG.info("[BinaryService::uploadFile] - Binary CREATED!");
 
 			return Response.ok().build();
 		} else {
