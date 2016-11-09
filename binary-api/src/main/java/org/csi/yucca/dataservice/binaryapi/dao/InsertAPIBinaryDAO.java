@@ -36,7 +36,7 @@ public class InsertAPIBinaryDAO {
 			newObj.setLastUpdateDateBinary(new java.util.Date().toString());
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - newObj = " + gson.toJson(newObj));
-			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + data);
+			log.info("[InsertAPIBinaryDAO:createBinary] - binaryDatasetCode = " + binaryDatasetCode);
 			
 			InsertObject data = new InsertObject();
 			data.setDatasetCode(binaryDatasetCode);
