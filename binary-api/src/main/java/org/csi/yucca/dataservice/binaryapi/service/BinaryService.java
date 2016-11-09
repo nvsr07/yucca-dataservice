@@ -458,12 +458,12 @@ public class BinaryService {
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
 		String supportDatasetCollection = Config.getInstance().getCollectionSupportDataset();
-		String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
-		String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
+		//String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
+		//String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
 		//MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
 		//MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
 		MongoDBMetadataDAO metadataDAO = new MongoDBMetadataDAO(mongo, supportDb, supportDatasetCollection);
-		//MongoDBBinaryDAO binaryDAO = new MongoDBBinaryDAO(mongo, "DB_" + tenantCode, MEDIA);
+		InsertAPIBinaryDAO binaryDAO = new InsertAPIBinaryDAO();
 
 		// Get idDataset from datasetCode, datasetVersion and tenantCode
 		Metadata mdFromMongo = null;
@@ -514,9 +514,7 @@ public class BinaryService {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity("{\"error_name\":\"Dataset attachment wrong\", \"error_code\":\"E113\", \"output\":\"NONE\", \"message\":\""
-								+ ex.getMessage() + "\"}")
-						.build();
+						.entity("{\"error_name\":\"Dataset attachment wrong\", \"error_code\":\"E113\", \"output\":\"NONE\", \"message\":\"" + ex.getMessage() + "\"}").build();
 			}
 
 			LOG.info("[BinaryService::uploadFile] - HDFS URI = " + uri);
@@ -524,10 +522,9 @@ public class BinaryService {
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
 			binaryData.setMetadataBinary("");
 			binaryData.setSizeBinary(0L);
-			//binaryDAO.createBinary(binaryData);
+			binaryDAO.createBinary(binaryData);
 
-			//updateMongo(binaryData.getTenantBinary(), binaryData.getDatasetCode(), binaryData.getDatasetVersion(),
-			//		binaryData.getIdBinary());
+			//updateMongo(binaryData.getTenantBinary(), binaryData.getDatasetCode(), binaryData.getDatasetVersion(), binaryData.getIdBinary());
 
 			return Response.ok().build();
 		} else {

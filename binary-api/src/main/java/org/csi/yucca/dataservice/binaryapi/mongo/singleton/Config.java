@@ -34,7 +34,8 @@ public class Config {
 	public static final String KNOX_USER = "KNOX_USER";
 	public static final String KNOX_GROUP = "KNOX_GROUP";
 	public static final String HDFS_LIBRARY = "HDFS_LIBRARY";
-	public static final String INSERTAPI_URL = "INSERTAPI_URL";
+	public static final String API_ADMIN_SERVICES_URL = "API_ADMIN_SERVICES_URL";
+	public static final String DATA_INSERT_BASE_URL = "DATA_INSERT_BASE_URL";
 
 	private static Map<String, String> params = null;
 	private static Config instance = null;
@@ -65,6 +66,8 @@ public class Config {
 		params.put(HDFS_ROOT_DIR, rb.getString(HDFS_ROOT_DIR));
 		params.put(HDFS_USERNAME, rb.getString(HDFS_USERNAME));
 		params.put(HDFS_LIBRARY, rb.getString(HDFS_LIBRARY));
+		params.put(API_ADMIN_SERVICES_URL, rb.getString(API_ADMIN_SERVICES_URL));
+		params.put(DATA_INSERT_BASE_URL, rb.getString(DATA_INSERT_BASE_URL));
 		
 		
 		ResourceBundle rbSecret = ResourceBundle.getBundle("SDPDataApiSecret");
@@ -187,5 +190,13 @@ public class Config {
 
 	public static String getHdfsLibrary() {
 		return params.get(HDFS_LIBRARY);
+	}
+	
+	public String getApiAdminServicesUrl() {
+		return params.get(API_ADMIN_SERVICES_URL);
+	}
+	
+	public String getDataInsertBaseUrl() {
+		return params.get(DATA_INSERT_BASE_URL);
 	}
 }
