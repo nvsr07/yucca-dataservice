@@ -36,13 +36,15 @@ public class InsertAPIBinaryDAO {
 			newObj.setLastUpdateDateBinary(new java.util.Date().toString());
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - newObj = " + gson.toJson(newObj));
-			
 			InsertObject data = new InsertObject();
+			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + gson.toJson(data));
 			data.setDatasetCode(binary.getDatasetCode());
+			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + gson.toJson(data));
 			data.addMediaObject(newObj);
+			log.info("[InsertAPIBinaryDAO:createBinary] - data = " + gson.toJson(data));
 			List<InsertObject> dataInsert = new ArrayList<InsertObject>();
+			log.info("[InsertAPIBinaryDAO:createBinary] - dataInsert = " + gson.toJson(dataInsert));
 			dataInsert.add(data);
-			
 			log.info("[InsertAPIBinaryDAO:createBinary] - dataInsert = " + gson.toJson(dataInsert));
 			
 			String tenantDetailUrl = Config.getInstance().getApiAdminServicesUrl() + "/tenants/" + binary.getTenantBinary();
