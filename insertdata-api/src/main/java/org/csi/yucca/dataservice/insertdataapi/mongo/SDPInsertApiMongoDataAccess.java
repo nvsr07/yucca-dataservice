@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
@@ -28,6 +29,7 @@ import com.mongodb.WriteResult;
 import com.mongodb.util.JSON;
 
 public class SDPInsertApiMongoDataAccess {
+	private static final org.apache.log4j.Logger log=org.apache.log4j.Logger.getLogger("org.csi.yucca.datainsert");
 
 	private static String takeNvlValues(Object obj) {
 		if (null==obj) return null;
@@ -573,6 +575,7 @@ public class SDPInsertApiMongoDataAccess {
 			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
 			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+			log.info("[MongoDataAccess::getInfoDataset]  Query"+query);
 			cursor = coll.find(query);			
 			if (cursor.hasNext()) {
 				DBObject obj=cursor.next();
@@ -598,7 +601,7 @@ public class SDPInsertApiMongoDataAccess {
 
 
 		} catch (Exception e) {
-			//TODO
+			log.error("[MongoDataAccess::getInfoDataset]  Error during query",e);
 		} finally {
 			try {
 				cursor.close();
