@@ -522,7 +522,7 @@ public class BinaryService {
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
 			binaryData.setMetadataBinary("");
 			binaryData.setSizeBinary(0L);
-			binaryDAO.createBinary(binaryData);
+			binaryDAO.createBinary(binaryData, mdBinaryDataSet.getDatasetCode());
 
 			//updateMongo(binaryData.getTenantBinary(), binaryData.getDatasetCode(), binaryData.getDatasetVersion(), binaryData.getIdBinary());
 
