@@ -43,6 +43,8 @@ public class InsertAPIBinaryDAO {
 			List<InsertObject> dataInsert = new ArrayList<InsertObject>();
 			dataInsert.add(data);
 			
+			log.info("[InsertAPIBinaryDAO:createBinary] - dataInsert = " + gson.toJson(dataInsert));
+			
 			String tenantDetailUrl = Config.getInstance().getApiAdminServicesUrl() + "/tenants/" + binary.getTenantBinary();
 			String tenantDetailString = HttpDelegate.executeGet(tenantDetailUrl, null, null, null);
 			log.info("[InsertAPIBinaryDAO:createBinary] - tenantDetailString (executeGet) = " + tenantDetailString);
