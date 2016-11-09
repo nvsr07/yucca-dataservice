@@ -1,5 +1,7 @@
 package org.csi.yucca.dataservice.binaryapi.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -507,24 +509,66 @@ public class BinaryService {
 
 			//String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(hdfsDirectory);
+			
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+			byte[] buffer = new byte[1024];
+			int len;
+			while ((len = fileInputPart.getBody(InputStream.class, null).read(buffer)) > -1 ) {
+			    baos.write(buffer, 0, len);
+			}
+			baos.flush();
+
+			InputStream isForWriteFile = new ByteArrayInputStream(baos.toByteArray()); 
+			InputStream isForAnalizeMetadata = new ByteArrayInputStream(baos.toByteArray()); 
+			
 			String uri = null;
 			try {
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, fileInputPart.getBody(InputStream.class, null), idBinary);
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, isForWriteFile, idBinary); //fileInputPart.getBody(InputStream.class, null), idBinary);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 						.entity("{\"error_name\":\"Dataset attachment wrong\", \"error_code\":\"E113\", \"output\":\"NONE\", \"message\":\"" + ex.getMessage() + "\"}").build();
+			} finally {
+				try {
+					isForWriteFile.close();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
 			}
 
 			LOG.info("[BinaryService::uploadFile] - HDFS URI = " + uri);
 
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
-			binaryData.setMetadataBinary("");
-			binaryData.setSizeBinary(0L);
-			binaryDAO.createBinary(binaryData, mdBinaryDataSet.getDatasetCode());
 
-			//updateMongo(binaryData.getTenantBinary(), binaryData.getDatasetCode(), binaryData.getDatasetVersion(), binaryData.getIdBinary());
+			Map<String,String> mapHS = null;
+			try {
+				mapHS = extractMetadata(isForAnalizeMetadata);
+				binaryData.setMetadataBinary(mapHS.toString());
+				
+				Long sizeFileLenght = 0L;
+				
+				//if (Config.getHdfsLibrary().equals("webhdfs")){
+				//	sizeFileLenght = org.csi.yucca.dataservice.ingest.binary.webhdfs.HdfsFSUtils.sizeFile(Config.getKnoxUser(), Config.getKnoxPwd(), pathForUri, Config.getKnoxUrl(), idBinary);
+				//} else {
+					sizeFileLenght = Long.parseLong(mapHS.get("sizeFileLenght"));
+				//}
+				
+				System.out.println("sizeFileLenght = " + sizeFileLenght.toString());
+				
+				binaryData.setSizeBinary(sizeFileLenght);
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					isForAnalizeMetadata.close();
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+			}
+			
+			binaryDAO.createBinary(binaryData, mdBinaryDataSet.getDatasetCode());
 
 			return Response.ok().build();
 		} else {
