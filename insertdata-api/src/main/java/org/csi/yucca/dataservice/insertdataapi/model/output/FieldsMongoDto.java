@@ -25,6 +25,7 @@ public class FieldsMongoDto {
 	public static final String DATA_TYPE_LAT = "latitude";	
 	public static final String DATA_TYPE_BINARY = "binary";	
 	
+	public static final String DATA_TYPE_DATE = "date";
 
 	private static Map<String,String> testMap;
 	static {
@@ -40,6 +41,7 @@ public class FieldsMongoDto {
 		testMap.put(DATA_TYPE_LAT, DATA_TYPE_LAT);
 		testMap.put(DATA_TYPE_FLOAT, DATA_TYPE_FLOAT);
 		testMap.put(DATA_TYPE_BINARY, DATA_TYPE_BINARY);
+		testMap.put(DATA_TYPE_DATE, DATA_TYPE_DATE);
 
 
 	}
@@ -123,6 +125,7 @@ public class FieldsMongoDto {
 		if (DATA_TYPE_FLOAT.equals(this.fieldType)) return validateFloat(valueToCheck); 
 		if (DATA_TYPE_STRING.equals(this.fieldType)) return validateString(valueToCheck); 
 		if (DATA_TYPE_BOOLEAN.equals(this.fieldType)) return validateBoolean(valueToCheck); 
+		if (DATA_TYPE_DATE.equals(this.fieldType)) return validateDate(valueToCheck); 
 		if (DATA_TYPE_DATETIME.equals(this.fieldType)) return validateDate(valueToCheck); 
 		if (DATA_TYPE_LON.equals(this.fieldType)) return validateDouble(valueToCheck); 
 		if (DATA_TYPE_LAT.equals(this.fieldType)) return validateDouble(valueToCheck); 
@@ -247,6 +250,7 @@ public class FieldsMongoDto {
 		if (DATA_TYPE_BOOLEAN.equals(this.fieldType)) ret+=value; 
 		//if (DATA_TYPE_DATETIME.equals(this.fieldType)) ret+="ISODate(\""+value+"\")";
 		if (DATA_TYPE_DATETIME.equals(this.fieldType)) ret+="{$date : \""+value+"\"}";
+		if (DATA_TYPE_DATE.equals(this.fieldType)) ret+="{$date : \""+value+"\"}";
 		if (DATA_TYPE_LON.equals(this.fieldType)) ret+=value;
 		if (DATA_TYPE_LAT.equals(this.fieldType)) ret+=value;
 		if (DATA_TYPE_BINARY.equals(this.fieldType)) ret+="\""+value.replace("\"", "\\\"")+"\"";
