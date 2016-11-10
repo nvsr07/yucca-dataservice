@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +17,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -34,17 +31,11 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.Parser;
 import org.apache.tika.parser.ParserDecorator;
 import org.apache.tika.sax.BodyContentHandler;
-import org.xml.sax.SAXException;
-
-import com.google.gson.Gson;
-import com.mongodb.MongoClient;
-
 import org.csi.yucca.dataservice.binaryapi.dao.InsertAPIBinaryDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBMetadataDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBStreamDAO;
 import org.csi.yucca.dataservice.binaryapi.dao.MongoDBTenantDAO;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils;
-import org.csi.yucca.dataservice.binaryapi.model.api.DataUploadForm;
 import org.csi.yucca.dataservice.binaryapi.model.api.Dataset;
 import org.csi.yucca.dataservice.binaryapi.model.api.MyApi;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
@@ -52,10 +43,13 @@ import org.csi.yucca.dataservice.binaryapi.model.metadata.Metadata;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Stream;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.csi.yucca.dataservice.binaryapi.util.SplittableInputStream;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartInput;
+import org.xml.sax.SAXException;
+
+import com.google.gson.Gson;
+import com.mongodb.MongoClient;
 
 @Path("/binary")
 public class BinaryService {
@@ -83,41 +77,6 @@ public class BinaryService {
 			throws WebApplicationException, NumberFormatException, UnknownHostException {
 
 		LOG.info("[BinaryService::downloadCSVFile] - downloadCSVFile!");
-
-		// MessageContext mc = wsContext.getMessageContext();
-		// HttpServletRequest req =
-		// (HttpServletRequest)mc.get(MessageContext.SERVLET_REQUEST);
-
-		// LOG.info("accountingLog start!");
-
-		// AccountingLog accountingLog = new AccountingLog();
-		// //info.getClientIp()
-		// accountingLog.setUniqueid(apiCode + "|" + idDataSet + "|" +
-		// datasetVersion);
-		// accountingLog.setApicode(apiCode);
-		// accountingLog.setQuerString("GET - downloadCSVFile");
-
-		// LOG.info("accountingLog go!");
-
-		// Enumeration<String> headerNames = req.getHeaderNames();
-		// String headerName = "";
-		// String headerValue = "";
-		// String logAccountingMessage = "";
-
-		// while (headerNames.hasMoreElements()) {
-		// headerName = headerNames.nextElement();
-		// headerValue = req.getHeader(headerName);
-
-		// String uniqueid = "";
-		// String forwardefor = "";
-		// String jwt = "";
-		// if ("UNIQUE_ID".equals(headerName)) uniqueid = headerValue;
-		// else if ("X-Forwarded-For".equals(headerName)) forwardefor =
-		// headerValue;
-		// else if ("X-JWT-Assertion".equals(headerName)) jwt = headerValue;
-		// }
-
-		// LOG.info("[BinaryService::downloadCSVFile] - accountingLog done!");
 
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
@@ -424,8 +383,13 @@ public class BinaryService {
 	@Path("/input/{tenantCode}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	public Response uploadFile(MultipartFormDataInput body, @PathParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
-
-		String aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
+		String aliasFile="noalias";
+		if (body.getFormDataMap().get("alias")!=null)
+			aliasFile = body.getFormDataMap().get("alias").get(0).getBodyAsString();
+		else 
+			aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
+			
+		
 		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
 		//String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
 		String datasetCode = body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
@@ -510,17 +474,13 @@ public class BinaryService {
 			//String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
 			binaryData.setPathHdfsBinary(hdfsDirectory);
 			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-			byte[] buffer = new byte[1024];
-			int len;
-			while ((len = fileInputPart.getBody(InputStream.class, null).read(buffer)) > -1 ) {
-			    baos.write(buffer, 0, len);
-			}
-			baos.flush();
-
-			InputStream isForWriteFile = new ByteArrayInputStream(baos.toByteArray()); 
-			InputStream isForAnalizeMetadata = new ByteArrayInputStream(baos.toByteArray()); 
+			// Create a SplittableInputStream from the originalStream
+			SplittableInputStream is  = new SplittableInputStream(fileInputPart.getBody(InputStream.class, null));
+			
+			SplittableInputStream isForWriteFile = is.split();
+			SplittableInputStream isForAnalizeMetadata = is.split();
+			
+			
 			
 			String uri = null;
 			try {
