@@ -44,6 +44,7 @@ public class InsertAPIBinaryDAO {
 			newObj.setPathHdfsBinary(binary.getPathHdfsBinary());
 			newObj.setInsertDateBinary(requiredDate);
 			newObj.setLastUpdateDateBinary(requiredDate);
+			newObj.setMetadataBinary(binary.getMetadataBinary());
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - newObj = " + gson.toJson(newObj));
 			log.info("[InsertAPIBinaryDAO:createBinary] - binaryDatasetCode = " + binaryDatasetCode);
@@ -55,20 +56,20 @@ public class InsertAPIBinaryDAO {
 			dataInsert.add(data);
 			
 			log.info("[InsertAPIBinaryDAO:createBinary] - dataInsert = " + gson.toJson(dataInsert));
-			
-			String tenantDetailUrl = Config.getInstance().getApiAdminServicesUrl() + "/tenants/" + binary.getTenantBinary();
-			String tenantDetailString = HttpDelegate.executeGet(tenantDetailUrl, null, null, null);
-			log.info("[InsertAPIBinaryDAO:createBinary] - tenantDetailString (executeGet) = " + tenantDetailString);
-			TenantIn tenantin = gson.fromJson(tenantDetailString, TenantIn.class);
-			String tenantPassword = tenantin.getTenants().getTenant().getTenantPassword();
+//			
+//			String tenantDetailUrl = Config.getInstance().getApiAdminServicesUrl() + "/tenants/" + binary.getTenantBinary();
+//			String tenantDetailString = HttpDelegate.executeGet(tenantDetailUrl, null, null, null);
+//			log.info("[InsertAPIBinaryDAO:createBinary] - tenantDetailString (executeGet) = " + tenantDetailString);
+//			TenantIn tenantin = gson.fromJson(tenantDetailString, TenantIn.class);
+//			String tenantPassword = tenantin.getTenants().getTenant().getTenantPassword();
 
 			String insertApiUrl = Config.getInstance().getDataInsertBaseUrl() + binary.getTenantBinary();
 
 			log.info("[InsertAPIBinaryDAO:createBinary] - insertApiUrl = " + insertApiUrl);
 			log.info("[InsertAPIBinaryDAO:createBinary] - binary.getTenantBinary() = " + binary.getTenantBinary());
-			log.info("[InsertAPIBinaryDAO:createBinary] - tenantPassword = " + tenantPassword);
+//			log.info("[InsertAPIBinaryDAO:createBinary] - tenantPassword = " + tenantPassword);
 
-			String executePost = HttpDelegate.executePost(insertApiUrl, binary.getTenantBinary(), tenantPassword, null, null, null, gson.toJson(dataInsert));
+			String executePost = HttpDelegate.executePost(insertApiUrl, null, null, null, null, null, gson.toJson(dataInsert));
 
 			log.info("[InsertAPIBinaryDAO:createBinary] - executePost = " + executePost);
 			
