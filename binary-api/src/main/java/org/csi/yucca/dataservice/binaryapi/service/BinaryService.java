@@ -1,10 +1,7 @@
 package org.csi.yucca.dataservice.binaryapi.service;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -24,7 +21,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.input.TeeInputStream;
+import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.apache.cxf.message.Attachment;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -45,9 +43,6 @@ import org.csi.yucca.dataservice.binaryapi.model.metadata.Metadata;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Stream;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
-import org.csi.yucca.dataservice.binaryapi.util.SplittableInputStream;
-import org.jboss.resteasy.plugins.providers.multipart.InputPart;
-import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 import org.xml.sax.SAXException;
 
 import com.google.gson.Gson;
@@ -384,37 +379,43 @@ public class BinaryService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenantCode}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(MultipartFormDataInput body, @PathParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
-		String aliasFile="noalias";
-		if (body.getFormDataMap().get("alias")!=null)
-			aliasFile = body.getFormDataMap().get("alias").get(0).getBodyAsString();
-		else 
-			aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
-		
-		
-		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
-		//String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
-		String datasetCode = body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
-		Integer datasetVersion = Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
+	public Response uploadFile(@Multipart("upfile") org.apache.cxf.jaxrs.ext.multipart.Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
+			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
+			UnknownHostException {
 
-		InputPart fileInputPart = body.getFormDataMap().get("upfile").get(0);
-		String filename = parseFileName(fileInputPart.getHeaders());
-		
-		LOG.info("[BinaryService::uploadFile] - aliasFile = " + aliasFile);
-		LOG.info("[BinaryService::uploadFile] - idBinary = " + idBinary);
-		LOG.info("[BinaryService::uploadFile] - tenantCode = " + tenantCode);
-		LOG.info("[BinaryService::uploadFile] - datasetCode = " + datasetCode);
-		LOG.info("[BinaryService::uploadFile] - datasetVersion = " + datasetVersion);
-		LOG.info("[BinaryService::uploadFile] - fileInputPart = " + fileInputPart);
-		LOG.info("[BinaryService::uploadFile] - filename = " + filename);
-
-		// Get size for verify max size file upload (dirty)
+		long startTime = System.currentTimeMillis();
+		//Get size for verify max size file upload (dirty) 
 		Integer sizeFileAttachment = null;
 		try {
-			sizeFileAttachment = fileInputPart.getBody(InputStream.class, null).available();
+			sizeFileAttachment = attachment.getObject(InputStream.class).available();
 		} catch (IOException ex2) {
 			ex2.printStackTrace();
 		}
+//	public Response uploadFile(MultipartFormDataInput body, @PathParam("tenantCode") String tenantCode) throws NumberFormatException, IOException {
+//		String aliasFile="noalias";
+//		if (body.getFormDataMap().get("alias")!=null)
+//			aliasFile = body.getFormDataMap().get("alias").get(0).getBodyAsString();
+//		else 
+//			aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
+//		
+//		
+//		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
+//		//String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
+//		String datasetCode = body.getFormDataMap().get("datasetCode").get(0).getBodyAsString();
+//		Integer datasetVersion = Integer.parseInt(body.getFormDataMap().get("datasetVersion").get(0).getBodyAsString());
+//
+//		InputPart fileInputPart = body.getFormDataMap().get("upfile").get(0);
+//		String filename = parseFileName(fileInputPart.getHeaders());
+		
+//
+//		// Get size for verify max size file upload (dirty)
+//		Integer sizeFileAttachment = null;
+//		try {
+//			sizeFileAttachment = fileInputPart.getBody(InputStream.class, null).available();
+//		} catch (IOException ex2) {
+//			ex2.printStackTrace();
+//		}
+//		String contentType = fileInputPart.getMediaType().getType();
 
 		if (sizeFileAttachment > MAX_SIZE_FILE_ATTACHMENT) {
 			return Response.status(413)
@@ -422,6 +423,9 @@ public class BinaryService {
 					.build();
 		}
 
+		String filename = attachment.getContentDisposition().getParameter("filename");
+		String contentType = attachment.getContentType().toString();
+		
 		BinaryData binaryData = new BinaryData();
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
@@ -456,7 +460,7 @@ public class BinaryService {
 		binaryData.setTenantBinary(tenantCode);
 		binaryData.setDatasetCode(datasetCode);
 		binaryData.setFilenameBinary(filename);
-		binaryData.setContentTypeBinary(fileInputPart.getMediaType().getType());
+		binaryData.setContentTypeBinary(contentType);
 
 		LOG.info("[BinaryService::uploadFile] - BinaryIdDataset => " + mdFromMongo.getInfo().getBinaryIdDataset());
 
@@ -473,7 +477,7 @@ public class BinaryService {
 
 			binaryData.setPathHdfsBinary(hdfsDirectory +"/" + idBinary);
 			
-			InputStream  isForWriteFile = fileInputPart.getBody(InputStream.class, null);
+			InputStream  isForWriteFile = attachment.getObject(InputStream.class); // fileInputPart.getBody(InputStream.class, null);
 
 			
 			String uri = null;
