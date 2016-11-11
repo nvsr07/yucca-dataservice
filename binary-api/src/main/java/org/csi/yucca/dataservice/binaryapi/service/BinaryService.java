@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.TeeInputStream;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -470,14 +472,9 @@ public class BinaryService {
 					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
 
 			binaryData.setPathHdfsBinary(hdfsDirectory +"/" + idBinary);
+			
+			InputStream  isForWriteFile = fileInputPart.getBody(InputStream.class, null);
 
-			// Create a SplittableInputStream from the originalStream
-			SplittableInputStream is  = new SplittableInputStream(fileInputPart.getBody(InputStream.class, null));
-			
-			SplittableInputStream isForWriteFile = is.split();
-			SplittableInputStream isForAnalizeMetadata = is.split();
-			
-			
 			
 			String uri = null;
 			try {
@@ -498,11 +495,14 @@ public class BinaryService {
 
 			LOG.info("[BinaryService::uploadFile] - HDFS URI = " + uri);
 
+			
+			
 			binaryData.setDatasetVersion(mdBinaryDataSet.getDatasetVersion());
-
+			InputStream isForAnalizeMetadata = null;
 			Map<String,String> mapHS = null;
 			try {
-				mapHS = extractMetadata(isForAnalizeMetadata);
+			    isForAnalizeMetadata = HdfsFSUtils.readFile(hdfsDirectory+"/"+idBinary);
+				mapHS = extractMetadata( isForAnalizeMetadata);
 				binaryData.setMetadataBinary(mapHS.toString());
 				LOG.info("[BinaryService::uploadFile] - MetadataBinary = " + mapHS.toString());
 				
@@ -521,7 +521,8 @@ public class BinaryService {
 				e.printStackTrace();
 			} finally {
 				try {
-					isForAnalizeMetadata.close();
+					if (isForAnalizeMetadata!=null )
+						isForAnalizeMetadata.close();
 					LOG.info("[BinaryService::uploadFile] - InputStream 2 CLose");
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -550,17 +551,11 @@ public class BinaryService {
 		String typeDirectory = "";
 		String subTypeDirectory = "";
 
-		LOG.info("[BinaryService::getPathForHDFS] - mdBinaryDataSet.getInfo() => "
-				+ mdBinaryFromMongo.getInfo().toJson().toString());
-		LOG.info("[BinaryService::getPathForHDFS] - mdBinaryDataSet.getInfo().getDataDomain() => "
-				+ datasetFromMongo.getInfo().getDataDomain());
-
 		String dataDomain = datasetFromMongo.getInfo().getDataDomain();
 		LOG.info("[BinaryService::getPathForHDFS] - dataDomain => " + dataDomain);
 		dataDomain = dataDomain.toUpperCase();
 		
 		Gson gson = new Gson();
-		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo => " + gson.toJson(mdBinaryFromMongo));
 
 		if (mdBinaryFromMongo.getConfigData().getSubtype().equals("binaryDataset")) {
 			if (datasetFromMongo.getInfo().getCodSubDomain() == null) {
