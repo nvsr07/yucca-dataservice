@@ -318,7 +318,7 @@ public class BinaryService {
 							&& (mdFromMongo.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())
 									&& (mdFromMongo.getInfo().getBinaryIdDataset().equals(idDataSet))
 									&& (mdFromMongo.getInfo().getBinaryDatasetVersion().equals(datasetVersion)))) {
-						String pathForUri = getPathForHDFS(mdBinaryDataSet, tenantCode, idBinary);
+						String pathForUri = getPathForHDFS(mdBinaryDataSet,mdFromMongo, tenantCode, idBinary);
 
 						InputStream is;
 						try {
@@ -464,7 +464,7 @@ public class BinaryService {
 		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
-			String hdfsDirectory = getPathForHDFS(mdBinaryDataSet, tenantCode, idBinary);
+			String hdfsDirectory = getPathForHDFS(mdBinaryDataSet,mdFromMongo, tenantCode, idBinary);
 			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
 			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
 					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
@@ -542,7 +542,7 @@ public class BinaryService {
 		}
 	}
 
-	private String getPathForHDFS(Metadata mdFromMongo, String tenantCode, String idBinary)
+	private String getPathForHDFS(Metadata mdBinaryFromMongo, Metadata datasetFromMongo, String tenantCode, String idBinary)
 			throws NumberFormatException, UnknownHostException {
 
 		MongoClient mongo = MongoSingleton.getMongoClient();
@@ -556,28 +556,28 @@ public class BinaryService {
 		String subTypeDirectory = "";
 
 		LOG.info("[BinaryService::getPathForHDFS] - mdBinaryDataSet.getInfo() => "
-				+ mdFromMongo.getInfo().toJson().toString());
+				+ mdBinaryFromMongo.getInfo().toJson().toString());
 		LOG.info("[BinaryService::getPathForHDFS] - mdBinaryDataSet.getInfo().getDataDomain() => "
-				+ mdFromMongo.getInfo().getDataDomain());
+				+ datasetFromMongo.getInfo().getDataDomain());
 
-		String dataDomain = mdFromMongo.getInfo().getDataDomain();
+		String dataDomain = datasetFromMongo.getInfo().getDataDomain();
 		LOG.info("[BinaryService::getPathForHDFS] - dataDomain => " + dataDomain);
 		dataDomain = dataDomain.toUpperCase();
 		
 		Gson gson = new Gson();
-		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo => " + gson.toJson(mdFromMongo));
+		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo => " + gson.toJson(mdBinaryFromMongo));
 
-		if (mdFromMongo.getConfigData().getSubtype().equals("binaryDataset")) {
-			if (mdFromMongo.getInfo().getCodSubDomain() == null) {
+		if (mdBinaryFromMongo.getConfigData().getSubtype().equals("binaryDataset")) {
+			if (datasetFromMongo.getInfo().getCodSubDomain() == null) {
 				LOG.info("[BinaryService::getPathForHDFS] - CodSubDomain is null => "
-						+ mdFromMongo.getInfo().getCodSubDomain());
-				typeDirectory = "db_" + mdFromMongo.getConfigData().getTenantCode();
+						+ datasetFromMongo.getInfo().getCodSubDomain());
+				typeDirectory = "db_" + datasetFromMongo.getConfigData().getTenantCode();
 			} else {
 				LOG.info(
-						"[BinaryService::getPathForHDFS] - CodSubDomain => " + mdFromMongo.getInfo().getCodSubDomain());
-				typeDirectory = "db_" + mdFromMongo.getInfo().getCodSubDomain();
+						"[BinaryService::getPathForHDFS] - CodSubDomain => " + datasetFromMongo.getInfo().getCodSubDomain());
+				typeDirectory = "db_" + datasetFromMongo.getInfo().getCodSubDomain();
 			}
-			subTypeDirectory = mdFromMongo.getDatasetCode();
+			subTypeDirectory = mdBinaryFromMongo.getDatasetCode();
 
 			LOG.info("[BinaryService::getPathForHDFS] - typeDirectory => " + typeDirectory);
 			LOG.info("[BinaryService::getPathForHDFS] - subTypeDirectory => " + subTypeDirectory);
@@ -585,7 +585,7 @@ public class BinaryService {
 			typeDirectory = "";
 		}
 
-		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo.subtype = " + mdFromMongo.getConfigData().getSubtype());
+		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo.subtype = " + mdBinaryFromMongo.getConfigData().getSubtype());
 		LOG.info("[BinaryService::getPathForHDFS] - typeDirectory = " + typeDirectory);
 
 		String organizationCode = tenantDAO.getOrganizationByTenantCode(tenantCode).toUpperCase();
