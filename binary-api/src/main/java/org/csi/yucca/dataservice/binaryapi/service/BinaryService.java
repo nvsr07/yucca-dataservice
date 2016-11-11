@@ -318,7 +318,7 @@ public class BinaryService {
 							&& (mdFromMongo.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())
 									&& (mdFromMongo.getInfo().getBinaryIdDataset().equals(idDataSet))
 									&& (mdFromMongo.getInfo().getBinaryDatasetVersion().equals(datasetVersion)))) {
-						String pathForUri = getPathForHDFS(mdFromMongo, tenantCode, idBinary);
+						String pathForUri = getPathForHDFS(mdBinaryDataSet, tenantCode, idBinary);
 
 						InputStream is;
 						try {
@@ -464,7 +464,7 @@ public class BinaryService {
 		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
-			String hdfsDirectory = getPathForHDFS(mdFromMongo, tenantCode, idBinary);
+			String hdfsDirectory = getPathForHDFS(mdBinaryDataSet, tenantCode, idBinary);
 			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
 			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
 					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
@@ -567,7 +567,7 @@ public class BinaryService {
 		Gson gson = new Gson();
 		LOG.info("[BinaryService::getPathForHDFS] - mdFromMongo => " + gson.toJson(mdFromMongo));
 
-		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset")) {
+		if (mdFromMongo.getConfigData().getSubtype().equals("binaryDataset")) {
 			if (mdFromMongo.getInfo().getCodSubDomain() == null) {
 				LOG.info("[BinaryService::getPathForHDFS] - CodSubDomain is null => "
 						+ mdFromMongo.getInfo().getCodSubDomain());
@@ -581,10 +581,6 @@ public class BinaryService {
 
 			LOG.info("[BinaryService::getPathForHDFS] - typeDirectory => " + typeDirectory);
 			LOG.info("[BinaryService::getPathForHDFS] - subTypeDirectory => " + subTypeDirectory);
-		} else if (mdFromMongo.getConfigData().getSubtype().equals("streamDataset")) {
-			Stream tmp = streamDAO.getStreamByDataset(mdFromMongo.getIdDataset(), mdFromMongo.getDatasetVersion());
-			typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
-			subTypeDirectory = tmp.getStreamCode();
 		} else {
 			typeDirectory = "";
 		}
