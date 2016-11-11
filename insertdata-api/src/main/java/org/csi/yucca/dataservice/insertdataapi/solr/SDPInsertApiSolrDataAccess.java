@@ -49,7 +49,7 @@ public class SDPInsertApiSolrDataAccess {
 			}
 			else if (dati.getDatasetType().equals("binaryDataset"))
 			{
-				collection = tenant+"_medial";
+				collection = tenant+"_media";
 			}
 			
 			

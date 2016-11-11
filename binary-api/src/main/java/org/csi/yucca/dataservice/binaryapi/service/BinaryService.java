@@ -318,11 +318,11 @@ public class BinaryService {
 							&& (mdFromMongo.getConfigData().getTenantCode().equals(api.getConfigData().getTenantCode())
 									&& (mdFromMongo.getInfo().getBinaryIdDataset().equals(idDataSet))
 									&& (mdFromMongo.getInfo().getBinaryDatasetVersion().equals(datasetVersion)))) {
-						String pathForUri = getPathForHDFS(mdBinaryDataSet,mdFromMongo, tenantCode, idBinary);
+						String pathForUri = getPathForHDFS(mdBinaryDataSet,mdFromMongo, tenantCode);
 
 						InputStream is;
 						try {
-							is = HdfsFSUtils.readFile(pathForUri);
+							is = HdfsFSUtils.readFile(pathForUri+"/"+idBinary);
 						} catch (Exception e) {
 							LOG.error("[BinaryService::downloadFile] - Internal error during READFile", e);
 							throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -388,7 +388,7 @@ public class BinaryService {
 			aliasFile = body.getFormDataMap().get("alias").get(0).getBodyAsString();
 		else 
 			aliasFile = body.getFormDataMap().get("aliasFile").get(0).getBodyAsString();
-			
+		
 		
 		String idBinary = body.getFormDataMap().get("idBinary").get(0).getBodyAsString();
 		//String tenantCode = body.getFormDataMap().get("tenantCode").get(0).getBodyAsString();
@@ -464,16 +464,13 @@ public class BinaryService {
 		LOG.info("[BinaryService::uploadFile] - Subtype = " + mdFromMongo.getConfigData().getSubtype());
 		if (mdFromMongo.getConfigData().getSubtype().equals("bulkDataset") && (mdBinaryDataSet != null)) {
 
-			String hdfsDirectory = getPathForHDFS(mdBinaryDataSet,mdFromMongo, tenantCode, idBinary);
+			String hdfsDirectory = getPathForHDFS(mdBinaryDataSet,mdFromMongo, tenantCode);
 			LOG.info("[BinaryService::uploadFile] - hdfsDirectory = " + hdfsDirectory);
 			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
 					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
 
-			binaryData.setPathHdfsBinary(hdfsDirectory);
+			binaryData.setPathHdfsBinary(hdfsDirectory +"/" + idBinary);
 
-			//String pathForUri = "/" + Config.getHdfsRootDir() + "/tnt-" + tenantCode + PATH_INTERNAL_HDFS + mdBinaryDataSet.getDatasetCode() + "/" + idBinary;
-			binaryData.setPathHdfsBinary(hdfsDirectory);
-			
 			// Create a SplittableInputStream from the originalStream
 			SplittableInputStream is  = new SplittableInputStream(fileInputPart.getBody(InputStream.class, null));
 			
@@ -519,7 +516,7 @@ public class BinaryService {
 				
 				LOG.info("[BinaryService::uploadFile] - sizeFileLenght = " + sizeFileLenght.toString());
 				
-				binaryData.setSizeBinary(sizeFileLenght);
+				binaryData.setSizeBinary(sizeFileAttachment!=null?sizeFileAttachment:sizeFileLenght);
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
@@ -542,13 +539,11 @@ public class BinaryService {
 		}
 	}
 
-	private String getPathForHDFS(Metadata mdBinaryFromMongo, Metadata datasetFromMongo, String tenantCode, String idBinary)
+	private String getPathForHDFS(Metadata mdBinaryFromMongo, Metadata datasetFromMongo, String tenantCode)
 			throws NumberFormatException, UnknownHostException {
 
 		MongoClient mongo = MongoSingleton.getMongoClient();
 		String supportDb = Config.getInstance().getDbSupport();
-		String supportStreamCollection = Config.getInstance().getCollectionSupportStream();
-		MongoDBStreamDAO streamDAO = new MongoDBStreamDAO(mongo, supportDb, supportStreamCollection);
 		String supportTenantCollection = Config.getInstance().getCollectionSupportTenant();
 		MongoDBTenantDAO tenantDAO = new MongoDBTenantDAO(mongo, supportDb, supportTenantCollection);
 
