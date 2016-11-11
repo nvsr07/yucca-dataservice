@@ -74,6 +74,10 @@ public class SDPInsertApiPhoenixDataAccess {
 				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_SOCIAL ,? ,? ,? ,? "; 
 				
 			}
+			else if (dati.getDatasetType().equals("binaryDataset"))
+			{
+				table = "MEDIA";
+			}
 			
 	        Iterator<Entry<String, FieldsMongoDto>> fieldIter = dati.getFieldsType().entrySet().iterator();
 			
@@ -97,6 +101,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	            } else if ("boolean".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" TINYINT";
 	            } else if ("datetime".equalsIgnoreCase(tipo)) {
+	                campiSQL+=" TIMESTAMP";
+	            } else if ("date".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" TIMESTAMP";
 	            } else if ("longitude".equalsIgnoreCase(tipo)) {
 	                campiSQL+=" DOUBLE";
@@ -162,6 +168,9 @@ public class SDPInsertApiPhoenixDataAccess {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TINYINT);
 	                    else stmt.setInt(pos, Boolean.parseBoolean(value.toString())?1:0);
 	                } else if ("datetime".equalsIgnoreCase(tipo)) {
+	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TIMESTAMP);
+	                    stmt.setTimestamp(pos,new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
+	                } else if ("date".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TIMESTAMP);
 	                    stmt.setTimestamp(pos,new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
 	                } else if ("longitude".equalsIgnoreCase(tipo)) {

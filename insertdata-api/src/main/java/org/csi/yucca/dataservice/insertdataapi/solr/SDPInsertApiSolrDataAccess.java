@@ -47,6 +47,10 @@ public class SDPInsertApiSolrDataAccess {
 			{
 				collection = tenant+"_social";
 			}
+			else if (dati.getDatasetType().equals("binaryDataset"))
+			{
+				collection = tenant+"_medial";
+			}
 			
 			
             Collection<SolrInputDocument> list =new ArrayList<SolrInputDocument>();
@@ -60,7 +64,7 @@ public class SDPInsertApiSolrDataAccess {
 	            doc.setField("idDataset_l", (Integer.parseInt(Long.toString(dati.getIdDataset()))));
 	            doc.setField("datasetVersion_l",(Integer.parseInt(Long.toString(dati.getDatasetVersion()))));
 
-	            if (!dati.getDatasetType().equals("bulkDataset"))
+	            if (!dati.getDatasetType().equals("bulkDataset") || !dati.getDatasetType().equals("binaryDataset"))
 				{
 	            	doc.setField("time_dt",DateUtil.convertToStd(json.get("time").toString()));
 	            	doc.setField("sensor_s",dati.getSensor());
@@ -97,6 +101,9 @@ public class SDPInsertApiSolrDataAccess {
 	                    if ( null== value) doc.setField(nome+"_b",null);
 	                    else doc.setField(nome+"_b", Boolean.parseBoolean(value.toString()));
 	                } else if ("datetime".equalsIgnoreCase(tipo)) {
+	                	if ( null== value) doc.setField(nome+"_dt",null);
+	                	else doc.setField(nome+"_dt", DateUtil.convertToStd(value.toString()));
+	                } else if ("date".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) doc.setField(nome+"_dt",null);
 	                	else doc.setField(nome+"_dt", DateUtil.convertToStd(value.toString()));
 	                } else if ("longitude".equalsIgnoreCase(tipo)) {
