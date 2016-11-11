@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.apache.cxf.message.Attachment;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
@@ -379,9 +380,18 @@ public class BinaryService {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/input/{tenantCode}/")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFile(@Multipart("upfile") org.apache.cxf.jaxrs.ext.multipart.Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
-			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
-			UnknownHostException {
+	public Response uploadFile(MultipartBody body, @PathParam("tenant") String tenantCode) throws NumberFormatException,
+	UnknownHostException
+	{
+		org.apache.cxf.jaxrs.ext.multipart.Attachment attachment = body.getAttachment("upfile");
+		String datasetCode = body.getAttachment("datasetCode").getObject(String.class);
+		Integer datasetVersion = body.getAttachment("datasetVersion").getObject(Integer.class);
+		String aliasFile = body.getAttachment("alias").getObject(String.class);
+		String idBinary = body.getAttachment("idBinary").getObject(String.class);
+		
+//	public Response uploadFile(@Multipart("upfile") org.apache.cxf.jaxrs.ext.multipart.Attachment attachment, @PathParam("tenant") String tenantCode, @Multipart("datasetCode") String datasetCode,
+//			@Multipart("datasetVersion") Integer datasetVersion, @Multipart("alias") String aliasFile, @Multipart("idBinary") String idBinary) throws NumberFormatException,
+//			UnknownHostException {
 
 		long startTime = System.currentTimeMillis();
 		//Get size for verify max size file upload (dirty) 
