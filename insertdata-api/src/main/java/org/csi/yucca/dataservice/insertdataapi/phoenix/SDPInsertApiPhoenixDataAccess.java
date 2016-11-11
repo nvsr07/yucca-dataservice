@@ -129,7 +129,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	            stmt.setString(3, json.get("objectid").toString());
 	            
 	            int pos=4;
-	            if (!dati.getDatasetType().equals("bulkDataset"))
+	            if (!dati.getDatasetType().equals("bulkDataset")&& !dati.getDatasetType().equals("binaryDataset"))
 				{
 	            	stmt.setTimestamp(4, new Timestamp(DateUtil.multiParseDate(json.get("time").toString()).getTime()));
 	            	stmt.setString(5, dati.getSensor());

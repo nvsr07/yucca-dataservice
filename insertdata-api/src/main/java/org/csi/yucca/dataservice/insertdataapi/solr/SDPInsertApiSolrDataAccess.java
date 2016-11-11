@@ -64,7 +64,7 @@ public class SDPInsertApiSolrDataAccess {
 	            doc.setField("idDataset_l", (Integer.parseInt(Long.toString(dati.getIdDataset()))));
 	            doc.setField("datasetVersion_l",(Integer.parseInt(Long.toString(dati.getDatasetVersion()))));
 
-	            if (!dati.getDatasetType().equals("bulkDataset") || !dati.getDatasetType().equals("binaryDataset"))
+	            if (!dati.getDatasetType().equals("bulkDataset") && !dati.getDatasetType().equals("binaryDataset"))
 				{
 	            	doc.setField("time_dt",DateUtil.convertToStd(json.get("time").toString()));
 	            	doc.setField("sensor_s",dati.getSensor());
