@@ -9,6 +9,7 @@ import it.csi.smartdata.dataapi.mongo.exception.SDPCustomQueryOptionException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
 import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 import it.csi.smartdata.dataapi.odata.SDPOdataFilterExpression;
+import it.csi.smartdata.dataapi.solr.CloudSolrSingleton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import org.apache.olingo.odata2.api.edm.provider.Property;
 import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.RangeFacet.Date;
@@ -1546,6 +1548,15 @@ public class SDPDataApiMongoAccess {
 			String dbcfg=tanantDbCfg.getDataBase();
 
 
+			if (null==collection || collection.trim().length()<=0) {
+				//TODO aggoungere int per integrazione
+				
+				collection="sdp_"+SDPDataApiConfig.getInstance().getSdpAmbiente()+codiceTenant+"_media";
+			}			
+			
+			
+			
+			
 			Integer idDatasetBinary=(Integer)((DBObject)streamMetadata.get("info")).get("binaryIdDataset");
 			Integer binaryDatasetVersion=(Integer)((DBObject)streamMetadata.get("info")).get("binaryDatasetVersion");
 
@@ -1693,7 +1704,11 @@ public class SDPDataApiMongoAccess {
 			
 			
 			
-			HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
+			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
+			
+			
+			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
 			solrQuery.setFilterQueries(queryTotSolr);
@@ -1704,7 +1719,7 @@ public class SDPDataApiMongoAccess {
 			
 			
 			
-			QueryResponse rsp = solrServer.query(solrQuery);
+			QueryResponse rsp = solrServer.query(collection,solrQuery);
 			SolrDocumentList results = rsp.getResults();
 			SolrDocument curSolrDoc=null;
 
@@ -2367,6 +2382,7 @@ public class SDPDataApiMongoAccess {
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] streamMetadata="+streamMetadata);
 			String solrCollection= codiceTenant;
+			String codiceTenantOrig=codiceTenant;
 
 			List<Property> compPropsTot=new ArrayList<Property>();
 			List<Property> compPropsCur=new ArrayList<Property>();			
@@ -2402,14 +2418,6 @@ public class SDPDataApiMongoAccess {
 		
 			
 			//TODO calcolarlo in base a stream subtype
-			if (DATA_TYPE_MEASURE.equals(datatType)) {
-				codiceTenant+="_measures";
-				
-			} else if (DATA_TYPE_DATA.equals(datatType)) {
-				codiceTenant+="_data";
-			} else if (DATA_TYPE_SOCIAL.equals(datatType)) {
-				codiceTenant+="_social";
-			}
 
 //			if (null==collection || collection.trim().length()<=0) {
 //				DbConfDto tanantDbCfg=new DbConfDto();
@@ -2419,18 +2427,39 @@ public class SDPDataApiMongoAccess {
 //				port=""+tanantDbCfg.getPort();
 //				dbcfg=tanantDbCfg.getDataBase();
 //			}
-//
-//			if (null==dbcfg || dbcfg.trim().length()<=0) {
-//				DbConfDto tanantDbCfg=new DbConfDto();
-//
-//				if (DATA_TYPE_MEASURE.equals(datatType)) {
-//					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES, codiceTenant);
-//				} else if (DATA_TYPE_DATA.equals(datatType)) {
-//					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA, codiceTenant);
-//				}  
-//				dbcfg=tanantDbCfg.getDataBase();
-//			}
 
+			if (null==dbcfg || dbcfg.trim().length()<=0) {
+				DbConfDto tanantDbCfg=new DbConfDto();
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES_SOLR, codiceTenantOrig);
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA_SOLR, codiceTenantOrig);
+				}  else if (DATA_TYPE_SOCIAL.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_SOCIAL_SOLR, codiceTenantOrig);
+					
+				}
+					
+				dbcfg=tanantDbCfg.getDataBase();
+				collection=tanantDbCfg.getCollection();
+			}
+
+			
+			if (null==collection || collection.trim().length()<=0) {
+				//TODO aggoungere int per integrazione
+				
+				collection="sdp_"+SDPDataApiConfig.getInstance().getSdpAmbiente()+codiceTenant;
+				
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					collection+="_measures";
+					
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					collection+="_data";
+				} else if (DATA_TYPE_SOCIAL.equals(datatType)) {
+					collection+="_social";
+				}
+				
+			}
 
 //			host=SDPDataApiConfig.getInstance().getMongoDefaultHost();
 //			port=""+SDPDataApiConfig.getInstance().getMongoDefaultPort();
@@ -2525,12 +2554,14 @@ public class SDPDataApiMongoAccess {
 			String  query = queryTotSolr;
 
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query ="+query);
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] collection ="+collection);
 
 			
+
 			
+			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
 			
-			
-			HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
+			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
 			solrQuery.setFilterQueries(queryTotCntSolr);
@@ -2543,7 +2574,7 @@ public class SDPDataApiMongoAccess {
 
 
 			starTtime=System.currentTimeMillis();
-			QueryResponse rsp = solrServer.query(solrQuery);
+			QueryResponse rsp = solrServer.query(collection,solrQuery);
 			//cnt = collMisure.find( new BasicDBObject("$and", queryTotCnt)).count();
 			
 			SolrDocumentList aaa = (SolrDocumentList)rsp.getResponse().get("response");
@@ -2636,6 +2667,7 @@ public class SDPDataApiMongoAccess {
 			}
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query executed in --> "+deltaTime);
 			//log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] count --> "+cursor.count());
+			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] orderby ="+orderSolr);
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] limit --> "+limitL);
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] skip --> "+skipL);
 
@@ -2656,7 +2688,7 @@ public class SDPDataApiMongoAccess {
 			DBObject obj=null;
 			starTtime=System.currentTimeMillis();
 
-			rsp = solrServer.query(solrQuery);
+			rsp = solrServer.query(collection,solrQuery);
 			SolrDocumentList results = rsp.getResults();
 			SolrDocument curSolrDoc=null;
 			try {

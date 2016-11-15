@@ -11,7 +11,9 @@ public class SDPDataApiConfig {
 	public static final String MONGO_DB_CFG_API="MONGO_DB_CFG_API";
 	public static final String MONGO_DB_CFG_STREAM="MONGO_DB_CFG_STREAM";
 	public static final String MONGO_DB_CFG_TENANT="MONGO_DB_CFG_TENANT";
-	
+	public static final String SDP_SOLR_URL="SDP_SOLR_URL";
+	public static final String SDP_AMBIENTE="SDP_AMBIENTE";
+		
 	public static SDPDataApiConfig instance=null;
 	private static int anno_init = 0;
 	private static int mese_init = 0;
@@ -45,6 +47,11 @@ public class SDPDataApiConfig {
 		ResourceBundle rb= ResourceBundle.getBundle("SDPDataApiConfig");
 		
 		 params = new HashMap<String, String>();
+		 
+			params.put("SDP_SOLR_URL", rb.getString("SDP_SOLR_URL"));
+			params.put("SDP_AMBIENTE", rb.getString("SDP_AMBIENTE"));
+			 
+		 
 		params.put("SDP_WEB_FILTER_PATTERN", rb.getString("SDP_WEB_FILTER_PATTERN"));
 		params.put("SDP_WEB_SERVLET_URL", rb.getString("SDP_WEB_SERVLET_URL"));
 		params.put("SDP_WEB_BASE_URL", rb.getString("SDP_WEB_BASE_URL"));
@@ -95,6 +102,14 @@ public class SDPDataApiConfig {
 		
 	}
 
+	
+	public String getSolrUrl() {
+		return params.get(SDP_SOLR_URL);
+	}
+	
+	public String getSdpAmbiente() {
+		return (null==params.get(SDP_AMBIENTE) ? "" : params.get(SDP_AMBIENTE));
+	}
 	
 	public int getMaxDocumentPerPage() {
 		

@@ -36,6 +36,12 @@ public class MongoTenantDbSingleton {
 
 	public static final String DB_MEDIA="DBMEDIA";
 
+	
+	public static final String DB_MESURES_SOLR="DBMEASURES_SOLR";
+	public static final String DB_DATA_SOLR="DBDATA_SOLR";
+	public static final String DB_MEDIA_SOLR="DBMEDIA_SOLR";
+	public static final String DB_SOCIAL_SOLR="DBSOCIAL_SOLR";
+	
 
 	public static MongoTenantDbSingleton instance=null;
 	private static int anno_init = 0;
@@ -179,6 +185,25 @@ public class MongoTenantDbSingleton {
 					dataDb.setCollection(takeNvlValues( obj.get("dataCollectionName")));
 					dataDb.setPort(SDPDataApiConfig.getInstance().getMongoDefaultPort());
 
+					DbConfDto dataDbSolr=new DbConfDto();
+					dataDbSolr.setCollection(takeNvlValues( obj.get("dataSolrCollectionName")));
+					
+					DbConfDto mediaDbSolr=new DbConfDto();
+					mediaDbSolr.setCollection(takeNvlValues( obj.get("mediaSolrCollectionName")));
+
+					DbConfDto measureDbSolr=new DbConfDto();
+					measureDbSolr.setCollection(takeNvlValues( obj.get("measuresSolrCollectionName")));
+					
+					
+					DbConfDto socialDbSolr=new DbConfDto();
+					socialDbSolr.setCollection(takeNvlValues( obj.get("socialSolrCollectionName")));
+					
+					
+					
+					params.put(tenant+"__"+DB_SOCIAL_SOLR, socialDbSolr);
+					params.put(tenant+"__"+DB_MESURES_SOLR, measureDbSolr);
+					params.put(tenant+"__"+DB_DATA_SOLR, dataDbSolr);
+					params.put(tenant+"__"+DB_MEDIA_SOLR, mediaDbSolr);	
 
 
 
@@ -268,7 +293,29 @@ public class MongoTenantDbSingleton {
 					dataDb.setPort(SDPDataApiConfig.getInstance().getMongoDefaultPort());
 
 
+					
+					
+					
+					DbConfDto dataDbSolr=new DbConfDto();
+					dataDbSolr.setCollection(takeNvlValues( obj.get("dataSolrCollectionName")));
+					
+					DbConfDto mediaDbSolr=new DbConfDto();
+					mediaDbSolr.setCollection(takeNvlValues( obj.get("mediaSolrCollectionName")));
 
+					DbConfDto measureDbSolr=new DbConfDto();
+					measureDbSolr.setCollection(takeNvlValues( obj.get("measuresSolrCollectionName")));
+					
+					DbConfDto socialDbSolr=new DbConfDto();
+					socialDbSolr.setCollection(takeNvlValues( obj.get("socialSolrCollectionName")));
+					
+					
+					
+					params.put(tenant+"__"+DB_SOCIAL_SOLR, socialDbSolr);
+					
+					params.put(tenant+"__"+DB_MESURES_SOLR, measureDbSolr);
+					params.put(tenant+"__"+DB_DATA_SOLR, dataDbSolr);
+					params.put(tenant+"__"+DB_MEDIA_SOLR, mediaDbSolr);	
+					
 
 					params.put(tenant+"__"+DB_MESURES, measureDb);
 					params.put(tenant+"__"+DB_MESURES_TRASH, measureDbTrahs);
