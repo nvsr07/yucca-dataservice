@@ -3,10 +3,14 @@ package org.csi.yucca.dataservice.insertdataapi.mongo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
@@ -34,34 +38,19 @@ public class SDPInsertApiMongoConnectionSingleton {
 	public static final String DB_DATA_TRASH="DBDATA_TRASH";
 	
 	
-	private static int anno_init = 0;
-	private static int mese_init = 0;
-	private static int giorno_init = 0;
 	public static SDPInsertApiMongoConnectionSingleton instance=null;
 
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	
-	private static HashMap<String, CollectionConfDto> params = new HashMap<String, CollectionConfDto>();
+	private static Map<String, CollectionConfDto> params =   Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(1,TimeUnit.MINUTES));  // new HashMap<String, CollectionConfDto>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
-	private static boolean singletonToRefresh() {
-		int curAnno = Calendar.getInstance().get(Calendar.YEAR);
-		int curMese = Calendar.getInstance().get(Calendar.MONTH);
-		int curGiorno = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-		if (curAnno > anno_init) return true;
-		else if (curMese > mese_init) return true;
-		//per refresh mensile
-		//else if (curGiorno > giorno_init)return true;
-		return false;
-	}
+
 	public synchronized static SDPInsertApiMongoConnectionSingleton getInstance() throws Exception{
 		//if(instance == null || singletonToRefresh()) {
 		if(instance == null) {
 			//if (instance!=null) instance.cleanMongoConnection(); 
 			instance = new SDPInsertApiMongoConnectionSingleton();
-			anno_init = Calendar.getInstance().get(Calendar.YEAR);
-			mese_init = Calendar.getInstance().get(Calendar.MONTH);
-			giorno_init = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		}
 		return instance;
 	}
@@ -85,7 +74,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 		DBCursor cursor=null;
 		try {
 			mongoConnection = new HashMap<String, MongoClient>();
-			params = new HashMap<String, CollectionConfDto>();
+			params = Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(10,TimeUnit.MINUTES)); 
 			//STREAM
 			String host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
 			int port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
@@ -126,6 +115,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 
 
 	private void reloadDataDbConfig() throws Exception {
+		log.info("Reloading tenant configuration....");
 		DBCursor cursor =null;
 		try {
 			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
