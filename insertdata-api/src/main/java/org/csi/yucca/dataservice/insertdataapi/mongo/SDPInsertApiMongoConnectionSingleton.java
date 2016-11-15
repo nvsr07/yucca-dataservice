@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
@@ -37,6 +39,8 @@ public class SDPInsertApiMongoConnectionSingleton {
 	private static int giorno_init = 0;
 	public static SDPInsertApiMongoConnectionSingleton instance=null;
 
+	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
+	
 	private static HashMap<String, CollectionConfDto> params = new HashMap<String, CollectionConfDto>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
@@ -102,6 +106,10 @@ public class SDPInsertApiMongoConnectionSingleton {
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STATUS);
 			mongoConnection.put(MONGO_DB_CFG_STATUS, getMongoClient(host, port));
 
+			host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
+			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
+			mongoConnection.put(MONGO_DB_CFG_TENANT, getMongoClient(host, port));
+
 
 		} catch (Exception e) {
 			//TODO log
@@ -111,13 +119,13 @@ public class SDPInsertApiMongoConnectionSingleton {
 		}
 	}
 
-	public CollectionConfDto getDataDbConfiguration(String tenantCode) {
+	public CollectionConfDto getDataDbConfiguration(String tenantCode) throws Exception {
 		if (null==params.get(tenantCode)) reloadDataDbConfig();
 		return params.get(tenantCode);
 	}
 
 
-	private void reloadDataDbConfig() {
+	private void reloadDataDbConfig() throws Exception {
 		DBCursor cursor =null;
 		try {
 			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
@@ -153,7 +161,8 @@ public class SDPInsertApiMongoConnectionSingleton {
 				
 			}
 		} catch (Exception e) {
-			//TODO log
+			log.error("Error",e);
+			throw e;
 		} finally {
 			try { cursor.close(); } catch (Exception ec) {}
 
