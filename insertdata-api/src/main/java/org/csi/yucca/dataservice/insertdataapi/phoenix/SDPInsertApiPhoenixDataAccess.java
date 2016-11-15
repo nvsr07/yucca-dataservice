@@ -16,8 +16,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
+import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
@@ -47,6 +49,7 @@ public class SDPInsertApiPhoenixDataAccess {
 		String riga=null;
 		DBObject dbObject = null;
 		BulkWriteResult result=null;
+		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 		try {
 			//System.out.println("###########################################");
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
@@ -55,28 +58,53 @@ public class SDPInsertApiPhoenixDataAccess {
 			  
 			conn.setAutoCommit(false);
 
-			String schema = "DB_"+tenant.toUpperCase();
+			//String schema = "DB_"+tenant.toUpperCase();
 			
-			String 	table = "DATA";
+			String schema = "";
+			String table = "";
+			
 			String campiSQL="iddataset, datasetversion, ids, objectid ";
 			String valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_DATA ,?  "; 
 			if (dati.getDatasetType().equals("streamDataset"))
 			{
-				table = "MEASURES";
+				schema = conf.getMeasuresPhoenixSchemaName();
+				if (schema == null)
+					schema = "db_"+tenant;
+				table = conf.getMeasuresPhoenixTableName();
+				if (table == null)
+					table = "measures";
 				campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
 				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_MEASURES ,? ,? ,? ,? ";  
 				
 			}
 			else if (dati.getDatasetType().equals("socialDataset"))
 			{
-				table = "SOCIAL";
+				schema = conf.getSocialPhoenixSchemaName();
+				if (schema == null)
+					schema = "db_"+tenant;
+				table = conf.getSocialPhoenixTableName();
+				if (table == null)
+					table = "social";
 				campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
 				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_SOCIAL ,? ,? ,? ,? "; 
 				
 			}
 			else if (dati.getDatasetType().equals("binaryDataset"))
 			{
-				table = "MEDIA";
+				schema = conf.getMediaPhoenixSchemaName();
+				if (schema == null)
+					schema = "db_"+tenant;
+				table = conf.getMediaPhoenixTableName();
+				if (table == null)
+					table = "media";
+			}
+			else {
+				schema = conf.getDataPhoenixSchemaName();
+				if (schema == null)
+					schema = "db_"+tenant;
+				table = conf.getDataPhoenixTableName();
+				if (table == null)
+					table = "data";
 			}
 			
 	        Iterator<Entry<String, FieldsMongoDto>> fieldIter = dati.getFieldsType().entrySet().iterator();

@@ -13,8 +13,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.common.SolrInputDocument;
 import org.bson.types.ObjectId;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
+import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
@@ -38,18 +40,34 @@ public class SDPInsertApiSolrDataAccess {
 		BulkWriteResult result=null;
 		try {
 			
-			String 	collection = tenant+"_data";
+			
+			CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
+			
+			String 	collection = "";
+			
 			if (dati.getDatasetType().equals("streamDataset"))
 			{
-				collection = tenant+"_measures";
+				collection = conf.getMeasuresSolrCollectionName();
+				if (collection == null)
+					collection = "sdp_"+tenant+"_measures";
 			}
 			else if (dati.getDatasetType().equals("socialDataset"))
 			{
-				collection = tenant+"_social";
+				collection = conf.getSocialSolrCollectionName();
+				if (collection == null)
+					collection = "sdp_"+tenant+"_social";
 			}
 			else if (dati.getDatasetType().equals("binaryDataset"))
 			{
-				collection = tenant+"_media";
+				collection = conf.getMediaSolrCollectionName();
+				if (collection == null)
+					collection = "sdp_"+tenant+"_media";
+			}
+			else
+			{
+				collection = conf.getDataSolrCollectionName();
+				if (collection == null)
+					collection = "sdp_"+tenant+"_data";
 			}
 			
 			

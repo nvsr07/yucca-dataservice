@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.DB;
@@ -37,7 +37,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 	private static int giorno_init = 0;
 	public static SDPInsertApiMongoConnectionSingleton instance=null;
 
-	private static HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
+	private static HashMap<String, CollectionConfDto> params = new HashMap<String, CollectionConfDto>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
 	private static boolean singletonToRefresh() {
@@ -81,7 +81,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 		DBCursor cursor=null;
 		try {
 			mongoConnection = new HashMap<String, MongoClient>();
-			params = new HashMap<String, DbConfDto>();
+			params = new HashMap<String, CollectionConfDto>();
 			//STREAM
 			String host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
 			int port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
@@ -102,47 +102,6 @@ public class SDPInsertApiMongoConnectionSingleton {
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STATUS);
 			mongoConnection.put(MONGO_DB_CFG_STATUS, getMongoClient(host, port));
 
-			host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
-			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
-			mongoConnection.put(MONGO_DB_CFG_TENANT, getMongoClient(host, port));
-
-			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_TENANT));
-			String collection=SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
-			DBCollection coll = db.getCollection(collection);
-
-			cursor = coll.find();
-			try {
-				while (cursor.hasNext()) {
-
-					DBObject obj=cursor.next();
-
-					String tenant=obj.get("tenantCode").toString();
-					
-					DbConfDto measureDb=new DbConfDto();
-					measureDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-					measureDb.setDataBase(takeNvlValues( obj.get("measuresCollectionDb")));
-					measureDb.setCollection(takeNvlValues( obj.get("measuresCollectionName")));
-					measureDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-
-					
-					DbConfDto dataDb=new DbConfDto();
-					dataDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-					dataDb.setDataBase(takeNvlValues( obj.get("dataCollectionDb")));
-					dataDb.setCollection(takeNvlValues( obj.get("dataCollectionName")));
-					dataDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-					
-					
-					params.put(tenant+"__"+DB_MESURES, measureDb);
-					params.put(tenant+"__"+DB_DATA, dataDb);
-					
-				}
-			} catch (Exception e) {
-				//TODO log
-			} finally {
-
-			}
-
 
 		} catch (Exception e) {
 			//TODO log
@@ -152,9 +111,9 @@ public class SDPInsertApiMongoConnectionSingleton {
 		}
 	}
 
-	public DbConfDto getDataDbConfiguration(String dbType,String tenantCode) {
-		if (null==params.get(tenantCode+"__"+dbType)) reloadDataDbConfig();
-		return params.get(tenantCode+"__"+dbType);
+	public CollectionConfDto getDataDbConfiguration(String tenantCode) {
+		if (null==params.get(tenantCode)) reloadDataDbConfig();
+		return params.get(tenantCode);
 	}
 
 
@@ -173,22 +132,24 @@ public class SDPInsertApiMongoConnectionSingleton {
 
 				String tenant=obj.get("tenantCode").toString();
 				
-				DbConfDto measureDb=new DbConfDto();
-				measureDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-				measureDb.setDataBase(takeNvlValues( obj.get("measuresCollectionDb")));
-				measureDb.setCollection(takeNvlValues( obj.get("measuresCollectionName")));
-				measureDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-
+				CollectionConfDto collectionConf=new CollectionConfDto();
 				
-				DbConfDto dataDb=new DbConfDto();
-				dataDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-				dataDb.setDataBase(takeNvlValues( obj.get("dataCollectionDb")));
-				dataDb.setCollection(takeNvlValues( obj.get("dataCollectionName")));
-				dataDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
+				collectionConf.setSocialSolrCollectionName( takeNvlValues(obj.get("socialSolrCollectionName")));
+				collectionConf.setMeasuresSolrCollectionName( takeNvlValues(obj.get("measuresSolrCollectionName")));
+				collectionConf.setDataSolrCollectionName( takeNvlValues(obj.get("dataSolrCollectionName")));
+				collectionConf.setMediaSolrCollectionName( takeNvlValues(obj.get("mediaSolrCollectionName")));
 				
+				collectionConf.setSocialPhoenixSchemaName( takeNvlValues(obj.get("socialPhoenixSchemaName")));
+				collectionConf.setDataPhoenixSchemaName( takeNvlValues(obj.get("dataPhoenixSchemaName")));
+				collectionConf.setMediaPhoenixSchemaName( takeNvlValues(obj.get("mediaPhoenixSchemaName")));
+				collectionConf.setMeasuresPhoenixSchemaName(takeNvlValues(obj.get("measuresPhoenixSchemaName")));
 				
-				params.put(tenant+"__"+DB_MESURES, measureDb);
-				params.put(tenant+"__"+DB_DATA, dataDb);
+				collectionConf.setSocialPhoenixTableName(takeNvlValues(obj.get("socialPhoenixTableName")));
+				collectionConf.setDataPhoenixTableName( takeNvlValues(obj.get("dataPhoenixTableName")));
+				collectionConf.setMediaPhoenixTableName( takeNvlValues(obj.get("mediaPhoenixTableName")));
+				collectionConf.setMeasuresPhoenixTableName( takeNvlValues(obj.get("measuresPhoenixTableName")));
+				
+				params.put(tenant, collectionConf);
 				
 			}
 		} catch (Exception e) {
