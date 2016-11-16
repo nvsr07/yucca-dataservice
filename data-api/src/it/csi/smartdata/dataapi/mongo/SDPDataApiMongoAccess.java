@@ -1707,8 +1707,8 @@ public class SDPDataApiMongoAccess {
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
 			
 			
-			//CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
-			HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
+			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
 
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
@@ -2560,10 +2560,10 @@ public class SDPDataApiMongoAccess {
 			
 
 			
-			//CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
 			
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
-			HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
+			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
 			solrQuery.setFilterQueries(queryTotCntSolr);
