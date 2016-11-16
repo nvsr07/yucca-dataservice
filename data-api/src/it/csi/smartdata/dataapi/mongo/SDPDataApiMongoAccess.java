@@ -1541,7 +1541,7 @@ public class SDPDataApiMongoAccess {
 
 
 			DbConfDto tanantDbCfg=new DbConfDto();
-			tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MEDIA, codiceTenant);
+			tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MEDIA_SOLR, codiceTenant);
 			collection=tanantDbCfg.getCollection();
 			String host=tanantDbCfg.getHost();
 			String port=""+tanantDbCfg.getPort();
