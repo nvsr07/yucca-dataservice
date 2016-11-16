@@ -14,7 +14,7 @@ import net.minidev.json.JSONObject;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
@@ -210,6 +210,7 @@ public class InsertApiLogic {
 				datiToins.setSensor(sensor);
 				datiToins.setStatus(DatasetBulkInsert.STATUS_SYNTAX_CHECKED);
 				datiToins.setDatasetType(infoDataset.getDatasetSubType());
+
 				
 				ret.put(datasetCode, datiToins);
 				totalDocumentsToIns=totalDocumentsToIns+datiToins.getNumRowToInsFromJson();

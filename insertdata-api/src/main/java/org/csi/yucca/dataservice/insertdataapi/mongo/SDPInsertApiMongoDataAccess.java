@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
@@ -113,60 +113,7 @@ public class SDPInsertApiMongoDataAccess {
 	}
 
 
-	public int copyRecords(String tenant,String globIdRequest, DatasetBulkInsert blockInfo , DbConfDto cfgDb) throws Exception {
-		DBCursor  cursor=null;
-		BulkWriteResult result=null;
-
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-
-
-			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-			DBCollection coll = db.getCollection("stage_"+globIdRequest);
-
-
-
-			MongoClient mongoClientTarget =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(cfgDb.getHost(),cfgDb.getPort());
-			DB dbTarget = mongoClientTarget.getDB(cfgDb.getDataBase());
-			DBCollection collTarget = dbTarget.getCollection(cfgDb.getCollection());
-			BulkWriteOperation builder = collTarget.initializeOrderedBulkOperation();
-
-
-
-			BasicDBObject query=new BasicDBObject("idRequest",blockInfo.getRequestId());
-
-			cursor=coll.find(query);
-
-			int count=0;
-			while (cursor.hasNext()) {
-				count++;
-				DBObject oo = cursor.next();
-				//TODO... verificare per le date
-				builder.insert(oo);
-			}
-			cursor.close();
-
-			//System.out.println("copy bulk ready ... idRequest="+blockInfo.getRequestId()+"   countExpected="+blockInfo.getNumRowToInsFromJson()+ "     documents in bulkoperation="+count);
-
-
-			//TODO
-			if (count!=blockInfo.getNumRowToInsFromJson()) System.out.println("TODO ... gestire conteggi sbagliati");
-
-			result = builder.execute();
-
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-			try {
-				cursor.close();
-			} catch (Exception e ) {}
-
-		}
-		return result==null? -1 : result.getInsertedCount();
-	}
+	
 
 
 

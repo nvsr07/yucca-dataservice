@@ -25,6 +25,18 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-surefire-plugin</artifactId>
+	        <version>2.19.1</version>
+	        <configuration>
+	        </configuration>
+      	</plugin>			
+		<plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>2.19.1</version>    
+        </plugin>
 	</build>
 	<repositories>
 		<repository>
@@ -48,6 +60,24 @@
 		</repository>
 	</repositories>
 	<dependencies>
+		<dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.8</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20151123</version>
+      <scope>test</scope>
+</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -226,6 +256,11 @@
 						<targetPath>.</targetPath>
 					</resource>
 				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/binary-api/test/int</directory>
+					</testResource>
+				</testResources>
 			</build>
 			<properties>
 				<webXmlPath>${project.build.directory}/checkout/binary-api/resources/int/</webXmlPath>

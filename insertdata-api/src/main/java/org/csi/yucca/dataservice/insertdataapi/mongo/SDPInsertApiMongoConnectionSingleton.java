@@ -3,11 +3,17 @@ package org.csi.yucca.dataservice.insertdataapi.mongo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
-import org.csi.yucca.dataservice.insertdataapi.model.output.DbConfDto;
+import org.apache.commons.collections4.map.PassiveExpiringMap;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.DB;
@@ -32,32 +38,19 @@ public class SDPInsertApiMongoConnectionSingleton {
 	public static final String DB_DATA_TRASH="DBDATA_TRASH";
 	
 	
-	private static int anno_init = 0;
-	private static int mese_init = 0;
-	private static int giorno_init = 0;
 	public static SDPInsertApiMongoConnectionSingleton instance=null;
 
-	private static HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
+	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
+	
+	private static Map<String, CollectionConfDto> params =   Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(1,TimeUnit.MINUTES));  // new HashMap<String, CollectionConfDto>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
-	private static boolean singletonToRefresh() {
-		int curAnno = Calendar.getInstance().get(Calendar.YEAR);
-		int curMese = Calendar.getInstance().get(Calendar.MONTH);
-		int curGiorno = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-		if (curAnno > anno_init) return true;
-		else if (curMese > mese_init) return true;
-		//per refresh mensile
-		//else if (curGiorno > giorno_init)return true;
-		return false;
-	}
+
 	public synchronized static SDPInsertApiMongoConnectionSingleton getInstance() throws Exception{
 		//if(instance == null || singletonToRefresh()) {
 		if(instance == null) {
 			//if (instance!=null) instance.cleanMongoConnection(); 
 			instance = new SDPInsertApiMongoConnectionSingleton();
-			anno_init = Calendar.getInstance().get(Calendar.YEAR);
-			mese_init = Calendar.getInstance().get(Calendar.MONTH);
-			giorno_init = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		}
 		return instance;
 	}
@@ -81,7 +74,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 		DBCursor cursor=null;
 		try {
 			mongoConnection = new HashMap<String, MongoClient>();
-			params = new HashMap<String, DbConfDto>();
+			params = Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(10,TimeUnit.MINUTES)); 
 			//STREAM
 			String host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
 			int port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
@@ -106,43 +99,6 @@ public class SDPInsertApiMongoConnectionSingleton {
 			port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
 			mongoConnection.put(MONGO_DB_CFG_TENANT, getMongoClient(host, port));
 
-			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_TENANT));
-			String collection=SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
-			DBCollection coll = db.getCollection(collection);
-
-			cursor = coll.find();
-			try {
-				while (cursor.hasNext()) {
-
-					DBObject obj=cursor.next();
-
-					String tenant=obj.get("tenantCode").toString();
-					
-					DbConfDto measureDb=new DbConfDto();
-					measureDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-					measureDb.setDataBase(takeNvlValues( obj.get("measuresCollectionDb")));
-					measureDb.setCollection(takeNvlValues( obj.get("measuresCollectionName")));
-					measureDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-
-					
-					DbConfDto dataDb=new DbConfDto();
-					dataDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-					dataDb.setDataBase(takeNvlValues( obj.get("dataCollectionDb")));
-					dataDb.setCollection(takeNvlValues( obj.get("dataCollectionName")));
-					dataDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-					
-					
-					params.put(tenant+"__"+DB_MESURES, measureDb);
-					params.put(tenant+"__"+DB_DATA, dataDb);
-					
-				}
-			} catch (Exception e) {
-				//TODO log
-			} finally {
-
-			}
-
 
 		} catch (Exception e) {
 			//TODO log
@@ -152,13 +108,14 @@ public class SDPInsertApiMongoConnectionSingleton {
 		}
 	}
 
-	public DbConfDto getDataDbConfiguration(String dbType,String tenantCode) {
-		if (null==params.get(tenantCode+"__"+dbType)) reloadDataDbConfig();
-		return params.get(tenantCode+"__"+dbType);
+	public CollectionConfDto getDataDbConfiguration(String tenantCode) throws Exception {
+		if (null==params.get(tenantCode)) reloadDataDbConfig();
+		return params.get(tenantCode);
 	}
 
 
-	private void reloadDataDbConfig() {
+	private void reloadDataDbConfig() throws Exception {
+		log.info("Reloading tenant configuration....");
 		DBCursor cursor =null;
 		try {
 			MongoClient mongoClient =getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
@@ -173,26 +130,29 @@ public class SDPInsertApiMongoConnectionSingleton {
 
 				String tenant=obj.get("tenantCode").toString();
 				
-				DbConfDto measureDb=new DbConfDto();
-				measureDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-				measureDb.setDataBase(takeNvlValues( obj.get("measuresCollectionDb")));
-				measureDb.setCollection(takeNvlValues( obj.get("measuresCollectionName")));
-				measureDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-
+				CollectionConfDto collectionConf=new CollectionConfDto();
 				
-				DbConfDto dataDb=new DbConfDto();
-				dataDb.setHost(SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_DEFAULT));
-				dataDb.setDataBase(takeNvlValues( obj.get("dataCollectionDb")));
-				dataDb.setCollection(takeNvlValues( obj.get("dataCollectionName")));
-				dataDb.setPort(SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_DEFAULT));
+				collectionConf.setSocialSolrCollectionName( takeNvlValues(obj.get("socialSolrCollectionName")));
+				collectionConf.setMeasuresSolrCollectionName( takeNvlValues(obj.get("measuresSolrCollectionName")));
+				collectionConf.setDataSolrCollectionName( takeNvlValues(obj.get("dataSolrCollectionName")));
+				collectionConf.setMediaSolrCollectionName( takeNvlValues(obj.get("mediaSolrCollectionName")));
 				
+				collectionConf.setSocialPhoenixSchemaName( takeNvlValues(obj.get("socialPhoenixSchemaName")));
+				collectionConf.setDataPhoenixSchemaName( takeNvlValues(obj.get("dataPhoenixSchemaName")));
+				collectionConf.setMediaPhoenixSchemaName( takeNvlValues(obj.get("mediaPhoenixSchemaName")));
+				collectionConf.setMeasuresPhoenixSchemaName(takeNvlValues(obj.get("measuresPhoenixSchemaName")));
 				
-				params.put(tenant+"__"+DB_MESURES, measureDb);
-				params.put(tenant+"__"+DB_DATA, dataDb);
+				collectionConf.setSocialPhoenixTableName(takeNvlValues(obj.get("socialPhoenixTableName")));
+				collectionConf.setDataPhoenixTableName( takeNvlValues(obj.get("dataPhoenixTableName")));
+				collectionConf.setMediaPhoenixTableName( takeNvlValues(obj.get("mediaPhoenixTableName")));
+				collectionConf.setMeasuresPhoenixTableName( takeNvlValues(obj.get("measuresPhoenixTableName")));
+				
+				params.put(tenant, collectionConf);
 				
 			}
 		} catch (Exception e) {
-			//TODO log
+			log.error("Error",e);
+			throw e;
 		} finally {
 			try { cursor.close(); } catch (Exception ec) {}
 
