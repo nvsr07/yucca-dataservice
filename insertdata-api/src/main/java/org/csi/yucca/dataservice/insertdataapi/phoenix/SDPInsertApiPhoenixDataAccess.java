@@ -63,7 +63,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			String schema = "";
 			String table = "";
 			
-			String campiSQL="iddataset_l, datasetversion_, id ";
+			String campiSQL="iddataset_l, datasetversion_l, id ";
 			String valuesSql= "(?, ?, ?  "; 
 			if (dati.getDatasetType().equals("streamDataset"))
 			{
