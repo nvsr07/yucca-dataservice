@@ -163,7 +163,7 @@ public class InsertApiLogic {
 				insStrConst+= "  idDataset : "+infoDataset.getDatasetId();
 				insStrConst+= " , datasetVersion : "+infoDataset.getDatasetVersion();
 
-				boolean isVerOneRequired = true;
+				boolean isVerOneRequired = false;
 
 				// se dataset � stream, recupero info stream
 				String streamCode=null;
@@ -179,6 +179,7 @@ public class InsertApiLogic {
 					insStrConst+= " , streamCode : \"" + infoStream.getStreamCode() +"\"";
 					sensor=infoStream.getSensorCode();
 					streamCode=infoStream.getStreamCode();
+					isVerOneRequired = true;
 				}
 				if ("socialDataset".equals(infoDataset.getDatasetSubType())) {
 					//aggiungo il campo fittizio Time
@@ -192,7 +193,7 @@ public class InsertApiLogic {
 					sensor=infoStream.getSensorCode();
 					streamCode=infoStream.getStreamCode();
 					
-					isVerOneRequired = false;
+					
 				}
 				
 				
