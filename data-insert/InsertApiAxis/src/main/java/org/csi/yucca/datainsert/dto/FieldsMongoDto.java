@@ -113,8 +113,9 @@ public class FieldsMongoDto {
 	}
 
 
-	public boolean validateValue(String valueToCheck) {
-		if (this.datasetVersion!=1 && valueToCheck==null) return true ;
+	public boolean validateValue(String valueToCheck, boolean isV1required) {
+		if ((this.datasetVersion!=1 || !isV1required) && valueToCheck==null) return true ;
+//		if (this.datasetVersion!=1 && valueToCheck==null) return true ;
 		if (this.datasetVersion==1 && valueToCheck==null) return false ;
 		
 		if (DATA_TYPE_INT.equals(this.fieldType)) return validateInt(valueToCheck); 
