@@ -63,12 +63,11 @@
                 </format>
                 <args>
                     <arg evaluator="xml" expression="get-property('codiceTenant')"/>
-                    <arg evaluator="xml" expression="json-eval($.)"/>
+                    <arg evaluator="xml" expression="$." evaluator="json"/>
                     <arg evaluator="xml" expression="get-property('idunivoco')"/>
                     <arg evaluator="xml" expression="get-property('forwardfor')"/>
                     <arg evaluator="xml" expression="get-property('authinfo')"/>
                     <arg evaluator="xml" expression="get-property('path')"/>
-                    
                 </args>
             </payloadFactory>
             <log level="custom">
