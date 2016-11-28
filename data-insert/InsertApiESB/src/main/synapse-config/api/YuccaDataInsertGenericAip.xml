@@ -63,7 +63,7 @@
                 </format>
                 <args>
                     <arg evaluator="xml" expression="get-property('codiceTenant')"/>
-                    <arg evaluator="xml" expression="$." evaluator="json"/>
+                    <arg evaluator="json" expression="$."/>
                     <arg evaluator="xml" expression="get-property('idunivoco')"/>
                     <arg evaluator="xml" expression="get-property('forwardfor')"/>
                     <arg evaluator="xml" expression="get-property('authinfo')"/>
