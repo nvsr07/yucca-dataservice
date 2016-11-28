@@ -44,7 +44,6 @@
             <property name="NO_ENTITY_BODY" scope="axis2" action="remove"/>
             <property name="codiceTenant" expression="get-property('uri.var.codTenant')" scope="default" type="STRING"/>
             <property name="JSONPayload" expression="json-eval($.)" scope="default" type="STRING"/>
-            <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
             <payloadFactory media-type="xml">
                 <format>
                     <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:dat="http://datainsert.yucca.csi.org">
@@ -198,7 +197,6 @@
             <log level="custom">
                 <property name="step" value="API_DataInsert_InsertRequesta BEGIN"/>
             </log>
-            <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
             <log level="custom">
                 <property name="step" value="API_DataInsert_InsertRequesta DOPO PAYLOAD JS "/>
             </log>
