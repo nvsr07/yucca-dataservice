@@ -1759,7 +1759,7 @@ public class SDPDataApiMongoAccess {
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] sqlPhoenix="+sql);
 
 			int strtINdex=2;
-			PreparedStatement stmt=conn.prepareStatement("select "+ sql+ " limit 10");
+			PreparedStatement stmt=conn.prepareStatement(sql);
 			stmt.setInt(1, new Double(idDataset).intValue()); 
 			if (null!=internalId) {
 				stmt.setString(2, internalId);
