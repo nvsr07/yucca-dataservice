@@ -1783,9 +1783,20 @@ public class SDPDataApiMongoAccess {
 				}
 			}
 
-
-
+			long starTtime=0;
+			long deltaTime=-1;
+			starTtime=System.currentTimeMillis();
 			ResultSet rs=stmt.executeQuery();
+			
+			//Cursor cursor =collMisure.aggregate(pipeline,aggregationOptions);
+
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] QUERY TIME ="+deltaTime);
+
+			starTtime=System.currentTimeMillis();
+			deltaTime=-1;
 
 			int cntRet=1;
 			cnt=0;
@@ -1874,19 +1885,8 @@ public class SDPDataApiMongoAccess {
 
 		
 
-			long starTtime=0;
-			long deltaTime=-1;
 
-			starTtime=System.currentTimeMillis();
-			//Cursor cursor =collMisure.aggregate(pipeline,aggregationOptions);
 
-			try {
-				deltaTime=System.currentTimeMillis()-starTtime;
-			} catch (Exception e) {}
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] QUERY TIME ="+deltaTime);
-
-			starTtime=System.currentTimeMillis();
-			deltaTime=-1;
 
 
 
