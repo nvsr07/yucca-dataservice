@@ -63,8 +63,8 @@ public class SDPInsertApiPhoenixDataAccess {
 			String schema = "";
 			String table = "";
 			
-			String campiSQL="iddataset, datasetversion, ids, objectid ";
-			String valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_DATA ,?  "; 
+			String campiSQL="iddataset_l, datasetversion_l, id ";
+			String valuesSql= "(?, ?, ?  "; 
 			if (dati.getDatasetType().equals("streamDataset"))
 			{
 				schema = conf.getMeasuresPhoenixSchemaName();
@@ -73,8 +73,8 @@ public class SDPInsertApiPhoenixDataAccess {
 				table = conf.getMeasuresPhoenixTableName();
 				if (table == null)
 					table = "measures";
-				campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
-				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_MEASURES ,? ,? ,? ,? ";  
+				campiSQL= campiSQL + ", time_dt, sensor_s, streamcode_s ";
+				valuesSql= valuesSql + ",? ,? ,? ";  
 				
 			}
 			else if (dati.getDatasetType().equals("socialDataset"))
@@ -85,8 +85,8 @@ public class SDPInsertApiPhoenixDataAccess {
 				table = conf.getSocialPhoenixTableName();
 				if (table == null)
 					table = "social";
-				campiSQL="iddataset, datasetversion, ids, objectid, tempo, sensor, streamcode ";
-				valuesSql= "(?, ?,NEXT VALUE FOR DB_"+tenant.toUpperCase()+".SEQ_SOCIAL ,? ,? ,? ,? "; 
+				campiSQL= campiSQL + ", time_dt, sensor_s, streamcode_s ";
+				valuesSql= valuesSql + ",? ,? ,? ";  
 				
 			}
 			else if (dati.getDatasetType().equals("binaryDataset"))
@@ -114,30 +114,40 @@ public class SDPInsertApiPhoenixDataAccess {
 	        	Entry<String, FieldsMongoDto> field = fieldIter.next();
 	        	String nome=field.getKey();
 	            String tipo=(field.getValue()).getFieldType();
-	            campiSQL+=","+nome;
 	            
 	            if ("int".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" INTEGER";
+		            campiSQL+=","+nome;
+	                campiSQL+="_i INTEGER";
 	            } else if ("long".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" BIGINT";
+		            campiSQL+=","+nome;
+	                campiSQL+="_l BIGINT";
 	            } else if ("double".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" DOUBLE";
+		            campiSQL+=","+nome;
+	                campiSQL+="_d DOUBLE";
 	            } else if ("float".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" FLOAT";
+		            campiSQL+=","+nome;
+	                campiSQL+="_f FLOAT";
 	            } else if ("string".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" VARCHAR";
+		            campiSQL+=","+nome;
+	                campiSQL+="_s VARCHAR";
 	            } else if ("boolean".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" TINYINT";
+		            campiSQL+=","+nome;
+	                campiSQL+="_b TINYINT";
 	            } else if ("datetime".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" TIMESTAMP";
+		            campiSQL+=","+nome;
+	                campiSQL+="_dt TIMESTAMP";
 	            } else if ("date".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" TIMESTAMP";
+		            campiSQL+=","+nome;
+	                campiSQL+="_dt TIMESTAMP";
 	            } else if ("longitude".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" DOUBLE";
+		            campiSQL+=","+nome;
+	                campiSQL+="_d DOUBLE";
 	            } else if ("latitude".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" DOUBLE";
+		            campiSQL+=","+nome;
+	                campiSQL+="_d DOUBLE";
 	            } else if ("binary".equalsIgnoreCase(tipo)) {
-	                campiSQL+=" VARCHAR";
+		            campiSQL+=","+nome;
+	                campiSQL+="_s VARCHAR";
 	            }
 	            
 	            

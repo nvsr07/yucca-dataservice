@@ -1,6 +1,6 @@
 package org.csi.yucca.dataservice.insertdataapi.solr;
 
-import java.sql.Timestamp;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -10,18 +10,20 @@ import net.minidev.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.XMLResponseParser;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
-import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BulkWriteResult;
-import com.mongodb.DBObject;
 
 public class SDPInsertApiSolrDataAccess {
 
@@ -33,7 +35,37 @@ public class SDPInsertApiSolrDataAccess {
         server = CloudSolrSingleton.getServer();
 	}
 
+	public static void main(String[] args) throws SolrServerException, IOException {
 
+		CloudSolrClient server2 = CloudSolrSingleton.getServer();
+		server2.setDefaultCollection("tst_csp_data");
+		SolrInputDocument doc = new SolrInputDocument();
+		doc.addField("id", "ppppp");
+		doc.addField("name", "A lovely summer holiday");
+		server2.add(doc);
+		server2.commit();
+		
+		
+		server2.setParser(new XMLResponseParser());
+		SolrQuery parameters = new SolrQuery();
+		
+		
+		parameters.set("q", "*:*");
+		parameters.set("qt", "/select");
+		parameters.set("collection", "tst_csp_data");
+		QueryResponse response;
+		try {
+			response = server2.query(parameters);
+			SolrDocumentList list = response.getResults();
+			System.out.println(list.size());
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
 	public int insertBulk(String tenant, DatasetBulkInsert dati) throws Exception {
