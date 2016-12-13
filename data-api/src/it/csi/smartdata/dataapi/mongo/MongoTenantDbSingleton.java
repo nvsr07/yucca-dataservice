@@ -42,6 +42,11 @@ public class MongoTenantDbSingleton {
 	public static final String DB_MEDIA_SOLR="DBMEDIA_SOLR";
 	public static final String DB_SOCIAL_SOLR="DBSOCIAL_SOLR";
 	
+	
+	public static final String DB_MESURES_PHOENIX="DBMEASURES_PHOENIX";
+	public static final String DB_DATA_PHOENIX="DBDATA_PHOENIX";
+	public static final String DB_MEDIA_PHOENIX="DBMEDIA_PHOENIX";
+	public static final String DB_SOCIAL_PHOENIX="DBSOCIAL_PHOENIX";	
 
 	public static MongoTenantDbSingleton instance=null;
 	private static int anno_init = 0;
@@ -198,12 +203,38 @@ public class MongoTenantDbSingleton {
 					DbConfDto socialDbSolr=new DbConfDto();
 					socialDbSolr.setCollection(takeNvlValues( obj.get("socialSolrCollectionName")));
 					
+
+					
+					DbConfDto dataDbPhoenix=new DbConfDto();
+					dataDbPhoenix.setCollection(takeNvlValues( obj.get("dataPhoenixCollectionName")));
+					dataDbPhoenix.setDataBase(takeNvlValues( obj.get("dataPhoenixSchemaName")));
+					
+					DbConfDto mediaDbPhoenix=new DbConfDto();
+					mediaDbPhoenix.setCollection(takeNvlValues( obj.get("mediaPhoenixCollectionName")));
+					mediaDbPhoenix.setDataBase(takeNvlValues( obj.get("mediaPhoenixSchemaName")));
+
+					DbConfDto measureDbPhoenix=new DbConfDto();
+					measureDbPhoenix.setCollection(takeNvlValues( obj.get("measuresPhoenixCollectionName")));
+					measureDbPhoenix.setDataBase(takeNvlValues( obj.get("measuresPhoenixSchemaName")));
+					
+					
+					DbConfDto socialDbPhoenix=new DbConfDto();
+					socialDbPhoenix.setCollection(takeNvlValues( obj.get("socialPhoenixCollectionName")));
+					socialDbPhoenix.setDataBase(takeNvlValues( obj.get("socialPhoenixSchemaName")));
+					
+
+					params.put(tenant+"__"+DB_SOCIAL_PHOENIX, socialDbPhoenix);
+					params.put(tenant+"__"+DB_MESURES_PHOENIX, measureDbPhoenix);
+					params.put(tenant+"__"+DB_DATA_PHOENIX, dataDbPhoenix);
+					params.put(tenant+"__"+DB_MEDIA_PHOENIX, mediaDbPhoenix);	
+					
 					
 					
 					params.put(tenant+"__"+DB_SOCIAL_SOLR, socialDbSolr);
 					params.put(tenant+"__"+DB_MESURES_SOLR, measureDbSolr);
 					params.put(tenant+"__"+DB_DATA_SOLR, dataDbSolr);
 					params.put(tenant+"__"+DB_MEDIA_SOLR, mediaDbSolr);	
+
 
 
 
@@ -308,7 +339,29 @@ public class MongoTenantDbSingleton {
 					DbConfDto socialDbSolr=new DbConfDto();
 					socialDbSolr.setCollection(takeNvlValues( obj.get("socialSolrCollectionName")));
 					
+					DbConfDto dataDbPhoenix=new DbConfDto();
+					dataDbPhoenix.setCollection(takeNvlValues( obj.get("dataPhoenixCollectionName")));
+					dataDbPhoenix.setDataBase(takeNvlValues( obj.get("dataPhoenixSchemaName")));
 					
+					DbConfDto mediaDbPhoenix=new DbConfDto();
+					mediaDbPhoenix.setCollection(takeNvlValues( obj.get("mediaPhoenixCollectionName")));
+					mediaDbPhoenix.setDataBase(takeNvlValues( obj.get("mediaPhoenixSchemaName")));
+
+					DbConfDto measureDbPhoenix=new DbConfDto();
+					measureDbPhoenix.setCollection(takeNvlValues( obj.get("measuresPhoenixCollectionName")));
+					measureDbPhoenix.setDataBase(takeNvlValues( obj.get("measuresPhoenixSchemaName")));
+					
+					
+					DbConfDto socialDbPhoenix=new DbConfDto();
+					socialDbPhoenix.setCollection(takeNvlValues( obj.get("socialPhoenixCollectionName")));
+					socialDbPhoenix.setDataBase(takeNvlValues( obj.get("socialPhoenixSchemaName")));
+					
+
+					params.put(tenant+"__"+DB_SOCIAL_PHOENIX, socialDbPhoenix);
+					params.put(tenant+"__"+DB_MESURES_PHOENIX, measureDbPhoenix);
+					params.put(tenant+"__"+DB_DATA_PHOENIX, dataDbPhoenix);
+					params.put(tenant+"__"+DB_MEDIA_PHOENIX, mediaDbPhoenix);	
+
 					
 					params.put(tenant+"__"+DB_SOCIAL_SOLR, socialDbSolr);
 					

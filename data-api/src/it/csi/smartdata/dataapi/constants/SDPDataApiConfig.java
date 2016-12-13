@@ -13,6 +13,11 @@ public class SDPDataApiConfig {
 	public static final String MONGO_DB_CFG_TENANT="MONGO_DB_CFG_TENANT";
 	public static final String SDP_SOLR_URL="SDP_SOLR_URL";
 	public static final String SDP_AMBIENTE="SDP_AMBIENTE";
+	public static final String SDP_PHOENIX_URL="PHOENIX_URL";
+	
+	
+	
+	
 		
 	public static SDPDataApiConfig instance=null;
 	private static int anno_init = 0;
@@ -50,7 +55,8 @@ public class SDPDataApiConfig {
 		 
 			params.put("SDP_SOLR_URL", rb.getString("SDP_SOLR_URL"));
 			params.put("SDP_AMBIENTE", rb.getString("SDP_AMBIENTE"));
-			 
+			params.put(SDP_PHOENIX_URL, rb.getString(SDP_PHOENIX_URL));
+			
 		 
 		params.put("SDP_WEB_FILTER_PATTERN", rb.getString("SDP_WEB_FILTER_PATTERN"));
 		params.put("SDP_WEB_SERVLET_URL", rb.getString("SDP_WEB_SERVLET_URL"));
@@ -103,6 +109,9 @@ public class SDPDataApiConfig {
 	}
 
 	
+	public String getPhoenixUrl() {
+		return params.get(SDP_PHOENIX_URL);
+	}
 	public String getSolrUrl() {
 		return params.get(SDP_SOLR_URL);
 	}

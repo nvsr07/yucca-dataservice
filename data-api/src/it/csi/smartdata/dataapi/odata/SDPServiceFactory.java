@@ -1,5 +1,7 @@
 package it.csi.smartdata.dataapi.odata;
 
+
+
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 
 import java.util.StringTokenizer;
@@ -10,7 +12,6 @@ import org.apache.olingo.odata2.api.ODataServiceFactory;
 import org.apache.olingo.odata2.api.edm.provider.EdmProvider;
 import org.apache.olingo.odata2.api.exception.ODataException;
 import org.apache.olingo.odata2.api.processor.ODataContext;
-import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 
 public class SDPServiceFactory extends ODataServiceFactory {
 	static Logger log = Logger.getLogger(SDPServiceFactory.class.getPackage().getName());

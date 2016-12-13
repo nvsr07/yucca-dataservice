@@ -1,5 +1,6 @@
 package it.csi.smartdata.dataapi.mongo;
 
+
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
 import it.csi.smartdata.dataapi.mongo.exception.SDPOrderBySizeException;
@@ -18,8 +19,6 @@ import org.apache.olingo.odata2.api.edm.EdmMultiplicity;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.EdmTargetPath;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
-import org.apache.olingo.odata2.api.edm.provider.AnnotationAttribute;
-import org.apache.olingo.odata2.api.edm.provider.AnnotationElement;
 import org.apache.olingo.odata2.api.edm.provider.Association;
 import org.apache.olingo.odata2.api.edm.provider.AssociationEnd;
 import org.apache.olingo.odata2.api.edm.provider.AssociationSet;
@@ -39,12 +38,10 @@ import org.apache.olingo.odata2.api.edm.provider.PropertyRef;
 import org.apache.olingo.odata2.api.edm.provider.Schema;
 import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
 import org.apache.olingo.odata2.api.exception.ODataException;
-import org.bson.BSONObject;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 
 public class SDPMongoOdataCast {
 
@@ -1165,7 +1162,7 @@ public class SDPMongoOdataCast {
 			int limit,
 			String timeGroupByParam,
 			String timeGroupOperatorsParam,
-			Object groupOutQuery) throws Exception{
+			Object groupOutQuery,String dataType) throws Exception{
 		
 		// TODO YUCCA-74 odata evoluzione
 
@@ -1218,7 +1215,7 @@ public class SDPMongoOdataCast {
 				
 				dsCodes+=datasetCode+"|";
 				tenantsCodes+=tenantStrean+"|";
-				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStream(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,SDPDataApiMongoAccess.DATA_TYPE_MEASURE, userQuery
+				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStreamPhoenix(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,dataType, userQuery
 						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
 				List<Map<String, Object>> misureCur = cur.getDati();
 				

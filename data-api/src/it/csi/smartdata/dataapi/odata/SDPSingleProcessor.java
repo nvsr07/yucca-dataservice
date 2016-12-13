@@ -1,5 +1,7 @@
 package it.csi.smartdata.dataapi.odata;
 
+
+
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.SDPDataApiMongoAccess;
@@ -24,8 +26,6 @@ import org.apache.olingo.odata2.api.edm.EdmLiteralKind;
 import org.apache.olingo.odata2.api.edm.EdmNavigationProperty;
 import org.apache.olingo.odata2.api.edm.EdmProperty;
 import org.apache.olingo.odata2.api.edm.EdmSimpleType;
-import org.apache.olingo.odata2.api.edm.provider.EntitySet;
-import org.apache.olingo.odata2.api.edm.provider.NavigationProperty;
 import org.apache.olingo.odata2.api.ep.EntityProvider;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties;
 import org.apache.olingo.odata2.api.ep.EntityProviderWriteProperties.ODataEntityProviderPropertiesBuilder;
@@ -43,8 +43,6 @@ import org.apache.olingo.odata2.api.uri.info.GetEntitySetUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetEntityUriInfo;
 import org.apache.olingo.odata2.api.uri.info.GetSimplePropertyUriInfo;
 import org.apache.olingo.odata2.core.uri.expression.FilterParserImpl;
-
-import com.mongodb.BasicDBList;
 
 public class SDPSingleProcessor extends ODataSingleProcessor {
 	static Logger log = Logger.getLogger(SDPSingleProcessor.class.getPackage().getName());
@@ -243,7 +241,10 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				Object userQuery=null;
 				Object orderQuery=null;
 				Object userQuerySolr = null;
+				Object userQueryPhoneix = null;
 				Object orderQuerySolr=null;
+				Object orderQueryPhoenix=null;
+				
 				FilterExpression fe = uriInfo.getFilter();
 				OrderByExpression oe=uriInfo.getOrderBy();
 				
@@ -259,7 +260,10 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					evs.setEntitySetName(entitySet.getName());
 					evs.setMappaCampi(mappaCampi);
 					userQuerySolr = fe.accept(evs);
-					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuerySolr);
+					log.debug("[SDPSingleProcessor::readEntitySet] userQuerySolr="+userQuerySolr);
+					
+					
+					
 					
 				}
 				if (oe != null) {
@@ -292,6 +296,11 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 						setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL;
 					}
 					
+					
+					String dataType=SDPDataApiMongoAccess.DATA_TYPE_MEASURE;
+					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) dataType=SDPDataApiMongoAccess.DATA_TYPE_SOCIAL; 
+					
+					
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameStatCONST).getEntityType().getNamespace();
 					String timeGroupByParam=uriInfo.getCustomQueryOptions().get("timeGroupBy");
 					String timeGroupOperatorsParam=uriInfo.getCustomQueryOptions().get("timeGroupOperators");
@@ -304,18 +313,41 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 						if (feStats != null) {
 							SDPExpressionVisitor ev = new SDPExpressionVisitor();
 							ev.setEntitySetName(entitySet.getName());
-							userSourceEntityQuery = feStats.accept(ev);
+							//userSourceEntityQuery = feStats.accept(ev);
 							log.debug("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
+							
+							
+							SDPPhoenixExpressionVisitor evp=new SDPPhoenixExpressionVisitor();
+							evp.setEntitySetName(entitySet.getName());
+							evp.setMappaCampi(mappaCampi);
+							userQueryPhoneix = feStats.accept(evp);
+							log.debug("[SDPSingleProcessor::readEntitySet] userQueryPhoneix="+userQueryPhoneix);
+							
 						}
+						
 					}
+					if (oe != null) {
+						SDPExpressionVisitor ev = new SDPExpressionVisitor();
+						ev.setEntitySetName(entitySet.getName());
+						//orderQuery=oe.accept(ev);
+						log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
+
+						SDPPhoenixExpressionVisitor evs = new SDPPhoenixExpressionVisitor();
+						evs.setEntitySetName(entitySet.getName());
+						evs.setMappaCampi(mappaCampi);
+						evs.setvisitorMOde(SDPPhoenixExpressionVisitor.MODE_STATS_HAVINGCLAUSE);
+						orderQueryPhoenix = oe.accept(evs);
+						log.debug("[SDPSingleProcessor::readEntitySet] orderQueryPhoenix="+orderQueryPhoenix);
 					
+					
+					}
 					
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 					int skip=skiptop[0];
 					int top=skiptop[1];
 					
-					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userSourceEntityQuery,orderQuery,-1,-1,
-							timeGroupByParam,timeGroupOperatorsParam,userQuery);
+					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQueryPhoneix,orderQueryPhoenix,-1,-1,
+							timeGroupByParam,timeGroupOperatorsParam,userQuery,dataType);
 					
 					
 					accLog.setDataOut(dataRes.getDati().size());

@@ -169,6 +169,44 @@ public interface SDPDataApiConstants {
 	}};
 	
 	
+	public static final Map<String,String> SDP_DATATYPE_PHOENIXTYPES = new HashMap<String, String>() {{
+		put("Boolean" ,"TINYINT");
+		put("boolean" ,"TINYINT");
+		put("String"  ,"VARCHAR");
+		put("string"  ,"VARCHAR");
+		put("Int"     ,"INTEGER");
+		put("int"     ,"INTEGER");
+		put("Long"    ,"BIGINT");
+		put("long"    ,"BIGINT");
+		put("Double"  ,"DOUBLE");
+		put("double"  ,"DOUBLE");
+		put("Data"    ,"TIMESTAMP");
+		put("data"    ,"TIMESTAMP");
+		put("Date"    ,"TIMESTAMP");
+		put("date"    ,"TIMESTAMP");
+		put("DatetimeOffset"    ,"TIMESTAMP");
+		put("datetimeoffset"    ,"TIMESTAMP");
+		put("DateTime"    ,"TIMESTAMP");
+		put("datetime"    ,"TIMESTAMP");
+		put("dateTime"    ,"TIMESTAMP");
+		put("Time"    ,"TIMESTAMP");
+		put("time"     ,"TIMESTAMP");
+//		put("Float"    ,EdmSimpleTypeKind.Decimal);
+//		put("float"    ,EdmSimpleTypeKind.Decimal);
+		put("Float"    ,"FLOAT");
+		put("float"    ,"FLOAT");
+
+
+		put("longitude"    ,"DOUBLE");
+		put("latitude"    ,"DOUBLE");
+		
+		
+		//1.2 binary
+		put("binary"    ,"VARCHAR");
+		
+		
+		
+	}};
 
 	
 	

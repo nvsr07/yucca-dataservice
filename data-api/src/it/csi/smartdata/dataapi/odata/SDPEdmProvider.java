@@ -4,7 +4,7 @@ import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.SDPMongoOdataCast;
 
 import java.util.List;
-
+ 
 import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.FullQualifiedName;
