@@ -703,7 +703,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 
 		} catch (Exception e) {
-			log.error("[SDPSingleProcessor::readEntitySet] " + e);
+			log.error("[SDPSingleProcessor::readEntitySet] " , e);
 			accLog.setErrore(e.toString());
 			
 			if (e instanceof ODataException) throw (ODataException)e;
