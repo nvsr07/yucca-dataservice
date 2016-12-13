@@ -496,10 +496,11 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 		if (ret==null) ret = fieldNameInput;
 		
 		if ("id".equals(ret)) return ret;
-		
+		if (this.visitorMOde==this.MODE_BASIC) {
+
 		String tipo=this.mappaCampi.get(ret);
 		ret += (SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)!=null ? SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo) : "");
-
+		}
 		if (ret!=null) return ret;
 		else return fieldNameInput;
 	}
