@@ -347,7 +347,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 						evp.setMappaCampi(mappaCampi);
 						evp.setvisitorMOde(SDPPhoenixExpressionVisitor.MODE_STATS_HAVINGCLAUSE);
 						userQuery = fe.accept(evp);
-						log.info("[SDPSingleProcessor::readEntitySet] havingPhoenix="+userQueryPhoneix);
+						log.info("[SDPSingleProcessor::readEntitySet] havingPhoenix="+userQuery);
 					}
 					
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
