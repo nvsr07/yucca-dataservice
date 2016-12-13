@@ -148,14 +148,14 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 		
 			
 			//To distinguish between literals and properties we give back the whole edmProperty in this case
-			if (this.visitorMOde==this.MODE_STATS_HAVINGCLAUSE) {
-				try {
-				String ret=this.fieldAppendMap.get(this.entitySetName+"."+edmProperty.getName());
-				if (ret!=null) return ret; 				
-				} catch (Exception e) {
-					
-				}
-			}
+//			if (this.visitorMOde==this.MODE_STATS_HAVINGCLAUSE) {
+//				try {
+//				String ret=this.fieldAppendMap.get(this.entitySetName+"."+edmProperty.getName());
+//				if (ret!=null) return ret; 				
+//				} catch (Exception e) {
+//					
+//				}
+//			}
 			return edmProperty;
 			
 		}
