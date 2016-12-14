@@ -1778,6 +1778,7 @@ public class SDPDataApiMongoAccess {
 			if (null != groupOutQuery) {
 				for (int i =0;i<((SDPPhoenixExpression)groupOutQuery).getParameters().size();i++) {
 					Object curpar=((SDPPhoenixExpression)groupOutQuery).getParameters().get(i);
+					
 					stmt.setObject(strtINdex, curpar);
 					strtINdex++;
 				}

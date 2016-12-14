@@ -107,11 +107,19 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 			//if (leftSide instanceof EdmTyped && !(rightSide instanceof String)) {
 			SDPPhoenixExpression expression = new SDPPhoenixExpression(operator);
 			try {
-				expression.setPrepeparedWhere(      getFullFielName(((EdmTyped)   leftSide).getName(),((EdmTyped)   leftSide).getType()) + " " + sqlOperator + " ?");
+			if (rightSide instanceof Date) {
+				SimpleDateFormat dateFormatB = new SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss.SSS");
+				dateFormatB.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				String qq = dateFormatB.format((Date)rightSide);
+				expression.setPrepeparedWhere(      getFullFielName(((EdmTyped)   leftSide).getName(),((EdmTyped)   leftSide).getType()) + " " + sqlOperator + " TO_DATE('"+qq+"','yyyy-MM-dd HH:mm:ss.SSS') ");
+				
+			} else {
+					expression.setPrepeparedWhere(      getFullFielName(((EdmTyped)   leftSide).getName(),((EdmTyped)   leftSide).getType()) + " " + sqlOperator + " ?");
+				expression.addParameter(rightSide);
+			}
 			} catch (EdmException e) {
 				throw new RuntimeException("EdmException occured");
 			}
-			expression.addParameter(rightSide);
 			return expression;
 		} else if (leftSide instanceof SDPPhoenixExpression && rightSide instanceof SDPPhoenixExpression) {
 			SDPPhoenixExpression returnExpression = new SDPPhoenixExpression(operator);
@@ -284,6 +292,9 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 
 
 				Date data =null;
+				java.sql.Date dataSql=null;
+				
+				
 				SimpleDateFormat dateFormatA = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 				SimpleDateFormat dateFormatB = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 				SimpleDateFormat dateFormatC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -387,7 +398,12 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 				String c = dateFormatB.format(data);
 				String d = dateFormatE.format(data);
 				
-				return c;
+				//return c;
+				return data;
+				//dataSql=new java.sql.Date(data.getTime()); 
+
+				
+				
 
 			} catch (Exception e) {
 				log.error("[SDPExpressionVisitor::visitLiteral] exception handling "+e);
@@ -526,6 +542,15 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 		
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".count" ,"totale");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".count" ,"totale");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".datasetVersion" ,"datasetVersion_l");
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".datasetVersion" ,"datasetVersion_l");
 		
 		
 		
