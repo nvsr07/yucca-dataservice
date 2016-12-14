@@ -44,10 +44,6 @@ public abstract class AbstractService {
 	public DatasetBulkInsertOutput dataInsert(HttpServletRequest request,
 			HttpServletResponse response, String jsonData, String codTenant, String uniqueid,
 			String forwardfor, String authInfo) {
-		System.out.println("codiceTenant"+codTenant);
-	
-		
-		
 		if (!validationJsonFormat(jsonData))
 		{
 			throw new InsertApiBaseException("E012");

@@ -563,7 +563,7 @@ public class InsertApiLogic {
 				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
 				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
 				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
-				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore,isVerOneRequired));
+				if (null!=campoMongoV1) log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore,isVerOneRequired));
 				numCampiInV1++;
 			}
 			log.finest("[InsertApiLogic::parseCompnents] .................");
@@ -631,14 +631,14 @@ public class InsertApiLogic {
 		for (int i = 0 ; i< elencoStream.size(); i++) {
 			
 			
-			log.info("[InsertApiLogic::parseMisura] nome stream, tipo stream: "+elencoStream.get(i).getStreamCode() + ","+elencoStream.get(i).getTipoStream());
+			log.finest("[InsertApiLogic::parseMisura] nome stream, tipo stream: "+elencoStream.get(i).getStreamCode() + ","+elencoStream.get(i).getTipoStream());
 
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_APPLICATION && application==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")"); 
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_SENSOR && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET && sensor==null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "+(sensor!=null ? sensor : application) +" (stream: "+stream+")");
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_UNDEFINED) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND, " invalid virtual object tpye: data insert allowed only for sensors and applications "); 
 			
-			log.info("[InsertApiLogic::parseMisura]      OK --------------");
+			log.finest("[InsertApiLogic::parseMisura]      OK --------------");
 			
 			if (elencoStream.get(i).getTipoStream()==MongoStreamInfo.STREAM_TYPE_TWEET)
 			{
