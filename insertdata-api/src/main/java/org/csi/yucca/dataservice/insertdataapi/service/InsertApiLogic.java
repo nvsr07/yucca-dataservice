@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,11 +13,9 @@ import net.minidev.json.JSONObject;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.phoenix.SDPInsertApiPhoenixDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.solr.SDPInsertApiSolrDataAccess;
@@ -77,7 +74,7 @@ public class InsertApiLogic {
 
 				//int righeinserite=mongoAccess.insertBulk(tenant, curBulkToIns,indiceDaCReare);
 				Long startTimeX = System.currentTimeMillis();
-				log.info("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
+				log.finest("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
 				phoenixAccess.insertBulk(tenant, curBulkToIns);
 				log.info("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 				
@@ -89,7 +86,7 @@ public class InsertApiLogic {
 				
 				try {
 					startTimeX = System.currentTimeMillis();
-					log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
+					log.finest("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
 					solrAccess.insertBulk(tenant,curBulkToIns );
 					log.info("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
@@ -276,7 +273,7 @@ public class InsertApiLogic {
 				if (streamToFind == null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
 				if (sensorToFind == null ) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
 
-
+				log.info("[InsertApiLogic::parseJsonInputStream] Parsing tenant=["+tenant+"] sensor=["+sensorToFind+"] stream=["+streamToFind+"]");
 
 				if (ret.get(sensorToFind+"_"+streamToFind)!=null) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DUPLICATE, " for stream "+streamToFind);
 
@@ -656,10 +653,7 @@ public class InsertApiLogic {
 		
 		
 		ArrayList<FieldsMongoDto> elencoCampi=mongoAccess.getCampiDataSet(elencoStream, Long.parseLong(""+reqVersion) );
-
-		
 		ArrayList<FieldsMongoDto> elencoCampiV1=mongoAccess.getCampiDataSet(elencoStream, Long.parseLong("1") );
-		
 		
 		if (elencoCampi==null || elencoCampi.size()<=0) throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, ": "+(stream!=null ? stream : application) +" (sensor: "+sensor+")");
 		HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();

@@ -70,14 +70,14 @@ public abstract class AbstractService {
 			accLog1.setUniqueid(uniqueid);
 
 			
-			log.info( "[InsertApi::insertApiDataset] BEGIN ");
+			log.debug( "[AbstractService::dataInsert] BEGIN ");
 
 			//System.out.println(" TIMETIME insertApiDataset -- inizio --> "+System.currentTimeMillis());
 			
 			Long starTtimeX=System.currentTimeMillis();
-			log.info( "[InsertApi::insertApiDataset] BEGIN Parsing and validation ..");
+			log.debug( "[AbstractService::dataInsert] BEGIN Parsing and validation ..");
 			HashMap<String, DatasetBulkInsert> mapAttributes = parseJsonInput(codTenant,jsonData);
-			log.info( "[InsertApi::insertApiDataset] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtimeX)+"]");
+			log.info( "[InsertApi::dataInsert] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtimeX)+"]");
 
 
 			outData=inserimentoGeneralizzato(codTenant, mapAttributes);
@@ -87,14 +87,12 @@ public abstract class AbstractService {
 			int inData=0;
 			
 			
-			log.info( "[InsertApi::insertApiDataset] report inserimento: ");
-			log.info( "[InsertApi::insertApiDataset]       globalRequestID --> " +outData.getGlobalRequestId());
-			log.info( "[InsertApi::insertApiDataset]       error code      --> " +(outData.getInsertException()!=null ? outData.getInsertException().getErrorCode() : "NONE" ));
-			log.info( "[InsertApi::insertApiDataset]       Numero Blocchi  --> " +(outData.getDataBLockreport()!=null ? outData.getDataBLockreport().size() : "WARNING: NONE" ));
+			log.debug( "[AbstractService::dataInsert] report inserimento: ");
+			log.info( "[AbstractService::dataInsert] globalRequestID --> " +outData.getGlobalRequestId()+"|error code --> " +(outData.getInsertException()!=null ? outData.getInsertException().getErrorCode() : "NONE" )+"| Numero Blocchi  --> " +(outData.getDataBLockreport()!=null ? outData.getDataBLockreport().size() : "WARNING: NONE" ));
 			for (int i=0;outData.getDataBLockreport()!=null && i<outData.getDataBLockreport().size(); i++) {
-				log.debug("[InsertApi::insertApiDataset]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
-				log.debug( "[InsertApi::insertApiDataset]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
-				log.debug( "[InsertApi::insertApiDataset]            blocco("+i+") getRequestId            --> " +outData.getDataBLockreport().get(i).getRequestId());
+				log.debug("[AbstractService::dataInsert]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
+				log.debug( "[AbstractService::dataInsert]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
+				log.debug( "[AbstractService::dataInsert]            blocco("+i+") getRequestId            --> " +outData.getDataBLockreport().get(i).getRequestId());
 				accLog1.setDataIn(outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				accLog1.setDatasetcode(outData.getDataBLockreport().get(i).getIdDataset()+":"+outData.getDataBLockreport().get(i).getDatasetVersion());
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
@@ -139,7 +137,7 @@ public abstract class AbstractService {
 
 		try {
 
-			log.info( "[InsertApi::inserimentoGeneralizzato] BEGIN ");
+			log.debug( "[InsertApi::inserimentoGeneralizzato] BEGIN ");
 			accLog.setTenantcode(codTenant);
 
 			InsertApiLogic insApiLogic=new InsertApiLogic();
@@ -193,7 +191,7 @@ public abstract class AbstractService {
 			outData.setInsertException(newEx);
 		} finally {
 		
-			log.info( "[InsertApi::inserimentoGeneralizzato] END ");
+			log.debug( "[InsertApi::inserimentoGeneralizzato] END ");
 			//logAccounting.info(accLog.toString());	
 			
 		}
