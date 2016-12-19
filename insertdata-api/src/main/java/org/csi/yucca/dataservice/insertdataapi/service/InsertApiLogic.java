@@ -117,7 +117,7 @@ public class InsertApiLogic {
 			}
 		}
 		long startTimeX = System.currentTimeMillis();
-		mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins", datiToIns);
+//		mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins", datiToIns);
 		log.info("[InsertApiLogic::insertManager] END updateStatus  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 		return datiToIns;
 
