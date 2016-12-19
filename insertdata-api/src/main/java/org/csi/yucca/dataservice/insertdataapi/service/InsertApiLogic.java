@@ -116,9 +116,9 @@ public class InsertApiLogic {
 
 			}
 		}
-		//System.out.println(" TIMETIME insertManager -- fine inserimento bulk --> "+System.currentTimeMillis());
+		long startTimeX = System.currentTimeMillis();
 		mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins", datiToIns);
-		//System.out.println(" TIMETIME insertManager -- end --> "+System.currentTimeMillis());
+		log.info("[InsertApiLogic::insertManager] END updateStatus  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 		return datiToIns;
 
 	}	

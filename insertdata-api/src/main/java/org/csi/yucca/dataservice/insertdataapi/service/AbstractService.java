@@ -70,13 +70,13 @@ public abstract class AbstractService {
 
 			//System.out.println(" TIMETIME insertApiDataset -- inizio --> "+System.currentTimeMillis());
 			
-			Long starTtimeX=System.currentTimeMillis();
 			log.debug( "[AbstractService::dataInsert] BEGIN Parsing and validation ..");
 			HashMap<String, DatasetBulkInsert> mapAttributes = parseJsonInput(codTenant,jsonData);
-			log.info( "[InsertApi::dataInsert] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtimeX)+"]");
+			log.info( "[InsertApi::dataInsert] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 
 			outData=inserimentoGeneralizzato(codTenant, mapAttributes);
+			log.info( "[InsertApi::dataInsert] END inserimentoGeneralizzato. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 			//System.out.println(" TIMETIME insertApiDataset -- fine --> "+System.currentTimeMillis());
 
@@ -132,6 +132,7 @@ public abstract class AbstractService {
 		AccountingLog accLog=new AccountingLog();
 
 		try {
+			long starTtime=System.currentTimeMillis();
 
 			log.debug( "[InsertApi::inserimentoGeneralizzato] BEGIN ");
 			accLog.setTenantcode(codTenant);
@@ -142,6 +143,9 @@ public abstract class AbstractService {
 
 			HashMap<String, DatasetBulkInsert> retHm = insApiLogic.insertManager(codTenant,datiDains);	
 
+			log.info( "[InsertApi::dataInsert] END insertManager. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
+
+			
 			//System.out.println(" TIMETIME inserimentoGeneralizzato -- dopo insert manager --> "+System.currentTimeMillis());
 
 			ArrayList<DatasetBulkInsertIOperationReport> ret = new ArrayList<DatasetBulkInsertIOperationReport>();
@@ -169,6 +173,8 @@ public abstract class AbstractService {
 				idRichieste=retHm.get(key).getGlobalReqId();
 				ret.add(retElement);
 			}
+
+			log.info( "[InsertApi::dataInsert] END Request creation. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 			outData.setDataBLockreport(ret);
 			outData.setGlobalRequestId(idRichieste);
