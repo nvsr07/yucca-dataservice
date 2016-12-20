@@ -185,16 +185,24 @@ public class SDPInsertApiPhoenixDataAccess {
 		            Object value = json.get(nome);
 		            
 	                if ("int".equalsIgnoreCase(tipo)) {
-	                    if ( null== value) stmt.setNull(pos,java.sql.Types.INTEGER);
+	                    if ( null== value ) stmt.setNull(pos,java.sql.Types.INTEGER);
 	                    else stmt.setInt(pos, Integer.parseInt(value.toString()));
 	                } else if ("long".equalsIgnoreCase(tipo)) {
 	                    if ( null== value) stmt.setNull(pos,java.sql.Types.BIGINT);
 	                    else stmt.setLong(pos, Long.parseLong(value.toString()));
 	                } else if ("double".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.DOUBLE);
+	                	if ( null== value 
+	                			|| Double.parseDouble(value.toString()) == Double.NaN
+	                			|| Double.parseDouble(value.toString()) == Double.POSITIVE_INFINITY 
+	                			|| Double.parseDouble(value.toString()) == Double.NEGATIVE_INFINITY
+	                			) stmt.setNull(pos,java.sql.Types.DOUBLE);
 	                    else stmt.setDouble(pos, Double.parseDouble(value.toString()));
 	                } else if ("float".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.FLOAT);
+	                	if ( null== value
+	                			|| Float.parseFloat(value.toString()) == Float.NaN
+	                			|| Float.parseFloat(value.toString()) == Float.POSITIVE_INFINITY 
+	                			|| Float.parseFloat(value.toString()) == Float.NEGATIVE_INFINITY
+	                		) stmt.setNull(pos,java.sql.Types.FLOAT);
 	                    else stmt.setFloat(pos, (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.VARCHAR);
@@ -212,10 +220,18 @@ public class SDPInsertApiPhoenixDataAccess {
 	                	if ( null== value) stmt.setNull(pos,java.sql.Types.TIMESTAMP);
 	                    stmt.setTimestamp(pos,new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
 	                } else if ("longitude".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.DOUBLE);
+	                	if ( null== value
+	                			|| Double.parseDouble(value.toString()) == Double.NaN
+	                			|| Double.parseDouble(value.toString()) == Double.POSITIVE_INFINITY 
+	                			|| Double.parseDouble(value.toString()) == Double.NEGATIVE_INFINITY
+	                		) stmt.setNull(pos,java.sql.Types.DOUBLE);
 	                	else stmt.setDouble(pos, Double.parseDouble(value.toString()));
 	                } else if ("latitude".equalsIgnoreCase(tipo)) {
-	                	if ( null== value) stmt.setNull(pos,java.sql.Types.DOUBLE);
+	                	if ( null== value
+	                			|| Double.parseDouble(value.toString()) == Double.NaN
+	                			|| Double.parseDouble(value.toString()) == Double.POSITIVE_INFINITY 
+	                			|| Double.parseDouble(value.toString()) == Double.NEGATIVE_INFINITY
+	                		) stmt.setNull(pos,java.sql.Types.DOUBLE);
 	                	else stmt.setDouble(pos, Double.parseDouble(value.toString()));
 	                } 
 	                
