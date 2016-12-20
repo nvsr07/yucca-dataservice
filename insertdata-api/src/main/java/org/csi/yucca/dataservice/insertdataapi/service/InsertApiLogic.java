@@ -76,7 +76,7 @@ public class InsertApiLogic {
 				Long startTimeX = System.currentTimeMillis();
 				log.finest("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
 				phoenixAccess.insertBulk(tenant, curBulkToIns);
-				log.info("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
+				log.finest("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 				
 				//TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
@@ -88,7 +88,7 @@ public class InsertApiLogic {
 					startTimeX = System.currentTimeMillis();
 					log.finest("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
 					solrAccess.insertBulk(tenant,curBulkToIns );
-					log.info("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
+					log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
 					datiToIns.put(key, curBulkToIns);
 				} catch (Exception e)
@@ -118,7 +118,7 @@ public class InsertApiLogic {
 		}
 		long startTimeX = System.currentTimeMillis();
 //		mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins", datiToIns);
-		log.info("[InsertApiLogic::insertManager] END updateStatus  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
+		log.finest("[InsertApiLogic::insertManager] END updateStatus  Elapsed["+(System.currentTimeMillis()-startTimeX)+"]");
 		return datiToIns;
 
 	}	

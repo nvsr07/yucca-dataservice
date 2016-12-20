@@ -72,11 +72,11 @@ public abstract class AbstractService {
 			
 			log.debug( "[AbstractService::dataInsert] BEGIN Parsing and validation ..");
 			HashMap<String, DatasetBulkInsert> mapAttributes = parseJsonInput(codTenant,jsonData);
-			log.info( "[InsertApi::dataInsert] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
+			log.debug( "[InsertApi::dataInsert] END Parsing and validation. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 
 			outData=inserimentoGeneralizzato(codTenant, mapAttributes);
-			log.info( "[InsertApi::dataInsert] END inserimentoGeneralizzato. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
+			log.debug( "[InsertApi::dataInsert] END inserimentoGeneralizzato. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 			//System.out.println(" TIMETIME insertApiDataset -- fine --> "+System.currentTimeMillis());
 
@@ -84,7 +84,7 @@ public abstract class AbstractService {
 			
 			
 			log.debug( "[AbstractService::dataInsert] report inserimento: ");
-			log.info( "[AbstractService::dataInsert] globalRequestID --> " +outData.getGlobalRequestId()+"|error code --> " +(outData.getInsertException()!=null ? outData.getInsertException().getErrorCode() : "NONE" )+"| Numero Blocchi  --> " +(outData.getDataBLockreport()!=null ? outData.getDataBLockreport().size() : "WARNING: NONE" ));
+			log.debug( "[AbstractService::dataInsert] globalRequestID --> " +outData.getGlobalRequestId()+"|error code --> " +(outData.getInsertException()!=null ? outData.getInsertException().getErrorCode() : "NONE" )+"| Numero Blocchi  --> " +(outData.getDataBLockreport()!=null ? outData.getDataBLockreport().size() : "WARNING: NONE" ));
 			for (int i=0;outData.getDataBLockreport()!=null && i<outData.getDataBLockreport().size(); i++) {
 				log.debug("[AbstractService::dataInsert]            blocco("+i+") status                  --> " +outData.getDataBLockreport().get(i).getStatus());
 				log.debug( "[AbstractService::dataInsert]            blocco("+i+") getNumRowToInsFromJson  --> " +outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
