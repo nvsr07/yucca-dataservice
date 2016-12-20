@@ -143,7 +143,7 @@ public abstract class AbstractService {
 
 			HashMap<String, DatasetBulkInsert> retHm = insApiLogic.insertManager(codTenant,datiDains);	
 
-			log.info( "[InsertApi::dataInsert] END insertManager. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
+			log.debug( "[InsertApi::dataInsert] END insertManager. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 			
 			//System.out.println(" TIMETIME inserimentoGeneralizzato -- dopo insert manager --> "+System.currentTimeMillis());
@@ -174,7 +174,7 @@ public abstract class AbstractService {
 				ret.add(retElement);
 			}
 
-			log.info( "[InsertApi::dataInsert] END Request creation. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
+			log.debug( "[InsertApi::dataInsert] END Request creation. Elapsed["+(System.currentTimeMillis()-starTtime)+"]");
 
 			outData.setDataBLockreport(ret);
 			outData.setGlobalRequestId(idRichieste);

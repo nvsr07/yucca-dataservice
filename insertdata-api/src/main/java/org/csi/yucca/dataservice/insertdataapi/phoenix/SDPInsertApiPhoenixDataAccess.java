@@ -192,16 +192,14 @@ public class SDPInsertApiPhoenixDataAccess {
 	                    else stmt.setLong(pos, Long.parseLong(value.toString()));
 	                } else if ("double".equalsIgnoreCase(tipo)) {
 	                	if ( null== value 
-	                			|| Double.parseDouble(value.toString()) == Double.NaN
-	                			|| Double.parseDouble(value.toString()) == Double.POSITIVE_INFINITY 
-	                			|| Double.parseDouble(value.toString()) == Double.NEGATIVE_INFINITY
+	                			|| Double.isNaN(Double.parseDouble(value.toString()))
+	                			|| Double.isInfinite(Double.parseDouble(value.toString()))
 	                			) stmt.setNull(pos,java.sql.Types.DOUBLE);
 	                    else stmt.setDouble(pos, Double.parseDouble(value.toString()));
 	                } else if ("float".equalsIgnoreCase(tipo)) {
 	                	if ( null== value
-	                			|| Float.parseFloat(value.toString()) == Float.NaN
-	                			|| Float.parseFloat(value.toString()) == Float.POSITIVE_INFINITY 
-	                			|| Float.parseFloat(value.toString()) == Float.NEGATIVE_INFINITY
+	                			|| Float.isNaN(Float.parseFloat(value.toString()))
+	                			|| Float.isInfinite(Float.parseFloat(value.toString()))
 	                		) stmt.setNull(pos,java.sql.Types.FLOAT);
 	                    else stmt.setFloat(pos, (Float.parseFloat(value.toString())));
 	                } else if ("string".equalsIgnoreCase(tipo)) {
@@ -221,16 +219,14 @@ public class SDPInsertApiPhoenixDataAccess {
 	                    stmt.setTimestamp(pos,new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
 	                } else if ("longitude".equalsIgnoreCase(tipo)) {
 	                	if ( null== value
-	                			|| Double.parseDouble(value.toString()) == Double.NaN
-	                			|| Double.parseDouble(value.toString()) == Double.POSITIVE_INFINITY 
-	                			|| Double.parseDouble(value.toString()) == Double.NEGATIVE_INFINITY
+	                			|| Double.isNaN(Double.parseDouble(value.toString()))
+	                			|| Double.isInfinite(Double.parseDouble(value.toString()))
 	                		) stmt.setNull(pos,java.sql.Types.DOUBLE);
 	                	else stmt.setDouble(pos, Double.parseDouble(value.toString()));
 	                } else if ("latitude".equalsIgnoreCase(tipo)) {
 	                	if ( null== value
-	                			|| Double.parseDouble(value.toString()) == Double.NaN
-	                			|| Double.parseDouble(value.toString()) == Double.POSITIVE_INFINITY 
-	                			|| Double.parseDouble(value.toString()) == Double.NEGATIVE_INFINITY
+	                			|| Double.isNaN(Double.parseDouble(value.toString()))
+	                			|| Double.isInfinite(Double.parseDouble(value.toString()))
 	                		) stmt.setNull(pos,java.sql.Types.DOUBLE);
 	                	else stmt.setDouble(pos, Double.parseDouble(value.toString()));
 	                } 
@@ -285,5 +281,11 @@ public class SDPInsertApiPhoenixDataAccess {
 	}
 
 
-
+	public static void main(String[] args) {
+		if (Float.isNaN(Float.parseFloat("12")))
+			System.out.println("OK");
+	  
+		System.out.println("--"+Float.parseFloat("NaN")+"|"+Float.NaN);
+	  
+	}
 }

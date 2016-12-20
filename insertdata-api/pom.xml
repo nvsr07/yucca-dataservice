@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.dataservice.insertdataapi</groupId>
 	<artifactId>insertdataapi</artifactId>
-	<version>1.0.0-002</version>
+	<version>1.0.0-005</version>
 	<packaging>war</packaging>
 	<name>insertdataapi</name>
 	<scm>
