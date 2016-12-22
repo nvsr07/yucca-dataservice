@@ -42,7 +42,6 @@
             <log level="custom">
                 <property name="step" value="API_DataInsertGeneric_InsertRequesta BEGIN"/>
             </log>
-            <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
             <log level="custom">
                 <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD JS "/>
             </log>
@@ -224,7 +223,6 @@
             <log level="custom">
                 <property name="step" value="API_DataInsertGeneric_InsertRequesta BEGIN"/>
             </log>
-            <property name="bodyStream" expression="$body" scope="default" type="STRING"/>
             <log level="custom">
                 <property name="step" value="API_DataInsertGeneric_InsertRequesta DOPO PAYLOAD JS "/>
             </log>

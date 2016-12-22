@@ -163,6 +163,8 @@ public class InsertApiLogic {
 					insStrConst+= " , streamCode : \"" + infoStream.getStreamCode() +"\"";
 					sensor=infoStream.getSensorCode();
 					streamCode=infoStream.getStreamCode();
+					
+					isStream = true;
 				}
 				// se dataset e' dataset va bene cosi' 
 
@@ -170,7 +172,7 @@ public class InsertApiLogic {
 				
 				
 				//DatasetBulkInsert datiToins=parseGenericDataset(tenant, ooo.toJSONString(), insStrConst, infoDataset);
-				DatasetBulkInsert datiToins=parseGenericDataset(tenant, ooo, insStrConst, infoDataset,infoDatasetV1);
+				DatasetBulkInsert datiToins=parseGenericDataset(tenant, ooo, insStrConst, infoDataset,infoDatasetV1,isStream);
 				
 				
 				//System.out.println(" TIMETIME parseJsonInputDataset -- parsificato dataset info--> "+System.currentTimeMillis());
@@ -281,7 +283,7 @@ public class InsertApiLogic {
 	}	
 
 
-	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1) throws Exception {
+	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1, boolean isV1required) throws Exception {
 		//System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret=null;
 
@@ -317,7 +319,7 @@ public class InsertApiLogic {
 				
 				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
-				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1,isV1required));
 				
 				
 				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") parse componenti--> "+System.currentTimeMillis());
@@ -348,7 +350,7 @@ public class InsertApiLogic {
 		return ret;
 	}	
 	
-	private DatasetBulkInsert parseGenericDataset(String tenant, String jsonInput,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1) throws Exception {
+	private DatasetBulkInsert parseGenericDataset(String tenant, String jsonInput,String insStrConst,MongoDatasetInfo datasetMongoInfo,MongoDatasetInfo datasetMongoInfoV1, boolean isV1required) throws Exception {
 		//System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret=null;
 
@@ -383,7 +385,7 @@ public class InsertApiLogic {
 				components = JsonPath.read(jsonInput, "$.values["+i+"]");
 				//System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
-				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1,isV1required));
 				
 				
 				//System.out.println(" TIMETIME parseGenericDataset -- dentro ciclo ("+i+") parse componenti--> "+System.currentTimeMillis());
@@ -414,7 +416,7 @@ public class InsertApiLogic {
 	
 	
 	//private String parseComponents (JSONObject components,String insStrConst,ArrayList<FieldsMongoDto> elencoCampi) throws Exception {
-	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo,HashMap<String, FieldsMongoDto> campiMongoV1) throws Exception {		
+	private String parseComponents (JSONObject components,String insStrConst,HashMap<String, FieldsMongoDto> campiMongo,HashMap<String, FieldsMongoDto> campiMongoV1, boolean isV1required) throws Exception {		
 		ArrayList<String> rigadains= new ArrayList<String>();
 		Iterator<String> itCampiJson=components.keySet().iterator();
 
@@ -445,27 +447,27 @@ public class InsertApiLogic {
 			
 			
 			//validazione del valore
-			if (!campoMongo.validateValue(valore))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
+			if (!campoMongo.validateValue(valore,isV1required))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
 					" - field "+jsonField+" ("+insStrConst+"): "+valore);
 			
 			
-			log.info("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
-			log.info("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
-			log.info("[InsertApiLogic::parseCompnents] valore: "+valore);
+			log.finest("[InsertApiLogic::parseCompnents] ---------------- campo : "+campoMongo.getFieldName());
+			log.finest("[InsertApiLogic::parseCompnents] campoMongoV1 is null: "+(campoMongoV1==null));
+			log.finest("[InsertApiLogic::parseCompnents] valore: "+valore);
 			if (campoMongoV1!=null) {
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
-				log.info("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
-				if (null!=campoMongoV1) log.info("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore));
+				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.versione="+campoMongoV1.getDatasetVersion());
+				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.nome="+campoMongoV1.getFieldName());
+				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.gettype="+campoMongoV1.getFieldType());
+				if (null!=campoMongoV1) log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->"+campoMongoV1.validateValue(valore,isV1required));
 				numCampiInV1++;
 			}
-			log.info("[InsertApiLogic::parseCompnents] .................");
-			log.info("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
-			log.info("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
-			log.info("[InsertApiLogic::parseCompnents]          valore="+valore);
+			log.finest("[InsertApiLogic::parseCompnents] .................");
+			log.finest("[InsertApiLogic::parseCompnents]          jsonField="+jsonField);
+			log.finest("[InsertApiLogic::parseCompnents]          insStrConst="+insStrConst);
+			log.finest("[InsertApiLogic::parseCompnents]          valore="+valore);
 			
 			
-			if (null!=campoMongoV1 && !campoMongoV1.validateValue(valore))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
+			if (null!=campoMongoV1 && !campoMongoV1.validateValue(valore,isV1required))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
 					" - field "+jsonField+" ("+insStrConst+"): "+( (valore == null) ? "null" : valore));
 			
 			
@@ -606,7 +608,7 @@ public class InsertApiLogic {
 
 				//System.out.println(" TIMETIME parseMisura -- valore ("+i+") recuperati oggetti--> "+System.currentTimeMillis());
 				
-				if (!campotimeStamp.validateValue(timeStamp))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
+				if (!campotimeStamp.validateValue(timeStamp,true))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
 						" - field time ("+insStrConstBase+"): "+timeStamp);
 
 
@@ -615,7 +617,7 @@ public class InsertApiLogic {
 				//insStrConst+= ", time: {$date :\""+timeStamp+"\"} ";
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
 				
-				rigadains.add(parseComponents(components, insStrConstBase+", time: {$date :\""+timeStamp+"\"} ", campiMongo,campiMongoV1));
+				rigadains.add(parseComponents(components, insStrConstBase+", time: {$date :\""+timeStamp+"\"} ", campiMongo,campiMongoV1,true));
 				//System.out.println(" TIMETIME parseMisura -- valore ("+i+") parsing components--> "+System.currentTimeMillis());
 				
 
@@ -714,7 +716,7 @@ public class InsertApiLogic {
 				//Controllo del timeStamp
 				String timeStamp= (String)ooo.get("time");
 				FieldsMongoDto campotimeStamp= new FieldsMongoDto("aaa",FieldsMongoDto.DATA_TYPE_DATETIME);
-				if (!campotimeStamp.validateValue(timeStamp))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
+				if (!campotimeStamp.validateValue(timeStamp,true))  throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE,
 						" - field time ("+insStrConst+"): "+timeStamp);
 
 
@@ -756,7 +758,7 @@ public class InsertApiLogic {
 				insStrConst+= ", time: {$date :\""+timeStamp+"\"} ";
 				//rigadains.add(parseComponents(components, insStrConst, elencoCampi));
 				
-				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1));
+				rigadains.add(parseComponents(components, insStrConst, campiMongo,campiMongoV1,true));
 				
 
 
