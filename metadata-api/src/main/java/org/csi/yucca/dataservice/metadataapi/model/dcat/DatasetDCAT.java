@@ -2,7 +2,6 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.VCTypeDCAT;
 
 public class DatasetDCAT {
 

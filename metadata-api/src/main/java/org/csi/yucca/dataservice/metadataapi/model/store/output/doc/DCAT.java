@@ -3,9 +3,8 @@ package org.csi.yucca.dataservice.metadataapi.model.store.output.doc;
 
 
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
-	import java.util.Date;
 
-	import com.google.gson.Gson;
+import com.google.gson.Gson;
 
 public class DCAT {
 

@@ -12,7 +12,6 @@ import org.csi.yucca.dataservice.metadataapi.model.ckan.Resource;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDoc;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.ConfigData;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DCAT;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DocDatasetContent;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DocStreamContent;
 import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Element;

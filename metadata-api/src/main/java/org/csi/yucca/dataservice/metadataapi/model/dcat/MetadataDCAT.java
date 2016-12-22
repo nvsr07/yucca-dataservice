@@ -1,29 +1,5 @@
 package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.csi.yucca.dataservice.metadataapi.delegate.i18n.I18nDelegate;
-import org.csi.yucca.dataservice.metadataapi.model.ckan.ExtraV2;
-import org.csi.yucca.dataservice.metadataapi.model.ckan.Resource;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreDoc;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.StoreMetadataItem;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.ConfigData;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DocDatasetContent;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DocStreamContent;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Element;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Field;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Info;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Position;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.Tag;
-import org.csi.yucca.dataservice.metadataapi.util.Config;
-import org.csi.yucca.dataservice.metadataapi.util.Util;
-import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
-
-import com.google.gson.Gson;
 
 public class MetadataDCAT {
 	public static final String METADATA_TYPE_STREAM = "stream";

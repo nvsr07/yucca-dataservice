@@ -1,35 +1,29 @@
 package org.csi.yucca.dataservice.metadataapi.service;
 
 import java.net.UnknownHostException;
-import java.util.LinkedList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.AgentDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.CatalogDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DatasetDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DistributionDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.LicenceTypeDCAT;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.TypeDCAT;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.VCTypeDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.VcardDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.output.Metadata;
-import org.csi.yucca.dataservice.metadataapi.model.store.output.doc.DCAT;
-import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
-import com.github.jsonldjava.core.JsonLdOptions;
 import com.google.gson.Gson;
 
 @Path("/dcat")
@@ -49,11 +43,17 @@ public class DcatService extends AbstractService {
 			@QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat,
 			@QueryParam("maxLon") Double maxLon, @QueryParam("lang") String lang)
 			throws NumberFormatException, UnknownHostException {
+		
+		
+	    SimpleDateFormat catalogDateFormat = new SimpleDateFormat("yyyy-MM-dd");//dd/MM/yyyy
+
 
 		CatalogDCAT catalog = new CatalogDCAT();
 		catalog.setDescription("Catalogo Smart Data Piemonte");
 		catalog.setTitle("CATALOGO SMART DATA");
 		catalog.setHomepage("http://userportal.smartdatanet.it");
+		catalog.setModified(catalogDateFormat.format(new Date()));
+
 
 		LicenceTypeDCAT lic = new LicenceTypeDCAT();
 		lic.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
@@ -123,7 +123,12 @@ public class DcatService extends AbstractService {
 				
 				dsDCAT.setDescription(metadata.getDescription());
 				dsDCAT.setTitle(metadata.getName());
-				String keyWords = "";
+				// V01 - fixed value http://publications.europa.eu/resource/authority/frequency/UNKNOWN
+				
+				dsDCAT.setAccrualPeriodicity("http://publications.europa.eu/resource/authority/frequency/UNKNOWN");
+				//dsDCAT.setAccrualPeriodicity(metadata.getFps());
+				
+//				String keyWords = "";
 				if (metadata.getTags() != null) {
 					for (String tag : metadata.getTags()) {
 						dsDCAT.addKeyword(tag);
@@ -131,7 +136,6 @@ public class DcatService extends AbstractService {
 				}
 				dsDCAT.setTheme(metadata.getDomain());
 				dsDCAT.setAccessRights(metadata.getVisibility());
-				dsDCAT.setAccrualPeriodicity(metadata.getFps());
 				dsDCAT.setIdentifier(metadata.getCode() + "_" + metadata.getVersion());
 				if (metadata.getOpendata() != null)
 					dsDCAT.setModified(metadata.getOpendata().getDataUpdateDate());

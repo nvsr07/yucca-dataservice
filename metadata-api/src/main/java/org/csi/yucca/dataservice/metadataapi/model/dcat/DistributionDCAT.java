@@ -7,8 +7,10 @@ public class DistributionDCAT {
 	private String accessURL; // url su portale SDP del dataset (da valorizzare
 								// a runtime)
 	private String format = "http://publications.europa.eu/resource/authority/file-type/CSV";
-	private LicenceTypeDCAT license = new LicenceTypeDCAT(); // lo prendi dal campo license del Dataset
-	//private Integer byteSize = 0; // fisso
+	private LicenceTypeDCAT license = new LicenceTypeDCAT(); // lo prendi dal
+																// campo license
+																// del Dataset
+	// private Integer byteSize = 0; // fisso
 	private String downloadURL; // link per il download del dataset in csv (da
 								// valorizzare a runtime)
 	private String language = "http://publications.europa.eu/resource/authority/language/ITA";
@@ -36,9 +38,9 @@ public class DistributionDCAT {
 		this.license = license;
 	}
 
-	/*public Integer getByteSize() {
-		return byteSize;
-	}*/
+	/*
+	 * public Integer getByteSize() { return byteSize; }
+	 */
 
 	public String getDownloadURL() {
 		return downloadURL;
@@ -67,4 +69,9 @@ public class DistributionDCAT {
 	public void setModified(String modified) {
 		this.modified = modified;
 	}
+
+	public String getType() {
+		return type;
+	}
+
 }
