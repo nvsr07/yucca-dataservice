@@ -8,7 +8,7 @@
             <wsp:Policy xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy"
                         xmlns:throttle="http://www.wso2.org/products/wso2commons/throttle">
                 <throttle:ThrottleAssertion>
-                    <throttle:MaximumConcurrentAccess>4</throttle:MaximumConcurrentAccess>
+                    <throttle:MaximumConcurrentAccess>10</throttle:MaximumConcurrentAccess>
                 </throttle:ThrottleAssertion>
             </wsp:Policy>
         </policy>  
