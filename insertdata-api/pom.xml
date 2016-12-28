@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.dataservice.insertdataapi</groupId>
 	<artifactId>insertdataapi</artifactId>
-	<version>1.0.0-005</version>
+	<version>1.0.0-006</version>
 	<packaging>war</packaging>
 	<name>insertdataapi</name>
 	<scm>
@@ -162,7 +162,12 @@
 		    <artifactId>slf4j-log4j12</artifactId>
 		    <version>1.5.6</version>
 		    <scope>provided</scope>
-		</dependency>		
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.activemq</groupId>
+		    <artifactId>activemq-client</artifactId>
+		    <version>5.9.0</version>
+		</dependency>					
 	</dependencies>
 	<profiles>
 		<profile>

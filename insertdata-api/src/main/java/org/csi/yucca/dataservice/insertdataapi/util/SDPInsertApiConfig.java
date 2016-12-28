@@ -15,10 +15,12 @@ public class SDPInsertApiConfig {
 	public static final String MONGO_DB_CFG_STATUS="MONGO_DB_CFG_STATUS";
 	public static final String MONGO_DB_DEFAULT="MONGO_DB_DEFAULT";
 
-	
 	public static final String PHOENIX_URL="PHOENIX_URL";
 	public static final String SOLR_URL="SOLR_URL";
-	
+
+	public static final String JMS_MB_INTERNAL_URL = "JMS_MB_INTERNAL_URL";	
+	public static final String JMS_MB_INTERNAL_USERNAME = "JMS_MB_INTERNAL_USERNAME";	
+	public static final String JMS_MB_INTERNAL_PASSWORD = "JMS_MB_INTERNAL_PASSWORD";	
 
 	public static SDPInsertApiConfig instance=null;
 	private static int anno_init = 0;
@@ -78,6 +80,12 @@ public class SDPInsertApiConfig {
 		params.put(PHOENIX_URL, rb.getString(PHOENIX_URL));
 		params.put(SOLR_URL, rb.getString(SOLR_URL));
 
+		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
+		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
+		params.put(JMS_MB_INTERNAL_PASSWORD, rb.getString(JMS_MB_INTERNAL_PASSWORD));
+
+
+		
 	}
 //MONGO_DB_DEFAULT
 	public String getMongoCfgHost(String cfgType) {
@@ -153,5 +161,15 @@ public class SDPInsertApiConfig {
 		return params.get("SDP_MONGO_CFG_DEFAULT_PWD");
 	}
 
+	public String getJMSUrl(){
+		return params.get(JMS_MB_INTERNAL_URL);
+	}
+	
+	public String getJMSUsername(){
+		return params.get(JMS_MB_INTERNAL_USERNAME);
+	}
+	public String getJMSPassword(){
+		return params.get(JMS_MB_INTERNAL_PASSWORD);
+	}
 
 }
