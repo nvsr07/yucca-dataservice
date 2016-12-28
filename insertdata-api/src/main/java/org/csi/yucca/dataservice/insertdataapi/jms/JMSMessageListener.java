@@ -5,21 +5,24 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-public class JMSMessageListener implements MessageListener {
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+public class JMSMessageListener implements MessageListener {
+	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	public void onMessage(Message message) {
 		if (message instanceof TextMessage) {
             TextMessage textMessage = (TextMessage) message;
             String text;
 			try {
 				text = textMessage.getText();
-	            System.out.println("Received: " + text);
+	            log.info("---->Received: " + text);
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         } else {
-            System.out.println("Received: " + message);
+        	log.info("---->Received: " + message);
         }
 
 	}

@@ -10,10 +10,13 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 public class JMSConsumerMainThread implements Runnable, ExceptionListener {
-	
+	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
+
 	private Connection connection;
 	private Session session;
 	private MessageConsumer consumer;
@@ -21,7 +24,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 	public void run() {
 
 		try {
-			// Create a ConnectionFactory
+			log.info("[JMSConsumerMainThread::run] Starting connection...");
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
 					SDPInsertApiConfig.getInstance().getJMSUrl());
 			connectionFactory.setMaxThreadPoolSize(2000);
@@ -48,21 +51,23 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			consumer.setMessageListener(new JMSMessageListener());
 			// Wait for a message
 		} catch (Exception e) {
-			System.out.println("Caught: " + e);
-			e.printStackTrace();
+			log.error("[JMSConsumerMainThread::run] Error on Starting connection..."+e.getMessage(), e);
+
 		}
 	}
 	
 	public void closing()
 	{
+		log.info("[JMSConsumerMainThread::run] Closing connection...");
 		try {
 			consumer.close();
 			session.close();
 			connection.close();
 		} catch (JMSException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("[JMSConsumerMainThread::run] Error on Closing connection..."+e.getMessage(), e);
 		}
+		log.info("[JMSConsumerMainThread::run] Closed");
+
 	}
 
 	public synchronized void onException(JMSException ex) {
