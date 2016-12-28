@@ -81,7 +81,7 @@ public class SDPInsertApiConfig {
 		params.put(SOLR_URL, rb.getString(SOLR_URL));
 
 		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
-		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
+		params.put(JMS_MB_INTERNAL_USERNAME, rb.getString(JMS_MB_INTERNAL_USERNAME));
 		params.put(JMS_MB_INTERNAL_PASSWORD, rb.getString(JMS_MB_INTERNAL_PASSWORD));
 
 
