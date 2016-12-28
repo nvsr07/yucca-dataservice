@@ -16,7 +16,7 @@ public class JMSMessageListener implements MessageListener {
             String text;
 			try {
 				text = textMessage.getText();
-	            log.info("---->Received: " + text);
+	            //log.info("---->Received: " + text);
 			} catch (JMSException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
