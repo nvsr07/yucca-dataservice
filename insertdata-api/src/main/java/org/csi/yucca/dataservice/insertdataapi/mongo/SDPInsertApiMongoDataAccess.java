@@ -40,348 +40,348 @@ public class SDPInsertApiMongoDataAccess {
 
 
 
-	public boolean insertStatusRecord(String tenant, DatasetBulkInsert dati) throws Exception {
-
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-			BasicDBObject doc = new BasicDBObject("tenant ", tenant);
-			doc.append("idRequest", dati.getRequestId());
-			doc.append("datainserimento", "TODO");
-			doc.append("status", dati.getStatus());
-			doc.append("idDataset", dati.getIdDataset());
-			doc.append("datasetVersion", dati.getDatasetVersion());
-			doc.append("numDocuments", dati.getNumRowToInsFromJson());
-
-			WriteResult res = coll.insert(doc);
-
-			if (res.getN()<1) return false;
-		} catch (Exception e ) {
-			throw e;
-		}
-		return true;
-	}
-
-
-	public String insertStatusRecordArray(String tenant, HashMap<String, DatasetBulkInsert> datiToIns) throws Exception {
-		String globIdRequest=null;
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-			long millis=new Date().getTime();
-
-
-			globIdRequest=tenant+"_"+millis;
-			List<BasicDBObject> arrDocs= new ArrayList<BasicDBObject>();
-			DatasetBulkInsert dati=null;
-
-			Iterator<String> iter= datiToIns.keySet().iterator();
-			while (iter.hasNext()) {
-				String key=iter.next();
-				dati=datiToIns.get(key);
-				BasicDBObject doc = new BasicDBObject("tenant ", tenant);
-				doc.append("idRequest", dati.getRequestId());
-				doc.append("datainserimento", "TODO");
-				doc.append("status", dati.getStatus());
-				doc.append("idDataset", dati.getIdDataset());
-				doc.append("datasetVersion", dati.getDatasetVersion());
-				doc.append("numDocuments", dati.getNumRowToInsFromJson());
-
-
-				doc.append("stream", dati.getStream());
-				doc.append("datasetCode", dati.getDatasetCode());
-				doc.append("sensor", dati.getSensor());
-
-
-
-				arrDocs.add(doc);
-			}
-			BasicDBObject obj=new BasicDBObject();
-			obj.append("globalRequestID", globIdRequest);
-			obj.append("globStatus", "start_ins");
-			obj.put("richieste", arrDocs);
-			WriteResult res = coll.insert(obj);
-			//System.out.println(res.getN()+"---->"+res);
-		} catch (Exception e ) {
-			throw e;
-		}
-		return globIdRequest;
-	}
-
-
-	
-
-
-
-	public boolean updateStatusRecordArray(String tenant,String globIdRequest, String newStatus, HashMap<String, DatasetBulkInsert> datiToIns) throws Exception {
-
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-
-			BasicDBObject obj=new BasicDBObject();
-			obj.append("globalRequestID", globIdRequest);
-			coll.remove(obj);
-
-
-
-			List<BasicDBObject> arrDocs= new ArrayList<BasicDBObject>();
-			DatasetBulkInsert dati=null;
-
-			Iterator<String> iter= datiToIns.keySet().iterator();
-			while (iter.hasNext()) {
-				String key=iter.next();
-				dati=datiToIns.get(key);
-				BasicDBObject doc = new BasicDBObject("tenant ", tenant);
-				doc.append("idRequest", dati.getRequestId());
-				doc.append("datainserimento", "TODO");
-				doc.append("status", dati.getStatus());
-				doc.append("idDataset", dati.getIdDataset());
-				doc.append("datasetVersion", dati.getDatasetVersion());
-				doc.append("numDocuments", dati.getNumRowToInsFromJson());
-
-
-				doc.append("stream", dati.getStream());
-				doc.append("datasetCode", dati.getDatasetCode());
-				doc.append("sensor", dati.getSensor());
-
-
-				arrDocs.add(doc);
-			}
-			obj.append("globStatus", newStatus);
-			obj.put("richieste", arrDocs);
-			WriteResult res = coll.insert(obj);
-			//System.out.println(res.getN()+"---->"+res);
-			//if (res.getN()<1) return false;
-		} catch (Exception e ) {
-			throw e;
-		}
-		return true;
-	}
-
-
-
-
-	public boolean updateGlobalRequestStatus(String  globIdRequest, String stato, String statoOld) throws Exception {
-
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-			BasicDBObject searchQuery = new BasicDBObject().append("globalRequestID", globIdRequest).append("globStatus", statoOld);			
-
-
-			BasicDBObject doc = new BasicDBObject();
-
-			doc.append("$set",new BasicDBObject("globStatus", stato));
-			WriteResult res = coll.update(searchQuery,doc);
-			//System.out.println(res.getN());
-			if (res.getN()<1) return false;
-		} catch (Exception e ) {
-			throw e;
-		}
-		return true;
-	}	
-
-	public ArrayList<DatasetBulkInsert> getElencoRichiesteByGlobRequestId(String globIdRequest) throws Exception {
-		DBCursor  cursor=null;
-		ArrayList<DatasetBulkInsert> ret = new ArrayList<DatasetBulkInsert>();
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-			BasicDBObject searchQuery = new BasicDBObject().append("globalRequestID", globIdRequest);			
-
-			cursor = coll.find(searchQuery);
-
-			if (!cursor.hasNext()) {
-				//todo eccezione 
-			}
-
-			DBObject docOrig=cursor.next();
-			BasicDBList richieste= (BasicDBList)docOrig.get("richieste"); 
-			for (int i = 0 ; i< richieste.size();i++) {
-				BasicDBObject curReq=(BasicDBObject)richieste.get(i);
-				DatasetBulkInsert cur=new DatasetBulkInsert();
-				cur.setDatasetVersion(curReq.getLong("datasetVersion"));
-				cur.setIdDataset(curReq.getLong("idDataset"));
-				cur.setRequestId(curReq.getString("idRequest"));
-				cur.setNumRowToInsFromJson(curReq.getInt("numDocuments"));
-				cur.setStatus(curReq.getString("status"));
-
-
-
-				cur.setStream(curReq.getString("stream"));
-				cur.setDatasetCode(curReq.getString("datasetCode"));
-				cur.setSensor(curReq.getString("sensor"));
-
-
-
-
-				ret.add(cur);
-			}
-
-
-
-		} catch (Exception e ) {
-			throw e;
-		} finally {
-			try {
-				cursor.close();
-			} catch (Exception e ) {}
-		}
-		return ret;
-	}
-
-
-	public boolean updateSingleArreayRequestStatus(String  globIdRequest, String stato, String idRequest) throws Exception {
-		DBCursor  cursor=null;
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-			BasicDBObject searchQuery = new BasicDBObject().append("globalRequestID", globIdRequest);			
-
-			cursor = coll.find(searchQuery);
-
-
-			if (!cursor.hasNext()) {
-				//todo eccezione 
-			}
-			DBObject docOrig=cursor.next();
-
-			BasicDBList richieste= (BasicDBList)docOrig.get("richieste"); 
-
-
-			List<BasicDBObject> arrDocs= new ArrayList<BasicDBObject>();
-
-
-			for (int i = 0 ; i< richieste.size();i++) {
-				BasicDBObject curReq=(BasicDBObject)richieste.get(i);
-				if (  ((String)curReq.get("idRequest")).equalsIgnoreCase(idRequest) ) {
-					//curReq.append("$set",new BasicDBObject("status", stato));
-					//curReq.remove("status");
-					curReq.put("status",stato);
-
-				}
-				arrDocs.add(curReq);
-			}
-
-
-			((BasicDBObject)docOrig).remove("richieste");
-			((BasicDBObject)docOrig).put("richieste",arrDocs);
-
-
-			WriteResult res = coll.update(searchQuery,docOrig);
-			//System.out.println(res.getN());
-			if (res.getN()<1) return false;
-		} catch (Exception e ) {
-			throw e;
-		} finally {
-			try {
-				cursor.close();
-			} catch (Exception e ) {}
-		}
-		return true;
-	}	
-
-
-	public boolean updateStatusRecord(String tenant, DatasetBulkInsert dati) throws Exception {
-
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
-
-			BasicDBObject searchQuery = new BasicDBObject().append("idRequest", dati.getRequestId());			
-
-
-			BasicDBObject doc = new BasicDBObject();
-
-			doc.append("$set",new BasicDBObject("status", dati.getStatus()));
-			WriteResult res = coll.update(searchQuery,doc);
-			//System.out.println(res.getN());
-			if (res.getN()<1) return false;
-		} catch (Exception e ) {
-			throw e;
-		}
-		return true;
-	}
-
-
-
-
-
-	public int insertBulk(String tenant, DatasetBulkInsert dati, boolean creatIndex) throws Exception {
-		String riga=null;
-		DBObject dbObject = null;
-		BulkWriteResult result=null;
-		try {
-			//System.out.println("###########################################");
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-
-
-			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-			DBCollection coll = db.getCollection("stage_"+dati.getGlobalReqId());
-			if (creatIndex) coll.createIndex(new BasicDBObject("idRequest", 1));
-
-
-			BulkWriteOperation builder = coll.initializeOrderedBulkOperation();
-			for (int i = 0; i<dati.getRowsToInsert().size(); i++) {
-				riga="{idRequest:\""+dati.getRequestId()+"\" , "+dati.getRowsToInsert().get(i)+"}";
-				//System.out.println(riga);
-				builder.insert((DBObject) JSON.parse(riga,new JSONCallbackTimeZone()));
-			}
-
-			result = builder.execute();
-		} catch (Exception e ) {
-			e.printStackTrace();
-			throw e;
-		}
-		return result==null? -1 : result.getInsertedCount();
-
-	}
-
-
-	public boolean dropCollection(String tenant,String globIdRequest) throws Exception {
-		BulkWriteResult result=null;
-
-		try {
-			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
-			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-
-
-			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
-			DBCollection coll = db.getCollection("stage_"+globIdRequest);
-
-			coll.drop();
-
-
-
-			//System.out.println("copy bulk ready ... idRequest="+blockInfo.getRequestId()+"   countExpected="+blockInfo.getNumRowToInsFromJson()+ "     documents in bulkoperation="+count);
-
-
-
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		} finally {
-
-		}
-		return true;
-	}
-
+//	public boolean insertStatusRecord(String tenant, DatasetBulkInsert dati) throws Exception {
+//
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//			BasicDBObject doc = new BasicDBObject("tenant ", tenant);
+//			doc.append("idRequest", dati.getRequestId());
+//			doc.append("datainserimento", "TODO");
+//			doc.append("status", dati.getStatus());
+//			doc.append("idDataset", dati.getIdDataset());
+//			doc.append("datasetVersion", dati.getDatasetVersion());
+//			doc.append("numDocuments", dati.getNumRowToInsFromJson());
+//
+//			WriteResult res = coll.insert(doc);
+//
+//			if (res.getN()<1) return false;
+//		} catch (Exception e ) {
+//			throw e;
+//		}
+//		return true;
+//	}
+//
+//
+//	public String insertStatusRecordArray(String tenant, HashMap<String, DatasetBulkInsert> datiToIns) throws Exception {
+//		String globIdRequest=null;
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//			long millis=new Date().getTime();
+//
+//
+//			globIdRequest=tenant+"_"+millis;
+//			List<BasicDBObject> arrDocs= new ArrayList<BasicDBObject>();
+//			DatasetBulkInsert dati=null;
+//
+//			Iterator<String> iter= datiToIns.keySet().iterator();
+//			while (iter.hasNext()) {
+//				String key=iter.next();
+//				dati=datiToIns.get(key);
+//				BasicDBObject doc = new BasicDBObject("tenant ", tenant);
+//				doc.append("idRequest", dati.getRequestId());
+//				doc.append("datainserimento", "TODO");
+//				doc.append("status", dati.getStatus());
+//				doc.append("idDataset", dati.getIdDataset());
+//				doc.append("datasetVersion", dati.getDatasetVersion());
+//				doc.append("numDocuments", dati.getNumRowToInsFromJson());
+//
+//
+//				doc.append("stream", dati.getStream());
+//				doc.append("datasetCode", dati.getDatasetCode());
+//				doc.append("sensor", dati.getSensor());
+//
+//
+//
+//				arrDocs.add(doc);
+//			}
+//			BasicDBObject obj=new BasicDBObject();
+//			obj.append("globalRequestID", globIdRequest);
+//			obj.append("globStatus", "start_ins");
+//			obj.put("richieste", arrDocs);
+//			WriteResult res = coll.insert(obj);
+//			//System.out.println(res.getN()+"---->"+res);
+//		} catch (Exception e ) {
+//			throw e;
+//		}
+//		return globIdRequest;
+//	}
+//
+//
+//	
+//
+//
+//
+//	public boolean updateStatusRecordArray(String tenant,String globIdRequest, String newStatus, HashMap<String, DatasetBulkInsert> datiToIns) throws Exception {
+//
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//
+//			BasicDBObject obj=new BasicDBObject();
+//			obj.append("globalRequestID", globIdRequest);
+//			coll.remove(obj);
+//
+//
+//
+//			List<BasicDBObject> arrDocs= new ArrayList<BasicDBObject>();
+//			DatasetBulkInsert dati=null;
+//
+//			Iterator<String> iter= datiToIns.keySet().iterator();
+//			while (iter.hasNext()) {
+//				String key=iter.next();
+//				dati=datiToIns.get(key);
+//				BasicDBObject doc = new BasicDBObject("tenant ", tenant);
+//				doc.append("idRequest", dati.getRequestId());
+//				doc.append("datainserimento", "TODO");
+//				doc.append("status", dati.getStatus());
+//				doc.append("idDataset", dati.getIdDataset());
+//				doc.append("datasetVersion", dati.getDatasetVersion());
+//				doc.append("numDocuments", dati.getNumRowToInsFromJson());
+//
+//
+//				doc.append("stream", dati.getStream());
+//				doc.append("datasetCode", dati.getDatasetCode());
+//				doc.append("sensor", dati.getSensor());
+//
+//
+//				arrDocs.add(doc);
+//			}
+//			obj.append("globStatus", newStatus);
+//			obj.put("richieste", arrDocs);
+//			WriteResult res = coll.insert(obj);
+//			//System.out.println(res.getN()+"---->"+res);
+//			//if (res.getN()<1) return false;
+//		} catch (Exception e ) {
+//			throw e;
+//		}
+//		return true;
+//	}
+//
+//
+//
+//
+//	public boolean updateGlobalRequestStatus(String  globIdRequest, String stato, String statoOld) throws Exception {
+//
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//			BasicDBObject searchQuery = new BasicDBObject().append("globalRequestID", globIdRequest).append("globStatus", statoOld);			
+//
+//
+//			BasicDBObject doc = new BasicDBObject();
+//
+//			doc.append("$set",new BasicDBObject("globStatus", stato));
+//			WriteResult res = coll.update(searchQuery,doc);
+//			//System.out.println(res.getN());
+//			if (res.getN()<1) return false;
+//		} catch (Exception e ) {
+//			throw e;
+//		}
+//		return true;
+//	}	
+
+//	public ArrayList<DatasetBulkInsert> getElencoRichiesteByGlobRequestId(String globIdRequest) throws Exception {
+//		DBCursor  cursor=null;
+//		ArrayList<DatasetBulkInsert> ret = new ArrayList<DatasetBulkInsert>();
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//			BasicDBObject searchQuery = new BasicDBObject().append("globalRequestID", globIdRequest);			
+//
+//			cursor = coll.find(searchQuery);
+//
+//			if (!cursor.hasNext()) {
+//				//todo eccezione 
+//			}
+//
+//			DBObject docOrig=cursor.next();
+//			BasicDBList richieste= (BasicDBList)docOrig.get("richieste"); 
+//			for (int i = 0 ; i< richieste.size();i++) {
+//				BasicDBObject curReq=(BasicDBObject)richieste.get(i);
+//				DatasetBulkInsert cur=new DatasetBulkInsert();
+//				cur.setDatasetVersion(curReq.getLong("datasetVersion"));
+//				cur.setIdDataset(curReq.getLong("idDataset"));
+//				cur.setRequestId(curReq.getString("idRequest"));
+//				cur.setNumRowToInsFromJson(curReq.getInt("numDocuments"));
+//				cur.setStatus(curReq.getString("status"));
+//
+//
+//
+//				cur.setStream(curReq.getString("stream"));
+//				cur.setDatasetCode(curReq.getString("datasetCode"));
+//				cur.setSensor(curReq.getString("sensor"));
+//
+//
+//
+//
+//				ret.add(cur);
+//			}
+//
+//
+//
+//		} catch (Exception e ) {
+//			throw e;
+//		} finally {
+//			try {
+//				cursor.close();
+//			} catch (Exception e ) {}
+//		}
+//		return ret;
+//	}
+//
+//
+//	public boolean updateSingleArreayRequestStatus(String  globIdRequest, String stato, String idRequest) throws Exception {
+//		DBCursor  cursor=null;
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//			BasicDBObject searchQuery = new BasicDBObject().append("globalRequestID", globIdRequest);			
+//
+//			cursor = coll.find(searchQuery);
+//
+//
+//			if (!cursor.hasNext()) {
+//				//todo eccezione 
+//			}
+//			DBObject docOrig=cursor.next();
+//
+//			BasicDBList richieste= (BasicDBList)docOrig.get("richieste"); 
+//
+//
+//			List<BasicDBObject> arrDocs= new ArrayList<BasicDBObject>();
+//
+//
+//			for (int i = 0 ; i< richieste.size();i++) {
+//				BasicDBObject curReq=(BasicDBObject)richieste.get(i);
+//				if (  ((String)curReq.get("idRequest")).equalsIgnoreCase(idRequest) ) {
+//					//curReq.append("$set",new BasicDBObject("status", stato));
+//					//curReq.remove("status");
+//					curReq.put("status",stato);
+//
+//				}
+//				arrDocs.add(curReq);
+//			}
+//
+//
+//			((BasicDBObject)docOrig).remove("richieste");
+//			((BasicDBObject)docOrig).put("richieste",arrDocs);
+//
+//
+//			WriteResult res = coll.update(searchQuery,docOrig);
+//			//System.out.println(res.getN());
+//			if (res.getN()<1) return false;
+//		} catch (Exception e ) {
+//			throw e;
+//		} finally {
+//			try {
+//				cursor.close();
+//			} catch (Exception e ) {}
+//		}
+//		return true;
+//	}	
+//
+//
+//	public boolean updateStatusRecord(String tenant, DatasetBulkInsert dati) throws Exception {
+//
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STATUS);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_STATUS));
+//
+//			BasicDBObject searchQuery = new BasicDBObject().append("idRequest", dati.getRequestId());			
+//
+//
+//			BasicDBObject doc = new BasicDBObject();
+//
+//			doc.append("$set",new BasicDBObject("status", dati.getStatus()));
+//			WriteResult res = coll.update(searchQuery,doc);
+//			//System.out.println(res.getN());
+//			if (res.getN()<1) return false;
+//		} catch (Exception e ) {
+//			throw e;
+//		}
+//		return true;
+//	}
+
+
+
+
+//
+//	public int insertBulk(String tenant, DatasetBulkInsert dati, boolean creatIndex) throws Exception {
+//		String riga=null;
+//		DBObject dbObject = null;
+//		BulkWriteResult result=null;
+//		try {
+//			//System.out.println("###########################################");
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+//
+//
+//			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+//			DBCollection coll = db.getCollection("stage_"+dati.getGlobalReqId());
+//			if (creatIndex) coll.createIndex(new BasicDBObject("idRequest", 1));
+//
+//
+//			BulkWriteOperation builder = coll.initializeOrderedBulkOperation();
+//			for (int i = 0; i<dati.getRowsToInsert().size(); i++) {
+//				riga="{idRequest:\""+dati.getRequestId()+"\" , "+dati.getRowsToInsert().get(i)+"}";
+//				//System.out.println(riga);
+//				builder.insert((DBObject) JSON.parse(riga,new JSONCallbackTimeZone()));
+//			}
+//
+//			result = builder.execute();
+//		} catch (Exception e ) {
+//			e.printStackTrace();
+//			throw e;
+//		}
+//		return result==null? -1 : result.getInsertedCount();
+//
+//	}
+//
+//
+//	public boolean dropCollection(String tenant,String globIdRequest) throws Exception {
+//		BulkWriteResult result=null;
+//
+//		try {
+//			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_APPOGGIO);
+//			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+//
+//
+//			//DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_APPOGGIO));
+//			DBCollection coll = db.getCollection("stage_"+globIdRequest);
+//
+//			coll.drop();
+//
+//
+//
+//			//System.out.println("copy bulk ready ... idRequest="+blockInfo.getRequestId()+"   countExpected="+blockInfo.getNumRowToInsFromJson()+ "     documents in bulkoperation="+count);
+//
+//
+//
+//
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			throw e;
+//		} finally {
+//
+//		}
+//		return true;
+//	}
+//
 
 
 	public MongoStreamInfo getStreamInfoForDataset (String tenant,long idDataset,long datasetVersion) {

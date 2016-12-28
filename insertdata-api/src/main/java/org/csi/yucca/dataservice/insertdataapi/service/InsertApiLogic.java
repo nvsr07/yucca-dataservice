@@ -57,7 +57,9 @@ public class InsertApiLogic {
 		//System.out.println(" TIMETIME insertManager -- fine ciclo UNO --> "+System.currentTimeMillis());
 		
 		
-		String idRequest=mongoAccess.insertStatusRecordArray(tenant,datiToIns);
+//		String idRequest=mongoAccess.insertStatusRecordArray(tenant,datiToIns);
+		long millis=new Date().getTime();
+		String idRequest =tenant+"_"+millis;
 
 		//System.out.println(" TIMETIME insertManager -- fine inserimento start ins --> "+System.currentTimeMillis());
 

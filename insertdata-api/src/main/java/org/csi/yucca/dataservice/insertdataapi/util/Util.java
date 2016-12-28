@@ -99,8 +99,11 @@ public class Util {
 		// info.setFields(fields);
 		// m.setInfo(info);;
 
-		String out = Util.cleanStringCamelCase("asd-sfd.t/12", 12);
-		System.out.println(out);
+		// String out = Util.cleanStringCamelCase("asd-sfd.t/12", 12);
+		
+		Float f = Float.parseFloat("19.92519358989357");
+		
+		System.out.println(f +"_"+f.doubleValue());
 	}
 
 	public static String join(String[] strings, String glue) {
@@ -138,5 +141,6 @@ public class Util {
 		}
 		return out;
 	}
+	
 
 }
