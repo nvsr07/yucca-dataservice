@@ -22,7 +22,7 @@ public class JMSMessageListener implements MessageListener {
 				e.printStackTrace();
 			}
         } else {
-        	log.info("---->Received: " + message);
+        	//log.info("---->Received: " + message);
         }
 
 	}
