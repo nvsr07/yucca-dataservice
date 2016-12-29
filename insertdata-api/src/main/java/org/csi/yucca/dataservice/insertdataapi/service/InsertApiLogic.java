@@ -423,7 +423,18 @@ public class InsertApiLogic {
 		
 		
 		int i =0;
-		JSONArray arrayValori=(JSONArray)bloccoDaIns.get("values");
+		Object valuesObject = bloccoDaIns.get("values");
+		JSONArray arrayValori;
+		
+		if (valuesObject instanceof JSONArray)
+		{
+			arrayValori = (JSONArray)bloccoDaIns.get("values");
+		}
+		else {
+			arrayValori = new JSONArray();
+			arrayValori.add(valuesObject);
+		}
+		
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		//System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
 		int numeroCampiMongo=elencoCampi.size();
@@ -499,7 +510,18 @@ public class InsertApiLogic {
 		
 		
 		int i =0;
-		JSONArray arrayValori=(JSONArray)bloccoDaIns.get("values");
+		Object valuesObject = bloccoDaIns.get("values");
+		JSONArray arrayValori;
+		
+		if (valuesObject instanceof JSONArray)
+		{
+			arrayValori = (JSONArray)bloccoDaIns.get("values");
+		}
+		else {
+			arrayValori = new JSONArray();
+			arrayValori.add(valuesObject);
+		}
+		
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		//System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
 		int numeroCampiMongo=elencoCampi.size();
@@ -689,7 +711,18 @@ public class InsertApiLogic {
 		//			    "datasetVersion" : 1,
 		//			    "streamCode" : "TrFl",
 
-		JSONArray arrayValori=(JSONArray)bloccoDaIns.get("values");
+		Object valuesObject = bloccoDaIns.get("values");
+		JSONArray arrayValori;
+		
+		if (valuesObject instanceof JSONArray)
+		{
+			arrayValori = (JSONArray)bloccoDaIns.get("values");
+		}
+		else {
+			arrayValori = new JSONArray();
+			arrayValori.add(valuesObject);
+		}
+		
 		ArrayList<String> rigadains= new ArrayList<String>();
 		int numeroCampiMongo=elencoCampi.size();
 		FieldsMongoDto campotimeStamp=null;
