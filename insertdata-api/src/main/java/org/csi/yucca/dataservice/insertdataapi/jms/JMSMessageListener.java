@@ -22,11 +22,13 @@ public class JMSMessageListener implements MessageListener {
 	
 	public void onMessage(Message message) {
 		
+		
 		try {
 			if (message instanceof TextMessage)
 			{
 				TextMessage txtMessage = (TextMessage)message ;
-					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, "", "", "");
+				log.error("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
+				JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, "", "", "");
 			}
 			else 
 			{
