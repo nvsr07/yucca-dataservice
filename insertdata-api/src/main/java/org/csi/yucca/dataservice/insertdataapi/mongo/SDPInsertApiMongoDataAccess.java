@@ -449,7 +449,7 @@ public class SDPInsertApiMongoDataAccess {
 			queryTot.add( new BasicDBObject("streams.stream.virtualEntityCode",sensor));
 			BasicDBObject query = new BasicDBObject("$and", queryTot);
 			
-			log.info("[QUERY]"+query);
+			log.debug("[QUERY]"+query);
 			
 			cursor = coll.find(query).sort(orderby);
 			while (cursor.hasNext()) {

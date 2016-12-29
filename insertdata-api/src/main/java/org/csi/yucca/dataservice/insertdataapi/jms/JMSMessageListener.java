@@ -27,7 +27,7 @@ public class JMSMessageListener implements MessageListener {
 			if (message instanceof TextMessage)
 			{
 				TextMessage txtMessage = (TextMessage)message ;
-				log.error("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
+				log.debug("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
 				JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, "", "", "");
 			}
 			else 
