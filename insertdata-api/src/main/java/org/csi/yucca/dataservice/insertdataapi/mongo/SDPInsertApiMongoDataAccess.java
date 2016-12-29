@@ -502,7 +502,7 @@ public class SDPInsertApiMongoDataAccess {
 				cursor.close();
 			} catch (Exception e ) {}
 		}
-		log.debug("Size:"+ret==null?0:ret.size());
+		log.debug("Size:"+(ret==null?0:ret.size()));
 		return ret;
 	}
 

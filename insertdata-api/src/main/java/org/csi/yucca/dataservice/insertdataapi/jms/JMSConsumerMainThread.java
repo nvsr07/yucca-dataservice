@@ -74,7 +74,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 						if (!sessions.containsKey(newTenant)) // new tenant!
 						{
 							Session session = connection.createSession(false,Session.AUTO_ACKNOWLEDGE);
-							Destination destination = session.createQueue(VIRTUAL_QUEUE_CONSUMER_INSERTAPI_INPUT+"."+newTenant+".>");
+							Destination destination = session.createQueue(VIRTUAL_QUEUE_CONSUMER_INSERTAPI_INPUT+"."+newTenant+".*");
 							log.info("[JMSConsumerMainThread::run] Connected to queue:"+ destination.toString());
 							MessageConsumer consumer = session.createConsumer(destination);
 							consumer.setMessageListener(new JMSMessageListener(newTenant));
