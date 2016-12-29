@@ -31,6 +31,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 
 	private Connection connection;
 	private Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
+	private Map<String, MessageConsumer> consumers = new ConcurrentHashMap<String, MessageConsumer>();
 
 	public void run() {
 
@@ -61,7 +62,9 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 						String oldTenant = (String) iter.next();
 						if (!tenants.contains(oldTenant))
 						{
+							consumers.get(oldTenant).close();
 							sessions.get(oldTenant).close();
+							consumers.remove(oldTenant);
 							sessions.remove(oldTenant);
 						}
 					}
@@ -76,6 +79,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 							MessageConsumer consumer = session.createConsumer(destination);
 							consumer.setMessageListener(new JMSMessageListener(newTenant));
 							sessions.put(newTenant, session);
+							consumers.put(newTenant, consumer);
 						}
 					}
 				} catch (MongoAccessException e) {
@@ -94,9 +98,14 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 	{
 		log.info("[JMSConsumerMainThread::run] Closing connection...");
 		try {
-			Iterator<Session> iter =sessions.values().iterator(); 
+			Iterator<MessageConsumer> iter =consumers.values().iterator(); 
 			while (iter.hasNext()) {
 				iter.next().close();
+			}
+			
+			Iterator<Session> iter2 =sessions.values().iterator(); 
+			while (iter2.hasNext()) {
+				iter2.next().close();
 			}
 			
 			connection.close();
