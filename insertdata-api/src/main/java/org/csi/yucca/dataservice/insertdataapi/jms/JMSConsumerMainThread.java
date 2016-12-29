@@ -75,6 +75,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 							log.info("[JMSConsumerMainThread::run] Connected to queue:"+ destination.toString());
 							MessageConsumer consumer = session.createConsumer(destination);
 							consumer.setMessageListener(new JMSMessageListener(newTenant));
+							sessions.put(newTenant, session);
 						}
 					}
 				} catch (MongoAccessException e) {
