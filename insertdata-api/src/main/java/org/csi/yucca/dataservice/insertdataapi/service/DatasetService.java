@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,15 +31,14 @@ public class DatasetService extends AbstractService {
 	@Path("/input/{codTenant}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public DatasetBulkInsertOutput dataInsert(@Context HttpServletRequest request, String jsonData,
+	public DatasetBulkInsertOutput dataInsert(String jsonData,
 			@PathParam(value="codTenant") String codTenant, @HeaderParam(value="UNIQUE_ID")String uniqueid,
 			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
 			 @Context final HttpServletResponse response) throws InsertApiBaseException {
-		
-		
-		return super.dataInsert(request,response,jsonData,codTenant,uniqueid,forwardfor,authInfo);
-		
-		
+		DatasetBulkInsertOutput out = super.dataInsert(jsonData,codTenant,uniqueid,forwardfor,authInfo);
+		if (response!=null)
+			response.setStatus(Status.ACCEPTED.getStatusCode());
+		return out;
 	}
 
 	@Override

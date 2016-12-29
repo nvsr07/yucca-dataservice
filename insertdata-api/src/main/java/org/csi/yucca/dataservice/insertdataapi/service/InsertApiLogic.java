@@ -34,7 +34,7 @@ public class InsertApiLogic {
 
 		//System.out.println(" TIMETIME insertManager -- start --> "+System.currentTimeMillis());
 
-		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
+		
 		SDPInsertApiSolrDataAccess solrAccess=new SDPInsertApiSolrDataAccess();
 		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
 		DatasetBulkInsert curBulkToIns=null;

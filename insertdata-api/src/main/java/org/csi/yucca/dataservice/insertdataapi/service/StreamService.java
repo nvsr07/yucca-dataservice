@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
@@ -34,9 +35,10 @@ public class StreamService extends AbstractService {
 			@PathParam(value="codTenant") String codTenant, @HeaderParam(value="UNIQUE_ID")String uniqueid,
 			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
 			 @Context final HttpServletResponse response) throws InsertApiBaseException  {
-		
-		
-		return super.dataInsert(request,response,jsonData,codTenant,uniqueid,forwardfor,authInfo);
+		DatasetBulkInsertOutput out = super.dataInsert(jsonData,codTenant,uniqueid,forwardfor,authInfo);
+		if (response!=null)
+			response.setStatus(Status.ACCEPTED.getStatusCode());
+		return out;
 	}
 
 	@Override

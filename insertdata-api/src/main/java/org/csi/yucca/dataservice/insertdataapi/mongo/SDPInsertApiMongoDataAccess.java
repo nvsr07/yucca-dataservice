@@ -3,11 +3,13 @@ package org.csi.yucca.dataservice.insertdataapi.mongo;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
@@ -691,6 +693,52 @@ public class SDPInsertApiMongoDataAccess {
 
 
 		return ret;
+	}
+
+
+
+
+
+	public Set<String> getTenantList() throws MongoAccessException {
+		Set<String> tenants = new HashSet<String>();
+
+	
+		log.info("getTenantList....");
+		DBCursor cursor =null;
+		try {
+			MongoClient mongoClient =SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);	
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_TENANT));
+			String collection=SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
+			DBCollection coll = db.getCollection(collection);
+
+			cursor = coll.find();
+			while (cursor.hasNext()) {
+
+				DBObject obj=cursor.next();
+				String tenantCode=obj.get("tenantCode").toString();
+
+				// if almost one phoenix schema defined
+				boolean oneSchema = (obj.get("socialPhoenixSchemaName")!=null) ||
+							(obj.get("dataPhoenixSchemaName")!=null) ||
+							(obj.get("mediaPhoenixSchemaName")!=null)||
+							(obj.get("measuresPhoenixSchemaName")!=null);
+				if (oneSchema)
+					tenants.add(tenantCode);
+			}
+		} catch (Exception e) {
+			log.error("Error during tenant List",e);
+			throw new MongoAccessException(e);
+		} finally {
+			try { cursor.close(); } catch (Exception ec) {}
+
+		}
+		
+		return tenants;
+	
+	
+	
+	
+	
 	}
 
 }

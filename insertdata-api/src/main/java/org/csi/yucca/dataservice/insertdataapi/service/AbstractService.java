@@ -41,8 +41,7 @@ public abstract class AbstractService {
 		return  true;
 	}
 
-	public DatasetBulkInsertOutput dataInsert(HttpServletRequest request,
-			HttpServletResponse response, String jsonData, String codTenant, String uniqueid,
+	public DatasetBulkInsertOutput dataInsert( String jsonData, String codTenant, String uniqueid,
 			String forwardfor, String authInfo) {
 		if (!validationJsonFormat(jsonData))
 		{
@@ -118,7 +117,7 @@ public abstract class AbstractService {
 			log.info( "[InsertApi::insertApiDataset] END --> elapsed: "+deltaTime);
 		}
 
-		response.setStatus(Status.ACCEPTED.getStatusCode());
+//		response.setStatus(Status.ACCEPTED.getStatusCode());
 		return outData;
 
 	}

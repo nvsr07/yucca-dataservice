@@ -42,7 +42,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	
-	private static Map<String, CollectionConfDto> params =   Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(1,TimeUnit.MINUTES));  // new HashMap<String, CollectionConfDto>();
+	private static Map<String, CollectionConfDto> params =   Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(10,TimeUnit.MINUTES));  // new HashMap<String, CollectionConfDto>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
 
