@@ -1,5 +1,6 @@
 package org.csi.yucca.dataservice.insertdataapi.jms;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,7 +47,6 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			connection.start();
 			connection.setExceptionListener(this);
 
-			log.info("[JMSConsumerMainThread::run] Before Get tenant list and update sessions...");
 
 			while (true)
 			{
@@ -55,21 +55,24 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 				Set<String> tenants;
 				try {
 					tenants = mongoAccess.getTenantList();
-					while (sessions.keySet().iterator().hasNext())
+					Iterator<String> iter = sessions.keySet().iterator();
+					while (iter.hasNext())
 					{
-						String oldTenant = (String) sessions.keySet().iterator().next();
+						String oldTenant = (String) iter.next();
 						if (!tenants.contains(oldTenant))
 						{
 							sessions.get(oldTenant).close();
 							sessions.remove(oldTenant);
 						}
 					}
-					while (tenants.iterator().hasNext()) {
-						String newTenant = (String) tenants.iterator().next();
+					iter = tenants.iterator();
+					while (iter.hasNext()) {
+						String newTenant = (String) iter.next();
 						if (!sessions.containsKey(newTenant)) // new tenant!
 						{
 							Session session = connection.createSession(false,Session.AUTO_ACKNOWLEDGE);
 							Destination destination = session.createQueue(VIRTUAL_QUEUE_CONSUMER_INSERTAPI_INPUT+"."+newTenant+".>");
+							log.info("[JMSConsumerMainThread::run] Connected to queue:"+ destination.toString());
 							MessageConsumer consumer = session.createConsumer(destination);
 							consumer.setMessageListener(new JMSMessageListener(newTenant));
 						}
