@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertIOperationReport;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
@@ -42,7 +43,7 @@ public abstract class AbstractService {
 	}
 
 	public DatasetBulkInsertOutput dataInsert( String jsonData, String codTenant, String uniqueid,
-			String forwardfor, String authInfo) {
+			String forwardfor, String authInfo) throws InsertApiBaseException {
 		if (!validationJsonFormat(jsonData))
 		{
 			throw new InsertApiBaseException("E012");
@@ -104,9 +105,7 @@ public abstract class AbstractService {
 			throw insEx;
 		} catch (Exception e) {
 			log.fatal( "[InsertApi::insertApiDataset] GenericException "+e);
-			InsertApiBaseException newEx=new InsertApiBaseException("UNKNOWN");
-			accLog.setErrore(newEx.getErrorCode() + " - " + newEx.getErrorName());
-			throw newEx;
+			throw new InsertApiRuntimeException(e);
 		} finally {
 			try {
 				deltaTime=System.currentTimeMillis()-starTtime;
@@ -126,7 +125,7 @@ public abstract class AbstractService {
 			String jsonData) throws Exception ;
 
 	
-	protected DatasetBulkInsertOutput inserimentoGeneralizzato(String codTenant,HashMap<String, DatasetBulkInsert>datiDains) throws Exception{
+	protected DatasetBulkInsertOutput inserimentoGeneralizzato(String codTenant,HashMap<String, DatasetBulkInsert>datiDains) throws InsertApiBaseException{
 		DatasetBulkInsertOutput outData=new DatasetBulkInsertOutput();
 		AccountingLog accLog=new AccountingLog();
 

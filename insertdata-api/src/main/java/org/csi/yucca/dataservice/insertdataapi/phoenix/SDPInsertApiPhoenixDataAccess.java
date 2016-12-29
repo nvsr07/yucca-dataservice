@@ -4,6 +4,7 @@ import java.beans.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Iterator;
@@ -16,6 +17,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
@@ -45,7 +47,7 @@ public class SDPInsertApiPhoenixDataAccess {
 
 
 
-	public int insertBulk(String tenant, DatasetBulkInsert dati) throws Exception {
+	public int insertBulk(String tenant, DatasetBulkInsert dati) {
 		String riga=null;
 		DBObject dbObject = null;
 		BulkWriteResult result=null;
@@ -262,19 +264,30 @@ public class SDPInsertApiPhoenixDataAccess {
 	            conn.commit();            
 	        } catch (Exception e) {	
 	        	log.error("Insert Phoenix Error", e);
-	        	conn.rollback();
-	        	throw new Exception(e);
+	        	try {
+					conn.rollback();
+				} catch (SQLException e1) {
+		        	log.error("Impossible to rollback", e1);
+				}
+	        	throw new InsertApiRuntimeException(e);
 	        } finally {
-	        	 stmt.close();
-	        	 conn.close();
+	        	try {
+		        	 stmt.close();
+		        	 conn.close();
+				} catch (SQLException e1) {
+		        	log.error("Impossible to close",e1);
+				}
 	        }
 	       
 	    
 	        
 	
-		} catch (Exception e ) {
-			e.printStackTrace();
-			throw e;
+		} catch (SQLException e ) {
+			log.error("Phoenix runtime exception",e);
+			throw new InsertApiRuntimeException(e);
+		}catch (InsertApiRuntimeException e1 ) {
+			log.error("Phoenix runtime exception",e1);
+			throw e1;
 		}
 		return result==null? -1 : result.getInsertedCount();
 

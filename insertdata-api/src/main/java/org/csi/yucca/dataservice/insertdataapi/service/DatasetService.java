@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
 import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
@@ -34,7 +35,7 @@ public class DatasetService extends AbstractService {
 	public DatasetBulkInsertOutput dataInsert(String jsonData,
 			@PathParam(value="codTenant") String codTenant, @HeaderParam(value="UNIQUE_ID")String uniqueid,
 			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
-			 @Context final HttpServletResponse response) throws InsertApiBaseException {
+			 @Context final HttpServletResponse response) throws InsertApiBaseException, InsertApiRuntimeException {
 		DatasetBulkInsertOutput out = super.dataInsert(jsonData,codTenant,uniqueid,forwardfor,authInfo);
 		if (response!=null)
 			response.setStatus(Status.ACCEPTED.getStatusCode());

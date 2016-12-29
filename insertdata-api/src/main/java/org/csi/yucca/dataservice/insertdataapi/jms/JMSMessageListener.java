@@ -8,6 +8,8 @@ import javax.jms.TextMessage;
 import org.apache.activemq.command.ActiveMQDestination;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.service.StreamService;
 
 public class JMSMessageListener implements MessageListener {
@@ -28,7 +30,14 @@ public class JMSMessageListener implements MessageListener {
 			{
 				TextMessage txtMessage = (TextMessage)message ;
 				log.debug("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
-				JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, "", "", "");
+				try {
+					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
+				} catch (InsertApiBaseException e) {
+					log.warn("[JMSMessageListener::onMessage]  Invalid message for JMS ["+e.getErrorCode()+"]: "+e.getErrorName());
+				} catch (InsertApiRuntimeException e) {
+					log.error("[JMSMessageListener::onMessage]  System error for JMS",e);
+					throw e;
+				}
 			}
 			else 
 			{

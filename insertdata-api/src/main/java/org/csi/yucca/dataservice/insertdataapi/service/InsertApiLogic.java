@@ -128,7 +128,7 @@ public class InsertApiLogic {
 
 	public HashMap<String, DatasetBulkInsert> parseJsonInputDataset(String tenant, String jsonInput) throws Exception {
 		int i =0;
-		boolean endArray=false;
+		boolean endArray=false; 
 		JSONObject ooo=null;
 		HashMap<String, DatasetBulkInsert> ret= new HashMap<String, DatasetBulkInsert>();
 		SDPInsertApiMongoDataAccess mongoAccess=new SDPInsertApiMongoDataAccess();
@@ -224,7 +224,7 @@ public class InsertApiLogic {
 					endArray=true;
 				} else {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e );
-					throw e;
+					throw new InsertApiBaseException("E012");
 				}
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" + ex );
@@ -302,7 +302,7 @@ public class InsertApiLogic {
 					endArray=true;
 				} else {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e );
-					throw e;
+					throw new InsertApiBaseException("E012");
 				}
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception" , ex );
@@ -380,7 +380,7 @@ public class InsertApiLogic {
 					endArray=true;
 				} else {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e );
-					throw e;
+					throw new InsertApiBaseException("E012");
 				}
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex );

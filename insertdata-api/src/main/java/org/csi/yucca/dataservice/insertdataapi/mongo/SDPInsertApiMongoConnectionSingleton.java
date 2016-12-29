@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
@@ -46,7 +47,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
 
-	public synchronized static SDPInsertApiMongoConnectionSingleton getInstance() throws Exception{
+	public synchronized static SDPInsertApiMongoConnectionSingleton getInstance(){
 		//if(instance == null || singletonToRefresh()) {
 		if(instance == null) {
 			//if (instance!=null) instance.cleanMongoConnection(); 
@@ -70,7 +71,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 		}
 	}
 	
-	private SDPInsertApiMongoConnectionSingleton() throws Exception{
+	private SDPInsertApiMongoConnectionSingleton() {
 		DBCursor cursor=null;
 		try {
 			mongoConnection = new HashMap<String, MongoClient>();
@@ -108,13 +109,13 @@ public class SDPInsertApiMongoConnectionSingleton {
 		}
 	}
 
-	public CollectionConfDto getDataDbConfiguration(String tenantCode) throws Exception {
+	public CollectionConfDto getDataDbConfiguration(String tenantCode)  {
 		if (null==params.get(tenantCode)) reloadDataDbConfig();
 		return params.get(tenantCode);
 	}
 
 
-	private void reloadDataDbConfig() throws Exception {
+	private void reloadDataDbConfig() {
 		log.info("Reloading tenant configuration....");
 		DBCursor cursor =null;
 		try {
@@ -152,7 +153,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 			}
 		} catch (Exception e) {
 			log.error("Error",e);
-			throw e;
+			throw new InsertApiRuntimeException(e);
 		} finally {
 			try { cursor.close(); } catch (Exception ec) {}
 
