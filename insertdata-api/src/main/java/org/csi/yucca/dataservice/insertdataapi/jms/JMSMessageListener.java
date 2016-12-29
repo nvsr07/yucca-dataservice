@@ -21,9 +21,22 @@ public class JMSMessageListener implements MessageListener {
 	}
 	
 	public void onMessage(Message message) {
-
-		log.info("Message:!!!"+message.toString()+"!!!");
-		JMSMessageListener.streamService.dataInsert(message.toString(), codTenant, "", "", "");
+		
+		try {
+			if (message instanceof TextMessage)
+			{
+				TextMessage txtMessage = (TextMessage)message ;
+					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, "", "", "");
+			}
+			else 
+			{
+				log.warn("[JMSMessageListener::onMessage]  No textMessage"+message);
+			}
+		} catch (JMSException e) {
+			log.error("[JMSMessageListener::onMessage]  textMessage problem", e);
+		}
+		
+		
 		
 	}
 
