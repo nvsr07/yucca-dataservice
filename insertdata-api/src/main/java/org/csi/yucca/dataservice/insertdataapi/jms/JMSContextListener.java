@@ -1,5 +1,8 @@
 package org.csi.yucca.dataservice.insertdataapi.jms;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.servlet.ServletContextEvent;
@@ -14,18 +17,18 @@ import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 @WebListener
 public class JMSContextListener implements ServletContextListener {
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
-	JMSConsumerMainThread th;
+	private  ExecutorService exService = null;
 	
-	public void contextDestroyed(ServletContextEvent arg0) {
-		log.info("[JMSContextListener::contextDestroyed]");
-		th.closing();
-	}
 
 	public void contextInitialized(ServletContextEvent arg0) {
 		log.info("[JMSContextListener::contextInitialized]");
-		th = new JMSConsumerMainThread();
-		Thread thread = new Thread(th);
-        thread.start();
+		exService = Executors.newSingleThreadExecutor();
+		exService.execute(new JMSConsumerMainThread());
+	}
+
+	public void contextDestroyed(ServletContextEvent arg0) {
+		log.info("[JMSContextListener::contextDestroyed]");
+		exService.shutdownNow();
 	}
 
 }

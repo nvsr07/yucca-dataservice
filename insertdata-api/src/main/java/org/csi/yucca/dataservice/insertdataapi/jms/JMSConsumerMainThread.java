@@ -33,6 +33,8 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 	private Map<String, Session> sessions = new ConcurrentHashMap<String, Session>();
 	private Map<String, MessageConsumer> consumers = new ConcurrentHashMap<String, MessageConsumer>();
 
+	
+	
 	public void run() {
 
 		try {
@@ -88,13 +90,17 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 				Thread.sleep(5*60*1000);
 			}
 			
+		} 
+		catch (InterruptedException ie) {
+			log.warn("[JMSConsumerMainThread::run] JMSConsumerMainThread shutdown");
+			closing();
 		} catch (Exception e) {
 			log.error("[JMSConsumerMainThread::run] Error on Starting connection..."+e.getMessage(), e);
-
+			
 		}
 	}
 	
-	public void closing()
+	private void closing()
 	{
 		log.info("[JMSConsumerMainThread::run] Closing connection...");
 		try {
