@@ -510,18 +510,7 @@ public class InsertApiLogic {
 		
 		
 		int i =0;
-		Object valuesObject = bloccoDaIns.get("values");
-		JSONArray arrayValori;
-		
-		if (valuesObject instanceof JSONArray)
-		{
-			arrayValori = (JSONArray)bloccoDaIns.get("values");
-		}
-		else {
-			arrayValori = new JSONArray();
-			arrayValori.add(valuesObject);
-		}
-		
+		JSONArray arrayValori=(JSONArray)bloccoDaIns.get("values");
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		//System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
 		int numeroCampiMongo=elencoCampi.size();
