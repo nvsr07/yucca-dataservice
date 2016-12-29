@@ -22,20 +22,8 @@ public class JMSMessageListener implements MessageListener {
 	
 	public void onMessage(Message message) {
 
-		try {
-		log.info("Class JMSDestination=["+message.getJMSDestination().getClass().getCanonicalName()+"]");
-		if (message.getJMSDestination() instanceof ActiveMQDestination)
-		{
-			ActiveMQDestination mqDest = (ActiveMQDestination) message.getJMSDestination();
-			log.info("ActiveMQDestination physicalName=["+mqDest.getPhysicalName()+"]");
-		}
-		
+		log.info("Message:!!!"+message.toString()+"!!!");
 		JMSMessageListener.streamService.dataInsert(message.toString(), codTenant, "", "", "");
-		}
-		catch (JMSException e)
-		{
-			log.error("Error", e);
-		}
 		
 	}
 

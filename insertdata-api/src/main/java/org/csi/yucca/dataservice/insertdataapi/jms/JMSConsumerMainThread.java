@@ -81,7 +81,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 				} catch (MongoAccessException e) {
 					log.error("[JMSConsumerMainThread::run] Error reading tenant list... continue with old list", e);
 				}
-				Thread.sleep(10*1000);
+				Thread.sleep(5*60*1000);
 			}
 			
 		} catch (Exception e) {
@@ -94,9 +94,9 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 	{
 		log.info("[JMSConsumerMainThread::run] Closing connection...");
 		try {
-			while (sessions.values().iterator().hasNext()) {
-				Session type = (Session) sessions.values().iterator().next();
-				type.close();
+			Iterator<Session> iter =sessions.values().iterator(); 
+			while (iter.hasNext()) {
+				iter.next().close();
 			}
 			
 			connection.close();
