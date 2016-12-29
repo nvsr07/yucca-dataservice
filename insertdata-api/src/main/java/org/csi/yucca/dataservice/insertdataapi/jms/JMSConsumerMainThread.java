@@ -46,6 +46,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			connection.start();
 			connection.setExceptionListener(this);
 
+			log.info("[JMSConsumerMainThread::run] Before Get tenant list and update sessions...");
 
 			while (true)
 			{
