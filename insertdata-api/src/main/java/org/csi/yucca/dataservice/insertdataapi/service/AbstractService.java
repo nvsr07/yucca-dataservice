@@ -186,9 +186,10 @@ public abstract class AbstractService {
 			outData.setInsertException((InsertApiBaseException)insEx);
 		} catch (Exception e) {
 			log.fatal( "[InsertApi::insertApi] GenericException "+e);
-			
-			InsertApiBaseException newEx=new InsertApiBaseException("UNKNOWN");
-			outData.setInsertException(newEx);
+			if (e instanceof InsertApiRuntimeException)
+				throw (InsertApiRuntimeException)e;
+			else 
+				throw new InsertApiRuntimeException(e);
 		} finally {
 		
 			log.debug( "[InsertApi::inserimentoGeneralizzato] END ");

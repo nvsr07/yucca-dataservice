@@ -32,7 +32,7 @@ public class JMSMessageListener implements MessageListener {
 				log.info("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
 				try {
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
-					try {Thread.sleep(5000);} catch (InterruptedException e) {} // for testing, to remove
+//					try {Thread.sleep(5000);} catch (InterruptedException e) {} // for testing, to remove
 				} catch (InsertApiBaseException e) {
 					log.warn("[JMSMessageListener::onMessage]  Invalid message for JMS ["+e.getErrorCode()+"]: "+e.getErrorName());
 				} catch (InsertApiRuntimeException e) {
