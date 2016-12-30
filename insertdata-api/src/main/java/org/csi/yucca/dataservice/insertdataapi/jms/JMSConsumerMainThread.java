@@ -78,6 +78,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 							sessions.get(oldTenant).close();
 							consumers.remove(oldTenant);
 							sessions.remove(oldTenant);
+							log.info("[JMSConsumerMainThread::run] Disconnected for tenant:"+ oldTenant);
 						}
 					}
 					iter = tenants.iterator();
