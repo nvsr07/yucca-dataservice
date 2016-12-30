@@ -15,6 +15,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.RedeliveryPolicy;
 import org.apache.commons.collections4.SetUtils;
 import org.apache.commons.collections4.SetUtils.SetView;
 import org.apache.commons.collections4.map.HashedMap;
@@ -43,6 +44,14 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
 					SDPInsertApiConfig.getInstance().getJMSUrl());
 			connectionFactory.setMaxThreadPoolSize(2000);
+			RedeliveryPolicy policy = new RedeliveryPolicy();
+			policy.setInitialRedeliveryDelay(1000);
+			policy.setBackOffMultiplier(3);
+			policy.setUseExponentialBackOff(true);
+			policy.setMaximumRedeliveryDelay(15*60*1000);
+			policy.setMaximumRedeliveries(24*4);
+			
+			connectionFactory.setRedeliveryPolicy(policy);
 			connectionFactory.setUserName(SDPInsertApiConfig.getInstance().getJMSUsername());
 			connectionFactory.setPassword(SDPInsertApiConfig.getInstance().getJMSPassword());
 
