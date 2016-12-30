@@ -12,6 +12,7 @@ import net.minidev.json.JSONObject;
 
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
@@ -106,6 +107,10 @@ public class InsertApiLogic {
 					}
 				}
 			} catch (Exception e) {
+				if (e instanceof InsertApiRuntimeException)
+				{
+					throw e;
+				}
 				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] GenericException "+e);
 				log.log(Level.WARNING, "[InsertApiLogic::insertManager] Fallito inserimento blocco --> globalRequestId="+idRequest + "    blockRequestId="+curBulkToIns.getRequestId() );
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INS);

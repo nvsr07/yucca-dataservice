@@ -39,6 +39,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 
 		try {
 			log.info("[JMSConsumerMainThread::run] Starting connection...");
+			
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(
 					SDPInsertApiConfig.getInstance().getJMSUrl());
 			connectionFactory.setMaxThreadPoolSize(2000);

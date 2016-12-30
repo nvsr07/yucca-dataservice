@@ -16,7 +16,7 @@ public class JMSMessageListener implements MessageListener {
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	
 	private static StreamService streamService = new StreamService();
-	private String codTenant;
+	private final String codTenant;
 	
 	public JMSMessageListener(String codTenant){
 		this.codTenant = codTenant;
@@ -29,9 +29,10 @@ public class JMSMessageListener implements MessageListener {
 			if (message instanceof TextMessage)
 			{
 				TextMessage txtMessage = (TextMessage)message ;
-				log.debug("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
+				log.info("[JMSMessageListener::onMessage]  JMSListener=["+codTenant+"] -> msg"+ txtMessage.getText());
 				try {
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
+					try {Thread.sleep(5000);} catch (InterruptedException e) {} // for testing, to remove
 				} catch (InsertApiBaseException e) {
 					log.warn("[JMSMessageListener::onMessage]  Invalid message for JMS ["+e.getErrorCode()+"]: "+e.getErrorName());
 				} catch (InsertApiRuntimeException e) {
