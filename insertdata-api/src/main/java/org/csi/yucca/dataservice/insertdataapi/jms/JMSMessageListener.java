@@ -10,6 +10,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.command.ActiveMQDestination;
+import org.apache.activemq.command.ActiveMQMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
@@ -63,14 +64,37 @@ public class JMSMessageListener implements MessageListener {
 		long start = System.currentTimeMillis();
 		try {
 			log.info("forwardMessage message destination: " + message.getJMSDestination());
-			log.info("forwardMessage message physical name: " + ((ActiveMQDestination) message.getJMSDestination()).getPhysicalName());
-			log.info("forwardMessage message qualified name: " + ((ActiveMQDestination) message.getJMSDestination()).getQualifiedName());
-			log.info("forwardMessage message reference: " + ((ActiveMQDestination) message.getJMSDestination()).getReference());
+			ActiveMQDestination activeMQDestination = (ActiveMQDestination) message.getJMSDestination();
+			log.info("forwardMessage active mq message destination: " + ((ActiveMQMessage)message).getDestination());
 
+			
+			log.info("forwardMessage message physical name: " + activeMQDestination.getPhysicalName());
+			log.info("forwardMessage message qualified name: " + activeMQDestination.getQualifiedName());
+			log.info("forwardMessage message reference: " + activeMQDestination.getReference());
+
+			if(activeMQDestination.getDestinationPaths()!=null){
+				for (int j = 0; j < activeMQDestination.getDestinationPaths().length; j++) {
+					log.info("forwardMessage message path["+j+"]: " + activeMQDestination.getDestinationPaths()[j]);
+				}
+			}
+			else
+				log.info("forwardMessage message path is null");
+			
+			if(activeMQDestination.getCompositeDestinations()!=null){
+				for (int j = 0; j < activeMQDestination.getCompositeDestinations().length; j++) {
+					log.info("forwardMessage message composite ["+j+"]: " + activeMQDestination.getCompositeDestinations()[j]);
+				}
+			}
+			else
+				log.info("forwardMessage message composite is null");
+
+			
 			log.info("forwardMessage message id: " + message.getJMSMessageID());
 			log.info("forwardMessage message redelivered: " + message.getJMSRedelivered());
+			log.info("forwardMessage message redeliveryCounter: " + ((ActiveMQMessage)message).getRedeliveryCounter());
+
 			// producer output.${tenant.code}.${source.code}_${stream.code}
-			if (!message.getJMSRedelivered()) {
+			if (((ActiveMQMessage)message).getRedeliveryCounter()==0) {
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + ".sandbox.pippo");
 				log.info("[JMSConsumerMainThread::run] Connected to queue:" + destinationProducer.toString());
 				MessageProducer producer = sessionProducer.createProducer(destinationProducer);
