@@ -28,7 +28,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 	private static final Log log = LogFactory.getLog("org.csi.yucca.datainsert");
 
 	private Connection connectionInternal;
-	private Connection connectionExternal;
+	// private Connection connectionExternal;
 	private Map<String, JMSTenant> jmsTenants = new ConcurrentHashMap<String, JMSTenant>();
 
 	public void run() {
@@ -50,9 +50,10 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbExternalPassword(), 2000);
 
 			// Create a Connection internal
-			connectionExternal = connectionFactoryExternal.createConnection();
-			connectionExternal.start();
-			connectionExternal.setExceptionListener(this);
+			// connectionExternal =
+			// connectionFactoryExternal.createConnection();
+			// connectionExternal.start();
+			// connectionExternal.setExceptionListener(this);
 
 			while (true) {
 				log.info("[JMSConsumerMainThread::run] Get tenant list and update sessions...");
@@ -74,7 +75,6 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 						String newTenant = (String) iter.next();
 						if (!jmsTenants.containsKey(newTenant)) // new tenant!
 						{
-							Session sessionProducer = connectionExternal.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 							Session sessionConsumer = connectionInternal.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
@@ -83,9 +83,9 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 							log.info("[JMSConsumerMainThread::run] Connected to queue:" + destinationConsumer.toString());
 							MessageConsumer consumer = sessionConsumer.createConsumer(destinationConsumer);
 
-							consumer.setMessageListener(new JMSMessageListener(newTenant, sessionProducer));
+							consumer.setMessageListener(new JMSMessageListener(newTenant, connectionFactoryExternal));
 
-							JMSTenant jmsTenant = new JMSTenant(sessionConsumer, consumer, sessionProducer);
+							JMSTenant jmsTenant = new JMSTenant(sessionConsumer, consumer);
 							jmsTenants.put(newTenant, jmsTenant);
 						}
 					}
@@ -113,7 +113,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			}
 
 			connectionInternal.close();
-			connectionExternal.close();
+			// connectionExternal.close();
 		} catch (JMSException e) {
 			log.error("[JMSConsumerMainThread::run] Error on Closing connection..." + e.getMessage(), e);
 		}

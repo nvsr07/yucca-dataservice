@@ -3,6 +3,8 @@ package org.csi.yucca.dataservice.insertdataapi.jms;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -25,14 +27,14 @@ public class JMSMessageListener implements MessageListener {
 	private static StreamService streamService = new StreamService();
 	private final String codTenant;
 
-	private Session sessionProducer;
+	private ConnectionFactory connectionFactoryExternal;
 
 	public static final String VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT = "output";
 
 	ExecutorService sendMessageService;
-	public JMSMessageListener(String codTenant, Session sessionProducer) {
+	public JMSMessageListener(String codTenant, ConnectionFactory connectionFactoryExternal) {
 		this.codTenant = codTenant;
-		this.sessionProducer = sessionProducer;
+		this.connectionFactoryExternal = connectionFactoryExternal;
 		
 		sendMessageService = Executors.newSingleThreadExecutor();
 	}
@@ -44,7 +46,7 @@ public class JMSMessageListener implements MessageListener {
 				TextMessage txtMessage = (TextMessage) message;
 				log.debug("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
 				try {
-					sendMessageService.execute(createRunnable(sessionProducer, txtMessage));
+					sendMessageService.execute(createSendMessageRunnable(connectionFactoryExternal, txtMessage));
 
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
 
@@ -65,67 +67,17 @@ public class JMSMessageListener implements MessageListener {
 
 	}
 
-	private void forwardMessage(Session sessionProducer, TextMessage message) {
+	private void forwardMessage(ConnectionFactory connectionFactoryExternal, TextMessage message) {
 		long start = System.currentTimeMillis();
 		try {
-			/*
-			 * log.info("forwardMessage message destination: " +
-			 * message.getJMSDestination()); ActiveMQDestination
-			 * activeMQDestination = (ActiveMQDestination)
-			 * message.getJMSDestination();
-			 * log.info("forwardMessage active mq message destination: " +
-			 * ((ActiveMQMessage) message).getDestination());
-			 * 
-			 * log.info("forwardMessage message physical name: " +
-			 * activeMQDestination.getPhysicalName());
-			 * log.info("forwardMessage message qualified name: " +
-			 * activeMQDestination.getQualifiedName());
-			 * log.info("forwardMessage message reference: " +
-			 * activeMQDestination.getReference());
-			 * 
-			 * if (activeMQDestination.getDestinationPaths() != null) { for (int
-			 * j = 0; j < activeMQDestination.getDestinationPaths().length; j++)
-			 * { log.info("forwardMessage message path[" + j + "]: " +
-			 * activeMQDestination.getDestinationPaths()[j]); } } else
-			 * log.info("forwardMessage message path is null");
-			 * 
-			 * if (activeMQDestination.getCompositeDestinations() != null) { for
-			 * (int j = 0; j <
-			 * activeMQDestination.getCompositeDestinations().length; j++) {
-			 * log.info("forwardMessage message composite [" + j + "]: " +
-			 * activeMQDestination.getCompositeDestinations()[j]); } } else
-			 * log.info("forwardMessage message composite is null");
-			 * 
-			 * log.info("forwardMessage message id: " +
-			 * message.getJMSMessageID());
-			 * log.info("forwardMessage message redelivered: " +
-			 * message.getJMSRedelivered());
-			 * log.info("forwardMessage message redeliveryCounter: " +
-			 * ((ActiveMQMessage) message).getRedeliveryCounter());
-			 * 
-			 * ActiveMQMessage activeMQMessage = (ActiveMQMessage) message;
-			 * log.info("forwardMessage message originalDestination: " +
-			 * activeMQMessage.getOriginalDestination()); try { if
-			 * (activeMQMessage.getFrom() != null) {
-			 * log.info("forwardMessage message from name: " +
-			 * activeMQMessage.getFrom().getName());
-			 * log.info("forwardMessage message from broker url: " +
-			 * activeMQMessage.getFrom().getBrokerInfo().getBrokerURL()); } else
-			 * { log.info("forwardMessage message from is null"); } Enumeration
-			 * propertyNames = activeMQMessage.getPropertyNames(); if
-			 * (propertyNames != null) { while (propertyNames.hasMoreElements())
-			 * { String propertyName = (String) propertyNames.nextElement();
-			 * log.info("forwardMessage message property(" + propertyName +
-			 * "): " + activeMQMessage.getProperty(propertyName));
-			 * 
-			 * } } } catch (Exception e) {
-			 * log.error("[JMSProducerMainThread::forwardMessage] Error nei log: "
-			 * + e.getMessage()); e.printStackTrace(); }
-			 */
-			// producer output.${tenant.code}.${source.code}_${stream.code}
+			
 			if (((ActiveMQMessage) message).getRedeliveryCounter() == 0) {
 				String smartObject_stream = JMSMessageListener.streamService.getSmartobject_StreamFromJson(codTenant, message.getText());
 				log.debug("[JMSMessageListener::forwardMessage] first key:" + smartObject_stream);
+				
+				Connection connectionExternal = connectionFactoryExternal.createConnection();
+
+				Session sessionProducer = connectionExternal.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + "." + codTenant + "." + smartObject_stream);
 				log.debug("[JMSMessageListener::forwardMessage] Connected to queue:" + destinationProducer.toString());
@@ -133,6 +85,9 @@ public class JMSMessageListener implements MessageListener {
 
 				message.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 				producer.send(message);
+				producer.close();
+				sessionProducer.close();
+				connectionExternal.close();
 			}
 
 		} catch (Throwable e) {
@@ -144,15 +99,15 @@ public class JMSMessageListener implements MessageListener {
 	}
 	
 	
-	private Runnable createRunnable(final Session sessionProducer, final TextMessage message){
+	private Runnable createSendMessageRunnable(final ConnectionFactory connectionFactoryExternal, final TextMessage message){
 
-	    Runnable aRunnable = new Runnable(){
+	    Runnable sendMessageRunnable = new Runnable(){
 	        public void run(){
-	        	forwardMessage(sessionProducer, message);
+	        	forwardMessage(connectionFactoryExternal, message);
 	        }
 	    };
 
-	    return aRunnable;
+	    return sendMessageRunnable;
 
 	}
 }
