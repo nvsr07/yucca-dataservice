@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.insertdataapi.jms;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -20,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.service.StreamService;
+import org.csi.yucca.dataservice.insertdataapi.util.NamedThreadFactory;
 
 public class JMSMessageListener implements MessageListener {
 	private static final Log log = LogFactory.getLog("org.csi.yucca.datainsert");
@@ -37,7 +39,7 @@ public class JMSMessageListener implements MessageListener {
 		this.codTenant = codTenant;
 		this.connectionFactoryExternal = connectionFactoryExternal;
 		
-		sendMessageService = Executors.newSingleThreadExecutor();
+		sendMessageService = Executors.newSingleThreadExecutor(new NamedThreadFactory("JMS-forward-message-" + codTenant));
 	}
 
 	public void onMessage(Message message) {
@@ -45,9 +47,10 @@ public class JMSMessageListener implements MessageListener {
 		try {
 			if (message instanceof TextMessage) {
 				TextMessage txtMessage = (TextMessage) message;
-				log.debug("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
+				log.info("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
 				try {
 					sendMessageService.execute(createSendMessageRunnable(connectionFactoryExternal, txtMessage));
+					log.info("[JMSMessageListener::onMessage] send");
 
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
 
@@ -104,6 +107,8 @@ public class JMSMessageListener implements MessageListener {
 
 	    Runnable sendMessageRunnable = new Runnable(){
 	        public void run(){
+				log.info("[JMSMessageListener::onMessage]  forwardMessage");
+
 	        	forwardMessage(connectionFactoryExternal, message);
 	        }
 	    };

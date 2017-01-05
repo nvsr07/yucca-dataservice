@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebListener;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.csi.yucca.dataservice.insertdataapi.util.NamedThreadFactory;
 
 @WebListener
 public class JMSContextListener implements ServletContextListener {
@@ -18,7 +19,8 @@ public class JMSContextListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent arg0) {
 		log.info("[JMSContextListener::contextInitialized]");
-		exService = Executors.newSingleThreadExecutor();
+		
+		exService = Executors.newSingleThreadExecutor(new NamedThreadFactory("JMS-Context-Listener"));
 		exService.execute(new JMSConsumerMainThread());
 	}
 
