@@ -42,7 +42,7 @@ public class JMSMessageListener implements MessageListener {
 				log.info("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
 				try {
 
-					forwardMessage(sessionProducer, txtMessage);
+					//forwardMessage(sessionProducer, txtMessage);
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
 
 					// try {Thread.sleep(5000);} catch (InterruptedException e)
@@ -62,7 +62,7 @@ public class JMSMessageListener implements MessageListener {
 
 	}
 
-	public void forwardMessage(Session sessionProducer, TextMessage message) {
+	private void forwardMessage(Session sessionProducer, TextMessage message) {
 		long start = System.currentTimeMillis();
 		try {
 			/*
