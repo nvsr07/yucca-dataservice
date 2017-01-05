@@ -32,6 +32,7 @@ public class JMSMessageListener implements MessageListener {
 	public static final String VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT = "output";
 
 	ExecutorService sendMessageService;
+	
 	public JMSMessageListener(String codTenant, ConnectionFactory connectionFactoryExternal) {
 		this.codTenant = codTenant;
 		this.connectionFactoryExternal = connectionFactoryExternal;

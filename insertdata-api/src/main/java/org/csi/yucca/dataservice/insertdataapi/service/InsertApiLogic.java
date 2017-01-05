@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,13 +30,18 @@ import com.jayway.jsonpath.PathNotFoundException;
 public class InsertApiLogic {
 	private static final Logger log = Logger.getLogger("org.csi.yucca.datainsert");
 
+	ExecutorService solrInsertService;
+
 	public HashMap<String, DatasetBulkInsert> insertManager(String tenant, HashMap<String, DatasetBulkInsert> datiToIns) throws Exception {
 
 		Iterator<String> iter = datiToIns.keySet().iterator();
 
+		solrInsertService = Executors.newSingleThreadExecutor();
+
 		// System.out.println(" TIMETIME insertManager -- start --> "+System.currentTimeMillis());
 
-		SDPInsertApiSolrDataAccess solrAccess = new SDPInsertApiSolrDataAccess();
+		// SDPInsertApiSolrDataAccess solrAccess = new
+		// SDPInsertApiSolrDataAccess();
 		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
 		DatasetBulkInsert curBulkToIns = null;
 
@@ -88,21 +95,22 @@ public class InsertApiLogic {
 				try {
 					startTimeX = System.currentTimeMillis();
 					log.finest("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
-					solrAccess.insertBulk(tenant, curBulkToIns);
+					solrInsertService.execute(solrInsertRunnable(tenant, curBulkToIns));
+					// solrAccess.insertBulk(tenant, curBulkToIns);
 					log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
-					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
-					datiToIns.put(key, curBulkToIns);
+					//curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
+					//datiToIns.put(key, curBulkToIns);
 				} catch (Exception e) {
 					log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
-					log.log(Level.WARNING,
-							"[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
-					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
-					try {
-						curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+					//log.log(Level.WARNING,
+					//		"[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
+					//curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+					//try {
+					//	curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+//
+	//				} catch (Exception k) {
 
-					} catch (Exception k) {
-
-					}
+		//			}
 				}
 			} catch (Exception e) {
 				if (e instanceof InsertApiRuntimeException) {
@@ -116,6 +124,9 @@ public class InsertApiLogic {
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INS);
 
 				} catch (Exception k) {
+					log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
+					log.log(Level.WARNING,
+							"[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
 
 				}
 
@@ -127,6 +138,21 @@ public class InsertApiLogic {
 		log.finest("[InsertApiLogic::insertManager] END updateStatus  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 		return datiToIns;
 
+	}
+
+	private Runnable solrInsertRunnable(final String tenant, final DatasetBulkInsert curBulkToIns) {
+		Runnable solrInsertRunnable = new Runnable() {
+			public void run() {
+				try {
+					SDPInsertApiSolrDataAccess solrAccess = new SDPInsertApiSolrDataAccess();
+					solrAccess.insertBulk(tenant, curBulkToIns);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		};
+		return solrInsertRunnable;
 	}
 
 	public HashMap<String, DatasetBulkInsert> parseJsonInputDataset(String tenant, String jsonInput) throws Exception {
@@ -325,15 +351,15 @@ public class InsertApiLogic {
 		String sensor = null;
 		String application = null;
 		String stream = null;
-		
+
 		if (JsonPath.read(jsonInput, "$[0]") == null)
 			jsonInput = "[" + jsonInput + "]";
-		
+
 		JSONObject ooo = JsonPath.read(jsonInput, "$[0]");
 
 		if (null == ooo)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DATA_NOTARRAY);
-		
+
 		sensor = (String) ooo.get("sensor");
 		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] sensor= " + sensor);
 		application = (String) ooo.get("application");
