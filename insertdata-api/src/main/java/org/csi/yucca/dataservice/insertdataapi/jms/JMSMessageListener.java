@@ -95,20 +95,25 @@ public class JMSMessageListener implements MessageListener {
 
 			ActiveMQMessage activeMQMessage = (ActiveMQMessage) message;
 			log.info("forwardMessage message originalDestination: " + activeMQMessage.getOriginalDestination());
-			if (activeMQMessage.getFrom() != null) {
-				log.info("forwardMessage message from name: " + activeMQMessage.getFrom().getName());
-				log.info("forwardMessage message from broker url: " + activeMQMessage.getFrom().getBrokerInfo().getBrokerURL());
-			}
-			else{
-				log.info("forwardMessage message from is null");
-			}
-			Enumeration propertyNames = activeMQMessage.getPropertyNames();
-			while (propertyNames.hasMoreElements()) {
-				String propertyName = (String) propertyNames.nextElement();
-				log.info("forwardMessage message property(" + propertyName + "): " + activeMQMessage.getProperty(propertyName));
+			try {
+				if (activeMQMessage.getFrom() != null) {
+					log.info("forwardMessage message from name: " + activeMQMessage.getFrom().getName());
+					log.info("forwardMessage message from broker url: " + activeMQMessage.getFrom().getBrokerInfo().getBrokerURL());
+				} else {
+					log.info("forwardMessage message from is null");
+				}
+				Enumeration propertyNames = activeMQMessage.getPropertyNames();
+				if (propertyNames != null) {
+					while (propertyNames.hasMoreElements()) {
+						String propertyName = (String) propertyNames.nextElement();
+						log.info("forwardMessage message property(" + propertyName + "): " + activeMQMessage.getProperty(propertyName));
 
+					}
+				}
+			} catch (Exception e) {
+				log.error("[JMSProducerMainThread::forwardMessage] Error nei log: " + e.getMessage());
+				e.printStackTrace();
 			}
-
 			// producer output.${tenant.code}.${source.code}_${stream.code}
 			if (((ActiveMQMessage) message).getRedeliveryCounter() == 0) {
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + ".sandbox.pippo");
@@ -120,7 +125,7 @@ public class JMSMessageListener implements MessageListener {
 			}
 
 		} catch (Throwable e) {
-			log.error("[JMSProducerMainThread::forwardMessage] " + e.getMessage());
+			log.error("[JMSProducerMainThread::forwardMessage] Error: " + e.getMessage());
 		} finally {
 			long elapsed = System.currentTimeMillis() - start;
 			log.info("forwardMessage elapsed: " + elapsed);
