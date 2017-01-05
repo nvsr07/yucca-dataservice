@@ -3,16 +3,12 @@ package org.csi.yucca.dataservice.insertdataapi.jms;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 @WebListener
 public class JMSContextListener implements ServletContextListener {

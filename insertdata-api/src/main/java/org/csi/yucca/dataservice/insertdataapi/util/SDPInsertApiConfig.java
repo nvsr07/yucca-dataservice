@@ -21,6 +21,11 @@ public class SDPInsertApiConfig {
 	public static final String JMS_MB_INTERNAL_URL = "JMS_MB_INTERNAL_URL";	
 	public static final String JMS_MB_INTERNAL_USERNAME = "JMS_MB_INTERNAL_USERNAME";	
 	public static final String JMS_MB_INTERNAL_PASSWORD = "JMS_MB_INTERNAL_PASSWORD";	
+	
+	
+	public static final String JMS_MB_EXTERNAL_URL = "JMS_MB_EXTERNAL_URL";	
+	public static final String JMS_MB_EXTERNAL_USERNAME = "JMS_MB_EXTERNAL_USERNAME";	
+	public static final String JMS_MB_EXTERNAL_PASSWORD = "JMS_MB_EXTERNAL_PASSWORD";	
 
 	public static SDPInsertApiConfig instance=null;
 	private static int anno_init = 0;
@@ -83,6 +88,10 @@ public class SDPInsertApiConfig {
 		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
 		params.put(JMS_MB_INTERNAL_USERNAME, rb.getString(JMS_MB_INTERNAL_USERNAME));
 		params.put(JMS_MB_INTERNAL_PASSWORD, rb.getString(JMS_MB_INTERNAL_PASSWORD));
+
+		params.put(JMS_MB_EXTERNAL_URL, rb.getString(JMS_MB_EXTERNAL_URL));
+		params.put(JMS_MB_EXTERNAL_USERNAME, rb.getString(JMS_MB_EXTERNAL_USERNAME));
+		params.put(JMS_MB_EXTERNAL_PASSWORD, rb.getString(JMS_MB_EXTERNAL_PASSWORD));
 
 
 		
@@ -161,15 +170,29 @@ public class SDPInsertApiConfig {
 		return params.get("SDP_MONGO_CFG_DEFAULT_PWD");
 	}
 
-	public String getJMSUrl(){
+	public String getJMSMbInternalUrl(){
 		return params.get(JMS_MB_INTERNAL_URL);
 	}
 	
-	public String getJMSUsername(){
+	public String getJMSMbInternalUsername(){
 		return params.get(JMS_MB_INTERNAL_USERNAME);
 	}
-	public String getJMSPassword(){
+	
+	public String getJMSMbInternalPassword(){
 		return params.get(JMS_MB_INTERNAL_PASSWORD);
+	}
+
+	
+	public String getJMSMbExternalUrl(){
+		return params.get(JMS_MB_EXTERNAL_URL);
+	}
+	
+	public String getJMSMbExternalUsername(){
+		return params.get(JMS_MB_EXTERNAL_USERNAME);
+	}
+	
+	public String getJMSMbExternalPassword(){
+		return params.get(JMS_MB_EXTERNAL_PASSWORD);
 	}
 
 }
