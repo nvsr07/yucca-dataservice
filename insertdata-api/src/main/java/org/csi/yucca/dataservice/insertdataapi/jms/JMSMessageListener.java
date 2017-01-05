@@ -1,5 +1,9 @@
 package org.csi.yucca.dataservice.insertdataapi.jms;
 
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -92,6 +96,18 @@ public class JMSMessageListener implements MessageListener {
 			log.info("forwardMessage message id: " + message.getJMSMessageID());
 			log.info("forwardMessage message redelivered: " + message.getJMSRedelivered());
 			log.info("forwardMessage message redeliveryCounter: " + ((ActiveMQMessage)message).getRedeliveryCounter());
+			
+			ActiveMQMessage activeMQMessage = (ActiveMQMessage)message;
+			log.info("forwardMessage message originalDestination: " + activeMQMessage.getOriginalDestination());
+			log.info("forwardMessage message from name: " + activeMQMessage.getFrom().getName());
+			log.info("forwardMessage message from broker url: " + activeMQMessage.getFrom().getBrokerInfo().getBrokerURL());
+			
+			Enumeration propertyNames = activeMQMessage.getPropertyNames();
+			while(propertyNames.hasMoreElements()){
+			    String propertyName = (String) propertyNames.nextElement()			    		;
+				log.info("forwardMessage message property("+propertyName+"): " + activeMQMessage.getProperty(propertyName));
+
+			}
 
 			// producer output.${tenant.code}.${source.code}_${stream.code}
 			if (((ActiveMQMessage)message).getRedeliveryCounter()==0) {
