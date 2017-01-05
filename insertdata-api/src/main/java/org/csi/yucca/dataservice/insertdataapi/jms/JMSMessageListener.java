@@ -69,48 +69,48 @@ public class JMSMessageListener implements MessageListener {
 		try {
 			log.info("forwardMessage message destination: " + message.getJMSDestination());
 			ActiveMQDestination activeMQDestination = (ActiveMQDestination) message.getJMSDestination();
-			log.info("forwardMessage active mq message destination: " + ((ActiveMQMessage)message).getDestination());
+			log.info("forwardMessage active mq message destination: " + ((ActiveMQMessage) message).getDestination());
 
-			
 			log.info("forwardMessage message physical name: " + activeMQDestination.getPhysicalName());
 			log.info("forwardMessage message qualified name: " + activeMQDestination.getQualifiedName());
 			log.info("forwardMessage message reference: " + activeMQDestination.getReference());
 
-			if(activeMQDestination.getDestinationPaths()!=null){
+			if (activeMQDestination.getDestinationPaths() != null) {
 				for (int j = 0; j < activeMQDestination.getDestinationPaths().length; j++) {
-					log.info("forwardMessage message path["+j+"]: " + activeMQDestination.getDestinationPaths()[j]);
+					log.info("forwardMessage message path[" + j + "]: " + activeMQDestination.getDestinationPaths()[j]);
 				}
-			}
-			else
+			} else
 				log.info("forwardMessage message path is null");
-			
-			if(activeMQDestination.getCompositeDestinations()!=null){
+
+			if (activeMQDestination.getCompositeDestinations() != null) {
 				for (int j = 0; j < activeMQDestination.getCompositeDestinations().length; j++) {
-					log.info("forwardMessage message composite ["+j+"]: " + activeMQDestination.getCompositeDestinations()[j]);
+					log.info("forwardMessage message composite [" + j + "]: " + activeMQDestination.getCompositeDestinations()[j]);
 				}
-			}
-			else
+			} else
 				log.info("forwardMessage message composite is null");
 
-			
 			log.info("forwardMessage message id: " + message.getJMSMessageID());
 			log.info("forwardMessage message redelivered: " + message.getJMSRedelivered());
-			log.info("forwardMessage message redeliveryCounter: " + ((ActiveMQMessage)message).getRedeliveryCounter());
-			
-			ActiveMQMessage activeMQMessage = (ActiveMQMessage)message;
+			log.info("forwardMessage message redeliveryCounter: " + ((ActiveMQMessage) message).getRedeliveryCounter());
+
+			ActiveMQMessage activeMQMessage = (ActiveMQMessage) message;
 			log.info("forwardMessage message originalDestination: " + activeMQMessage.getOriginalDestination());
-			log.info("forwardMessage message from name: " + activeMQMessage.getFrom().getName());
-			log.info("forwardMessage message from broker url: " + activeMQMessage.getFrom().getBrokerInfo().getBrokerURL());
-			
+			if (activeMQMessage.getFrom() != null) {
+				log.info("forwardMessage message from name: " + activeMQMessage.getFrom().getName());
+				log.info("forwardMessage message from broker url: " + activeMQMessage.getFrom().getBrokerInfo().getBrokerURL());
+			}
+			else{
+				log.info("forwardMessage message from is null");
+			}
 			Enumeration propertyNames = activeMQMessage.getPropertyNames();
-			while(propertyNames.hasMoreElements()){
-			    String propertyName = (String) propertyNames.nextElement()			    		;
-				log.info("forwardMessage message property("+propertyName+"): " + activeMQMessage.getProperty(propertyName));
+			while (propertyNames.hasMoreElements()) {
+				String propertyName = (String) propertyNames.nextElement();
+				log.info("forwardMessage message property(" + propertyName + "): " + activeMQMessage.getProperty(propertyName));
 
 			}
 
 			// producer output.${tenant.code}.${source.code}_${stream.code}
-			if (((ActiveMQMessage)message).getRedeliveryCounter()==0) {
+			if (((ActiveMQMessage) message).getRedeliveryCounter() == 0) {
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + ".sandbox.pippo");
 				log.info("[JMSConsumerMainThread::run] Connected to queue:" + destinationProducer.toString());
 				MessageProducer producer = sessionProducer.createProducer(destinationProducer);
@@ -118,7 +118,7 @@ public class JMSMessageListener implements MessageListener {
 				message.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
 				producer.send(message);
 			}
-			
+
 		} catch (Throwable e) {
 			log.error("[JMSProducerMainThread::forwardMessage] " + e.getMessage());
 		} finally {
