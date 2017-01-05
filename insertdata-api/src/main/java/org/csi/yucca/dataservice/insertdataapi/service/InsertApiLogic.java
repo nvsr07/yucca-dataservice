@@ -325,10 +325,11 @@ public class InsertApiLogic {
 		String sensor = null;
 		String application = null;
 		String stream = null;
-		if (JsonPath.read(jsonInput, "$[0]") == null)
-			jsonInput = "[" + jsonInput + "]";
+		JSONObject ooo = JsonPath.read(jsonInput, "$..*");
+		if (ooo == null)
+			 ooo = JsonPath.read("[" + jsonInput + "]", "$[0]");
 
-		JSONObject ooo = JsonPath.read(jsonInput, "$[0]");
+		//JSONObject ooo = JsonPath.read(jsonInput, "$[0]");
 		log.info("[InsertApiLogic::getSmartobjectStreamFromJson] ooo= " + ooo);
 
 		if (null == ooo)
@@ -346,7 +347,7 @@ public class InsertApiLogic {
 		// TODO non so se e' bloccante ...
 		if (stream == null)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
-		if (sensor == null || application == null)
+		if (sensor == null && application == null)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
 
 		return smartobjectStream;
