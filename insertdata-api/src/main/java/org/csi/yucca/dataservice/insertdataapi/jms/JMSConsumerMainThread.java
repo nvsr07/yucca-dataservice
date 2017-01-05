@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -30,6 +29,8 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 	private Connection connectionInternal;
 	// private Connection connectionExternal;
 	private Map<String, JMSTenant> jmsTenants = new ConcurrentHashMap<String, JMSTenant>();
+	private PooledConnectionFactory connectionFactoryInternal;
+	private PooledConnectionFactory connectionFactoryExternal;
 
 	public void run() {
 
@@ -37,7 +38,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			log.info("[JMSConsumerMainThread::run] Starting connection...");
 
 			// internal Connection
-			ConnectionFactory connectionFactoryInternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbInternalUrl(), SDPInsertApiConfig.getInstance()
+			connectionFactoryInternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbInternalUrl(), SDPInsertApiConfig.getInstance()
 					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbInternalPassword(), 2000, 1000L, 3., true, new Long(15 * 60 * 1000), 24 * 4);
 
 			// Create a Connection internal
@@ -46,7 +47,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			connectionInternal.setExceptionListener(this);
 
 			// external Connection
-			ConnectionFactory connectionFactoryExternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbExternalUrl(), SDPInsertApiConfig.getInstance()
+			connectionFactoryExternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbExternalUrl(), SDPInsertApiConfig.getInstance()
 					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbExternalPassword(), 2000);
 
 			// Create a Connection internal
@@ -113,7 +114,8 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			}
 
 			connectionInternal.close();
-			// connectionExternal.close();
+			connectionFactoryInternal.stop();
+			connectionFactoryExternal.stop();
 		} catch (JMSException e) {
 			log.error("[JMSConsumerMainThread::run] Error on Closing connection..." + e.getMessage(), e);
 		}
@@ -125,7 +127,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 		System.out.println("JMS Exception occured. Shutting down client.");
 	}
 
-	private ConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize) {
+	private PooledConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize) {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 
 		if (maxThreadPoolSize != null)
@@ -137,7 +139,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 		return new PooledConnectionFactory(connectionFactory);
 	}
 
-	private ConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize, Long initialRedeliveryDelay, Double backOffMultiplier,
+	private PooledConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize, Long initialRedeliveryDelay, Double backOffMultiplier,
 			Boolean useExponentialBackOff, Long maximumRedeliveryDelay, Integer maximumRedeliveries) {
 
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
