@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
@@ -14,6 +15,7 @@ import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.RedeliveryPolicy;
+import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
@@ -35,7 +37,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			log.info("[JMSConsumerMainThread::run] Starting connection...");
 
 			// internal Connection
-			ActiveMQConnectionFactory connectionFactoryInternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbInternalUrl(), SDPInsertApiConfig.getInstance()
+			ConnectionFactory connectionFactoryInternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbInternalUrl(), SDPInsertApiConfig.getInstance()
 					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbInternalPassword(), 2000, 1000L, 3., true, new Long(15 * 60 * 1000), 24 * 4);
 
 			// Create a Connection internal
@@ -44,7 +46,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			connectionInternal.setExceptionListener(this);
 
 			// external Connection
-			ActiveMQConnectionFactory connectionFactoryExternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbExternalUrl(), SDPInsertApiConfig.getInstance()
+			ConnectionFactory connectionFactoryExternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbExternalUrl(), SDPInsertApiConfig.getInstance()
 					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbExternalPassword(), 2000);
 
 			// Create a Connection internal
@@ -123,7 +125,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 		System.out.println("JMS Exception occured. Shutting down client.");
 	}
 
-	private ActiveMQConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize) {
+	private ConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize) {
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 
 		if (maxThreadPoolSize != null)
@@ -132,11 +134,11 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 		connectionFactory.setUserName(username);
 		connectionFactory.setPassword(password);
 
-		return connectionFactory;
+		return new PooledConnectionFactory(connectionFactory);
 	}
 
-	private ActiveMQConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize, Long initialRedeliveryDelay,
-			Double backOffMultiplier, Boolean useExponentialBackOff, Long maximumRedeliveryDelay, Integer maximumRedeliveries) {
+	private ConnectionFactory createConnection(String url, String username, String password, Integer maxThreadPoolSize, Long initialRedeliveryDelay, Double backOffMultiplier,
+			Boolean useExponentialBackOff, Long maximumRedeliveryDelay, Integer maximumRedeliveries) {
 
 		ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(url);
 
@@ -159,7 +161,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 		connectionFactory.setUserName(username);
 		connectionFactory.setPassword(password);
 
-		return connectionFactory;
+		return new PooledConnectionFactory(connectionFactory);
 	}
 
 }
