@@ -335,13 +335,13 @@ public class InsertApiLogic {
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DATA_NOTARRAY);
 		
 		sensor = (String) ooo.get("sensor");
-		log.info("[InsertApiLogic::getSmartobjectStreamFromJson] sensor= " + sensor);
+		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] sensor= " + sensor);
 		application = (String) ooo.get("application");
-		log.info("[InsertApiLogic::getSmartobjectStreamFromJson] application= " + application);
+		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] application= " + application);
 		stream = (String) ooo.get("stream");
-		log.info("[InsertApiLogic::getSmartobjectStreamFromJson] stream= " + stream);
+		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] stream= " + stream);
 		smartobjectStream = (sensor != null ? sensor : application) + "_" + stream;
-		log.info("[InsertApiLogic::getSmartobjectStreamFromJson] smartobjectStream= " + smartobjectStream);
+		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] smartobjectStream= " + smartobjectStream);
 
 		// TODO non so se e' bloccante ...
 		if (stream == null)

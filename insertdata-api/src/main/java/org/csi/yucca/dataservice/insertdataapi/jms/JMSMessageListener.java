@@ -122,10 +122,10 @@ public class JMSMessageListener implements MessageListener {
 			// producer output.${tenant.code}.${source.code}_${stream.code}
 			if (((ActiveMQMessage) message).getRedeliveryCounter() == 0) {
 				String smartObject_stream = JMSMessageListener.streamService.getSmartobject_StreamFromJson(codTenant, message.getText());
-				log.info("[JMSMessageListener::forwardMessage] first key:" + smartObject_stream);
+				log.debug("[JMSMessageListener::forwardMessage] first key:" + smartObject_stream);
 
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + "." + codTenant + "." + smartObject_stream);
-				log.info("[JMSMessageListener::forwardMessage] Connected to queue:" + destinationProducer.toString());
+				log.debug("[JMSMessageListener::forwardMessage] Connected to queue:" + destinationProducer.toString());
 				MessageProducer producer = sessionProducer.createProducer(destinationProducer);
 
 				message.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
@@ -136,7 +136,7 @@ public class JMSMessageListener implements MessageListener {
 			log.error("[JMSProducerMainThread::forwardMessage] Error: " + e.getMessage());
 		} finally {
 			long elapsed = System.currentTimeMillis() - start;
-			log.info("forwardMessage elapsed: " + elapsed);
+			log.debug("forwardMessage elapsed: " + elapsed);
 		}
 	}
 }
