@@ -84,7 +84,7 @@ public class JMSMessageListener implements MessageListener {
 				Session sessionProducer = connectionExternal.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + "." + codTenant + "." + smartObject_stream);
-				log.debug("[JMSMessageListener::forwardMessage] Connected to queue:" + destinationProducer.toString());
+				log.info("[JMSMessageListener::forwardMessage] Connected to queue:" + destinationProducer.toString());
 				MessageProducer producer = sessionProducer.createProducer(destinationProducer);
 
 				message.setJMSDeliveryMode(DeliveryMode.NON_PERSISTENT);
