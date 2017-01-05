@@ -43,9 +43,13 @@ public class StreamService extends AbstractService {
 	}
 
 	@Override
-	public HashMap<String, DatasetBulkInsert> parseJsonInput(
+	protected HashMap<String, DatasetBulkInsert> parseJsonInput(
 			String codTenant, String jsonData) throws Exception {
 		return new InsertApiLogic().parseJsonInputStream(codTenant, jsonData);
+	}
+	
+	public String getSmartobject_StreamFromJson(String codTenant, String jsonData) throws Exception{
+		return InsertApiLogic.getSmartobject_StreamFromJson(codTenant, jsonData);
 	}
 
 

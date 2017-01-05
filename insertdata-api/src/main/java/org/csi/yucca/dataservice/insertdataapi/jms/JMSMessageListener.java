@@ -121,9 +121,7 @@ public class JMSMessageListener implements MessageListener {
 			 */
 			// producer output.${tenant.code}.${source.code}_${stream.code}
 			if (((ActiveMQMessage) message).getRedeliveryCounter() == 0) {
-				HashMap<String, DatasetBulkInsert> parseJsonInput = JMSMessageListener.streamService.parseJsonInput(codTenant, message.getText());
-
-				String smartObject_stream = parseJsonInput.keySet().iterator().next();
+				String smartObject_stream = JMSMessageListener.streamService.getSmartobject_StreamFromJson(codTenant, message.getText());
 				log.info("[JMSMessageListener::forwardMessage] first key:" + smartObject_stream);
 
 				Destination destinationProducer = sessionProducer.createTopic(VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT + "." + codTenant + "." + smartObject_stream);
