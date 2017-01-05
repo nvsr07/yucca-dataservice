@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.insertdataapi.jms;
 
-import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
@@ -16,7 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.service.StreamService;
 
 public class JMSMessageListener implements MessageListener {
@@ -29,9 +29,12 @@ public class JMSMessageListener implements MessageListener {
 
 	public static final String VIRTUAL_QUEUE_PRODUCER_INSERTAPI_OUTPUT = "output";
 
+	ExecutorService sendMessageService;
 	public JMSMessageListener(String codTenant, Session sessionProducer) {
 		this.codTenant = codTenant;
 		this.sessionProducer = sessionProducer;
+		
+		sendMessageService = Executors.newSingleThreadExecutor();
 	}
 
 	public void onMessage(Message message) {
@@ -39,10 +42,10 @@ public class JMSMessageListener implements MessageListener {
 		try {
 			if (message instanceof TextMessage) {
 				TextMessage txtMessage = (TextMessage) message;
-				log.info("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
+				log.debug("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
 				try {
+					sendMessageService.execute(createRunnable(sessionProducer, txtMessage));
 
-					//forwardMessage(sessionProducer, txtMessage);
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
 
 					// try {Thread.sleep(5000);} catch (InterruptedException e)
@@ -138,5 +141,18 @@ public class JMSMessageListener implements MessageListener {
 			long elapsed = System.currentTimeMillis() - start;
 			log.debug("forwardMessage elapsed: " + elapsed);
 		}
+	}
+	
+	
+	private Runnable createRunnable(final Session sessionProducer, final TextMessage message){
+
+	    Runnable aRunnable = new Runnable(){
+	        public void run(){
+	        	forwardMessage(sessionProducer, message);
+	        }
+	    };
+
+	    return aRunnable;
+
 	}
 }
