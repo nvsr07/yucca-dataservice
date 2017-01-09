@@ -7,7 +7,6 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SimpleTimeZone;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
@@ -141,12 +140,13 @@ public class FieldsMongoDto {
 		}
 		return true;
 	}
-	private boolean validateDate_old(String valueToCheck) {
-		Matcher m = r8601.matcher(valueToCheck);
-		if (!m.lookingAt()) return false;		
-		
-		return true;
-	}
+	
+//	private boolean validateDate_old(String valueToCheck) {
+//		Matcher m = r8601.matcher(valueToCheck);
+//		if (!m.lookingAt()) return false;		
+//		
+//		return true;
+//	}
 
 
 	private boolean validateDate(String valueToCheck) {

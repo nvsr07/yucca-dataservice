@@ -34,7 +34,7 @@ public class DatasetBulkInsert {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	private ArrayList<String> rowsToInsert=null;
+	//private ArrayList<String> rowsToInsert=null;
 	
 	private ArrayList<JSONObject> jsonRowsToInsert=null;
 	
@@ -109,12 +109,7 @@ public class DatasetBulkInsert {
 	public void setDatasetVersion(long datasetVersion) {
 		this.datasetVersion = datasetVersion;
 	}
-	public ArrayList<String> getRowsToInsert() {
-		return rowsToInsert;
-	}
-	public void setRowsToInsert(ArrayList<String> rowsToInsert) {
-		this.rowsToInsert = rowsToInsert;
-	}
+
 	public ArrayList<JSONObject> getJsonRowsToInsert() {
 		return jsonRowsToInsert;
 	}

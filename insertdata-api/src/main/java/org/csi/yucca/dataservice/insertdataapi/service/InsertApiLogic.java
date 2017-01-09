@@ -71,7 +71,7 @@ public class InsertApiLogic {
 
 		iter = datiToIns.keySet().iterator();
 
-		int cnt = 0;
+		// int cnt = 0;
 		// boolean indiceDaCReare=true;
 		while (iter.hasNext()) {
 			try {
@@ -98,19 +98,21 @@ public class InsertApiLogic {
 					solrInsertService.execute(solrInsertRunnable(tenant, curBulkToIns));
 					// solrAccess.insertBulk(tenant, curBulkToIns);
 					log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
-					//curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
-					//datiToIns.put(key, curBulkToIns);
+					// curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
+					// datiToIns.put(key, curBulkToIns);
 				} catch (Exception e) {
 					log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
-					//log.log(Level.WARNING,
-					//		"[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
-					//curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
-					//try {
-					//	curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
-//
-	//				} catch (Exception k) {
+					// log.log(Level.WARNING,
+					// "[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId="
+					// + idRequest + "    blockRequestId=" +
+					// curBulkToIns.getRequestId());
+					// curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+					// try {
+					// curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
+					//
+					// } catch (Exception k) {
 
-		//			}
+					// }
 				}
 			} catch (Exception e) {
 				if (e instanceof InsertApiRuntimeException) {
@@ -460,10 +462,10 @@ public class InsertApiLogic {
 		// System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret = null;
 
-		JSONObject ooo = null;
+		// JSONObject ooo = null;
 		JSONObject components = null;
 		boolean endArray = false;
-		ArrayList<String> rigadains = new ArrayList<String>();
+		// ArrayList<String> rigadains = new ArrayList<String>();
 
 		ArrayList<FieldsMongoDto> elencoCampi = datasetMongoInfo.getCampi();
 
@@ -490,7 +492,7 @@ public class InsertApiLogic {
 
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		// System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
-		int numeroCampiMongo = elencoCampi.size();
+		// int numeroCampiMongo = elencoCampi.size();
 		while (!endArray && i < arrayValori.size()) {
 			try {
 				// System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+")--> "+System.currentTimeMillis());
@@ -501,7 +503,8 @@ public class InsertApiLogic {
 				// System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				// rigadains.add(parseComponents(components, insStrConst,
 				// elencoCampi));
-				rigadains.add(parseComponents(components, insStrConst, campiMongo, campiMongoV1, isVerOneRequired));
+				// rigadains.add(parseComponents(components, insStrConst,
+				// campiMongo, campiMongoV1, isVerOneRequired));
 				components.put("objectid", ObjectId.get().toString());
 				listJson.add(components);
 
@@ -522,7 +525,7 @@ public class InsertApiLogic {
 		ret.setIdDataset(datasetMongoInfo.getDatasetId());
 		ret.setDatasetVersion(datasetMongoInfo.getDatasetVersion());
 		ret.setNumRowToInsFromJson(i);
-		ret.setRowsToInsert(rigadains);
+		// ret.setRowsToInsert(rigadains);
 		ret.setFieldsType(campiMongo);
 		ret.setJsonRowsToInsert(listJson);
 		// System.out.println(" TIMETIME parseGenericDataset -- fine--> "+System.currentTimeMillis());
@@ -534,7 +537,7 @@ public class InsertApiLogic {
 		// System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret = null;
 
-		JSONObject ooo = null;
+		// JSONObject ooo = null;
 		JSONObject components = null;
 		boolean endArray = false;
 		ArrayList<String> rigadains = new ArrayList<String>();
@@ -559,7 +562,7 @@ public class InsertApiLogic {
 		JSONArray arrayValori = (JSONArray) bloccoDaIns.get("values");
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		// System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
-		int numeroCampiMongo = elencoCampi.size();
+		// int numeroCampiMongo = elencoCampi.size();
 		while (!endArray && i < arrayValori.size()) {
 			try {
 				components = (JSONObject) arrayValori.get(i);
@@ -578,7 +581,7 @@ public class InsertApiLogic {
 		ret.setIdDataset(datasetMongoInfo.getDatasetId());
 		ret.setDatasetVersion(datasetMongoInfo.getDatasetVersion());
 		ret.setNumRowToInsFromJson(i);
-		ret.setRowsToInsert(rigadains);
+		// ret.setRowsToInsert(rigadains);
 		ret.setFieldsType(campiMongo);
 		ret.setJsonRowsToInsert(listJson);
 		// System.out.println(" TIMETIME parseGenericDataset -- fine--> "+System.currentTimeMillis());
@@ -687,7 +690,7 @@ public class InsertApiLogic {
 		if (elencoStream == null || elencoStream.size() <= 0)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": " + (sensor != null ? sensor : application) + " (stream: " + stream + ")");
 
-		boolean isVerOneRequired = true;
+		// boolean isVerOneRequired = true;
 		String datasetType = "streamDataset";
 		for (int i = 0; i < elencoStream.size(); i++) {
 
@@ -709,12 +712,13 @@ public class InsertApiLogic {
 			log.finest("[InsertApiLogic::parseMisura]      OK --------------");
 
 			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_TWEET) {
-				isVerOneRequired = false;
+				// isVerOneRequired = false;
 				datasetType = "socialDataset";
 			}
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_INTERNAL) {
-				isVerOneRequired = false;
-			}
+			// if (elencoStream.get(i).getTipoStream() ==
+			// MongoStreamInfo.STREAM_TYPE_INTERNAL) {
+			// isVerOneRequired = false;
+			// }
 		}
 
 		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(elencoStream, Long.parseLong("" + reqVersion));
@@ -763,8 +767,8 @@ public class InsertApiLogic {
 			arrayValori.add(valuesObject);
 		}
 
-		ArrayList<String> rigadains = new ArrayList<String>();
-		int numeroCampiMongo = elencoCampi.size();
+		// ArrayList<String> rigadains = new ArrayList<String>();
+		// int numeroCampiMongo = elencoCampi.size();
 		FieldsMongoDto campotimeStamp = null;
 		String timeStamp = null;
 		campotimeStamp = new FieldsMongoDto("aaa", FieldsMongoDto.DATA_TYPE_DATETIME);
@@ -790,7 +794,9 @@ public class InsertApiLogic {
 				// rigadains.add(parseComponents(components, insStrConst,
 				// elencoCampi));
 
-				rigadains.add(parseComponents(components, insStrConstBase + ", time: {$date :\"" + timeStamp + "\"} ", campiMongo, campiMongoV1, isVerOneRequired));
+				// rigadains.add(parseComponents(components, insStrConstBase +
+				// ", time: {$date :\"" + timeStamp + "\"} ", campiMongo,
+				// campiMongoV1, isVerOneRequired));
 				// System.out.println(" TIMETIME parseMisura -- valore ("+i+") parsing components--> "+System.currentTimeMillis());
 				components.put("objectid", ObjectId.get().toString());
 				components.put("time", timeStamp);
@@ -809,7 +815,7 @@ public class InsertApiLogic {
 		ret.setDatasetType(datasetType);
 		ret.setIdDataset(idDatasetTrovato);
 		ret.setNumRowToInsFromJson(i);
-		ret.setRowsToInsert(rigadains);
+		// ret.setRowsToInsert(rigadains);
 		ret.setFieldsType(campiMongo);
 		ret.setJsonRowsToInsert(listJson);
 		return ret;

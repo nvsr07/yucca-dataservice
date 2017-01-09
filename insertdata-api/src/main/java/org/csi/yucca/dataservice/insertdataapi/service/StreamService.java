@@ -19,7 +19,6 @@ import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
-import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
 
 @Path("/stream")
 public class StreamService extends AbstractService {

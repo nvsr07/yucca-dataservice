@@ -2,7 +2,6 @@ package org.csi.yucca.dataservice.insertdataapi.jms;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;

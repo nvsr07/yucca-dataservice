@@ -1,34 +1,23 @@
 package org.csi.yucca.dataservice.insertdataapi.mongo;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
-import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.util.JSONCallbackTimeZone;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
-import com.mongodb.BulkWriteOperation;
-import com.mongodb.BulkWriteResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.WriteResult;
-import com.mongodb.util.JSON;
 
 public class SDPInsertApiMongoDataAccess {
 	private static final org.apache.log4j.Logger log=org.apache.log4j.Logger.getLogger("org.csi.yucca.datainsert");
@@ -584,11 +573,11 @@ public class SDPInsertApiMongoDataAccess {
 
 			cursor = coll.find(query);			
 			boolean trovato=false;
-			HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
+			//HashMap<String, FieldsMongoDto> campiMongo= new HashMap<String, FieldsMongoDto>();
 			while (cursor.hasNext() && !trovato) {
 				DBObject obj=cursor.next();
 				String datasetDatasetVersion=takeNvlValues(obj.get("datasetVersion"));
-				String datasetDatasetId=takeNvlValues(obj.get("idDataset"));
+				//String datasetDatasetId=takeNvlValues(obj.get("idDataset"));
 				String isCurrent=takeNvlValues(((DBObject)obj.get("configData")).get("current"));
 				if (datasetVersion!=-1 && datasetVersion==Integer.parseInt(datasetDatasetVersion)) trovato=true;
 				if (datasetVersion==-1 && Integer.parseInt(isCurrent)==1) trovato= true;

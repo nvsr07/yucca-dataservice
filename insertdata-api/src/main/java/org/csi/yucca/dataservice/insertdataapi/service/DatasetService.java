@@ -3,7 +3,6 @@ package org.csi.yucca.dataservice.insertdataapi.service;
 import java.util.HashMap;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
@@ -14,13 +13,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
-import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
 
 @Path("/dataset")
 public class DatasetService extends AbstractService {

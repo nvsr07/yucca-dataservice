@@ -10,6 +10,8 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.ErrorOutput;
 public class InsertApiBaseException extends WebApplicationException{
 
 	
+	private static final long serialVersionUID = 1L;
+
 	public static final String ERROR_CODE_STREAM_NOT_FOUND="E011";
 	public static final String ERROR_CODE_INVALID_JSON="E012";
 	public static final String ERROR_CODE_INVALID_COMPONENTS="E013";

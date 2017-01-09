@@ -9,6 +9,8 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.ErrorOutput;
 
 public class InsertApiRuntimeException extends  WebApplicationException{
 
+	private static final long serialVersionUID = 1L;
+
 	private String errorName=null;
 	private String errorCode=null;
 	private String output=null;

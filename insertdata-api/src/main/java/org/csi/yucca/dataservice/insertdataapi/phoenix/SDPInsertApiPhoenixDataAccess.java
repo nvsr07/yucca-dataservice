@@ -6,17 +6,13 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
 import net.minidev.json.JSONObject;
 
-import org.apache.calcite.avatica.remote.Service.ConnectionSyncRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.bson.types.ObjectId;
-import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
@@ -26,7 +22,6 @@ import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.mongodb.BulkWriteResult;
-import com.mongodb.DBObject;
 
 public class SDPInsertApiPhoenixDataAccess {
 
@@ -35,10 +30,10 @@ public class SDPInsertApiPhoenixDataAccess {
 	 Connection conn = null;
      Statement stmt = null;
 	
-	private static String takeNvlValues(Object obj) {
-		if (null==obj) return null;
-		else return obj.toString();
-	}
+//	private static String takeNvlValues(Object obj) {
+//		if (null==obj) return null;
+//		else return obj.toString();
+//	}
 
 	public SDPInsertApiPhoenixDataAccess() throws ClassNotFoundException {
 		Class.forName("org.apache.phoenix.queryserver.client.Driver");
@@ -48,8 +43,8 @@ public class SDPInsertApiPhoenixDataAccess {
 
 
 	public int insertBulk(String tenant, DatasetBulkInsert dati) {
-		String riga=null;
-		DBObject dbObject = null;
+		//String riga=null;
+		//DBObject dbObject = null;
 		BulkWriteResult result=null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 		try {

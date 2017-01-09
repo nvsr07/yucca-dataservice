@@ -1,6 +1,5 @@
 package org.csi.yucca.dataservice.insertdataapi.filter;
 
-import javax.servlet.annotation.WebFilter;
 
 //@WebFilter(filterName = "AuthorizationFilter", urlPatterns = { "/*" })
 public class AuthorizationRequestFilter { //implements Filter {

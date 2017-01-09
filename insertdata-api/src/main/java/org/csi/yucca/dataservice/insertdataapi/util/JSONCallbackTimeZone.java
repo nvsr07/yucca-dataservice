@@ -145,17 +145,17 @@ public class JSONCallbackTimeZone extends BasicBSONCallback {
 	    
 	    public static void main(String[] args) {
 	    	String dataStr = "2014-05-13T17:08:58+0200";
-	    	String dataStr1 = "2014-05-13T15:08:58Z";
-	    	String dataStr2 = "2014-05-13T15:08:58.000Z";
-	    	String dataStr3 = "2014-05-13T17:08:58.000+0200";
-	    	String dataStr4 = "2014-05-13T15:08:58+00:00";
-	    	String dataStr5 = "2014-05-13T17:08:58+02:00";
-	    	String dataStr6 = "2014-05-13T15:08:58.000+00:00";
-	    	String dataStr7 = "2014-05-13T17:08:58.000+02:00";
+//	    	String dataStr1 = "2014-05-13T15:08:58Z";
+//	    	String dataStr2 = "2014-05-13T15:08:58.000Z";
+//	    	String dataStr3 = "2014-05-13T17:08:58.000+0200";
+//	    	String dataStr4 = "2014-05-13T15:08:58+00:00";
+//	    	String dataStr5 = "2014-05-13T17:08:58+02:00";
+//	    	String dataStr6 = "2014-05-13T15:08:58.000+00:00";
+//	    	String dataStr7 = "2014-05-13T17:08:58.000+02:00";
 	    	SimpleDateFormat format = new SimpleDateFormat(_secDateFormat_TZ);
             format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 
-//	    	System.out.println(format.format(parseDate(dataStr)));
+	    	System.out.println(format.format(parseDate(dataStr)));
 //	    	System.out.println(format.format(parseDate(dataStr1)));
 //	    	System.out.println(format.format(parseDate(dataStr2)));
 //	    	System.out.println(format.format(parseDate(dataStr3)));
