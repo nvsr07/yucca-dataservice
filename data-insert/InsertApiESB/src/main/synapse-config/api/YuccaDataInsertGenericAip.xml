@@ -28,7 +28,18 @@
                 </then>
                 <else/>
             </filter>
-            
+            <clone continueParent="true">
+                  <target>
+                     <sequence>
+                        <property name="OUT_ONLY" value="true"/>
+                        <send>
+                           <endpoint>
+                              <address uri="res.gwServerUrl/insert/dataset/"/>
+                           </endpoint>
+                        </send>
+                     </sequence>
+                  </target>
+             </clone>
             
              <property name="idunivoco" expression="$trp:UNIQUE_ID"/>
              <property name="forwardfor" expression="$trp:X-Forwarded-For"/>
