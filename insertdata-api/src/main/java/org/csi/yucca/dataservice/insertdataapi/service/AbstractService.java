@@ -76,9 +76,10 @@ public abstract class AbstractService {
 					+ (outData.getDataBLockreport() != null ? outData.getDataBLockreport().size() : "WARNING: NONE"));
 			for (int i = 0; outData.getDataBLockreport() != null && i < outData.getDataBLockreport().size(); i++) {
 				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") status                  --> " + outData.getDataBLockreport().get(i).getStatus());
-				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") getNumRowToInsFromJson  --> " + outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
+				log.info("[AbstractService::dataInsert]            blocco(" + i + ") getNumRowToInsFromJson  --> " + outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") getRequestId            --> " + outData.getDataBLockreport().get(i).getRequestId());
-				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") getDatasetCode            --> " + outData.getDataBLockreport().get(i).getDatasetCode());
+				log.info("[AbstractService::dataInsert]            blocco(" + i + ") getDatasetCode            --> " + outData.getDataBLockreport().get(i).getDatasetCode());
+				log.info("[AbstractService::dataInsert]            blocco(" + i + ") getNumRowInserted            --> " + outData.getDataBLockreport().get(i).getNumRowInserted());
 				accLog1.setDataIn(outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				accLog1.setDatasetcode(outData.getDataBLockreport().get(i).getIdDataset() + ":" + outData.getDataBLockreport().get(i).getDatasetVersion());
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
