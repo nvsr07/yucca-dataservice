@@ -119,35 +119,35 @@ public class AccountingLog {
 		String logAccountingMessage = "";
 
 		// id
-		logAccountingMessage = logAccountingMessage + "\"" + uniqueid.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + "\"" + getUniqueid().replace("\"", "\"\"") + "\"";
 		// forwardedfor
-		logAccountingMessage = logAccountingMessage + ",\"" + forwardefor.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getForwardefor().replace("\"", "\"\"") + "\"";
 		// jwt
-		logAccountingMessage = logAccountingMessage + ",\"" + jwtData.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getJwtData().replace("\"", "\"\"") + "\"";
 
 		// path
-		logAccountingMessage = logAccountingMessage + ",\"" + path.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getPath().replace("\"", "\"\"") + "\"";
 		// apicode
-		logAccountingMessage = logAccountingMessage + ",\"" + apicode.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getApicode().replace("\"", "\"\"") + "\"";
 
 		// datasetCode
-		logAccountingMessage = logAccountingMessage + ",\"" + datasetcode.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getDatasetcode().replace("\"", "\"\"") + "\"";
 
 		// tenantCode
-		logAccountingMessage = logAccountingMessage + ",\"" + tenantcode.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getTenantcode().replace("\"", "\"\"") + "\"";
 
 		// querString
-		logAccountingMessage = logAccountingMessage + ",\"" + querString.replace("\"", "\"\"") + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getQuerString().replace("\"", "\"\"") + "\"";
 
 		// dataIn
-		logAccountingMessage = logAccountingMessage + "," + dataIn;
+		logAccountingMessage = logAccountingMessage + "," + getDataIn();
 		// dataOut
-		logAccountingMessage = logAccountingMessage + "," + dataOut;
+		logAccountingMessage = logAccountingMessage + "," + getDataOut();
 		// elapsed
-		logAccountingMessage = logAccountingMessage + "," + elapsed;
+		logAccountingMessage = logAccountingMessage + "," + getElapsed();
 
 		// error
-		logAccountingMessage = logAccountingMessage + ",\"" + errore + "\"";
+		logAccountingMessage = logAccountingMessage + ",\"" + getErrore() + "\"";
 
 		return logAccountingMessage;
 	}

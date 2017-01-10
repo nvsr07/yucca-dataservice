@@ -85,12 +85,16 @@ public abstract class AbstractService {
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
 				inDataCount += outData.getDataBLockreport().get(i).getNumRowToInsFromJson();
 				outDataCount +=   outData.getDataBLockreport().get(i).getNumRowInserted();
+				
 				if(outData.getDataBLockreport().get(i).getDatasetCode()!=null)
 					accLog.setDatasetcode(outData.getDataBLockreport().get(i).getDatasetCode());
 
 			}
+			log.info("[AbstractService::dataInsert] inDataCount --> " + inDataCount);
+
 			accLog.setDataIn(inDataCount);
 			accLog.setDataOut(outDataCount);
+			log.info("[AbstractService::dataInsert] getDataIn --> " + accLog.getDataIn());
 
 		} catch (InsertApiBaseException insEx) {
 			log.warn("[InsertApi::insertApiDataset] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());
