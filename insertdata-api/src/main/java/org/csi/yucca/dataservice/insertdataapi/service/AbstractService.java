@@ -95,6 +95,7 @@ public abstract class AbstractService {
 			accLog.setDataIn(inDataCount);
 			accLog.setDataOut(outDataCount);
 			log.info("[AbstractService::dataInsert] getDataIn --> " + accLog.getDataIn());
+			log.info("[AbstractService::dataInsert] getDataIn --> " + accLog.toString());
 
 		} catch (InsertApiBaseException insEx) {
 			log.warn("[InsertApi::insertApiDataset] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());

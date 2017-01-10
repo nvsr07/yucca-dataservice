@@ -28,22 +28,18 @@ public class DatasetService extends AbstractService {
 	@Path("/input/{codTenant}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public DatasetBulkInsertOutput dataInsert(String jsonData,
-			@PathParam(value="codTenant") String codTenant, @HeaderParam(value="UNIQUE_ID")String uniqueid,
-			 @HeaderParam(value="X-Forwarded-For")String forwardfor, @HeaderParam(value="Authorization")String authInfo,
-			 @Context final HttpServletResponse response) throws InsertApiBaseException, InsertApiRuntimeException {
-		DatasetBulkInsertOutput out = super.dataInsert(jsonData,codTenant,uniqueid,forwardfor,authInfo);
-		if (response!=null)
+	public DatasetBulkInsertOutput dataInsert(String jsonData, @PathParam(value = "codTenant") String codTenant, @HeaderParam(value = "UNIQUE_ID") String uniqueid,
+			@HeaderParam(value = "X-Forwarded-For") String forwardfor, @HeaderParam(value = "Authorization") String authInfo, @Context final HttpServletResponse response)
+			throws InsertApiBaseException, InsertApiRuntimeException {
+		DatasetBulkInsertOutput out = super.dataInsert(jsonData, codTenant, uniqueid, forwardfor, authInfo);
+		if (response != null)
 			response.setStatus(Status.ACCEPTED.getStatusCode());
 		return out;
 	}
 
 	@Override
-	protected HashMap<String, DatasetBulkInsert> parseJsonInput(
-			String codTenant, String jsonData) throws Exception {
+	protected HashMap<String, DatasetBulkInsert> parseJsonInput(String codTenant, String jsonData) throws Exception {
 		return new InsertApiLogic().parseJsonInputDataset(codTenant, jsonData);
 	}
-	
-	
-	
+
 }
