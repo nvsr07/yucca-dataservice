@@ -78,12 +78,14 @@ public abstract class AbstractService {
 				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") status                  --> " + outData.getDataBLockreport().get(i).getStatus());
 				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") getNumRowToInsFromJson  --> " + outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") getRequestId            --> " + outData.getDataBLockreport().get(i).getRequestId());
+				log.debug("[AbstractService::dataInsert]            blocco(" + i + ") getDatasetCode            --> " + outData.getDataBLockreport().get(i).getDatasetCode());
 				accLog1.setDataIn(outData.getDataBLockreport().get(i).getNumRowToInsFromJson());
 				accLog1.setDatasetcode(outData.getDataBLockreport().get(i).getIdDataset() + ":" + outData.getDataBLockreport().get(i).getDatasetVersion());
 				accLog1.setErrore(outData.getDataBLockreport().get(i).getStatus());
 				inDataCount += outData.getDataBLockreport().get(i).getNumRowToInsFromJson();
 				outDataCount +=   outData.getDataBLockreport().get(i).getNumRowInserted();
-				accLog.setDatasetcode(outData.getDataBLockreport().get(i).getDatasetCode());
+				if(outData.getDataBLockreport().get(i).getDatasetCode()!=null)
+					accLog.setDatasetcode(outData.getDataBLockreport().get(i).getDatasetCode());
 
 			}
 			accLog.setDataIn(inDataCount);
