@@ -27,8 +27,7 @@ public class SDPInsertApiPhoenixDataAccess {
 
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 
-	 Connection conn = null;
-     Statement stmt = null;
+	 
 	
 //	private static String takeNvlValues(Object obj) {
 //		if (null==obj) return null;
@@ -45,6 +44,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	public int insertBulk(String tenant, DatasetBulkInsert dati) {
 		//String riga=null;
 		//DBObject dbObject = null;
+		Connection conn = null;
 		BulkWriteResult result=null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 		try {
