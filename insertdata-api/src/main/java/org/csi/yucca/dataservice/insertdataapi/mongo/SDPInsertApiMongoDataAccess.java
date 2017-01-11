@@ -470,6 +470,7 @@ public class SDPInsertApiMongoDataAccess {
 		String cacheKey = createStreamCacheKey(tenant, streamApplication, sensor);
 		ArrayList<MongoStreamInfo> ret = streamInfoCache.get(cacheKey);
 		if (ret == null) {
+			log.info("getStreamInfo -> ret null carico");
 			DBCursor cursor = null;
 			try {
 				MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STREAM);
@@ -546,6 +547,9 @@ public class SDPInsertApiMongoDataAccess {
 				}
 			}
 		}
+		else
+			log.info("getStreamInfo -> ret is not null");
+
 		log.debug("Size:" + (ret == null ? 0 : ret.size()));
 		return ret;
 	}
@@ -611,6 +615,8 @@ public class SDPInsertApiMongoDataAccess {
 		ArrayList<FieldsMongoDto> ret = campiDatasetCache.get(cacheKey);
 		
 		if (ret == null) {
+			log.info("getCampiDataSet -> ret null carico");
+
 			//DBCursor cursor = null;
 			try {
 
@@ -717,6 +723,9 @@ public class SDPInsertApiMongoDataAccess {
 				// } catch (Exception e) {
 				// }
 			}
+		}
+		else{
+			log.info("getCampiDataSet -> ret NOT null preso da cache");
 		}
 		return ret;
 
