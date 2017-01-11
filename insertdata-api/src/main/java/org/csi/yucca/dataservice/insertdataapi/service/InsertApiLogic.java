@@ -692,6 +692,8 @@ public class InsertApiLogic {
 
 		// boolean isVerOneRequired = true;
 		String datasetType = "streamDataset";
+		long datasetId = elencoStream.get(0).getDatasetId();
+		
 		for (int i = 0; i < elencoStream.size(); i++) {
 
 			log.finest("[InsertApiLogic::parseMisura] nome stream, tipo stream: " + elencoStream.get(i).getStreamCode() + "," + elencoStream.get(i).getTipoStream());
@@ -721,8 +723,11 @@ public class InsertApiLogic {
 			// }
 		}
 
-		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(elencoStream, Long.parseLong("" + reqVersion));
-		ArrayList<FieldsMongoDto> elencoCampiV1 = mongoAccess.getCampiDataSet(elencoStream, Long.parseLong("1"));
+
+		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("" + reqVersion));
+		ArrayList<FieldsMongoDto> elencoCampiV1 = elencoCampi;
+		if(reqVersion != 1)
+			elencoCampiV1 = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("1"));
 
 		if (elencoCampi == null || elencoCampi.size() <= 0)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, ": " + (stream != null ? stream : application) + " (sensor: "

@@ -6,6 +6,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -19,6 +20,7 @@ import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
+import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 
 @Path("/stream")
 public class StreamService extends AbstractService {
@@ -49,6 +51,20 @@ public class StreamService extends AbstractService {
 
 	public String getSmartobject_StreamFromJson(String codTenant, String jsonData) throws Exception {
 		return InsertApiLogic.getSmartobject_StreamFromJson(codTenant, jsonData);
+	}
+
+	@GET
+	@Path("/clearcache/{codTenant}/{streamApplication}/{sensor}")
+	@Produces("plain/text")
+	public String clearStreamCache(@Context HttpServletRequest request, String jsonData, @PathParam(value = "codTenant") String codTenant,
+			@PathParam(value = "streamApplication") String streamApplication, @PathParam(value = "sensor") String sensor, @HeaderParam(value = "UNIQUE_ID") String uniqueid,
+			@HeaderParam(value = "X-Forwarded-For") String forwardfor, @HeaderParam(value = "Authorization") String authInfo, @Context final HttpServletResponse response)
+			throws InsertApiBaseException, InsertApiRuntimeException {
+		log.info("clearStreamCache");
+		SDPInsertApiMongoDataAccess.clearCache(codTenant, streamApplication, sensor);
+		if (response != null)
+			response.setStatus(Status.ACCEPTED.getStatusCode());
+		return "Cache clear";
 	}
 
 }
