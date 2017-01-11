@@ -839,14 +839,22 @@ public class SDPInsertApiMongoDataAccess {
 		String streamCacheKey = createStreamCacheKey(tenant, streamApplication, sensor);
 		ArrayList<MongoStreamInfo> streamList = streamInfoCache.get(streamCacheKey);
 		if(streamList != null){
+			log.info("clearCache -> streamList NOT NULL elimino " + streamCacheKey);
 			streamInfoCache.remove(streamCacheKey);
 			for (MongoStreamInfo stream : streamList) {
 				String campiDatasetCacheKey = createCampiDatasetCacheKey(stream.getDatasetId(), stream.getDatasetVersion());
-				if(campiDatasetCache.get(campiDatasetCacheKey)!=null)
+				log.info("clearCache -> campiDatasetCacheKey " + campiDatasetCacheKey);
+
+				if(campiDatasetCache.get(campiDatasetCacheKey)!=null){
+					log.info("clearCache -> DatasetCache NOT NULL elimino " + streamCacheKey);
 					campiDatasetCache.remove(campiDatasetCacheKey);
+				}
+				else
+					log.info("clearCache -> DatasetCache NULL non faccio nulla " + streamCacheKey);
+					
 			}
-			campiDatasetCache.clear();
-			
 		}
+		else
+			log.info("clearCache -> streamList NULL non faccio nulla");
 	}
 }
