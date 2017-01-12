@@ -4,6 +4,7 @@ import java.beans.Statement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Iterator;
@@ -235,23 +236,6 @@ public class SDPInsertApiPhoenixDataAccess {
 	            
 	          
 	            stmt.addBatch();
-//	            //stmt.executeUpdate();
-//	            
-//	            recIns++;
-//	            if (recIns % BATCH_SIZE == 0) {
-//	                System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss").format(new Date())   + "--- BEGIN ciclo " +ciclo );
-//	               
-//	                if (recIns % COMMIT_SIZE == 0)
-//	                {
-//	                	conn.commit();
-//	                    stmt.clearBatch();
-//	                }
-//	                System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss").format(new Date())   + "--- END ciclo " +ciclo );
-//	                ciclo++;
-//	            }
-//	            
-//	            stmt.executeBatch();
-//	            
 	            
 	        }
 	        try {
@@ -267,6 +251,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	        	throw new InsertApiRuntimeException(e);
 	        } finally {
 	        	try {
+	        		 stmt.clearBatch();
+	        		 stmt.clearParameters();
 		        	 stmt.close();
 		        	 conn.close();
 				} catch (SQLException e1) {
@@ -289,11 +275,4 @@ public class SDPInsertApiPhoenixDataAccess {
 	}
 
 
-	public static void main(String[] args) {
-		if (Float.isNaN(Float.parseFloat("12")))
-			System.out.println("OK");
-	  
-		System.out.println("--"+Float.parseFloat("NaN")+"|"+Float.NaN);
-	  
-	}
 }
