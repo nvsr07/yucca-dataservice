@@ -2989,6 +2989,7 @@ public class SDPDataApiMongoAccess {
 				//				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
 				//				queryTotCnt.add( new BasicDBObject("_id",new ObjectId(internalId)));
 				queryTotSolr += "AND (id : "+internalId+")";
+				queryTotCntSolr += "AND (id : "+internalId+")";
 
 			}
 			if (null != userQuery) {
