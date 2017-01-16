@@ -51,7 +51,7 @@ public class SDPInsertApiPhoenixDataAccess {
 		try {
 			//System.out.println("###########################################");
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
-			try {conn.commit();} catch (Exception e) {log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Exception catched");}
+//			try {conn.commit();} catch (Exception e) {log.warn("[SDPInsertApiPhoenixDataAccess:insertBulk] Invalid Connection..... Exception catched");}
 					
 			  
 			conn.setAutoCommit(false);
