@@ -1686,8 +1686,14 @@ public class SDPDataApiMongoAccess {
 				groupbysleect = " MONTH(time_dt) as month , DAYOFMONTH(time_dt) as dayfomonth  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, -1 as dayofweek ";
 			} else if ("dayofweek_month".equals(timeGroupByParam)) {
 				//////groupby = " MONTH(time_dt), DAYOFMONTH(time_dt)";
+				groupby = " MONTH(time_dt), DAYOFWEEK(time_dt)";
+				groupbysleect = " MONTH(time_dt) as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("dayofweek".equals(timeGroupByParam)) {
+				groupby = " DAYOFWEEK(time_dt)";
+				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("hour_dayofweek".equals(timeGroupByParam)) {
+				groupby = " DAYOFWEEK(time_dt),HOUR(time_dt)";
+				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, HOUR(time_dt) as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("hour".equals(timeGroupByParam)) {
 				//YUCCA-388
 				groupby = "  HOUR(time_dt) ";
