@@ -36,7 +36,7 @@ public class SDPInsertApiPhoenixDataAccess {
 //	}
 
 	public SDPInsertApiPhoenixDataAccess() throws ClassNotFoundException {
-		Class.forName("org.apache.phoenix.queryserver.client.Driver");
+//		Class.forName("org.apache.phoenix.queryserver.client.Driver");
 	}
 
 
