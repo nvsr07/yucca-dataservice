@@ -26,6 +26,9 @@ public class SDPInsertApiConfig {
 	public static final String JMS_MB_EXTERNAL_URL = "JMS_MB_EXTERNAL_URL";	
 	public static final String JMS_MB_EXTERNAL_USERNAME = "JMS_MB_EXTERNAL_USERNAME";	
 	public static final String JMS_MB_EXTERNAL_PASSWORD = "JMS_MB_EXTERNAL_PASSWORD";	
+	
+	public static final String SOLR_INDEXER_ENABLED = "SOLR_INDEXER_ENABLED";
+
 
 	public static SDPInsertApiConfig instance=null;
 	private static int anno_init = 0;
@@ -93,6 +96,9 @@ public class SDPInsertApiConfig {
 		params.put(JMS_MB_EXTERNAL_USERNAME, rb.getString(JMS_MB_EXTERNAL_USERNAME));
 		params.put(JMS_MB_EXTERNAL_PASSWORD, rb.getString(JMS_MB_EXTERNAL_PASSWORD));
 
+		
+		
+		params.put(SOLR_INDEXER_ENABLED, rb.getString(SOLR_INDEXER_ENABLED));
 
 		
 	}
@@ -195,4 +201,15 @@ public class SDPInsertApiConfig {
 		return params.get(JMS_MB_EXTERNAL_PASSWORD);
 	}
 
+	public boolean isSolrIndexerEnabled()
+	{
+		String solrIndexerParam = params.get(SOLR_INDEXER_ENABLED);
+		if (solrIndexerParam!=null)
+		{
+			try{ return Boolean.parseBoolean(solrIndexerParam); }catch(Exception e){return false;}
+		}
+		else 
+			return false;
+	}
+	
 }
