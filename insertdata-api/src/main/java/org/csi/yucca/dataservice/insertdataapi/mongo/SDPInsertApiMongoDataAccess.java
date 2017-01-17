@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.antlr.grammar.v3.ANTLRParser.throwsSpec_return;
 import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
@@ -42,11 +41,35 @@ public class SDPInsertApiMongoDataAccess {
 //	private static Map<String, ArrayList<MongoStreamInfo>> streamInfoCache = Collections.synchronizedMap(new PassiveExpiringMap<String, ArrayList<MongoStreamInfo>>(10,
 //			TimeUnit.MINUTES));
 
-	private static Map<String, ArrayList<FieldsMongoDto>> campiDatasetCache = Collections.synchronizedMap(new PassiveExpiringMap<String, ArrayList<FieldsMongoDto>>(10,
-			TimeUnit.MINUTES));
+//	private static Map<String, ArrayList<FieldsMongoDto>> campiDatasetCache = Collections.synchronizedMap(new PassiveExpiringMap<String, ArrayList<FieldsMongoDto>>(10,
+//			TimeUnit.MINUTES));
 
+	private static LoadingCache<DatasetInfoKey, ArrayList<FieldsMongoDto>> campiDatasetCache = CacheBuilder.newBuilder()
+		       .refreshAfterWrite(5, TimeUnit.MINUTES)
+		       .build(
+		    		   new CacheLoader<DatasetInfoKey, ArrayList<FieldsMongoDto>>(){
+						@Override
+						public  ArrayList<FieldsMongoDto> load(DatasetInfoKey key) throws Exception {
+							log.info("--------------> load"+key);
+							return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
+						}
+						
+						@Override
+						public ListenableFuture< ArrayList<FieldsMongoDto>> reload(final DatasetInfoKey key,
+								 ArrayList<FieldsMongoDto> oldValue) throws Exception {
+							log.info("--------------> reloaded"+key);
+							ListenableFutureTask< ArrayList<FieldsMongoDto>> task = ListenableFutureTask.create(new Callable< ArrayList<FieldsMongoDto>>() {
+					                   public ArrayList<FieldsMongoDto> call() {
+					                     return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
+					                   }
+					                 });
+									Executors.newSingleThreadExecutor().execute(task);
+					                return task;
+						}
+		    		   });
+	
 	private static LoadingCache<StreamInfoKey, ArrayList<MongoStreamInfo>> streamInfoCache = CacheBuilder.newBuilder()
-		       .refreshAfterWrite(30, TimeUnit.SECONDS)
+		       .refreshAfterWrite(5, TimeUnit.MINUTES)
 		       .build(
 		    		   new CacheLoader<StreamInfoKey, ArrayList<MongoStreamInfo>>(){
 						@Override
@@ -204,7 +227,7 @@ public class SDPInsertApiMongoDataAccess {
 			
 		} catch (Exception e) {
 			log.error("Error", e);
-
+			throw new InsertApiRuntimeException(e);
 		} finally {
 			try {
 				cursor.close();
@@ -271,128 +294,51 @@ public class SDPInsertApiMongoDataAccess {
 
 	public ArrayList<FieldsMongoDto> getCampiDataSet(Long idDataset, long datasetVersion) throws Exception {
 
-		String cacheKey = createCampiDatasetCacheKey(idDataset, datasetVersion);
-		ArrayList<FieldsMongoDto> ret = campiDatasetCache.get(cacheKey);
+		ArrayList<FieldsMongoDto> ret;
+		try {
+			ret = campiDatasetCache.get(new DatasetInfoKey(idDataset, datasetVersion));
+		} catch (Exception e) {
+			throw new InsertApiRuntimeException(e);
+		}
 		
-		if (ret == null) {
-			log.debug("getCampiDataSet -> ret null carico");
-
-			//DBCursor cursor = null;
-			try {
-
-				
-				
-				//DBObject query = BasicDBObjectBuilder.start().append("_id", new ObjectId(metadata.getId())).get();
-				//DBObject data = this.collection.findOne(query);
-			
-				BasicDBList curDataset = new BasicDBList();
-				curDataset.add(new BasicDBObject("idDataset", idDataset));
-				if(datasetVersion!=-1)
-					curDataset.add(new BasicDBObject("datasetVersion", datasetVersion));
-				else
-					curDataset.add(new BasicDBObject("configData.current", 1));
-			
-				BasicDBObject query = new BasicDBObject("$and", curDataset);
-
-				MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
-				DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
-				DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
-
-				DBObject obj = coll.findOne(query);
-				ret = getCampiFromDbObject(obj);
-				//boolean trovato = false;
-				// HashMap<String, FieldsMongoDto> campiMongo= new
-				// HashMap<String, FieldsMongoDto>();
-				//while (cursor.hasNext() && !trovato) {
-//					//DBObject obj = cursor.next();
-//					String datasetDatasetVersion = takeNvlValues(obj.get("datasetVersion"));
-//					// String
-//					// datasetDatasetId=takeNvlValues(obj.get("idDataset"));
-//					//String isCurrent = takeNvlValues(((DBObject) obj.get("configData")).get("current"));
-//					//if (datasetVersion != -1 && datasetVersion == Integer.parseInt(datasetDatasetVersion))
-//				//		trovato = true;
-//					if (datasetVersion == -1 && Integer.parseInt(isCurrent) == 1)
-//						trovato = true;
-//					if (trovato) {
-//
-//						ret = getCampiFromDbObject(obj);
-//
-//						// Object
-//						// eleCapmpi=((BasicDBObject)obj.get("info")).get("fields");
-//						//
-//						// BasicDBList lista=null;
-//						// if (eleCapmpi instanceof BasicDBList) {
-//						// lista=(BasicDBList)eleCapmpi;
-//						// } else {
-//						// lista=new BasicDBList();
-//						// lista.add(eleCapmpi);
-//						// }
-//						//
-//						// for (int i=0;i<lista.size();i++) {
-//						// DBObject elemento=(DBObject)lista.get(i);
-//						// Set<String> chiavi= elemento.keySet();
-//						// String propName=null;
-//						// String porpType=null;
-//						// Iterator<String> itcomp=chiavi.iterator();
-//						// while (itcomp.hasNext()) {
-//						// String chiaveCur=itcomp.next();
-//						// String valor=takeNvlValues(elemento.get(chiaveCur));
-//						//
-//						// if (chiaveCur.equals("fieldName")) propName=valor;
-//						// if (chiaveCur.equals("dataType")) porpType=valor;
-//						//
-//						//
-//						// }
-//						// campiMongo.put(propName, new FieldsMongoDto(propName,
-//						// porpType));
-//						// if (null==ret) ret = new ArrayList<FieldsMongoDto>();
-//						// ret.add(new FieldsMongoDto(propName,
-//						// porpType,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// }
-//						// ret.add(new FieldsMongoDto("c1",
-//						// FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c2",
-//						// FieldsMongoDto.DATA_TYPE_DATETIME,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c3",
-//						// FieldsMongoDto.DATA_TYPE_DOUBLE,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c4",
-//						// FieldsMongoDto.DATA_TYPE_FLOAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c5",
-//						// FieldsMongoDto.DATA_TYPE_INT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c6",
-//						// FieldsMongoDto.DATA_TYPE_LAT,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c7",
-//						// FieldsMongoDto.DATA_TYPE_LON,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c8",
-//						// FieldsMongoDto.DATA_TYPE_LONG,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-//						// ret.add(new FieldsMongoDto("c9",
-//						// FieldsMongoDto.DATA_TYPE_STRING,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
-
-//					}
-//				}
-				if(cacheKey!=null)
-					campiDatasetCache.put(cacheKey, ret);
-			} catch (Exception e) {
-				if (cacheKey!=null && campiDatasetCache.get(cacheKey) != null)
-					campiDatasetCache.remove(cacheKey);
-
-				// TODO
-			} finally {
-				// try {
-				// cursor.close();
-				// } catch (Exception e) {
-				// }
-			}
-		}
-		else{
-			log.debug("getCampiDataSet -> ret NOT null preso da cache");
-		}
 		return ret;
 
 	}
 
 
-	private ArrayList<FieldsMongoDto> getCampiFromDbObject(DBObject obj) throws Exception {
+
+	private static  ArrayList<FieldsMongoDto> getCampiDatasetFromMongo(Long idDataset,
+			long datasetVersion) {
+		ArrayList<FieldsMongoDto> ret=null;
+		try {
+		
+		//DBObject query = BasicDBObjectBuilder.start().append("_id", new ObjectId(metadata.getId())).get();
+		//DBObject data = this.collection.findOne(query);
+
+		BasicDBList curDataset = new BasicDBList();
+		curDataset.add(new BasicDBObject("idDataset", idDataset));
+		if(datasetVersion!=-1)
+			curDataset.add(new BasicDBObject("datasetVersion", datasetVersion));
+		else
+			curDataset.add(new BasicDBObject("configData.current", 1));
+
+		BasicDBObject query = new BasicDBObject("$and", curDataset);
+
+		MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
+		DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+		DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+
+		DBObject obj = coll.findOne(query);
+		ret = getCampiFromDbObject(obj);
+		} catch (Exception e) {
+			log.error("Error", e);
+			throw new InsertApiRuntimeException(e);
+		} 
+		return ret;
+	}
+
+
+	private static ArrayList<FieldsMongoDto> getCampiFromDbObject(DBObject obj) throws Exception {
 		String datasetDatasetVersion = takeNvlValues(obj.get("datasetVersion"));
 		String datasetDatasetId = takeNvlValues(obj.get("idDataset"));
 		ArrayList<FieldsMongoDto> ret = null;
@@ -487,9 +433,6 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 	
-	private static String createStreamCacheKey(String tenant, String streamApplication, String sensor){
-		return  tenant + "_" + sensor + "_" + streamApplication;
-	}
 
 	private static String createCampiDatasetCacheKey(Long idDataset, long datasetVersion) {
 		return "idDataset_" + idDataset + "_datasetVersion_" +datasetVersion;
@@ -502,16 +445,7 @@ public class SDPInsertApiMongoDataAccess {
 			log.info("clearCache -> streamList NOT NULL elimino " + key);
 			streamInfoCache.refresh(key);
 			for (MongoStreamInfo stream : streamList) {
-				String campiDatasetCacheKey = createCampiDatasetCacheKey(stream.getDatasetId(), stream.getDatasetVersion());
-				log.info("clearCache -> campiDatasetCacheKey " + campiDatasetCacheKey);
-
-				if(campiDatasetCache.get(campiDatasetCacheKey)!=null){
-					log.info("clearCache -> DatasetCache NOT NULL elimino " + campiDatasetCacheKey);
-					campiDatasetCache.remove(campiDatasetCacheKey);
-				}
-				else
-					log.info("clearCache -> DatasetCache NULL non faccio nulla " + campiDatasetCacheKey);
-					
+				campiDatasetCache.refresh(new DatasetInfoKey(stream.getDatasetId(), stream.getDatasetVersion()));
 			}
 		}
 		else
