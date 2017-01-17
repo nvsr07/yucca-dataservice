@@ -92,27 +92,16 @@ public class InsertApiLogic {
 
 				datiToIns.put(key, curBulkToIns);
 
-				try {
-					startTimeX = System.currentTimeMillis();
-					log.finest("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
-					solrInsertService.execute(solrInsertRunnable(tenant, curBulkToIns));
-					// solrAccess.insertBulk(tenant, curBulkToIns);
-					log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
-					// curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INDEX);
-					// datiToIns.put(key, curBulkToIns);
-				} catch (Exception e) {
-					log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
-					// log.log(Level.WARNING,
-					// "[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId="
-					// + idRequest + "    blockRequestId=" +
-					// curBulkToIns.getRequestId());
-					// curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
-					// try {
-					// curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INDEX);
-					//
-					// } catch (Exception k) {
-
-					// }
+				if (!SDPInsertApiConfig.getInstance().isSolrIndexerEnabled())
+				{
+					try {
+						startTimeX = System.currentTimeMillis();
+						log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
+						solrInsertService.execute(solrInsertRunnable(tenant, curBulkToIns));
+						log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
+					} catch (Exception e) {
+						log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
+					}
 				}
 			} catch (Exception e) {
 				if (e instanceof InsertApiRuntimeException) {
