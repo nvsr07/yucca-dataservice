@@ -93,6 +93,10 @@
 	            <artifactId>azure-storage</artifactId>
 	            <groupId>com.microsoft.azure</groupId>
 	        </exclusion>
+	        <exclusion>
+	        	<artifactId>netty-all</artifactId>
+	        	<groupId>io.netty</groupId>
+	        </exclusion>
     	</exclusions>
 		 </dependency>
 		 <dependency> 
@@ -104,6 +108,14 @@
 	            	<artifactId>jdk.tools</artifactId>
 	            	<groupId>jdk.tools</groupId>
 	        	</exclusion>
+	        	 <exclusion>
+	        	<artifactId>netty-all</artifactId>
+	        	<groupId>io.netty</groupId>
+	        </exclusion>
+	         <exclusion>
+	        	<artifactId>netty</artifactId>
+	        	<groupId>io.netty</groupId>
+	        </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency> 
