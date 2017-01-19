@@ -751,8 +751,11 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		String tipo=this.mappaCampi.get(ret);
 		ret += (SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)!=null ? SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo) : "");
 
-		if (ret!=null) return ret;
-		else return fieldNameInput;
+//		if (ret!=null) return ret;
+//		else return fieldNameInput;
+		if (ret==null) ret=fieldNameInput;
+		if (!(ret.equals("idDataset_l") || ret.equals("datasetVersion_l" ))) ret=ret.toLowerCase();
+		return ret;
 	}
 
 
@@ -767,6 +770,8 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".idDataset" ,"idDataset_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".time" ,"time_dt");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".datasetVersion" ,"datasetVersion_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".datasetVersion" ,"datasetVersion_l");
 		
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceStream" ,"streams.stream.codiceStream");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceTenant" ,"streams.stream.codiceTenant");

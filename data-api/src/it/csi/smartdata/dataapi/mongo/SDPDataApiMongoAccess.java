@@ -1755,15 +1755,15 @@ public class SDPDataApiMongoAccess {
 
 
 			sql = groupbysleect+", count(1) as totale " +sql + " GROUP BY "+groupby; 
-			
-			
-			
-			
-			
+
+
+
+
+
 			sql = "select * from (select " + sql +")";
-			
+
 			if (null!=groupOutQuery) sql += " where "+((SDPPhoenixExpression)groupOutQuery).toString();
-			
+
 			if (null!=userOrderBy) sql += " ORDER BY " +  (String)userOrderBy;
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] sqlPhoenix="+sql);
 
@@ -1784,7 +1784,7 @@ public class SDPDataApiMongoAccess {
 			if (null != groupOutQuery) {
 				for (int i =0;i<((SDPPhoenixExpression)groupOutQuery).getParameters().size();i++) {
 					Object curpar=((SDPPhoenixExpression)groupOutQuery).getParameters().get(i);
-					
+
 					stmt.setObject(strtINdex, curpar);
 					strtINdex++;
 				}
@@ -1794,7 +1794,7 @@ public class SDPDataApiMongoAccess {
 			long deltaTime=-1;
 			starTtime=System.currentTimeMillis();
 			ResultSet rs=stmt.executeQuery();
-			
+
 			//Cursor cursor =collMisure.aggregate(pipeline,aggregationOptions);
 
 			try {
@@ -1807,7 +1807,7 @@ public class SDPDataApiMongoAccess {
 
 			int cntRet=1;
 			cnt=0;
-			
+
 			while (rs.next()) {
 				//System.out.println("num: "+cntRet+ "------------" +rs.getString("iddataset_l"));
 				//DBObject obj=result;
@@ -1890,14 +1890,14 @@ public class SDPDataApiMongoAccess {
 			}
 
 
-		
 
 
 
 
 
 
-			
+
+
 			try {
 				deltaTime=System.currentTimeMillis()-starTtime;
 			} catch (Exception e) {}
@@ -3016,6 +3016,9 @@ public class SDPDataApiMongoAccess {
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query ="+query);
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] collection ="+collection);
 
+			//yucca-1080
+//			queryTotSolr=queryTotSolr.toLowerCase().replaceAll("iddataset_l", "idDataset_l").replaceAll("datasetversion_l", "datasetVersion_l");
+//			queryTotCntSolr=queryTotCntSolr.toLowerCase().replaceAll("iddataset_l", "idDataset_l").replaceAll("datasetversion_l", "datasetVersion_l");
 
 
 
@@ -3106,7 +3109,9 @@ public class SDPDataApiMongoAccess {
 
 				for (int kkk=0;kkk<((ArrayList<String>)userOrderBy).size();kkk++) {
 					if (null==orderSolr) orderSolr=new ArrayList<SortClause>();
-
+					//yucca-1080
+					//SortClause cc=((ArrayList<SortClause>)userOrderBy).get(kkk);
+					//orderSolr.add(new SortClause(cc.getItem().toLowerCase(),cc.getOrder()));
 					orderSolr.add(((ArrayList<SortClause>)userOrderBy).get(kkk));
 				}
 
@@ -3163,7 +3168,7 @@ public class SDPDataApiMongoAccess {
 					misura.put("internalId",  internalID);
 
 					if (DATA_TYPE_MEASURE.equals(datatType) || DATA_TYPE_SOCIAL.equals(datatType)) {
-						String streamId=curSolrDoc.get("streamCode_s").toString();
+						String streamId=curSolrDoc.get("streamcode_s").toString();
 						String sensorId=curSolrDoc.get("sensor_s").toString();
 						misura.put("streamCode", streamId);
 						misura.put("sensor", sensorId);
@@ -3188,11 +3193,16 @@ public class SDPDataApiMongoAccess {
 
 
 
+						//
+						//						if (curSolrDoc.keySet().contains(chiaveL) ) {
+						//							Object oo = curSolrDoc.get(chiaveL);
+						//
+						//							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
+						//							
+						if (curSolrDoc.keySet().contains(chiaveL.toLowerCase()) ) {
+							Object oo = curSolrDoc.get(chiaveL.toLowerCase());
 
-						if (curSolrDoc.keySet().contains(chiaveL) ) {
-							Object oo = curSolrDoc.get(chiaveL);
-
-							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
+							String  valore=takeNvlValues(curSolrDoc.get(chiaveL.toLowerCase()));							
 							if (null!=valore) {
 								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
 									misura.put(chiave, Boolean.valueOf(valore));
