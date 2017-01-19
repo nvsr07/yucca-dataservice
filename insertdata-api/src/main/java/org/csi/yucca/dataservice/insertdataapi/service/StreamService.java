@@ -36,8 +36,8 @@ public class StreamService extends AbstractService {
 	public DatasetBulkInsertOutput dataInsert(@Context HttpServletRequest request, String jsonData, @PathParam(value = "codTenant") String codTenant,
 			@HeaderParam(value = "UNIQUE_ID") String uniqueid, @HeaderParam(value = "X-Forwarded-For") String forwardfor, @HeaderParam(value = "Authorization") String authInfo,
 			@Context final HttpServletResponse response) throws InsertApiBaseException, InsertApiRuntimeException {
-		log.info("forwardfor ->" + forwardfor);
-		log.info("authInfo ->" + authInfo);
+		log.debug("forwardfor ->" + forwardfor);
+		log.debug("authInfo ->" + authInfo);
 		DatasetBulkInsertOutput out = super.dataInsert(jsonData, codTenant, uniqueid, forwardfor, authInfo);
 		if (response != null)
 			response.setStatus(Status.ACCEPTED.getStatusCode());
