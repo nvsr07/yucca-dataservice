@@ -434,7 +434,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							entitySet,
 							misureNew,
 							EntityProviderWriteProperties.serviceRoot(
-									newUri).nextLink("asdasdasdasd")
+									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
 									.expandSelectTree(expandSelectTreeNode)
