@@ -470,7 +470,7 @@ public class SDPInsertApiMongoDataAccess {
 		String cacheKey = createStreamCacheKey(tenant, streamApplication, sensor);
 		ArrayList<MongoStreamInfo> ret = streamInfoCache.get(cacheKey);
 		if (ret == null) {
-			log.info("getStreamInfo -> ret null carico " + cacheKey);
+			log.debug("getStreamInfo -> ret null carico " + cacheKey);
 			DBCursor cursor = null;
 			try {
 				MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STREAM);
@@ -548,7 +548,7 @@ public class SDPInsertApiMongoDataAccess {
 			}
 		}
 		else
-			log.info("getStreamInfo -> ret is not null prendo da cache " + cacheKey);
+			log.debug("getStreamInfo -> ret is not null prendo da cache " + cacheKey);
 
 		log.debug("Size:" + (ret == null ? 0 : ret.size()));
 		return ret;
@@ -572,7 +572,7 @@ public class SDPInsertApiMongoDataAccess {
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
 			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
-			log.info("[MongoDataAccess::getInfoDataset]  Query" + query);
+			log.debug("[MongoDataAccess::getInfoDataset]  Query" + query);
 			cursor = coll.find(query);
 			if (cursor.hasNext()) {
 				DBObject obj = cursor.next();
@@ -615,7 +615,7 @@ public class SDPInsertApiMongoDataAccess {
 		ArrayList<FieldsMongoDto> ret = campiDatasetCache.get(cacheKey);
 		
 		if (ret == null) {
-			log.info("getCampiDataSet -> ret null carico");
+			log.debug("getCampiDataSet -> ret null carico");
 
 			//DBCursor cursor = null;
 			try {
@@ -715,8 +715,6 @@ public class SDPInsertApiMongoDataAccess {
 			} catch (Exception e) {
 				if (cacheKey!=null && campiDatasetCache.get(cacheKey) != null)
 					campiDatasetCache.remove(cacheKey);
-
-				// TODO
 			} finally {
 				// try {
 				// cursor.close();
@@ -725,7 +723,7 @@ public class SDPInsertApiMongoDataAccess {
 			}
 		}
 		else{
-			log.info("getCampiDataSet -> ret NOT null preso da cache");
+			log.debug("getCampiDataSet -> ret NOT null preso da cache");
 		}
 		return ret;
 
@@ -792,7 +790,7 @@ public class SDPInsertApiMongoDataAccess {
 	public Set<String> getTenantList() throws MongoAccessException {
 		Set<String> tenants = new HashSet<String>();
 
-		log.info("getTenantList....");
+		log.debug("getTenantList....");
 		DBCursor cursor = null;
 		try {
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);
@@ -839,22 +837,22 @@ public class SDPInsertApiMongoDataAccess {
 		String streamCacheKey = createStreamCacheKey(tenant, streamApplication, sensor);
 		ArrayList<MongoStreamInfo> streamList = streamInfoCache.get(streamCacheKey);
 		if(streamList != null){
-			log.info("clearCache -> streamList NOT NULL elimino " + streamCacheKey);
+			log.debug("clearCache -> streamList NOT NULL elimino " + streamCacheKey);
 			streamInfoCache.remove(streamCacheKey);
 			for (MongoStreamInfo stream : streamList) {
 				String campiDatasetCacheKey = createCampiDatasetCacheKey(stream.getDatasetId(), stream.getDatasetVersion());
-				log.info("clearCache -> campiDatasetCacheKey " + campiDatasetCacheKey);
+				log.debug("clearCache -> campiDatasetCacheKey " + campiDatasetCacheKey);
 
 				if(campiDatasetCache.get(campiDatasetCacheKey)!=null){
-					log.info("clearCache -> DatasetCache NOT NULL elimino " + streamCacheKey);
+					log.info("clearCache -> DatasetCache NOT NULL elimino " + campiDatasetCacheKey);
 					campiDatasetCache.remove(campiDatasetCacheKey);
 				}
 				else
-					log.info("clearCache -> DatasetCache NULL non faccio nulla " + streamCacheKey);
+					log.debug("clearCache -> DatasetCache NULL non faccio nulla " + campiDatasetCacheKey);
 					
 			}
 		}
 		else
-			log.info("clearCache -> streamList NULL non faccio nulla " + streamCacheKey);
+			log.debug("clearCache -> streamList NULL non faccio nulla " + streamCacheKey);
 	}
 }
