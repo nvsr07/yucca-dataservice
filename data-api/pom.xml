@@ -252,7 +252,7 @@
 	            	<groupId>jdk.tools</groupId>
 	        	</exclusion>
            <exclusion>
-          <artifactId>netty-all</artifactId>
+          <artifactId>netty</artifactId>
           <groupId>io.netty</groupId>
          </exclusion>
 	        	
