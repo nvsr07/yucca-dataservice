@@ -1875,7 +1875,7 @@ public class SDPDataApiMongoAccess {
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
 								misura.put(chiaveEdm, Long.parseLong(valore.replace(',','.')));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
-								misura.put(chiaveEdm, Double.parseDouble(valore));
+								misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
 								//								Object dataObj=obj.get(chiave);
 								//								misura.put(chiave, dataObj);
