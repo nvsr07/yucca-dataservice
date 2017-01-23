@@ -1735,9 +1735,10 @@ public class SDPDataApiMongoAccess {
 				String field=stDue.nextToken();
 				if (!hasField(compPropsTot,field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' in '" + curOperator +"' not fund in edm" , Locale.UK);
 				String opPhoenix=null;
+				boolean extraOp=false;
 				if ("avg".equals(op)) opPhoenix="avg";
-				else if ("first".equals(op)) opPhoenix="FIRST_VALUE";
-				else if ("last".equals(op)) opPhoenix="LAST_VALUE";
+				else if ("first".equals(op)) {opPhoenix="FIRST_VALUE"; extraOp=true; }
+				else if ("last".equals(op)) {opPhoenix="LAST_VALUE"; extraOp=true; }
 				else if ("sum".equals(op)) opPhoenix="sum";
 				else if ("max".equals(op)) opPhoenix="max";
 				else if ("min".equals(op)) opPhoenix="min";
@@ -1746,9 +1747,17 @@ public class SDPDataApiMongoAccess {
 				if (campoOperazione.containsKey(field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' present in more than one operation" , Locale.UK);
 
 				campoOperazione.put(field, opPhoenix);
+				
+				
+				String campoCompleto=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
+				
 				groupbysleect+=", "+opPhoenix + "(";
-				groupbysleect+=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
-				groupbysleect+= ")" + " as " + field +"_sts";
+				groupbysleect+=campoCompleto;
+				groupbysleect+= ")";
+				if (extraOp) {
+					groupbysleect+=  " WITHIN GROUP (ORDER BY "+campoCompleto+" asc) "; 
+				}
+				groupbysleect+=  " as " + field +"_sts";
 
 			}			
 
