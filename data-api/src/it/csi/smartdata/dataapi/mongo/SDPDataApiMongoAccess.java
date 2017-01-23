@@ -1873,7 +1873,7 @@ public class SDPDataApiMongoAccess {
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
 								misura.put(chiaveEdm, Integer.parseInt(valore));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
-								misura.put(chiaveEdm, Long.parseLong(valore));
+								misura.put(chiaveEdm, Long.parseLong(valore.replace(',','.')));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
 								misura.put(chiaveEdm, Double.parseDouble(valore));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
@@ -1883,7 +1883,7 @@ public class SDPDataApiMongoAccess {
 								//								Object dataObj=obj.get(chiave);
 								//								misura.put(chiave, dataObj);
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
-								misura.put(chiaveEdm, Double.parseDouble(valore));
+								misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
 
 							}					
 						}
