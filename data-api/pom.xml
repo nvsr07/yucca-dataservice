@@ -62,6 +62,17 @@
       <name>WSO2 Maven2 Repository</name>
       <url>http://dist.wso2.org/maven2</url>
     </repository>
+     
+		<repository>
+			<id>apache-maven2-repo</id>
+			<name>Apache Maven2 Repository</name>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+		    		<repository>
+			<id>Jetty</id>
+			<name>Jetty HDP Releases</name>
+		<url>http://repo.hortonworks.com/content/repositories/jetty-hadoop/</url>
+		</repository>
     <repository>
     <id>HDPReleases</id>
         <name>HDP Releases</name>
@@ -180,6 +191,85 @@
 		</dependency>
 
 
+
+		<dependency> 
+		<groupId>org.apache.phoenix</groupId> 
+		<artifactId>phoenix-core</artifactId>
+		<version>4.4.0.2.4.2.0-258</version>
+		<exclusions>
+	        <exclusion>
+	            <artifactId>jdk.tools</artifactId>
+	            <groupId>jdk.tools</groupId>
+	        </exclusion>
+	        <exclusion>
+	            <artifactId>hbase-server</artifactId>
+	            <groupId>org.apache.hbase</groupId>
+	        </exclusion>
+	         <exclusion>
+	            <artifactId>hbase-client</artifactId>
+	            <groupId>org.apache.hbase</groupId>
+	        </exclusion>
+	         <exclusion>
+	            <artifactId>hbase-annotations</artifactId>
+	            <groupId>org.apache.hbase</groupId>
+	        </exclusion>
+	         <exclusion>
+	            <artifactId>hbase-common</artifactId>
+	            <groupId>org.apache.hbase</groupId>
+	        </exclusion>
+	         <exclusion>
+	            <artifactId>hbase-protocol</artifactId>
+	            <groupId>org.apache.hbase</groupId>
+	        </exclusion>
+	         <exclusion>
+	            <artifactId>hadoop-azure</artifactId>
+	            <groupId>org.apache.hadoop</groupId>
+	        </exclusion>
+	          <exclusion>
+	            <artifactId>hadoop-common</artifactId>
+	            <groupId>org.apache.hadoop</groupId>
+	        </exclusion>  <exclusion>
+	            <artifactId>hadoop-mapreduce-client-core</artifactId>
+	            <groupId>org.apache.hadoop</groupId>
+	        </exclusion>
+	      	<exclusion>
+	            <artifactId>azure-storage</artifactId>
+	            <groupId>com.microsoft.azure</groupId>
+	        </exclusion>
+         <exclusion>
+          <artifactId>netty-all</artifactId>
+          <groupId>io.netty</groupId>
+         </exclusion>	        
+    	</exclusions>
+		 </dependency>
+		 <dependency> 
+			<groupId>org.apache.hbase</groupId> 
+			<artifactId>hbase-client</artifactId>
+			<version>1.1.2.2.4.2.0-258</version>
+			<exclusions>
+				<exclusion>
+	            	<artifactId>jdk.tools</artifactId>
+	            	<groupId>jdk.tools</groupId>
+	        	</exclusion>
+           <exclusion>
+          <artifactId>netty</artifactId>
+          <groupId>io.netty</groupId>
+         </exclusion>
+	        	
+			</exclusions>
+		</dependency>
+		<dependency> 
+			<groupId>org.apache.hbase</groupId> 
+			<artifactId>hbase-server</artifactId>
+			<version>1.1.2.2.4.2.0-258</version>
+			<exclusions>
+		        <exclusion>
+		            <groupId>*</groupId>
+		            <artifactId>*</artifactId>
+		        </exclusion>
+		    </exclusions>
+		</dependency>
+
 	</dependencies>
 	<profiles>
 
@@ -275,6 +365,42 @@
 				<testResources>
 					<testResource>
 						<directory>${project.build.directory}/checkout/dataapi/test/integ</directory>
+					</testResource>
+				</testResources>
+
+			</build>
+		</profile>
+
+		<profile>
+			<id>integsolrolddriver</id>
+			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/dataapi/resources/integsolrolddriver</directory>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/dataapi/test/integsolrolddriver</directory>
 					</testResource>
 				</testResources>
 

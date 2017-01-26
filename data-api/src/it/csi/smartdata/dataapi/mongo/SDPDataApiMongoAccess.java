@@ -1686,8 +1686,14 @@ public class SDPDataApiMongoAccess {
 				groupbysleect = " MONTH(time_dt) as month , DAYOFMONTH(time_dt) as dayfomonth  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, -1 as dayofweek ";
 			} else if ("dayofweek_month".equals(timeGroupByParam)) {
 				//////groupby = " MONTH(time_dt), DAYOFMONTH(time_dt)";
+				groupby = " MONTH(time_dt), DAYOFWEEK(time_dt)";
+				groupbysleect = " MONTH(time_dt) as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("dayofweek".equals(timeGroupByParam)) {
+				groupby = " DAYOFWEEK(time_dt)";
+				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("hour_dayofweek".equals(timeGroupByParam)) {
+				groupby = " DAYOFWEEK(time_dt),HOUR(time_dt)";
+				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, HOUR(time_dt) as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("hour".equals(timeGroupByParam)) {
 				//YUCCA-388
 				groupby = "  HOUR(time_dt) ";
@@ -1729,9 +1735,10 @@ public class SDPDataApiMongoAccess {
 				String field=stDue.nextToken();
 				if (!hasField(compPropsTot,field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' in '" + curOperator +"' not fund in edm" , Locale.UK);
 				String opPhoenix=null;
+				boolean extraOp=false;
 				if ("avg".equals(op)) opPhoenix="avg";
-				else if ("first".equals(op)) opPhoenix="FIRST_VALUE";
-				else if ("last".equals(op)) opPhoenix="LAST_VALUE";
+				else if ("first".equals(op)) {opPhoenix="FIRST_VALUE"; extraOp=true; }
+				else if ("last".equals(op)) {opPhoenix="LAST_VALUE"; extraOp=true; }
 				else if ("sum".equals(op)) opPhoenix="sum";
 				else if ("max".equals(op)) opPhoenix="max";
 				else if ("min".equals(op)) opPhoenix="min";
@@ -1740,24 +1747,32 @@ public class SDPDataApiMongoAccess {
 				if (campoOperazione.containsKey(field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' present in more than one operation" , Locale.UK);
 
 				campoOperazione.put(field, opPhoenix);
+				
+				
+				String campoCompleto=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
+				
 				groupbysleect+=", "+opPhoenix + "(";
-				groupbysleect+=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
-				groupbysleect+= ")" + " as " + field +"_sts";
+				groupbysleect+=campoCompleto;
+				groupbysleect+= ")";
+				if (extraOp) {
+					groupbysleect+=  " WITHIN GROUP (ORDER BY "+campoCompleto+" asc) "; 
+				}
+				groupbysleect+=  " as " + field +"_sts";
 
 			}			
 
 
 
 			sql = groupbysleect+", count(1) as totale " +sql + " GROUP BY "+groupby; 
-			
-			
-			
-			
-			
+
+
+
+
+
 			sql = "select * from (select " + sql +")";
-			
+
 			if (null!=groupOutQuery) sql += " where "+((SDPPhoenixExpression)groupOutQuery).toString();
-			
+
 			if (null!=userOrderBy) sql += " ORDER BY " +  (String)userOrderBy;
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] sqlPhoenix="+sql);
 
@@ -1778,7 +1793,7 @@ public class SDPDataApiMongoAccess {
 			if (null != groupOutQuery) {
 				for (int i =0;i<((SDPPhoenixExpression)groupOutQuery).getParameters().size();i++) {
 					Object curpar=((SDPPhoenixExpression)groupOutQuery).getParameters().get(i);
-					
+
 					stmt.setObject(strtINdex, curpar);
 					strtINdex++;
 				}
@@ -1788,7 +1803,7 @@ public class SDPDataApiMongoAccess {
 			long deltaTime=-1;
 			starTtime=System.currentTimeMillis();
 			ResultSet rs=stmt.executeQuery();
-			
+
 			//Cursor cursor =collMisure.aggregate(pipeline,aggregationOptions);
 
 			try {
@@ -1801,7 +1816,7 @@ public class SDPDataApiMongoAccess {
 
 			int cntRet=1;
 			cnt=0;
-			
+
 			while (rs.next()) {
 				//System.out.println("num: "+cntRet+ "------------" +rs.getString("iddataset_l"));
 				//DBObject obj=result;
@@ -1858,9 +1873,9 @@ public class SDPDataApiMongoAccess {
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
 								misura.put(chiaveEdm, Integer.parseInt(valore));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
-								misura.put(chiaveEdm, Long.parseLong(valore));
+								misura.put(chiaveEdm, Long.parseLong(valore.replace(',','.')));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
-								misura.put(chiaveEdm, Double.parseDouble(valore));
+								misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
 								//								Object dataObj=obj.get(chiave);
 								//								misura.put(chiave, dataObj);
@@ -1868,7 +1883,7 @@ public class SDPDataApiMongoAccess {
 								//								Object dataObj=obj.get(chiave);
 								//								misura.put(chiave, dataObj);
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
-								misura.put(chiaveEdm, Double.parseDouble(valore));
+								misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
 
 							}					
 						}
@@ -1884,14 +1899,14 @@ public class SDPDataApiMongoAccess {
 			}
 
 
-		
 
 
 
 
 
 
-			
+
+
 			try {
 				deltaTime=System.currentTimeMillis()-starTtime;
 			} catch (Exception e) {}
@@ -2989,6 +3004,7 @@ public class SDPDataApiMongoAccess {
 				//				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
 				//				queryTotCnt.add( new BasicDBObject("_id",new ObjectId(internalId)));
 				queryTotSolr += "AND (id : "+internalId+")";
+				queryTotCntSolr += "AND (id : "+internalId+")";
 
 			}
 			if (null != userQuery) {
@@ -3009,6 +3025,9 @@ public class SDPDataApiMongoAccess {
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query ="+query);
 			log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] collection ="+collection);
 
+			//yucca-1080
+//			queryTotSolr=queryTotSolr.toLowerCase().replaceAll("iddataset_l", "idDataset_l").replaceAll("datasetversion_l", "datasetVersion_l");
+//			queryTotCntSolr=queryTotCntSolr.toLowerCase().replaceAll("iddataset_l", "idDataset_l").replaceAll("datasetversion_l", "datasetVersion_l");
 
 
 
@@ -3099,7 +3118,9 @@ public class SDPDataApiMongoAccess {
 
 				for (int kkk=0;kkk<((ArrayList<String>)userOrderBy).size();kkk++) {
 					if (null==orderSolr) orderSolr=new ArrayList<SortClause>();
-
+					//yucca-1080
+					//SortClause cc=((ArrayList<SortClause>)userOrderBy).get(kkk);
+					//orderSolr.add(new SortClause(cc.getItem().toLowerCase(),cc.getOrder()));
 					orderSolr.add(((ArrayList<SortClause>)userOrderBy).get(kkk));
 				}
 
@@ -3156,7 +3177,7 @@ public class SDPDataApiMongoAccess {
 					misura.put("internalId",  internalID);
 
 					if (DATA_TYPE_MEASURE.equals(datatType) || DATA_TYPE_SOCIAL.equals(datatType)) {
-						String streamId=curSolrDoc.get("streamCode_s").toString();
+						String streamId=curSolrDoc.get("streamcode_s").toString();
 						String sensorId=curSolrDoc.get("sensor_s").toString();
 						misura.put("streamCode", streamId);
 						misura.put("sensor", sensorId);
@@ -3181,11 +3202,16 @@ public class SDPDataApiMongoAccess {
 
 
 
+						//
+						//						if (curSolrDoc.keySet().contains(chiaveL) ) {
+						//							Object oo = curSolrDoc.get(chiaveL);
+						//
+						//							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
+						//							
+						if (curSolrDoc.keySet().contains(chiaveL.toLowerCase()) ) {
+							Object oo = curSolrDoc.get(chiaveL.toLowerCase());
 
-						if (curSolrDoc.keySet().contains(chiaveL) ) {
-							Object oo = curSolrDoc.get(chiaveL);
-
-							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
+							String  valore=takeNvlValues(curSolrDoc.get(chiaveL.toLowerCase()));							
 							if (null!=valore) {
 								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
 									misura.put(chiave, Boolean.valueOf(valore));
