@@ -2,6 +2,8 @@ package org.csi.yucca.dataservice.insertdataapi.model.output;
 
 public class CollectionConfDto {
 	
+	private Boolean forwardToBrokerFromCEP;
+	
 	private String dataSolrCollectionName;
 	private String mediaSolrCollectionName;
 	private String socialSolrCollectionName;
@@ -91,6 +93,12 @@ public class CollectionConfDto {
 	}
 	public void setMeasuresPhoenixTableName(String measuresPhoenixTableName) {
 		this.measuresPhoenixTableName = measuresPhoenixTableName;
+	}
+	public Boolean getForwardToBrokerFromCEP() {
+		return forwardToBrokerFromCEP;
+	}
+	public void setForwardToBrokerFromCEP(Boolean forwardToBrokerFromCEP) {
+		this.forwardToBrokerFromCEP = forwardToBrokerFromCEP;
 	}
 
 	

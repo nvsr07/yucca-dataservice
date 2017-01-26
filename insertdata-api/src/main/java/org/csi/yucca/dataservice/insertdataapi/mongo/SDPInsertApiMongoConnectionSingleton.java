@@ -59,6 +59,16 @@ public class SDPInsertApiMongoConnectionSingleton {
 		else return obj.toString();
 	}
 	
+	private Boolean takeNvlValuesBoolean(Object obj) {
+		if (null==obj) return null;
+		if (obj instanceof Boolean)
+			return (Boolean) obj;
+		else {
+			log.warn("Configuration "+ obj+" not boolean as expected");
+			return null;
+		}
+	}
+	
 	public void cleanMongoConnection() {
 		if (mongoConnection!=null && mongoConnection.size()>0) {
 			Iterator<String> chiavi=mongoConnection.keySet().iterator();
@@ -146,6 +156,8 @@ public class SDPInsertApiMongoConnectionSingleton {
 				collectionConf.setDataPhoenixTableName( takeNvlValues(obj.get("dataPhoenixTableName")));
 				collectionConf.setMediaPhoenixTableName( takeNvlValues(obj.get("mediaPhoenixTableName")));
 				collectionConf.setMeasuresPhoenixTableName( takeNvlValues(obj.get("measuresPhoenixTableName")));
+				
+				collectionConf.setForwardToBrokerFromCEP(takeNvlValuesBoolean(obj.get("forwardToBrokerFromCEP")));
 				
 				params.put(tenant, collectionConf);
 				
