@@ -19,8 +19,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
+import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.service.StreamService;
 import org.csi.yucca.dataservice.insertdataapi.util.NamedThreadFactory;
+import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 public class JMSMessageListener implements MessageListener {
 	private static final Log log = LogFactory.getLog("org.csi.yucca.datainsert");
@@ -46,10 +48,15 @@ public class JMSMessageListener implements MessageListener {
 		try {
 			if (message instanceof TextMessage) {
 				TextMessage txtMessage = (TextMessage) message;
-				log.info("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
+				log.debug("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
 				try {
-					sendMessageService.execute(createSendMessageRunnable(connectionFactoryExternal, txtMessage));
-					log.info("[JMSMessageListener::onMessage] send");
+					
+					if (SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(codTenant).getForwardToBrokerFromCEP()!=null &&
+							SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(codTenant).getForwardToBrokerFromCEP().equals(false))
+					{
+						sendMessageService.execute(createSendMessageRunnable(connectionFactoryExternal, txtMessage));
+					}
+					log.debug("[JMSMessageListener::onMessage] send");
 
 					JMSMessageListener.streamService.dataInsert(txtMessage.getText(), codTenant, message.getJMSMessageID(), "", "");
 
@@ -76,7 +83,7 @@ public class JMSMessageListener implements MessageListener {
 			
 			if (((ActiveMQMessage) message).getRedeliveryCounter() == 0) {
 				String smartObject_stream = JMSMessageListener.streamService.getSmartobject_StreamFromJson(codTenant, message.getText());
-				log.debug("[JMSMessageListener::forwardMessage] first key:" + smartObject_stream);
+				log.info("[JMSMessageListener::forwardMessage] first key:" + smartObject_stream);
 				
 				Connection connectionExternal = connectionFactoryExternal.createConnection();
 
