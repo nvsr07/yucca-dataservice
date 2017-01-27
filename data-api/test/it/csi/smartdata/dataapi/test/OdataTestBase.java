@@ -29,8 +29,10 @@ public class OdataTestBase {
 //				"&$format=json";
 		
 		String urlToCall=dato.get("odata.url")+"/"+dato.get("odata.apicode")+"/";
+		boolean stats=false;
 		if (StringUtils.isNotEmpty(dato.getString("odata.entityset"))) {
 			urlToCall+=dato.get("odata.entityset");
+			if (((String)dato.get("odata.entityset")).indexOf("Stats")!=-1) stats=true;
 		}
 		boolean added=false;
 		if (dato.getInt("odata.top")>0) {
@@ -52,8 +54,32 @@ public class OdataTestBase {
 		
 		if (null!=format) {
 			urlToCall+=(added ? "&" : "?") + "$format="+format;
+			added=true;
+		}
+
+		if (stats) {
+			try {
+			if (StringUtils.isNotEmpty(dato.getString("odata.stats.timeGroupBy"))) {
+				urlToCall+=(added ? "&" : "?") + "timeGroupBy="+dato.get("odata.stats.timeGroupBy");
+				added=true;
+			}
+			if (StringUtils.isNotEmpty(dato.getString("odata.stats.timeGroupFilter"))) {
+				urlToCall+=(added ? "&" : "?") + "timeGroupFilter="+dato.get("odata.stats.timeGroupFilter");
+				added=true;
+			}
+			if (StringUtils.isNotEmpty(dato.getString("odata.stats.timeGroupOperators"))) {
+				urlToCall+=(added ? "&" : "?") + "timeGroupOperators="+dato.get("odata.stats.timeGroupOperators");
+				added=true;
+			}
+			} catch (Exception e ) {
+				e.printStackTrace();
+			}
+			
 		}
 		
+
+		
+
 		
 		
 		return urlToCall;
