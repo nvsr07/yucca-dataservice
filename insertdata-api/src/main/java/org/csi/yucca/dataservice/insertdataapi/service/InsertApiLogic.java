@@ -826,6 +826,8 @@ public class InsertApiLogic {
 
 		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
 		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
+		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
+
 
 		boolean deleteData = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
 

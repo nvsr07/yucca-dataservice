@@ -198,7 +198,15 @@ public abstract class AbstractService {
 	}
 
 	public DatasetDeleteOutput dataDelete(String codTenant, String idDataset, String datasetVersion, String uniqueid, String forwardfor, String authInfo) {
-		
+		log.info("[InsertApi::dataDelete] START ");
+		log.info("[InsertApi::dataDelete] codTenant " + codTenant);
+		log.info("[InsertApi::dataDelete] idDataset " + idDataset);
+		log.info("[InsertApi::dataDelete] datasetVersion " + datasetVersion);
+		log.info("[InsertApi::dataDelete] uniqueid " + uniqueid);
+		log.info("[InsertApi::dataDelete] forwardfor " + forwardfor);
+		log.info("[InsertApi::dataDelete] authInfo " + authInfo);
+
+
 		DatasetDeleteOutput outData = new DatasetDeleteOutput();
 		
 		
@@ -235,10 +243,11 @@ public abstract class AbstractService {
 
 			accLog1.setUniqueid(uniqueid);
 
-			log.debug("[AbstractService::dataDelete] BEGIN ");
+			log.info("[AbstractService::dataDelete] BEGIN ");
 			InsertApiLogic insertApiLogic = new InsertApiLogic();
 			boolean phoenixResult = insertApiLogic.deleteManager(codTenant, idDatasetLong, datasetVersionLong);
-			
+			log.info("[AbstractService::dataDelete] phoenixResult " + phoenixResult);
+
 			// vado su solar
 			
 		} catch (InsertApiBaseException insEx) {

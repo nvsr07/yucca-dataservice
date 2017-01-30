@@ -260,6 +260,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	}
 
 	public boolean deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
+		log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
+
 		Connection conn = null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 		boolean result = false;
@@ -304,9 +306,13 @@ public class SDPInsertApiPhoenixDataAccess {
 			}
 
 			String sql = "DELETE FROM " + schema + "." + table + " WHERE iddataset_l=?";
+
 			if (datasetVersion != null && datasetVersion > 0)
 				sql += " AND datasetversion_l=?";
 
+			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
+			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
+			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, (Integer.parseInt(Long.toString(idDataset))));
 			if (datasetVersion != null && datasetVersion > 0)
