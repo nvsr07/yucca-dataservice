@@ -26,6 +26,8 @@ public class InsertApiBaseException extends WebApplicationException{
 	public static final String ERROR_CODE_INPUT_INVALID_DATA_VALUE="E020";
 	
 	
+	
+	
 	private String errorName=null;
 	private String errorCode=null;
 	private String output=null;

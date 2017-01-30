@@ -2974,8 +2974,10 @@ public class SDPDataApiMongoAccess {
 
 			DBCollection collMisure =null;
 
-			String queryTotSolr="(idDataset_l:"+idDataset+")";
-			String queryTotCntSolr="(idDataset_l:"+idDataset+")";
+			String queryTotSolr="(iddataset_l:"+idDataset+")";
+			String queryTotCntSolr="(iddataset_l:"+idDataset+")";
+			//String queryTotSolr="(idDataset_l:"+idDataset+")";
+			//String queryTotCntSolr="(idDataset_l:"+idDataset+")";
 
 
 
@@ -2998,7 +3000,8 @@ public class SDPDataApiMongoAccess {
 
 			//queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$gt", 0)));
 
-			queryTotSolr+= " AND (datasetVersion_l : [ 0 TO * ])";
+			//queryTotSolr+= " AND (datasetVersion_l : [ 0 TO * ])";
+			queryTotSolr+= " AND (datasetversion_l : [ 0 TO * ])";
 
 			if (null!=internalId) {
 				//				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
@@ -3119,9 +3122,9 @@ public class SDPDataApiMongoAccess {
 				for (int kkk=0;kkk<((ArrayList<String>)userOrderBy).size();kkk++) {
 					if (null==orderSolr) orderSolr=new ArrayList<SortClause>();
 					//yucca-1080
-					//SortClause cc=((ArrayList<SortClause>)userOrderBy).get(kkk);
-					//orderSolr.add(new SortClause(cc.getItem().toLowerCase(),cc.getOrder()));
-					orderSolr.add(((ArrayList<SortClause>)userOrderBy).get(kkk));
+					SortClause cc=((ArrayList<SortClause>)userOrderBy).get(kkk);
+					orderSolr.add(new SortClause(cc.getItem().toLowerCase(),cc.getOrder()));
+					//orderSolr.add(((ArrayList<SortClause>)userOrderBy).get(kkk));
 				}
 
 
@@ -3172,7 +3175,8 @@ public class SDPDataApiMongoAccess {
 
 
 					String internalID=curSolrDoc.get("id").toString();
-					String datasetVersion=takeNvlValues(curSolrDoc.get("datasetVersion_l"));
+					//String datasetVersion=takeNvlValues(curSolrDoc.get("datasetVersion_l"));
+					String datasetVersion=takeNvlValues(curSolrDoc.get("datasetversion_l"));
 					Map<String, Object> misura = new HashMap<String, Object>();
 					misura.put("internalId",  internalID);
 
@@ -3187,7 +3191,8 @@ public class SDPDataApiMongoAccess {
 
 						misura.put("time", sddd );
 					}					
-					String iddataset=takeNvlValues(curSolrDoc.get("idDataset_l"));
+					//String iddataset=takeNvlValues(curSolrDoc.get("idDataset_l"));
+					String iddataset=takeNvlValues(curSolrDoc.get("iddataset_l"));
 					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 

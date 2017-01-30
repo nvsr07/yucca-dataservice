@@ -92,8 +92,7 @@ public class InsertApiLogic {
 
 				datiToIns.put(key, curBulkToIns);
 
-				if (!SDPInsertApiConfig.getInstance().isSolrIndexerEnabled())
-				{
+				if (!SDPInsertApiConfig.getInstance().isSolrIndexerEnabled()) {
 					try {
 						startTimeX = System.currentTimeMillis();
 						log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
@@ -681,7 +680,7 @@ public class InsertApiLogic {
 		boolean isVerOneRequired = true;
 		String datasetType = "streamDataset";
 		long datasetId = elencoStream.get(0).getDatasetId();
-		
+
 		for (int i = 0; i < elencoStream.size(); i++) {
 
 			log.finest("[InsertApiLogic::parseMisura] nome stream, tipo stream: " + elencoStream.get(i).getStreamCode() + "," + elencoStream.get(i).getTipoStream());
@@ -710,10 +709,9 @@ public class InsertApiLogic {
 			 }
 		}
 
-
 		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("" + reqVersion));
 		ArrayList<FieldsMongoDto> elencoCampiV1 = elencoCampi;
-		if(reqVersion != 1)
+		if (reqVersion != 1)
 			elencoCampiV1 = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("1"));
 
 		if (elencoCampi == null || elencoCampi.size() <= 0)
@@ -818,5 +816,20 @@ public class InsertApiLogic {
 		for (int i = 0; i < 100; i++) {
 			System.out.println(ObjectId.get().toString());
 		}
+	}
+
+	public boolean deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
+
+		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
+
+		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
+		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
+		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
+
+
+		boolean deleteData = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
+
+		return deleteData;
+
 	}
 }

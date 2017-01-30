@@ -46,7 +46,7 @@ public class OdataRecordContentTest extends OdataTestBase{
 			rs = rs.auth().basic(dato.getString("odata.username"), dato.getString("odata.password"));
 		}	 
 
-		
+		System.out.println(makeUrl(dato,"json"));
 		Response rsp = rs.when().get(makeUrl(dato,"json"));
 		JSONArray arrAtteso=(JSONArray)dato.get("odata.retdata.dataRecords");
 

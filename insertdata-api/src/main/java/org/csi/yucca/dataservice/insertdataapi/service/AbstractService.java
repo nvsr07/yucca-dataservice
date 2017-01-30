@@ -11,6 +11,7 @@ import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeExcepti
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertIOperationReport;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsertOutput;
+import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
 import org.csi.yucca.dataservice.insertdataapi.util.AccountingLog;
 
 import com.jayway.jsonpath.JsonPath;
@@ -193,6 +194,81 @@ public abstract class AbstractService {
 
 		}
 
+		return outData;
+	}
+
+	public DatasetDeleteOutput dataDelete(String codTenant, String idDataset, String datasetVersion, String uniqueid, String forwardfor, String authInfo) {
+		log.info("[InsertApi::dataDelete] START ");
+		log.info("[InsertApi::dataDelete] codTenant " + codTenant);
+		log.info("[InsertApi::dataDelete] idDataset " + idDataset);
+		log.info("[InsertApi::dataDelete] datasetVersion " + datasetVersion);
+		log.info("[InsertApi::dataDelete] uniqueid " + uniqueid);
+		log.info("[InsertApi::dataDelete] forwardfor " + forwardfor);
+		log.info("[InsertApi::dataDelete] authInfo " + authInfo);
+
+
+		DatasetDeleteOutput outData = new DatasetDeleteOutput();
+		
+		
+		long starTtime = 0;
+		long deltaTime = -1;
+		AccountingLog accLog = new AccountingLog();
+		AccountingLog accLog1 = new AccountingLog();
+		Long idDatasetLong = null;
+		Long datasetVersionLong = null;
+		if(idDataset == null){
+			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
+		}
+		try {
+			idDatasetLong = new Long(idDataset);
+		} catch (Exception e) {
+			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
+		}
+		
+		if (datasetVersion !=null) {
+			try {
+				datasetVersionLong = new Long(datasetVersion);
+			} catch (Exception e) {
+				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
+			}
+		}
+
+		try {
+			starTtime = System.currentTimeMillis();
+			accLog.setTenantcode(codTenant);
+			accLog.setUniqueid(uniqueid + "");
+			accLog.setForwardefor(forwardfor + "");
+			accLog.setJwtData(authInfo + "");
+			accLog.setPath("/dataset/delete/");
+
+			accLog1.setUniqueid(uniqueid);
+
+			log.info("[AbstractService::dataDelete] BEGIN ");
+			InsertApiLogic insertApiLogic = new InsertApiLogic();
+			boolean phoenixResult = insertApiLogic.deleteManager(codTenant, idDatasetLong, datasetVersionLong);
+			log.info("[AbstractService::dataDelete] phoenixResult " + phoenixResult);
+
+			// vado su solar
+			
+		} catch (InsertApiBaseException insEx) {
+			log.warn("[InsertApi::dataDelete] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());
+			accLog.setErrore(insEx.getErrorCode() + " - " + insEx.getErrorName());
+			throw insEx;
+		} catch (Exception e) {
+			log.fatal("[InsertApi::dataDelete] GenericException " + e);
+			throw new InsertApiRuntimeException(e);
+		} finally {
+			try {
+				deltaTime = System.currentTimeMillis() - starTtime;
+				accLog.setElapsed(deltaTime);
+
+			} catch (Exception e) {
+			}
+			logAccounting.info(accLog.toString());
+			log.info("[InsertApi::dataDelete] END --> elapsed: " + deltaTime);
+		}
+
+		// response.setStatus(Status.ACCEPTED.getStatusCode());
 		return outData;
 	}
 

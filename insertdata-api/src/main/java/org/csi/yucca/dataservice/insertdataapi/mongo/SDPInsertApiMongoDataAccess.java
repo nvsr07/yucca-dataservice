@@ -38,69 +38,64 @@ import com.mongodb.MongoClient;
 public class SDPInsertApiMongoDataAccess {
 	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("org.csi.yucca.datainsert");
 
-//	private static Map<String, ArrayList<MongoStreamInfo>> streamInfoCache = Collections.synchronizedMap(new PassiveExpiringMap<String, ArrayList<MongoStreamInfo>>(10,
-//			TimeUnit.MINUTES));
+	// private static Map<String, ArrayList<MongoStreamInfo>> streamInfoCache =
+	// Collections.synchronizedMap(new PassiveExpiringMap<String,
+	// ArrayList<MongoStreamInfo>>(10,
+	// TimeUnit.MINUTES));
 
-//	private static Map<String, ArrayList<FieldsMongoDto>> campiDatasetCache = Collections.synchronizedMap(new PassiveExpiringMap<String, ArrayList<FieldsMongoDto>>(10,
-//			TimeUnit.MINUTES));
+	// private static Map<String, ArrayList<FieldsMongoDto>> campiDatasetCache =
+	// Collections.synchronizedMap(new PassiveExpiringMap<String,
+	// ArrayList<FieldsMongoDto>>(10,
+	// TimeUnit.MINUTES));
 
-	private static LoadingCache<DatasetInfoKey, ArrayList<FieldsMongoDto>> campiDatasetCache = CacheBuilder.newBuilder()
-		       .refreshAfterWrite(5, TimeUnit.MINUTES)
-		       .build(
-		    		   new CacheLoader<DatasetInfoKey, ArrayList<FieldsMongoDto>>(){
-						@Override
-						public  ArrayList<FieldsMongoDto> load(DatasetInfoKey key) throws Exception {
-							log.info("--------------> load"+key);
+	private static LoadingCache<DatasetInfoKey, ArrayList<FieldsMongoDto>> campiDatasetCache = CacheBuilder.newBuilder().refreshAfterWrite(5, TimeUnit.MINUTES)
+			.build(new CacheLoader<DatasetInfoKey, ArrayList<FieldsMongoDto>>() {
+				@Override
+				public ArrayList<FieldsMongoDto> load(DatasetInfoKey key) throws Exception {
+					log.info("--------------> load" + key);
+					return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
+				}
+
+				@Override
+				public ListenableFuture<ArrayList<FieldsMongoDto>> reload(final DatasetInfoKey key, ArrayList<FieldsMongoDto> oldValue) throws Exception {
+					log.info("--------------> reloaded" + key);
+					ListenableFutureTask<ArrayList<FieldsMongoDto>> task = ListenableFutureTask.create(new Callable<ArrayList<FieldsMongoDto>>() {
+						public ArrayList<FieldsMongoDto> call() {
 							return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
 						}
-						
-						@Override
-						public ListenableFuture< ArrayList<FieldsMongoDto>> reload(final DatasetInfoKey key,
-								 ArrayList<FieldsMongoDto> oldValue) throws Exception {
-							log.info("--------------> reloaded"+key);
-							ListenableFutureTask< ArrayList<FieldsMongoDto>> task = ListenableFutureTask.create(new Callable< ArrayList<FieldsMongoDto>>() {
-					                   public ArrayList<FieldsMongoDto> call() {
-					                     return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
-					                   }
-					                 });
-									Executors.newSingleThreadExecutor().execute(task);
-					                return task;
+					});
+					Executors.newSingleThreadExecutor().execute(task);
+					return task;
+				}
+			});
+
+	private static LoadingCache<StreamInfoKey, ArrayList<MongoStreamInfo>> streamInfoCache = CacheBuilder.newBuilder().refreshAfterWrite(5, TimeUnit.MINUTES)
+			.build(new CacheLoader<StreamInfoKey, ArrayList<MongoStreamInfo>>() {
+				@Override
+				public ArrayList<MongoStreamInfo> load(StreamInfoKey key) throws Exception {
+					log.info("--------------> load" + key);
+					return getStreamInfoFromMongo(key.getTenant(), key.getStream(), key.getSensor());
+				}
+
+				@Override
+				public ListenableFuture<ArrayList<MongoStreamInfo>> reload(final StreamInfoKey key, ArrayList<MongoStreamInfo> oldValue) throws Exception {
+					log.info("--------------> reloaded" + key);
+					ListenableFutureTask<ArrayList<MongoStreamInfo>> task = ListenableFutureTask.create(new Callable<ArrayList<MongoStreamInfo>>() {
+						public ArrayList<MongoStreamInfo> call() {
+							return getStreamInfo(key.getTenant(), key.getStream(), key.getSensor());
 						}
-		    		   });
-	
-	private static LoadingCache<StreamInfoKey, ArrayList<MongoStreamInfo>> streamInfoCache = CacheBuilder.newBuilder()
-		       .refreshAfterWrite(5, TimeUnit.MINUTES)
-		       .build(
-		    		   new CacheLoader<StreamInfoKey, ArrayList<MongoStreamInfo>>(){
-						@Override
-						public  ArrayList<MongoStreamInfo> load(StreamInfoKey key) throws Exception {
-							log.info("--------------> load"+key);
-							return getStreamInfoFromMongo(key.getTenant(), key.getStream(), key.getSensor());
-						}
-						
-						@Override
-						public ListenableFuture< ArrayList<MongoStreamInfo>> reload(final StreamInfoKey key,
-								 ArrayList<MongoStreamInfo> oldValue) throws Exception {
-							log.info("--------------> reloaded"+key);
-							ListenableFutureTask< ArrayList<MongoStreamInfo>> task = ListenableFutureTask.create(new Callable< ArrayList<MongoStreamInfo>>() {
-					                   public ArrayList<MongoStreamInfo> call() {
-					                     return getStreamInfo(key.getTenant(), key.getStream(), key.getSensor());
-					                   }
-					                 });
-									Executors.newSingleThreadExecutor().execute(task);
-					                return task;
-						}
-		    		   });
-	
-	
+					});
+					Executors.newSingleThreadExecutor().execute(task);
+					return task;
+				}
+			});
+
 	private static String takeNvlValues(Object obj) {
 		if (null == obj)
 			return null;
 		else
 			return obj.toString();
 	}
-
-
 
 	public static MongoStreamInfo getStreamInfoForDataset(String tenant, long idDataset, long datasetVersion) {
 		MongoStreamInfo ret = null;
@@ -132,7 +127,7 @@ public class SDPInsertApiMongoDataAccess {
 			}
 
 		} catch (Exception e) {
-			log.error(e.getMessage(),e);
+			log.error(e.getMessage(), e);
 			throw new InsertApiRuntimeException(e);
 		} finally {
 			try {
@@ -145,7 +140,8 @@ public class SDPInsertApiMongoDataAccess {
 	}
 
 	public static ArrayList<MongoStreamInfo> getStreamInfo(String tenant, String streamApplication, String sensor) {
-		//String cacheKey = createStreamCacheKey(tenant, streamApplication, sensor);
+		// String cacheKey = createStreamCacheKey(tenant, streamApplication,
+		// sensor);
 		ArrayList<MongoStreamInfo> ret;
 		try {
 			ret = streamInfoCache.get(new StreamInfoKey(tenant, streamApplication, sensor));
@@ -156,13 +152,10 @@ public class SDPInsertApiMongoDataAccess {
 		return ret;
 	}
 
-
-
-	private static ArrayList<MongoStreamInfo> getStreamInfoFromMongo(String tenant,
-			String streamApplication, String sensor) {
-		log.info("getStreamInfo -> loadinf " + tenant + "||"+sensor+"||"+streamApplication);
+	private static ArrayList<MongoStreamInfo> getStreamInfoFromMongo(String tenant, String streamApplication, String sensor) {
+		log.info("getStreamInfo -> loadinf " + tenant + "||" + sensor + "||" + streamApplication);
 		DBCursor cursor = null;
-		ArrayList<MongoStreamInfo> ret =new ArrayList<MongoStreamInfo>();
+		ArrayList<MongoStreamInfo> ret = new ArrayList<MongoStreamInfo>();
 		try {
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STREAM);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STREAM));
@@ -221,10 +214,9 @@ public class SDPInsertApiMongoDataAccess {
 
 				}
 
-
 				ret.add(cur);
 			}
-			
+
 		} catch (Exception e) {
 			log.error("Error", e);
 			throw new InsertApiRuntimeException(e);
@@ -238,19 +230,44 @@ public class SDPInsertApiMongoDataAccess {
 	}
 
 	public MongoDatasetInfo getInfoDataset(String datasetCode, long datasetVersion, String codiceTenant) throws Exception {
+		MongoDatasetInfo ret = null;
+		BasicDBList curDataset = new BasicDBList();
+		curDataset.add(new BasicDBObject("datasetCode", datasetCode));
+		if (datasetVersion == -1) {
+			curDataset.add(new BasicDBObject("configData.current", new Long(1)));
+
+		} else {
+			curDataset.add(new BasicDBObject("datasetVersion", new Long(datasetVersion)));
+		}
+		curDataset.add(new BasicDBObject("configData.tenantCode", codiceTenant));
+
+		ret = loadDatasetInfo(curDataset);
+
+		return ret;
+
+	}
+
+	public MongoDatasetInfo getInfoDataset(Long idDataset, long datasetVersion, String codiceTenant) throws Exception {
+		MongoDatasetInfo ret = null;
+		BasicDBList curDataset = new BasicDBList();
+		curDataset.add(new BasicDBObject("idDataset", idDataset));
+		if (datasetVersion == -1) {
+			curDataset.add(new BasicDBObject("configData.current", new Long(1)));
+
+		} else {
+			curDataset.add(new BasicDBObject("datasetVersion", new Long(datasetVersion)));
+		}
+		curDataset.add(new BasicDBObject("configData.tenantCode", codiceTenant));
+
+		ret = loadDatasetInfo(curDataset);
+		return ret;
+
+	}
+
+	private MongoDatasetInfo loadDatasetInfo(BasicDBList curDataset) {
 		DBCursor cursor = null;
 		MongoDatasetInfo ret = null;
 		try {
-			BasicDBList curDataset = new BasicDBList();
-			curDataset.add(new BasicDBObject("datasetCode", datasetCode));
-			if (datasetVersion == -1) {
-				curDataset.add(new BasicDBObject("configData.current", new Long(1)));
-
-			} else {
-				curDataset.add(new BasicDBObject("datasetVersion", new Long(datasetVersion)));
-			}
-			curDataset.add(new BasicDBObject("configData.tenantCode", codiceTenant));
-
 			BasicDBObject query = new BasicDBObject("$and", curDataset);
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
@@ -278,7 +295,6 @@ public class SDPInsertApiMongoDataAccess {
 				ret.setTenantcode(tenanTcode);
 
 			}
-
 		} catch (Exception e) {
 			log.error("[MongoDataAccess::getInfoDataset]  Error during query", e);
 		} finally {
@@ -291,7 +307,6 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-
 	public ArrayList<FieldsMongoDto> getCampiDataSet(Long idDataset, long datasetVersion) throws Exception {
 
 		ArrayList<FieldsMongoDto> ret;
@@ -300,43 +315,40 @@ public class SDPInsertApiMongoDataAccess {
 		} catch (Exception e) {
 			throw new InsertApiRuntimeException(e);
 		}
-		
+
 		return ret;
 
 	}
 
-
-
-	private static  ArrayList<FieldsMongoDto> getCampiDatasetFromMongo(Long idDataset,
-			long datasetVersion) {
-		ArrayList<FieldsMongoDto> ret=null;
+	private static ArrayList<FieldsMongoDto> getCampiDatasetFromMongo(Long idDataset, long datasetVersion) {
+		ArrayList<FieldsMongoDto> ret = null;
 		try {
-		
-		//DBObject query = BasicDBObjectBuilder.start().append("_id", new ObjectId(metadata.getId())).get();
-		//DBObject data = this.collection.findOne(query);
 
-		BasicDBList curDataset = new BasicDBList();
-		curDataset.add(new BasicDBObject("idDataset", idDataset));
-		if(datasetVersion!=-1)
-			curDataset.add(new BasicDBObject("datasetVersion", datasetVersion));
-		else
-			curDataset.add(new BasicDBObject("configData.current", 1));
+			// DBObject query = BasicDBObjectBuilder.start().append("_id", new
+			// ObjectId(metadata.getId())).get();
+			// DBObject data = this.collection.findOne(query);
 
-		BasicDBObject query = new BasicDBObject("$and", curDataset);
+			BasicDBList curDataset = new BasicDBList();
+			curDataset.add(new BasicDBObject("idDataset", idDataset));
+			if (datasetVersion != -1)
+				curDataset.add(new BasicDBObject("datasetVersion", datasetVersion));
+			else
+				curDataset.add(new BasicDBObject("configData.current", 1));
 
-		MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
-		DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
-		DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+			BasicDBObject query = new BasicDBObject("$and", curDataset);
 
-		DBObject obj = coll.findOne(query);
-		ret = getCampiFromDbObject(obj);
+			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
+
+			DBObject obj = coll.findOne(query);
+			ret = getCampiFromDbObject(obj);
 		} catch (Exception e) {
 			log.error("Error", e);
 			throw new InsertApiRuntimeException(e);
-		} 
+		}
 		return ret;
 	}
-
 
 	private static ArrayList<FieldsMongoDto> getCampiFromDbObject(DBObject obj) throws Exception {
 		String datasetDatasetVersion = takeNvlValues(obj.get("datasetVersion"));
@@ -432,85 +444,77 @@ public class SDPInsertApiMongoDataAccess {
 		return tenants;
 
 	}
-	
 
 	private static String createCampiDatasetCacheKey(Long idDataset, long datasetVersion) {
-		return "idDataset_" + idDataset + "_datasetVersion_" +datasetVersion;
+		return "idDataset_" + idDataset + "_datasetVersion_" + datasetVersion;
 	}
 
-	public static void clearCache(String tenant, String streamApplication, String sensor){
+	public static void clearCache(String tenant, String streamApplication, String sensor) {
 		StreamInfoKey key = new StreamInfoKey(tenant, streamApplication, sensor);
 		ArrayList<MongoStreamInfo> streamList = streamInfoCache.getIfPresent(key);
-		if(streamList != null){
+		if (streamList != null) {
 			log.info("clearCache -> streamList NOT NULL elimino " + key);
 			streamInfoCache.refresh(key);
 			for (MongoStreamInfo stream : streamList) {
 				campiDatasetCache.refresh(new DatasetInfoKey(stream.getDatasetId(), stream.getDatasetVersion()));
 			}
-		}
-		else
+		} else
 			log.info("clearCache -> streamList NULL non faccio nulla " + key);
 	}
-	
-	
-	
+
 	public static void main(String[] args) throws InterruptedException {
-		Cache<String, String> prova = CacheBuilder.newBuilder()
-			       .refreshAfterWrite(10, TimeUnit.MILLISECONDS)
-			       .removalListener(new RemovalListener<String, String>() {
-			    	   @Override
-			    	public void onRemoval(RemovalNotification<String, String> arg0) {
-			    		   System.out.println("-------------->"+arg0.getKey()+"_"+arg0.getValue());
-			    	}
-			       }).build(
-			    		   new CacheLoader<String, String>(){
+		Cache<String, String> prova = CacheBuilder.newBuilder().refreshAfterWrite(10, TimeUnit.MILLISECONDS).removalListener(new RemovalListener<String, String>() {
+			@Override
+			public void onRemoval(RemovalNotification<String, String> arg0) {
+				System.out.println("-------------->" + arg0.getKey() + "_" + arg0.getValue());
+			}
+		}).build(new CacheLoader<String, String>() {
 
-							@Override
-							public String load(String arg0) throws Exception {
-								// TODO Auto-generated method stub
-								return null;
-							}
-							
-							@Override
-							public ListenableFuture<String> reload(final String key,
-									String oldValue) throws Exception {
-								System.out.println("--------------> reloaded"+key);
-								if (oldValue.equals("exc"))
-									throw new Exception("ERRORORO");
-								else {
-										ListenableFutureTask<String> task = ListenableFutureTask.create(new Callable<String>() {
-						                   public String call() {
-						                     return "__"+key;
-						                   }
-						                 });
-										Executors.newSingleThreadExecutor().execute(task);
-						                return task;
-									
-								}
+			@Override
+			public String load(String arg0) throws Exception {
+				// TODO Auto-generated method stub
+				return null;
+			}
 
-							}
-			    			   
-			    		   }
-			    		   
-			    		   );
-		
+			@Override
+			public ListenableFuture<String> reload(final String key, String oldValue) throws Exception {
+				System.out.println("--------------> reloaded" + key);
+				if (oldValue.equals("exc"))
+					throw new Exception("ERRORORO");
+				else {
+					ListenableFutureTask<String> task = ListenableFutureTask.create(new Callable<String>() {
+						public String call() {
+							return "__" + key;
+						}
+					});
+					Executors.newSingleThreadExecutor().execute(task);
+					return task;
+
+				}
+
+			}
+
+		}
+
+		);
+
 		Map pm = prova.asMap();
 		System.out.println("==============");
-		pm.put("pippo","pippoV");
-		System.out.println("pippo:"+pm.get("pippo"));
-		System.out.println("pippo:"+pm.get("pippo"));
-		pm.put("pippo2","pippoV2");
-		System.out.println("pippo:"+pm.get("pippo2"));
-		pm.put("pippo3","pippoV3");
-		System.out.println("pippo:"+pm.get("pippo3"));
-		pm.put("pippo","pippoVV");
-		System.out.println("pippo:"+pm.get("pippo"));
-		pm.put("pippo","exc");
-		System.out.println("pippo:"+pm.get("pippo"));
+		pm.put("pippo", "pippoV");
+		System.out.println("pippo:" + pm.get("pippo"));
+		System.out.println("pippo:" + pm.get("pippo"));
+		pm.put("pippo2", "pippoV2");
+		System.out.println("pippo:" + pm.get("pippo2"));
+		pm.put("pippo3", "pippoV3");
+		System.out.println("pippo:" + pm.get("pippo3"));
+		pm.put("pippo", "pippoVV");
+		System.out.println("pippo:" + pm.get("pippo"));
+		pm.put("pippo", "exc");
+		System.out.println("pippo:" + pm.get("pippo"));
 		Thread.sleep(2000);
 		Thread.sleep(2000);
 		System.out.println("---");
 		Thread.sleep(2000);
-		System.out.println("pippo:"+pm.get("pippo"));
+		System.out.println("pippo:" + pm.get("pippo"));
 	}
 }
