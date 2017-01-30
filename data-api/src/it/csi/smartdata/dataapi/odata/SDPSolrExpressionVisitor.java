@@ -754,7 +754,11 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 //		if (ret!=null) return ret;
 //		else return fieldNameInput;
 		if (ret==null) ret=fieldNameInput;
-		if (!(ret.equals("idDataset_l") || ret.equals("datasetVersion_l" ))) ret=ret.toLowerCase();
+		
+		
+		//if (!(ret.equals("idDataset_l") || ret.equals("datasetVersion_l" ))) ret=ret.toLowerCase();
+		
+		
 		return ret;
 	}
 
