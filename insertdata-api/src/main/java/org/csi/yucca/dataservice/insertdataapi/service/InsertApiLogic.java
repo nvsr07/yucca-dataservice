@@ -820,16 +820,18 @@ public class InsertApiLogic {
 		}
 	}
 
-	public boolean deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
+	public int deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
 
 		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
 
 		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
 		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
+		if(infoDataset == null)
+				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_NOT_FOUND, "Dataset not found on MongoDB");
 		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
 
 
-		boolean deleteData = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
+		int deleteData = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
 
 		return deleteData;
 

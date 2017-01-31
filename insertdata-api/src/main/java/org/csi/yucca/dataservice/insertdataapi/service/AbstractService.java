@@ -245,10 +245,12 @@ public abstract class AbstractService {
 
 			log.info("[AbstractService::dataDelete] BEGIN ");
 			InsertApiLogic insertApiLogic = new InsertApiLogic();
-			boolean phoenixResult = insertApiLogic.deleteManager(codTenant, idDatasetLong, datasetVersionLong);
-			log.info("[AbstractService::dataDelete] phoenixResult " + phoenixResult);
-
-			// vado su solar
+			int numrowDeleted = insertApiLogic.deleteManager(codTenant, idDatasetLong, datasetVersionLong);
+			log.info("[AbstractService::dataDelete] phoenixResult " + numrowDeleted);
+			outData.setGlobalRequestId(uniqueid);
+			outData.setDeleteOnPhoenix(true);
+			outData.setDeleteOnPhoenixMessage("Number of rows deleted on Phonix: " + numrowDeleted );
+			// vado su solr
 			
 		} catch (InsertApiBaseException insEx) {
 			log.warn("[InsertApi::dataDelete] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());
