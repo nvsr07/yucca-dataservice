@@ -243,6 +243,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+					throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" + ex);
 				i++;
@@ -321,6 +324,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception", ex);
 				i++;
@@ -431,6 +437,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex);
 				i++;

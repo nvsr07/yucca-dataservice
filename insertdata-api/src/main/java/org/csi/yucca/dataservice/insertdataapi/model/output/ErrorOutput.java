@@ -44,6 +44,8 @@ public class ErrorOutput {
 		this.output = output;
 		this.errorMessage = errorMessage;
 	}
+	
+	@JsonProperty("error_message")
 	public String getErrorMessage() {
 		return errorMessage;
 	}
