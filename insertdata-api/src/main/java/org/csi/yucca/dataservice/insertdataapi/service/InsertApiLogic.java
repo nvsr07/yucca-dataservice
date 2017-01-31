@@ -860,7 +860,7 @@ public class InsertApiLogic {
 		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
 		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
 		if (infoDataset == null)
-			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_NOT_FOUND, "Dataset not found on MongoDB");
+			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
 		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
 
 		int numrowDeleted = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
