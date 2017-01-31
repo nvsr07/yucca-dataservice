@@ -139,7 +139,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			}
 
 			String sql = "UPSERT INTO " + schema + "." + table + " (" + campiSQL + ")  VALUES  " + valuesSql + ") ";
-			log.info("insertBulk sql " +  sql);
+			log.debug("insertBulk sql " +  sql);
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			Iterator<JSONObject> iter = dati.getJsonRowsToInsert().iterator();
@@ -166,7 +166,7 @@ public class SDPInsertApiPhoenixDataAccess {
 
 					Object value = json.get(nome);
 					
-					log.info("insertBulk param nome: " + nome + " -  tipo: " +  tipo + " - value: " +  value);
+					log.debug("insertBulk param nome: " + nome + " -  tipo: " +  tipo + " - value: " +  value);
 
 
 					if ("int".equalsIgnoreCase(tipo)) {
@@ -264,7 +264,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	}
 
 	public int deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
-		log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
+		log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
 
 		Connection conn = null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
@@ -314,9 +314,9 @@ public class SDPInsertApiPhoenixDataAccess {
 			if (datasetVersion != null && datasetVersion > 0)
 				sql += " AND datasetversion_l=?";
 
-			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
-			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
-			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
+			log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
+			log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
+			log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			stmt.setInt(1, (Integer.parseInt(Long.toString(idDataset))));
 			if (datasetVersion != null && datasetVersion > 0)

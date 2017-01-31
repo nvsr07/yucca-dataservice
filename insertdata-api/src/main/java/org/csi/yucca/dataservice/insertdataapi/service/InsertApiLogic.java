@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
+import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
@@ -491,7 +492,7 @@ public class InsertApiLogic {
 				// System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				// rigadains.add(parseComponents(components, insStrConst,
 				// elencoCampi));
-				parseComponents(components, insStrConst,campiMongo, campiMongoV1, isVerOneRequired);
+				parseComponents(components, insStrConst, campiMongo, campiMongoV1, isVerOneRequired);
 				components.put("objectid", ObjectId.get().toString());
 				listJson.add(components);
 
@@ -704,9 +705,9 @@ public class InsertApiLogic {
 				isVerOneRequired = false;
 				datasetType = "socialDataset";
 			}
-			 if (elencoStream.get(i).getTipoStream() ==	 MongoStreamInfo.STREAM_TYPE_INTERNAL) {
-				 isVerOneRequired = false;
-			 }
+			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_INTERNAL) {
+				isVerOneRequired = false;
+			}
 		}
 
 		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("" + reqVersion));
@@ -784,9 +785,7 @@ public class InsertApiLogic {
 				// rigadains.add(parseComponents(components, insStrConst,
 				// elencoCampi));
 
-				parseComponents(components, insStrConstBase +
-						", time: {$date :\"" + timeStamp + "\"} ", campiMongo,
-						campiMongoV1, isVerOneRequired);
+				parseComponents(components, insStrConstBase + ", time: {$date :\"" + timeStamp + "\"} ", campiMongo, campiMongoV1, isVerOneRequired);
 				// System.out.println(" TIMETIME parseMisura -- valore ("+i+") parsing components--> "+System.currentTimeMillis());
 				components.put("objectid", ObjectId.get().toString());
 				components.put("time", timeStamp);
@@ -818,20 +817,36 @@ public class InsertApiLogic {
 		}
 	}
 
-	public int deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
+	public DatasetDeleteOutput deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
+
+		DatasetDeleteOutput outData = new DatasetDeleteOutput();
 
 		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
 
 		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
 		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
-		if(infoDataset == null)
-				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_NOT_FOUND, "Dataset not found on MongoDB");
+		if (infoDataset == null)
+			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_NOT_FOUND, "Dataset not found on MongoDB");
 		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
 
+		int numrowDeleted = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
 
-		int deleteData = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
+		outData.setDeleteOnPhoenix(true);
+		outData.setDeleteOnPhoenixMessage("Number of rows deleted on Phonix: " + numrowDeleted);
+		// vado su solr
+		try {
+			SDPInsertApiSolrDataAccess sdpInsertApiSolrDataAccess = new SDPInsertApiSolrDataAccess();
+			int responseStatus = sdpInsertApiSolrDataAccess.deleteData(infoDataset.getDatasetType(), codTenant, idDataset, datasetVersion);
+			outData.setDeleteOnSolr(true);
+			outData.setDeleteOnSolrMessage("Sorl response status: " + responseStatus);
 
-		return deleteData;
+		} catch (Exception e) {
+			log.warning("[InsertApi::dataDelete] Error on delete from Solr: " + e.getMessage());
+			outData.setDeleteOnSolr(false);
+			outData.setDeleteOnSolrMessage("Error on delete fro Solr: " + e.getMessage());
+		}
+
+		return outData;
 
 	}
 }
