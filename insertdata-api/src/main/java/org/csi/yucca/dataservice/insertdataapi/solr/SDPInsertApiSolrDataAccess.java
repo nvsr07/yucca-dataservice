@@ -221,17 +221,13 @@ public class SDPInsertApiSolrDataAccess {
 
 		// http://sdnet-solr.sdp.csi.it:8983/solr/sdp_int_tank_data/update?stream.body=%3Cdelete%3E%3Cquery%3Eiddataset_l=695%3C/query%3E%3C/delete%3E&commit=truewt=json
 
-		server.setDefaultCollection(collection);
-		SolrInputDocument doc = new SolrInputDocument();
-		doc.addField("iddataset_l", idDataset);
-		if (datasetVersion != null && datasetVersion > 0)
-			doc.addField("datasetversion_l", datasetVersion);
 
-		String query = "iddataset_l=" + idDataset;
+		String query = "iddataset_l:" + idDataset;
 		if (datasetVersion != null && datasetVersion > 0)
-			query += "AND datasetversion_l=" + datasetVersion;
-		server.deleteByQuery(query);
-		UpdateResponse updateResponse = server.commit();
+			query += "AND datasetversion_l:" + datasetVersion;
+		UpdateResponse updateResponse =server.deleteByQuery(collection, query,1000);
+		
+		//UpdateResponse updateResponse = server.commit();
 		log.info("[SDPInsertApiSolrDataAccess::deleteData] updateResponse " + updateResponse);
 		return updateResponse.getStatus();
 
