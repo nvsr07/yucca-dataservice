@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
@@ -33,15 +34,13 @@ public class StreamService extends AbstractService {
 	@Path("/input/{codTenant}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	public DatasetBulkInsertOutput dataInsert(@Context HttpServletRequest request, String jsonData, @PathParam(value = "codTenant") String codTenant,
+	public Response dataInsert(@Context HttpServletRequest request, String jsonData, @PathParam(value = "codTenant") String codTenant,
 			@HeaderParam(value = "UNIQUE_ID") String uniqueid, @HeaderParam(value = "X-Forwarded-For") String forwardfor, @HeaderParam(value = "Authorization") String authInfo,
 			@Context final HttpServletResponse response) throws InsertApiBaseException, InsertApiRuntimeException {
 		log.debug("forwardfor ->" + forwardfor);
 		log.debug("authInfo ->" + authInfo);
 		DatasetBulkInsertOutput out = super.dataInsert(jsonData, codTenant, uniqueid, forwardfor, authInfo);
-		if (response != null)
-			response.setStatus(Status.ACCEPTED.getStatusCode());
-		return out;
+		return Response.status(Status.ACCEPTED).entity(out).build();
 	}
 
 	@Override
