@@ -224,7 +224,7 @@ public class SDPInsertApiSolrDataAccess {
 
 		String query = "iddataset_l:" + idDataset;
 		if (datasetVersion != null && datasetVersion > 0)
-			query += "AND datasetversion_l:" + datasetVersion;
+			query += " AND datasetversion_l:" + datasetVersion;
 		UpdateResponse updateResponse =server.deleteByQuery(collection, query,1000);
 		
 		//UpdateResponse updateResponse = server.commit();
