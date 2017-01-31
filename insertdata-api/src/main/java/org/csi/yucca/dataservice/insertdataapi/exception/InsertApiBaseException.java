@@ -17,6 +17,7 @@ public class InsertApiBaseException extends WebApplicationException{
 	public static final String ERROR_CODE_INVALID_COMPONENTS="E013";
 	public static final String ERROR_CODE_DATASET_DATASETVERSION_INVALID="E014";
 	public static final String ERROR_CODE_DATASET_MAXRECORDS="E015";
+	public static final String ERROR_CODE_DATASET_NOT_FOUND="E016";
 
 	
 	public static final String ERROR_CODE_INPUT_SENSOR_MANCANTE="E016";

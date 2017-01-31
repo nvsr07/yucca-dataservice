@@ -139,6 +139,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			}
 
 			String sql = "UPSERT INTO " + schema + "." + table + " (" + campiSQL + ")  VALUES  " + valuesSql + ") ";
+			log.info("insertBulk sql " +  sql);
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			Iterator<JSONObject> iter = dati.getJsonRowsToInsert().iterator();
@@ -164,6 +165,9 @@ public class SDPInsertApiPhoenixDataAccess {
 					campiSQL += "," + nome;
 
 					Object value = json.get(nome);
+					
+					log.info("insertBulk param nome: " + nome + " -  tipo: " +  tipo + " - value: " +  value);
+
 
 					if ("int".equalsIgnoreCase(tipo)) {
 						if (null == value)
@@ -259,12 +263,12 @@ public class SDPInsertApiPhoenixDataAccess {
 
 	}
 
-	public boolean deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
+	public int deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
 		log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
 
 		Connection conn = null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
-		boolean result = false;
+		int result = -1;
 		try {
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
 
@@ -319,8 +323,9 @@ public class SDPInsertApiPhoenixDataAccess {
 				stmt.setInt(2, (Integer.parseInt(Long.toString(datasetVersion))));
 
 			try {
-				result = stmt.execute();
-				stmt.executeBatch();
+				stmt.execute();
+				//stmt.executeBatch();
+				result  = stmt.getUpdateCount();
 				conn.commit();
 			} catch (Exception e) {
 				log.error("Insert Phoenix Error", e);
