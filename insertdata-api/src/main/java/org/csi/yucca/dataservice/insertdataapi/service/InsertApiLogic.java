@@ -157,9 +157,17 @@ public class InsertApiLogic {
 		int reqVersion = -1;
 
 		int totalDocumentsToIns = 0;
-		if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
-			jsonInput = "[" + jsonInput + "]";
-
+		try {
+			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
+				jsonInput = "[" + jsonInput + "]";
+		} catch (PathNotFoundException e) {
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		}
+		
 		while (i < 100000 && !endArray) {
 			try {
 				// System.out.println(" TIMETIME parseJsonInputDataset -- inizio blocco "+i+"--> "+System.currentTimeMillis());
@@ -244,6 +252,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+					throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" + ex);
 				i++;
@@ -270,8 +281,17 @@ public class InsertApiLogic {
 		String stream = null;
 		String streamToFind = null;
 		String sensorToFind = null;
-		if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
-			jsonInput = "[" + jsonInput + "]";
+		try {
+			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
+				jsonInput = "[" + jsonInput + "]";
+		} catch (PathNotFoundException e) {
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		}
+
 
 		while (i < 100000 && !endArray) {
 			try {
@@ -322,6 +342,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception", ex);
 				i++;
@@ -381,8 +404,16 @@ public class InsertApiLogic {
 		int reqVersion = -1;
 
 		int totalDocumentsToIns = 0;
-		if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
-			jsonInput = "[" + jsonInput + "]";
+		try {
+			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
+				jsonInput = "[" + jsonInput + "]";
+		} catch (PathNotFoundException e) {
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		}
 
 		while (i < 100000 && !endArray) {
 			try {
@@ -432,6 +463,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex);
 				i++;

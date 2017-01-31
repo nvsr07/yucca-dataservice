@@ -104,7 +104,7 @@ public class JMSMessageListener implements MessageListener {
 			}
 
 		} catch (Throwable e) {
-			log.error("[JMSProducerMainThread::forwardMessage] Error: " + e.getMessage());
+			log.error("[JMSProducerMainThread::forwardMessage] Error: " + e.getMessage(),e);
 		} finally {
 			long elapsed = System.currentTimeMillis() - start;
 			log.debug("forwardMessage elapsed: " + elapsed);

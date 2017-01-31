@@ -154,26 +154,31 @@ public class FieldsMongoDto {
 			Object o= null;
 			SimpleDateFormat format = new SimpleDateFormat(_msDateFormat);
 			format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+			format.setLenient(false);
 			o = format.parse(valueToCheck, new ParsePosition(0));
 			if (o == null) {
 				// try older format with no ms
 				format = new SimpleDateFormat(_secDateFormat);
 				format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+				format.setLenient(false);
 				o = format.parse(valueToCheck, new ParsePosition(0));
 				if (o == null) {
 					// try timezone
 					format = new SimpleDateFormat(_msDateFormat_TZ);
 					format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+					format.setLenient(false);
 					o = format.parse(valueToCheck, new ParsePosition(0));
 					if (o == null) {
 						// try older format timezone
 						format = new SimpleDateFormat(_secDateFormat_TZ);
 						format.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+						format.setLenient(false);
 						o = format.parse(valueToCheck, new ParsePosition(0));
 					}
 					if (o == null) {
 						// try isoDate with JAXB
 						Calendar cal = DatatypeConverter.parseDateTime(valueToCheck);
+						cal.setLenient(false);
 						o = cal.getTime();
 					}
 
