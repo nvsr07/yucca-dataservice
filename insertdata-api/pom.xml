@@ -24,6 +24,21 @@
 					<webXml>${webXmlPath}/web.xml</webXml>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
+				</configuration>
+			</plugin>
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-failsafe-plugin</artifactId>
+		        <version>2.19.1</version>
+		      </plugin>						
 		</plugins>
 	</build>
 	<repositories>
@@ -259,6 +274,24 @@
 			<artifactId>activemq-pool</artifactId>
 			<version>5.9.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20151123</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.8</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<version>3.0.0</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>
@@ -312,6 +345,11 @@
 						<targetPath>.</targetPath>
 					</resource>
 				</resources>
+					<testResources>
+						<testResource>
+							<directory>${project.build.directory}/checkout/insertdataapi/test/int</directory>
+						</testResource>
+					</testResources>
 			</build>
 			<properties>
 				<webXmlPath>${project.build.directory}/checkout/insertdataapi/resources/int/</webXmlPath>
