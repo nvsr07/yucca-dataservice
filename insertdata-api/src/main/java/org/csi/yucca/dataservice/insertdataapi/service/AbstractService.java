@@ -208,7 +208,6 @@ public abstract class AbstractService {
 
 
 		DatasetDeleteOutput outData = new DatasetDeleteOutput();
-		outData.setGlobalRequestId(uniqueid);
 		
 		
 		long starTtime = 0;
@@ -247,7 +246,7 @@ public abstract class AbstractService {
 			log.info("[AbstractService::dataDelete] BEGIN ");
 			InsertApiLogic insertApiLogic = new InsertApiLogic();
 			outData = insertApiLogic.deleteManager(codTenant, idDatasetLong, datasetVersionLong);
-			log.info("[AbstractService::dataDelete] phoenixResult " + outData.getDeleteOnPhoenixMessage());
+			log.info("[AbstractService::dataDelete] phoenixResult " + outData.getDataDeletedMessage());
 			
 		} catch (InsertApiBaseException insEx) {
 			log.warn("[InsertApi::dataDelete] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());
