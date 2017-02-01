@@ -2072,6 +2072,7 @@ public class SDPDataApiMongoAccess {
 			campoTipoMetadato.put("datasetVersion", "datasetVersion_l");
 			campoTipoMetadato.put("idDataset", "idDataset_l");
 			campoTipoMetadato.put("idBinary", "idBinary_s");
+			campoTipoMetadato.put("filenameBinary", "filenameBinary_s");
 			campoTipoMetadato.put("aliasNameBinary", "aliasNameBinary_s");
 			campoTipoMetadato.put("sizeBinary", "sizeBinary_l");
 			campoTipoMetadato.put("contentTypeBinary", "contentTypeBinary_s");
@@ -2100,7 +2101,7 @@ public class SDPDataApiMongoAccess {
 			//queryTot.add( new BasicDBObject("idDataset",idDataset));
 
 
-			String queryTotSolr="(idDataset_l:"+idDatasetBinary+" AND datasetVersion_l : "+binaryDatasetVersion+" ";
+			String queryTotSolr="(iddataset_l:"+idDatasetBinary+" AND datasetversion_l : "+binaryDatasetVersion+" ";
 
 
 
@@ -2114,7 +2115,7 @@ public class SDPDataApiMongoAccess {
 			if (null!=internalId) {
 				//query.append("_id",new ObjectId(internalId));
 				//queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
-				queryTotSolr += "AND id : "+internalId+")";
+				queryTotSolr += "AND id : "+internalId;
 
 
 			}
@@ -2140,10 +2141,10 @@ public class SDPDataApiMongoAccess {
 			String inClause=null;
 			for (int kki=0; null!=elencoIdBinary && kki<elencoIdBinary.size(); kki++ ) {
 				if (inClause==null) inClause="("+ elencoIdBinary.get(kki);
-				else inClause=","+ elencoIdBinary.get(kki);
+				else inClause=" OR "+ elencoIdBinary.get(kki);
 			}
 			String  query = queryTotSolr;
-			if (inClause!=null) query+= " AND idBinary : " + inClause;
+			if (inClause!=null) query+= " AND (idbinary_s : " + inClause +"))";
 
 			//BasicDBObject query = new BasicDBObject("$and", queryTot);
 
@@ -2179,7 +2180,7 @@ public class SDPDataApiMongoAccess {
 
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
-			solrQuery.setFilterQueries(queryTotSolr);
+			solrQuery.setFilterQueries(query);
 			solrQuery.setRows(new Integer( new Long(limitL).intValue()));			
 			solrQuery.setStart(new Integer( new Long(skipL).intValue()));			
 			if (null!=orderSolr) solrQuery.setSorts(orderSolr);
@@ -2201,10 +2202,10 @@ public class SDPDataApiMongoAccess {
 				for (int j = 0; j < results.size(); ++j) {
 					curSolrDoc=results.get(j);
 					String internalID=curSolrDoc.get("id").toString();
-					String datasetVersion=takeNvlValues(curSolrDoc.get("datasetVersion_l"));
+					String datasetVersion=takeNvlValues(curSolrDoc.get("datasetversion_l"));
 					Map<String, Object> misura = new HashMap<String, Object>();
 					misura.put("internalId",  internalID);
-					String iddataset=takeNvlValues(curSolrDoc.get("idDataset_l"));
+					String iddataset=takeNvlValues(curSolrDoc.get("iddataset_l"));
 					if (null!= iddataset ) misura.put("idDataset",  Integer.parseInt(iddataset));
 					if (null!= datasetVersion ) misura.put("datasetVersion",  Integer.parseInt(datasetVersion));
 
@@ -2219,10 +2220,10 @@ public class SDPDataApiMongoAccess {
 
 
 
-						if (curSolrDoc.keySet().contains(chiaveL) ) {
-							Object oo = curSolrDoc.get(chiaveL);
+						if (curSolrDoc.keySet().contains(chiaveL.toLowerCase()) ) {
+							Object oo = curSolrDoc.get(chiaveL.toLowerCase());
 
-							String  valore=takeNvlValues(curSolrDoc.get(chiaveL));
+							String  valore=takeNvlValues(curSolrDoc.get(chiaveL.toLowerCase()));
 							if (null!=valore) {
 								if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
 									misura.put(chiave, Boolean.valueOf(valore));
@@ -2271,7 +2272,9 @@ public class SDPDataApiMongoAccess {
 							String b= a;
 						}
 					}					
+					String path="/api/"+codiceApi+"/attachment/"+idDatasetBinary+"/"+binaryDatasetVersion+"/"+misura.get("idBinary");
 
+					misura.put("urlDownloadBinary", path);
 					ret.add(misura);
 
 				}
