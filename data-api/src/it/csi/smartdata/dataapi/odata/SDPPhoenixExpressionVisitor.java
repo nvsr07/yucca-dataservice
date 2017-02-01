@@ -553,7 +553,14 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".datasetVersion" ,"datasetVersion_l");
 		
 		
-		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".idBinary" ,"idBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".filenameBinary" ,"filenameBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".aliasNameBinary" ,"aliasNameBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".contentTypeBinary" ,"contentTypeBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".urlDownloadBinary" ,"urlDownloadBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".metadataBinary" ,"metadataBinary_s");
 		
 		
 		

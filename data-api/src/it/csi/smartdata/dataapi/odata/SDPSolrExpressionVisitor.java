@@ -758,6 +758,8 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		
 		//if (!(ret.equals("idDataset_l") || ret.equals("datasetVersion_l" ))) ret=ret.toLowerCase();
 		
+		ret=ret.toLowerCase();
+		
 		
 		return ret;
 	}
@@ -776,6 +778,17 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".datasetVersion" ,"datasetVersion_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".idDataset" ,"idDataset_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".datasetVersion" ,"datasetVersion_l");
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".idBinary" ,"idBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".filenameBinary" ,"filenameBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".aliasNameBinary" ,"aliasNameBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".contentTypeBinary" ,"contentTypeBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".urlDownloadBinary" ,"urlDownloadBinary_s");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_BINARY+".metadataBinary" ,"metadataBinary_s");
+		
+		
 		
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceStream" ,"streams.stream.codiceStream");
 //		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_STREAMS+".codiceTenant" ,"streams.stream.codiceTenant");
