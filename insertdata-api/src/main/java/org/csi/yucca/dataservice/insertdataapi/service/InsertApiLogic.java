@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
+import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
@@ -92,8 +93,7 @@ public class InsertApiLogic {
 
 				datiToIns.put(key, curBulkToIns);
 
-				if (!SDPInsertApiConfig.getInstance().isSolrIndexerEnabled())
-				{
+				if (!SDPInsertApiConfig.getInstance().isSolrIndexerEnabled()) {
 					try {
 						startTimeX = System.currentTimeMillis();
 						log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
@@ -157,9 +157,17 @@ public class InsertApiLogic {
 		int reqVersion = -1;
 
 		int totalDocumentsToIns = 0;
-		if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
-			jsonInput = "[" + jsonInput + "]";
-
+		try {
+			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
+				jsonInput = "[" + jsonInput + "]";
+		} catch (PathNotFoundException e) {
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		}
+		
 		while (i < 100000 && !endArray) {
 			try {
 				// System.out.println(" TIMETIME parseJsonInputDataset -- inizio blocco "+i+"--> "+System.currentTimeMillis());
@@ -244,6 +252,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+					throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" + ex);
 				i++;
@@ -270,8 +281,17 @@ public class InsertApiLogic {
 		String stream = null;
 		String streamToFind = null;
 		String sensorToFind = null;
-		if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
-			jsonInput = "[" + jsonInput + "]";
+		try {
+			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
+				jsonInput = "[" + jsonInput + "]";
+		} catch (PathNotFoundException e) {
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		}
+
 
 		while (i < 100000 && !endArray) {
 			try {
@@ -322,6 +342,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception", ex);
 				i++;
@@ -381,8 +404,16 @@ public class InsertApiLogic {
 		int reqVersion = -1;
 
 		int totalDocumentsToIns = 0;
-		if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
-			jsonInput = "[" + jsonInput + "]";
+		try {
+			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
+				jsonInput = "[" + jsonInput + "]";
+		} catch (PathNotFoundException e) {
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
+		}
 
 		while (i < 100000 && !endArray) {
 			try {
@@ -432,6 +463,9 @@ public class InsertApiLogic {
 					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
+			} catch (IllegalArgumentException e) {
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex);
 				i++;
@@ -492,8 +526,7 @@ public class InsertApiLogic {
 				// System.out.println(" TIMETIME parseGenericDataset -- blocco ("+i+") JsonPath--> "+System.currentTimeMillis());
 				// rigadains.add(parseComponents(components, insStrConst,
 				// elencoCampi));
-				// rigadains.add(parseComponents(components, insStrConst,
-				// campiMongo, campiMongoV1, isVerOneRequired));
+				parseComponents(components, insStrConst, campiMongo, campiMongoV1, isVerOneRequired);
 				components.put("objectid", ObjectId.get().toString());
 				listJson.add(components);
 
@@ -679,10 +712,10 @@ public class InsertApiLogic {
 		if (elencoStream == null || elencoStream.size() <= 0)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": " + (sensor != null ? sensor : application) + " (stream: " + stream + ")");
 
-		// boolean isVerOneRequired = true;
+		boolean isVerOneRequired = true;
 		String datasetType = "streamDataset";
 		long datasetId = elencoStream.get(0).getDatasetId();
-		
+
 		for (int i = 0; i < elencoStream.size(); i++) {
 
 			log.finest("[InsertApiLogic::parseMisura] nome stream, tipo stream: " + elencoStream.get(i).getStreamCode() + "," + elencoStream.get(i).getTipoStream());
@@ -703,19 +736,17 @@ public class InsertApiLogic {
 			log.finest("[InsertApiLogic::parseMisura]      OK --------------");
 
 			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_TWEET) {
-				// isVerOneRequired = false;
+				isVerOneRequired = false;
 				datasetType = "socialDataset";
 			}
-			// if (elencoStream.get(i).getTipoStream() ==
-			// MongoStreamInfo.STREAM_TYPE_INTERNAL) {
-			// isVerOneRequired = false;
-			// }
+			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_INTERNAL) {
+				isVerOneRequired = false;
+			}
 		}
-
 
 		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("" + reqVersion));
 		ArrayList<FieldsMongoDto> elencoCampiV1 = elencoCampi;
-		if(reqVersion != 1)
+		if (reqVersion != 1)
 			elencoCampiV1 = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("1"));
 
 		if (elencoCampi == null || elencoCampi.size() <= 0)
@@ -788,9 +819,7 @@ public class InsertApiLogic {
 				// rigadains.add(parseComponents(components, insStrConst,
 				// elencoCampi));
 
-				// rigadains.add(parseComponents(components, insStrConstBase +
-				// ", time: {$date :\"" + timeStamp + "\"} ", campiMongo,
-				// campiMongoV1, isVerOneRequired));
+				parseComponents(components, insStrConstBase + ", time: {$date :\"" + timeStamp + "\"} ", campiMongo, campiMongoV1, isVerOneRequired);
 				// System.out.println(" TIMETIME parseMisura -- valore ("+i+") parsing components--> "+System.currentTimeMillis());
 				components.put("objectid", ObjectId.get().toString());
 				components.put("time", timeStamp);
@@ -820,5 +849,38 @@ public class InsertApiLogic {
 		for (int i = 0; i < 100; i++) {
 			System.out.println(ObjectId.get().toString());
 		}
+	}
+
+	public DatasetDeleteOutput deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
+
+		DatasetDeleteOutput outData = new DatasetDeleteOutput();
+
+		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
+
+		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
+		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
+		if (infoDataset == null)
+			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
+		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
+
+		int numrowDeleted = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
+
+		outData.setDeleteOnPhoenix(true);
+		outData.setDeleteOnPhoenixMessage("Number of rows deleted on Phonix: " + numrowDeleted);
+		// vado su solr
+		try {
+			SDPInsertApiSolrDataAccess sdpInsertApiSolrDataAccess = new SDPInsertApiSolrDataAccess();
+			int responseStatus = sdpInsertApiSolrDataAccess.deleteData(infoDataset.getDatasetType(), codTenant, idDataset, datasetVersion);
+			outData.setDeleteOnSolr(true);
+			outData.setDeleteOnSolrMessage("Sorl response status: " + responseStatus);
+
+		} catch (Exception e) {
+			log.warning("[InsertApi::dataDelete] Error on delete from Solr: " + e.getMessage());
+			outData.setDeleteOnSolr(false);
+			outData.setDeleteOnSolrMessage("Error on delete fro Solr: " + e.getMessage());
+		}
+
+		return outData;
+
 	}
 }
