@@ -162,12 +162,12 @@ public class InsertApiLogic {
 				jsonInput = "[" + jsonInput + "]";
 		} catch (PathNotFoundException e) {
 			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-				throw new InsertApiBaseException("E012");
+			throw new InsertApiBaseException("E012");
 		} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-				throw new InsertApiBaseException("E012");
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			throw new InsertApiBaseException("E012");
 		}
-		
+
 		while (i < 100000 && !endArray) {
 			try {
 				// System.out.println(" TIMETIME parseJsonInputDataset -- inizio blocco "+i+"--> "+System.currentTimeMillis());
@@ -253,8 +253,8 @@ public class InsertApiLogic {
 					throw new InsertApiBaseException("E012");
 				}
 			} catch (IllegalArgumentException e) {
-					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-					throw new InsertApiBaseException("E012");
+				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
 				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" + ex);
 				i++;
@@ -286,12 +286,11 @@ public class InsertApiLogic {
 				jsonInput = "[" + jsonInput + "]";
 		} catch (PathNotFoundException e) {
 			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-				throw new InsertApiBaseException("E012");
+			throw new InsertApiBaseException("E012");
 		} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-				throw new InsertApiBaseException("E012");
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			throw new InsertApiBaseException("E012");
 		}
-
 
 		while (i < 100000 && !endArray) {
 			try {
@@ -409,10 +408,10 @@ public class InsertApiLogic {
 				jsonInput = "[" + jsonInput + "]";
 		} catch (PathNotFoundException e) {
 			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-				throw new InsertApiBaseException("E012");
+			throw new InsertApiBaseException("E012");
 		} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
-				throw new InsertApiBaseException("E012");
+			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			throw new InsertApiBaseException("E012");
 		}
 
 		while (i < 100000 && !endArray) {
@@ -865,19 +864,20 @@ public class InsertApiLogic {
 
 		int numrowDeleted = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
 
-		outData.setDeleteOnPhoenix(true);
-		outData.setDeleteOnPhoenixMessage("Number of rows deleted on Phonix: " + numrowDeleted);
+		outData.setDataDeleted(true);
+		outData.setNumRowDeleted(numrowDeleted);
+		outData.setDataDeletedMessage("Number of rows deleted on Phonix: " + numrowDeleted);
 		// vado su solr
 		try {
 			SDPInsertApiSolrDataAccess sdpInsertApiSolrDataAccess = new SDPInsertApiSolrDataAccess();
 			int responseStatus = sdpInsertApiSolrDataAccess.deleteData(infoDataset.getDatasetType(), codTenant, idDataset, datasetVersion);
-			outData.setDeleteOnSolr(true);
-			outData.setDeleteOnSolrMessage("Sorl response status: " + responseStatus);
+			outData.setIndexDeleted(true);
+			outData.setIndexDeletedMessage("Sorl response status: " + responseStatus);
 
 		} catch (Exception e) {
 			log.warning("[InsertApi::dataDelete] Error on delete from Solr: " + e.getMessage());
-			outData.setDeleteOnSolr(false);
-			outData.setDeleteOnSolrMessage("Error on delete fro Solr: " + e.getMessage());
+			outData.setIndexDeleted(false);
+			outData.setIndexDeletedMessage("Error on delete fro Solr: " + e.getMessage());
 		}
 
 		return outData;

@@ -5,43 +5,11 @@ import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 public class DatasetDeleteOutput {
 
 	private InsertApiBaseException deleteException = null;
-	private String globalRequestId = null;
-	private Boolean deleteOnPhoenix = false;
-	private String deleteOnPhoenixMessage = null;
-	private Boolean deleteOnSolr = false;
-	private String deleteOnSolrMessage = null;
-
-	public Boolean getDeleteOnPhoenix() {
-		return deleteOnPhoenix;
-	}
-
-	public void setDeleteOnPhoenix(Boolean deleteOnPhoenix) {
-		this.deleteOnPhoenix = deleteOnPhoenix;
-	}
-
-	public String getDeleteOnPhoenixMessage() {
-		return deleteOnPhoenixMessage;
-	}
-
-	public void setDeleteOnPhoenixMessage(String deleteOnPhoenixMessage) {
-		this.deleteOnPhoenixMessage = deleteOnPhoenixMessage;
-	}
-
-	public Boolean getDeleteOnSolr() {
-		return deleteOnSolr;
-	}
-
-	public void setDeleteOnSolr(Boolean deleteOnSolr) {
-		this.deleteOnSolr = deleteOnSolr;
-	}
-
-	public String getDeleteOnSolrMessage() {
-		return deleteOnSolrMessage;
-	}
-
-	public void setDeleteOnSolrMessage(String deleteOnSolrMessage) {
-		this.deleteOnSolrMessage = deleteOnSolrMessage;
-	}
+	private Boolean dataDeleted = false;
+	private Integer numRowDeleted = 0;
+	private String dataDeletedMessage = null;
+	private Boolean indexDeleted = false;
+	private String indexDeletedMessage = null;
 
 	public InsertApiBaseException getDeleteException() {
 		return deleteException;
@@ -51,12 +19,44 @@ public class DatasetDeleteOutput {
 		this.deleteException = deleteException;
 	}
 
-	public String getGlobalRequestId() {
-		return globalRequestId;
+	public Boolean getDataDeleted() {
+		return dataDeleted;
 	}
 
-	public void setGlobalRequestId(String globalRequestId) {
-		this.globalRequestId = globalRequestId;
+	public void setDataDeleted(Boolean dataDeleted) {
+		this.dataDeleted = dataDeleted;
+	}
+
+	public Integer getNumRowDeleted() {
+		return numRowDeleted;
+	}
+
+	public void setNumRowDeleted(Integer numRowDeleted) {
+		this.numRowDeleted = numRowDeleted;
+	}
+
+	public String getDataDeletedMessage() {
+		return dataDeletedMessage;
+	}
+
+	public void setDataDeletedMessage(String dataDeletedMessage) {
+		this.dataDeletedMessage = dataDeletedMessage;
+	}
+
+	public Boolean getIndexDeleted() {
+		return indexDeleted;
+	}
+
+	public void setIndexDeleted(Boolean indexDeleted) {
+		this.indexDeleted = indexDeleted;
+	}
+
+	public String getIndexDeletedMessage() {
+		return indexDeletedMessage;
+	}
+
+	public void setIndexDeletedMessage(String indexDeletedMessage) {
+		this.indexDeletedMessage = indexDeletedMessage;
 	}
 
 }
