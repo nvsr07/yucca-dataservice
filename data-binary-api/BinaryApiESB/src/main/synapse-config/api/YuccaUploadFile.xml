@@ -2,6 +2,18 @@
 <api xmlns="http://ws.apache.org/ns/synapse" name="YuccaUploadFile" context="/wso005/binary">
     <resource methods="POST" uri-template="/input/{tenant}">
         <inSequence>
+            <clone continueParent="true">
+                  <target>
+                     <sequence>
+                        <property name="OUT_ONLY" value="true"/>
+                        <send>
+                           <endpoint>
+                              <address uri="res.gwServerUrl/insert/binary/"/>
+                           </endpoint>
+                        </send>
+                     </sequence>
+                  </target>
+             </clone>        
             <send>
                 <endpoint>
                     <address uri="http://localhost:9768/data-ingest-binary/services/binary_service/binary/"/>
