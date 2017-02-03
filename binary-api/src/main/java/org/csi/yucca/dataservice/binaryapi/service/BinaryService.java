@@ -321,8 +321,8 @@ public class BinaryService {
 
 						InputStream is;
 						try {
-							//NSLTMP
-							is = HdfsFSUtils.readFile(pathForUri+"/"+idBinary+"_nsl");
+							
+							is = HdfsFSUtils.readFile(pathForUri+"/"+idBinary);
 						} catch (Exception e) {
 							LOG.error("[BinaryService::downloadFile] - Internal error during READFile", e);
 							throw new WebApplicationException(Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -439,8 +439,8 @@ public class BinaryService {
 
 		binaryData.setIdDataset(mdFromMongo.getInfo().getBinaryIdDataset());
 		
-		//NSLTMP
-		binaryData.setIdBinary(idBinary+"_nsl");
+		
+		binaryData.setIdBinary(idBinary);
 		binaryData.setAliasNameBinary(aliasFile);
 		binaryData.setTenantBinary(tenantCode);
 		binaryData.setDatasetCode(datasetCode);
@@ -460,16 +460,16 @@ public class BinaryService {
 			LOG.info("[BinaryService::updateMongo] - tenantCode = " + tenantCode + ", datasetCode = " + datasetCode
 					+ ", datasetVersion = " + datasetVersion + ", idBinary=" + idBinary);
 
-			//NSLTMP
-			binaryData.setPathHdfsBinary(hdfsDirectory +"/" + idBinary+"_nsl");
+			
+			binaryData.setPathHdfsBinary(hdfsDirectory +"/" + idBinary);
 			
 			InputStream  isForWriteFile =  fileInputPart.getBody(InputStream.class, null); //attachment.getObject(InputStream.class); //
 
 			
 			String uri = null;
 			try {
-				//NSLTMP
-				uri = HdfsFSUtils.writeFile(hdfsDirectory, isForWriteFile, idBinary+"_nsl"); //fileInputPart.getBody(InputStream.class, null), idBinary);
+				
+				uri = HdfsFSUtils.writeFile(hdfsDirectory, isForWriteFile, idBinary); //fileInputPart.getBody(InputStream.class, null), idBinary);
 
 			} catch (Exception ex) {
 				ex.printStackTrace();
