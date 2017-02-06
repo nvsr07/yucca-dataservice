@@ -320,9 +320,10 @@ public class SDPInsertApiPhoenixDataAccess {
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
-
+			int counter = 0;
 			try {
-				while (deletedRows != 0) {
+				while (deletedRows != 0 || counter<50) {
+					counter++;
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows " + deletedRows);
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - totalDeletedRows " + totalDeletedRows);
 
@@ -338,6 +339,7 @@ public class SDPInsertApiPhoenixDataAccess {
 
 						stmt.execute();
 						deletedRows = stmt.getUpdateCount();
+						log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows dopo " + deletedRows);
 						totalDeletedRows += deletedRows;
 					} finally {
 						stmt.clearParameters();
