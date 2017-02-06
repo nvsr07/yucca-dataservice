@@ -315,7 +315,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			if (datasetVersion != null && datasetVersion > 0)
 				sql += " AND datasetversion_l=? ";
 
-			sql += " LIMIT ? OFFSET ?";
+			sql += " LIMIT ?";
 
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
@@ -332,11 +332,8 @@ public class SDPInsertApiPhoenixDataAccess {
 						if (datasetVersion != null && datasetVersion > 0) {
 							stmt.setInt(2, (Integer.parseInt(Long.toString(datasetVersion))));
 							stmt.setInt(3, DELETE_LIMIT);
-							stmt.setInt(4, totalDeletedRows);
-
 						} else {
 							stmt.setInt(2, DELETE_LIMIT);
-							stmt.setInt(3, totalDeletedRows);
 						}
 
 						stmt.execute();
