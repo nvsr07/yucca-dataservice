@@ -322,7 +322,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
 			int counter = 0;
 			try {
-				while (deletedRows != 0 || counter<50) {
+				while (deletedRows != 0 && counter<50) {
 					counter++;
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows " + deletedRows);
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - totalDeletedRows " + totalDeletedRows);
@@ -339,6 +339,7 @@ public class SDPInsertApiPhoenixDataAccess {
 
 						stmt.execute();
 						deletedRows = stmt.getUpdateCount();
+						conn.commit();
 						log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows dopo " + deletedRows);
 						totalDeletedRows += deletedRows;
 					} finally {
@@ -346,7 +347,6 @@ public class SDPInsertApiPhoenixDataAccess {
 						stmt.close();
 					}
 				}
-				conn.commit();
 			} catch (Exception e) {
 				log.error("Insert Phoenix Error", e);
 				try {
