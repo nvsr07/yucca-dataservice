@@ -139,7 +139,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			}
 
 			String sql = "UPSERT INTO " + schema + "." + table + " (" + campiSQL + ")  VALUES  " + valuesSql + ") ";
-			log.debug("insertBulk sql " +  sql);
+			log.debug("insertBulk sql " + sql);
 
 			PreparedStatement stmt = conn.prepareStatement(sql);
 			Iterator<JSONObject> iter = dati.getJsonRowsToInsert().iterator();
@@ -165,9 +165,8 @@ public class SDPInsertApiPhoenixDataAccess {
 					campiSQL += "," + nome;
 
 					Object value = json.get(nome);
-					
-					log.debug("insertBulk param nome: " + nome + " -  tipo: " +  tipo + " - value: " +  value);
 
+					log.debug("insertBulk param nome: " + nome + " -  tipo: " + tipo + " - value: " + value);
 
 					if ("int".equalsIgnoreCase(tipo)) {
 						if (null == value)
@@ -266,9 +265,11 @@ public class SDPInsertApiPhoenixDataAccess {
 	public int deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
 		log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
 
+		int DELETE_LIMIT = 3;
+		int totalDeletedRows = 0;
+		int deletedRows = -1;
 		Connection conn = null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
-		int result = -1;
 		try {
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
 
@@ -312,20 +313,40 @@ public class SDPInsertApiPhoenixDataAccess {
 			String sql = "DELETE FROM " + schema + "." + table + " WHERE iddataset_l=?";
 
 			if (datasetVersion != null && datasetVersion > 0)
-				sql += " AND datasetversion_l=?";
+				sql += " AND datasetversion_l=? ";
 
-			log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
-			log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
-			log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
-			PreparedStatement stmt = conn.prepareStatement(sql);
-			stmt.setInt(1, (Integer.parseInt(Long.toString(idDataset))));
-			if (datasetVersion != null && datasetVersion > 0)
-				stmt.setInt(2, (Integer.parseInt(Long.toString(datasetVersion))));
+			sql += " LIMIT ? OFFSET ?";
+
+			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     sql " + sql);
+			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     idDataset " + idDataset);
+			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
 
 			try {
-				stmt.execute();
-				//stmt.executeBatch();
-				result  = stmt.getUpdateCount();
+				while (deletedRows != 0) {
+					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows " + deletedRows);
+					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - totalDeletedRows " + totalDeletedRows);
+
+					PreparedStatement stmt = conn.prepareStatement(sql);
+					try {
+						stmt.setInt(1, (Integer.parseInt(Long.toString(idDataset))));
+						if (datasetVersion != null && datasetVersion > 0) {
+							stmt.setInt(2, (Integer.parseInt(Long.toString(datasetVersion))));
+							stmt.setInt(3, DELETE_LIMIT);
+							stmt.setInt(4, totalDeletedRows);
+
+						} else {
+							stmt.setInt(2, DELETE_LIMIT);
+							stmt.setInt(3, totalDeletedRows);
+						}
+
+						stmt.execute();
+						deletedRows = stmt.getUpdateCount();
+						totalDeletedRows += deletedRows;
+					} finally {
+						stmt.clearParameters();
+						stmt.close();
+					}
+				}
 				conn.commit();
 			} catch (Exception e) {
 				log.error("Insert Phoenix Error", e);
@@ -337,8 +358,6 @@ public class SDPInsertApiPhoenixDataAccess {
 				throw new InsertApiRuntimeException(e);
 			} finally {
 				try {
-					stmt.clearParameters();
-					stmt.close();
 					conn.close();
 				} catch (SQLException e1) {
 					log.error("Impossible to close", e1);
@@ -352,7 +371,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			log.error("Phoenix runtime exception", e1);
 			throw e1;
 		}
-		return result;
+		return totalDeletedRows;
 
 	}
 

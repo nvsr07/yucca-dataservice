@@ -867,6 +867,9 @@ public class InsertApiLogic {
 		outData.setDataDeleted(true);
 		outData.setNumRowDeleted(numrowDeleted);
 		outData.setDataDeletedMessage("Number of rows deleted on Phonix: " + numrowDeleted);
+		
+		// vado su hdfs
+		
 		// vado su solr
 		try {
 			SDPInsertApiSolrDataAccess sdpInsertApiSolrDataAccess = new SDPInsertApiSolrDataAccess();
