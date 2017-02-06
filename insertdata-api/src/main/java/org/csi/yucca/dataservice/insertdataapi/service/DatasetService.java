@@ -43,6 +43,18 @@ public class DatasetService extends AbstractService {
 		return new InsertApiLogic().parseJsonInputDataset(codTenant, jsonData);
 	}
 
+
+	@DELETE
+	@Path("/delete/{codTenant}/{idDataset}")
+	@Produces("application/json")
+	public Response dataDeleteNoVersion(@PathParam(value = "codTenant") String codTenant, @PathParam(value = "idDataset") String idDataset,
+			@HeaderParam(value = "UNIQUE_ID") String uniqueid, @HeaderParam(value = "X-Forwarded-For") String forwardfor,
+			@HeaderParam(value = "Authorization") String authInfo, @Context final HttpServletResponse response) throws InsertApiBaseException, InsertApiRuntimeException {
+		DatasetDeleteOutput out = super.dataDelete(codTenant, idDataset, null, uniqueid, forwardfor, authInfo);
+	
+		return Response.status(Status.ACCEPTED).entity(out).build();
+	}
+
 	@DELETE
 	@Path("/delete/{codTenant}/{idDataset}/{datasetVersion}")
 	@Produces("application/json")
