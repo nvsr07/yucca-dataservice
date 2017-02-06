@@ -247,11 +247,11 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	public MongoDatasetInfo getInfoDataset(Long idDataset, long datasetVersion, String codiceTenant) throws Exception {
+	public MongoDatasetInfo getInfoDataset(Long idDataset, Long datasetVersion, String codiceTenant) throws Exception {
 		MongoDatasetInfo ret = null;
 		BasicDBList curDataset = new BasicDBList();
 		curDataset.add(new BasicDBObject("idDataset", idDataset));
-		if (datasetVersion == -1) {
+		if (datasetVersion == null || datasetVersion == -1) {
 			curDataset.add(new BasicDBObject("configData.current", new Long(1)));
 
 		} else {
