@@ -324,6 +324,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			try {
 				while (deletedRows != 0 && counter<50) {
 					counter++;
+					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - counter " + counter);
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows " + deletedRows);
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - totalDeletedRows " + totalDeletedRows);
 
