@@ -125,7 +125,7 @@ public class InsertApiLogic {
 			}
 			 catch (Throwable e2) {
 				 log.log(Level.SEVERE, "[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
-				throw e2;
+				throw new InsertApiRuntimeException(e2);
 			} 
 		}
 		long startTimeX = System.currentTimeMillis();
