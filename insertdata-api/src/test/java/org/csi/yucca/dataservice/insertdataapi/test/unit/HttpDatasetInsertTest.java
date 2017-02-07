@@ -43,9 +43,9 @@ public class HttpDatasetInsertTest extends RestBase {
 			rs = rs.auth().basic(dato.getString("api.username"), dato.getString("api.password"));
 		}
 
-		Response rsp = rs.when().log().all().post(dato.get("api.dataset.url") + "" + dato.get("api.tenant") + "/");
+		Response rsp = rs.when().post(dato.get("api.dataset.url") + "" + dato.get("api.tenant") + "/");
 
-		rsp.then().log().all().statusCode(dato.getInt("api.httpStatusExcepted"));
+		rsp.then().statusCode(dato.getInt("api.httpStatusExcepted"));
 
 		if (StringUtils.isNotEmpty(dato.optString("api.errorCode")))
 			rsp.then().body("error_code", Matchers.equalTo(dato.optString("api.errorCode")));

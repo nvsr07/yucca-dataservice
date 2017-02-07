@@ -103,10 +103,11 @@ public class InsertApiLogic {
 						log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
 					}
 				}
-			} catch (Exception e) {
-				if (e instanceof InsertApiRuntimeException) {
-					throw e;
-				}
+			} catch (InsertApiRuntimeException e1) {
+				throw e1;
+			} catch (InsertApiBaseException e) {
+				
+				
 				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] GenericException " + e);
 				log.log(Level.WARNING,
 						"[InsertApiLogic::insertManager] Fallito inserimento blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
@@ -122,6 +123,10 @@ public class InsertApiLogic {
 				}
 
 			}
+			 catch (Throwable e2) {
+				 log.log(Level.SEVERE, "[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
+				throw e2;
+			} 
 		}
 		long startTimeX = System.currentTimeMillis();
 		// mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins",
