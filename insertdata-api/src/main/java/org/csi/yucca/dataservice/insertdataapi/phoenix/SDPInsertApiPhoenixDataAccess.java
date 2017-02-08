@@ -265,7 +265,7 @@ public class SDPInsertApiPhoenixDataAccess {
 	public int deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
 		log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
 
-		int DELETE_LIMIT = 3;
+		int DELETE_LIMIT = 50000;
 		int totalDeletedRows = 0;
 		int deletedRows = -1;
 		Connection conn = null;
@@ -322,7 +322,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			log.info("[SDPInsertApiPhoenixDataAccess::deleteData]     datasetVersion " + datasetVersion);
 			int counter = 0;
 			try {
-				while (deletedRows != 0 && counter<50) {
+				while (deletedRows != 0) {
 					counter++;
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - counter " + counter);
 					log.info("[SDPInsertApiPhoenixDataAccess::deleteData]    loop - deletedRows " + deletedRows);

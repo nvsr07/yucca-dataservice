@@ -14,6 +14,8 @@ public class MongoStreamInfo extends MongoDatasetInfo{
 	private String sensorCode=null;
 	private int tipoStream=STREAM_TYPE_SENSOR;
 	
+	private String virtualEntitySlug=null;
+	
 	public int getTipoStream() {
 		return tipoStream;
 	}
@@ -49,6 +51,12 @@ public class MongoStreamInfo extends MongoDatasetInfo{
 				) this.streamId = streamId;
 		
 		else this.streamId=STREAM_TYPE_UNDEFINED;
+	}
+	public String getVirtualEntitySlug() {
+		return virtualEntitySlug;
+	}
+	public void setVirtualEntitySlug(String virtualEntitySlug) {
+		this.virtualEntitySlug = virtualEntitySlug;
 	}
 	
 }

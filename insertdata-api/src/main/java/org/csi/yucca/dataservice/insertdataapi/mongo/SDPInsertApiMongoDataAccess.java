@@ -1,7 +1,6 @@
 package org.csi.yucca.dataservice.insertdataapi.mongo;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -11,7 +10,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.collections4.map.PassiveExpiringMap;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
@@ -117,12 +115,16 @@ public class SDPInsertApiMongoDataAccess {
 				String streamCode = takeNvlValues(obj.get("streamCode"));
 
 				String sensore = takeNvlValues(((DBObject) ((DBObject) (DBObject) obj.get("streams")).get("stream")).get("virtualEntityCode"));
+				
+				String virtualEntitySlug = takeNvlValues(((DBObject) ((DBObject) (DBObject) obj.get("streams")).get("stream")).get("virtualEntitySlug"));
+
 
 				ret = new MongoStreamInfo();
 				ret.setSensorCode(sensore);
 				ret.setDatasetId(idDataset);
 				ret.setDatasetVersion(datasetVersion);
 				ret.setStreamCode(streamCode);
+				ret.setVirtualEntitySlug(virtualEntitySlug);
 
 			}
 
@@ -278,13 +280,18 @@ public class SDPInsertApiMongoDataAccess {
 				DBObject obj = cursor.next();
 				String datasetDatasetVersion = takeNvlValues(obj.get("datasetVersion"));
 				String datasetDatasetId = takeNvlValues(obj.get("idDataset"));
-
+				String datasetCode = takeNvlValues(obj.get("datasetCode"));
+				
 				BasicDBObject configData = (BasicDBObject) obj.get("configData");
 
 				String type = takeNvlValues(configData.get("type"));
 				String subtype = takeNvlValues(configData.get("subtype"));
 				String tenanTcode = takeNvlValues(configData.get("tenantCode"));
 				ArrayList<FieldsMongoDto> campi = getCampiFromDbObject(obj);
+
+				BasicDBObject info = (BasicDBObject) obj.get("info");
+				String datasetDomain = takeNvlValues(info.get("dataDomain"));
+				String datasetSubdomain = takeNvlValues(info.get("codSubDomain"));
 
 				ret = new MongoDatasetInfo();
 				ret.setCampi(campi);
@@ -293,6 +300,9 @@ public class SDPInsertApiMongoDataAccess {
 				ret.setDatasetType(type);
 				ret.setDatasetSubType(subtype);
 				ret.setTenantcode(tenanTcode);
+				ret.setDatasetCode(datasetCode);
+				ret.setDatasetDomain(datasetDomain);
+				ret.setDatasetSubdomain(datasetSubdomain);
 
 			}
 		} catch (Exception e) {

@@ -292,6 +292,12 @@
 			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.4.7</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>

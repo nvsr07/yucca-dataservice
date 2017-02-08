@@ -15,6 +15,7 @@ import net.minidev.json.JSONObject;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
+import org.csi.yucca.dataservice.insertdataapi.hdfs.SDPInsertApiHdfsDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
@@ -198,7 +199,7 @@ public class InsertApiLogic {
 				if ("streamDataset".equals(infoDataset.getDatasetSubType())) {
 					// aggiungo il campo fittizio Time
 					infoDataset.getCampi().add(new FieldsMongoDto("time", FieldsMongoDto.DATA_TYPE_DATETIME, infoDataset.getDatasetId(), infoDataset.getDatasetVersion()));
-					MongoStreamInfo infoStream = mongoAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
+					MongoStreamInfo infoStream = SDPInsertApiMongoDataAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
 					// System.out.println(" TIMETIME parseJsonInputDataset -- recuperata info stream--> "+System.currentTimeMillis());
 
 					// aggiungo stream e sensore alla costante
@@ -211,7 +212,7 @@ public class InsertApiLogic {
 				if ("socialDataset".equals(infoDataset.getDatasetSubType())) {
 					// aggiungo il campo fittizio Time
 					infoDataset.getCampi().add(new FieldsMongoDto("time", FieldsMongoDto.DATA_TYPE_DATETIME, infoDataset.getDatasetId(), infoDataset.getDatasetVersion()));
-					MongoStreamInfo infoStream = mongoAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
+					MongoStreamInfo infoStream = SDPInsertApiMongoDataAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
 					// System.out.println(" TIMETIME parseJsonInputDataset -- recuperata info stream--> "+System.currentTimeMillis());
 
 					// aggiungo stream e sensore alla costante
@@ -706,7 +707,7 @@ public class InsertApiLogic {
 		// ArrayList<MongoStreamInfo>
 		// elencoStream=mongoAccess.getStreamInfo(tenant, (stream!=null ? stream
 		// : application), sensor);
-		ArrayList<MongoStreamInfo> elencoStream = mongoAccess.getStreamInfo(tenant, stream, (sensor != null ? sensor : application));
+		ArrayList<MongoStreamInfo> elencoStream = SDPInsertApiMongoDataAccess.getStreamInfo(tenant, stream, (sensor != null ? sensor : application));
 
 		if (elencoStream == null || elencoStream.size() <= 0)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": " + (sensor != null ? sensor : application) + " (stream: " + stream + ")");
@@ -867,8 +868,27 @@ public class InsertApiLogic {
 		outData.setDataDeleted(true);
 		outData.setNumRowDeleted(numrowDeleted);
 		outData.setDataDeletedMessage("Number of rows deleted on Phonix: " + numrowDeleted);
-		
+
 		// vado su hdfs
+		try {
+			String streamCode = null;
+			String streamVirtualEntitySlug = null;
+			if ("streamDataset".equals(infoDataset.getDatasetSubType()) || "socialDataset".equals(infoDataset.getDatasetSubType())) {
+				MongoStreamInfo streamInfo = SDPInsertApiMongoDataAccess.getStreamInfoForDataset(codTenant, idDataset, datasetVersion);
+				streamCode = streamInfo.getStreamCode();
+				streamVirtualEntitySlug = streamInfo.getVirtualEntitySlug();
+			}
+
+			SDPInsertApiHdfsDataAccess sdpInsertApiHdfsDataAccess = new SDPInsertApiHdfsDataAccess();
+			String responseStatus = sdpInsertApiHdfsDataAccess.deleteData(infoDataset.getDatasetType(), infoDataset.getDatasetSubType(), infoDataset.getDatasetDomain(),
+					infoDataset.getDatasetSubdomain(), codTenant, infoDataset.getDatasetCode(), streamVirtualEntitySlug, streamCode, idDataset, datasetVersion);
+			outData.setFileDeleted(responseStatus != null && responseStatus.startsWith("OK"));
+			outData.setFileDeletedMessage("HDFS response: " + responseStatus);
+		} catch (Exception e) {
+			log.warning("[InsertApi::dataDelete] Error on delete from HDFS: " + e.getMessage());
+			outData.setFileDeleted(false);
+			outData.setFileDeletedMessage("Error on delete HDFS: " + e.getMessage());
+		}
 		
 		// vado su solr
 		try {
@@ -880,7 +900,7 @@ public class InsertApiLogic {
 		} catch (Exception e) {
 			log.warning("[InsertApi::dataDelete] Error on delete from Solr: " + e.getMessage());
 			outData.setIndexDeleted(false);
-			outData.setIndexDeletedMessage("Error on delete fro Solr: " + e.getMessage());
+			outData.setIndexDeletedMessage("Error on delete from Solr: " + e.getMessage());
 		}
 
 		return outData;
