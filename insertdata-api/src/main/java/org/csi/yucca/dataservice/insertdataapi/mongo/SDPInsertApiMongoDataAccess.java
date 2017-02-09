@@ -150,7 +150,7 @@ public class SDPInsertApiMongoDataAccess {
 			String collection = SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
 			DBCollection coll = db.getCollection(collection);
 
-			BasicDBObject query = new BasicDBObject("configData.tenantCode", codTenant);
+			BasicDBObject query = new BasicDBObject("tenantCode", codTenant);
 			log.info("MongoTenantInfo query " + query);
 
 			tenant = coll.findOne(query);
