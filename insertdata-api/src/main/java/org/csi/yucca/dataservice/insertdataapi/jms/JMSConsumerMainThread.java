@@ -39,7 +39,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 
 			// internal Connection
 			connectionFactoryInternal = createConnection(SDPInsertApiConfig.getInstance().getJMSMbInternalUrl(), SDPInsertApiConfig.getInstance()
-					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbInternalPassword(), 2000, 1000L, 3., true, new Long(15 * 60 * 1000), 24 * 4);
+					.getJMSMbExternalUsername(), SDPInsertApiConfig.getInstance().getJMSMbInternalPassword(), 2000, 1000L, 3., true, 1800L, 100);
 
 			// Create a Connection internal
 			connectionInternal = connectionFactoryInternal.createConnection();
