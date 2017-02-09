@@ -43,16 +43,16 @@ public class SDPInsertApiHdfsDataAccess {
 			// Verifico il tipo di Dataset per creare il path corretto su HDFS
 			if (datasetSubtype.equals("bulkDataset")) {
 				if (datasetSubdomain == null) {
-					System.out.println("CodSubDomain is null => " + datasetSubdomain);
+					log.info("CodSubDomain is null => " + datasetSubdomain);
 					typeDirectory = "db_" + tenant;
 				} else {
-					System.out.println("CodSubDomain => " + datasetSubdomain);
+					log.info("CodSubDomain => " + datasetSubdomain);
 					typeDirectory = "db_" + datasetSubdomain;
 				}
 				subTypeDirectory = datasetCode;
 
-				System.out.println("typeDirectory => " + typeDirectory);
-				System.out.println("subTypeDirectory => " + subTypeDirectory);
+				log.info("typeDirectory => " + typeDirectory);
+				log.info("subTypeDirectory => " + subTypeDirectory);
 			} else if (datasetSubtype.equals("streamDataset") || datasetSubtype.equals("socialDataset")) {
 				typeDirectory = "so_" + streamVirtualEntitySlug;
 				subTypeDirectory = streamCode;
@@ -60,6 +60,8 @@ public class SDPInsertApiHdfsDataAccess {
 
 			apiBaseUrl = SDPInsertApiConfig.getInstance().getKnoxSdnetUlr() + new String(tenant).toUpperCase() + "/rawdata/" + datasetDomain + "/" + typeDirectory + "/"
 					+ subTypeDirectory;
+			log.info("apiBaseUrl => " + apiBaseUrl+ "?op=LISTSTATUS");
+
 			HttpClient client = HttpClientBuilder.create().build();
 			HttpGet httpget = new HttpGet(apiBaseUrl + "?op=LISTSTATUS");
 
@@ -72,7 +74,7 @@ public class SDPInsertApiHdfsDataAccess {
 			context.setCredentialsProvider(credsProvider);
 
 			HttpResponse response = client.execute(httpget, context);
-			log.debug("[SDPInsertApiHdfsDataAccess::deleteData] call to " + apiBaseUrl + " - status " + response.getStatusLine().toString() + " - status Code "
+			log.info("[SDPInsertApiHdfsDataAccess::deleteData] call to " + apiBaseUrl + " - status " + response.getStatusLine().toString() + " - status Code "
 					+ response.getStatusLine().getStatusCode());
 
 			if (response.getStatusLine().getStatusCode() == 404) {
@@ -112,6 +114,8 @@ public class SDPInsertApiHdfsDataAccess {
 					} else {
 						httpgetDel = new HttpDelete(apiBaseUrl + "/" + hdfsPath[i].getPathSuffix() + "?op=DELETE");
 					}
+
+					log.info("httpgetDel = " + httpgetDel);
 
 					HttpResponse responseDel = client.execute(httpgetDel, context);
 
