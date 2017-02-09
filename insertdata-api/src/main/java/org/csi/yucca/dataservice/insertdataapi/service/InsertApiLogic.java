@@ -887,7 +887,7 @@ public class InsertApiLogic {
 			MongoTenantInfo tenantInfo = SDPInsertApiMongoDataAccess.getTenantInfo(codTenant);
 			if (tenantInfo != null)
 				tenantOrganization = tenantInfo.getOrganizationCode();
-			log.finest("[InsertApiLogic::deleteManager]     tenantOrganization " + tenantOrganization);
+			log.info("[InsertApiLogic::deleteManager]     tenantOrganization " + tenantOrganization);
 			SDPInsertApiHdfsDataAccess sdpInsertApiHdfsDataAccess = new SDPInsertApiHdfsDataAccess();
 			String responseStatus = sdpInsertApiHdfsDataAccess.deleteData(infoDataset.getDatasetType(), infoDataset.getDatasetSubType(), infoDataset.getDatasetDomain(),
 					infoDataset.getDatasetSubdomain(), tenantOrganization, infoDataset.getDatasetCode(), streamVirtualEntitySlug, streamCode, idDataset, datasetVersion);

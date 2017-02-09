@@ -151,8 +151,10 @@ public class SDPInsertApiMongoDataAccess {
 			DBCollection coll = db.getCollection(collection);
 
 			BasicDBObject query = new BasicDBObject("configData.tenantCode", codTenant);
+			log.info("MongoTenantInfo query " + query);
 
 			tenant = coll.findOne(query);
+			log.info("MongoTenantInfo tenant " + tenant);
 			if (tenant != null)
 				ret = new MongoTenantInfo(tenant);
 		} catch (Exception e) {
