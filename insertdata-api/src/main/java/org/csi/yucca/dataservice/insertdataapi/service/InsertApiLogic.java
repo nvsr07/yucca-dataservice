@@ -21,6 +21,7 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.MongoTenantInfo;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.phoenix.SDPInsertApiPhoenixDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.solr.SDPInsertApiSolrDataAccess;
@@ -107,8 +108,7 @@ public class InsertApiLogic {
 			} catch (InsertApiRuntimeException e1) {
 				throw e1;
 			} catch (InsertApiBaseException e) {
-				
-				
+
 				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] GenericException " + e);
 				log.log(Level.WARNING,
 						"[InsertApiLogic::insertManager] Fallito inserimento blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
@@ -123,11 +123,10 @@ public class InsertApiLogic {
 
 				}
 
-			}
-			 catch (Throwable e2) {
-				 log.log(Level.SEVERE, "[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
+			} catch (Throwable e2) {
+				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
 				throw new InsertApiRuntimeException(e2);
-			} 
+			}
 		}
 		long startTimeX = System.currentTimeMillis();
 		// mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins",
@@ -884,9 +883,14 @@ public class InsertApiLogic {
 				streamVirtualEntitySlug = streamInfo.getVirtualEntitySlug();
 			}
 
+			String tenantOrganization = null;
+			MongoTenantInfo tenantInfo = SDPInsertApiMongoDataAccess.getTenantInfo(codTenant);
+			if (tenantInfo != null)
+				tenantOrganization = tenantInfo.getOrganizationCode();
+			log.finest("[InsertApiLogic::deleteManager]     tenantOrganization " + tenantOrganization);
 			SDPInsertApiHdfsDataAccess sdpInsertApiHdfsDataAccess = new SDPInsertApiHdfsDataAccess();
 			String responseStatus = sdpInsertApiHdfsDataAccess.deleteData(infoDataset.getDatasetType(), infoDataset.getDatasetSubType(), infoDataset.getDatasetDomain(),
-					infoDataset.getDatasetSubdomain(), codTenant, infoDataset.getDatasetCode(), streamVirtualEntitySlug, streamCode, idDataset, datasetVersion);
+					infoDataset.getDatasetSubdomain(), tenantOrganization, infoDataset.getDatasetCode(), streamVirtualEntitySlug, streamCode, idDataset, datasetVersion);
 			outData.setFileDeleted(responseStatus != null && responseStatus.startsWith("OK"));
 			outData.setFileDeletedMessage("HDFS response: " + responseStatus);
 		} catch (Exception e) {
@@ -894,7 +898,7 @@ public class InsertApiLogic {
 			outData.setFileDeleted(false);
 			outData.setFileDeletedMessage("Error on delete HDFS: " + e.getMessage());
 		}
-		
+
 		// vado su solr
 		try {
 			SDPInsertApiSolrDataAccess sdpInsertApiSolrDataAccess = new SDPInsertApiSolrDataAccess();

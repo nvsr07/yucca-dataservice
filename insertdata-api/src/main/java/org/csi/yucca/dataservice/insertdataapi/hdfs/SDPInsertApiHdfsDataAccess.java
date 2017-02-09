@@ -26,7 +26,7 @@ public class SDPInsertApiHdfsDataAccess {
 	private static final Log log = LogFactory.getLog("org.csi.yucca.datainsert");
 
 
-	public String deleteData(String datasetType, String datasetSubtype, String datasetDomain, String datasetSubdomain, String tenant, String datasetCode,
+	public String deleteData(String datasetType, String datasetSubtype, String datasetDomain, String datasetSubdomain, String tenantOrganization, String datasetCode,
 			String streamVirtualEntitySlug, String streamCode, Long idDataset, Long datasetVersion) {
 		String apiBaseUrl = "";
 		String typeDirectory = "";
@@ -44,7 +44,7 @@ public class SDPInsertApiHdfsDataAccess {
 			if (datasetSubtype.equals("bulkDataset")) {
 				if (datasetSubdomain == null) {
 					log.info("CodSubDomain is null => " + datasetSubdomain);
-					typeDirectory = "db_" + tenant;
+					typeDirectory = "db_" + tenantOrganization;
 				} else {
 					log.info("CodSubDomain => " + datasetSubdomain);
 					typeDirectory = "db_" + datasetSubdomain;
@@ -58,7 +58,7 @@ public class SDPInsertApiHdfsDataAccess {
 				subTypeDirectory = streamCode;
 			}
 
-			apiBaseUrl = SDPInsertApiConfig.getInstance().getKnoxSdnetUlr() + new String(tenant).toUpperCase() + "/rawdata/" + datasetDomain + "/" + typeDirectory + "/"
+			apiBaseUrl = SDPInsertApiConfig.getInstance().getKnoxSdnetUlr() + new String(tenantOrganization).toUpperCase() + "/rawdata/" + datasetDomain + "/" + typeDirectory + "/"
 					+ subTypeDirectory;
 			log.info("apiBaseUrl => " + apiBaseUrl+ "?op=LISTSTATUS");
 

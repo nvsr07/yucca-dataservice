@@ -15,6 +15,7 @@ import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.MongoTenantInfo;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.google.common.cache.Cache;
@@ -115,9 +116,8 @@ public class SDPInsertApiMongoDataAccess {
 				String streamCode = takeNvlValues(obj.get("streamCode"));
 
 				String sensore = takeNvlValues(((DBObject) ((DBObject) (DBObject) obj.get("streams")).get("stream")).get("virtualEntityCode"));
-				
-				String virtualEntitySlug = takeNvlValues(((DBObject) ((DBObject) (DBObject) obj.get("streams")).get("stream")).get("virtualEntitySlug"));
 
+				String virtualEntitySlug = takeNvlValues(((DBObject) ((DBObject) (DBObject) obj.get("streams")).get("stream")).get("virtualEntitySlug"));
 
 				ret = new MongoStreamInfo();
 				ret.setSensorCode(sensore);
@@ -136,6 +136,28 @@ public class SDPInsertApiMongoDataAccess {
 				cursor.close();
 			} catch (Exception e) {
 			}
+		}
+		return ret;
+
+	}
+
+	public static MongoTenantInfo getTenantInfo(String codTenant) {
+		MongoTenantInfo ret = null;
+		DBObject tenant = null;
+		try {
+			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);
+			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_TENANT));
+			String collection = SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_TENANT);
+			DBCollection coll = db.getCollection(collection);
+
+			BasicDBObject query = new BasicDBObject("configData.tenantCode", codTenant);
+
+			tenant = coll.findOne(query);
+			if (tenant != null)
+				ret = new MongoTenantInfo(tenant);
+		} catch (Exception e) {
+			log.error(e.getMessage(), e);
+			throw new InsertApiRuntimeException(e);
 		}
 		return ret;
 
@@ -281,7 +303,7 @@ public class SDPInsertApiMongoDataAccess {
 				String datasetDatasetVersion = takeNvlValues(obj.get("datasetVersion"));
 				String datasetDatasetId = takeNvlValues(obj.get("idDataset"));
 				String datasetCode = takeNvlValues(obj.get("datasetCode"));
-				
+
 				BasicDBObject configData = (BasicDBObject) obj.get("configData");
 
 				String type = takeNvlValues(configData.get("type"));
