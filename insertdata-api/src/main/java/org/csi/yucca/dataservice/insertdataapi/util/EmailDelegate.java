@@ -34,7 +34,7 @@ public class EmailDelegate {
 
 			// Send message
 			Transport.send(message);
-			System.out.println("Sent message successfully....");
+			System.out.println("Sent message successfully.... to "+ toAddress);
 		} catch (MessagingException mex) {
 			mex.printStackTrace();
 		}
