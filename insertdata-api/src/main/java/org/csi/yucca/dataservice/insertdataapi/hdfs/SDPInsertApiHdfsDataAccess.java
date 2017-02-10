@@ -37,7 +37,7 @@ public class SDPInsertApiHdfsDataAccess {
 		String mailFromAddress = SDPInsertApiConfig.getInstance().getMailFromAddress();
 
 		ObjectMapper mapper = new ObjectMapper();
-
+		int numOfFileDeleted  = 0;
 		try {
 
 			// Verifico il tipo di Dataset per creare il path corretto su HDFS
@@ -105,7 +105,7 @@ public class SDPInsertApiHdfsDataAccess {
 
 				List<FileStatus> hdfsPaths = pojoHdfs.getFileStatuses().getFileStatus();
 				for (FileStatus hdfsPath : hdfsPaths) {
-					
+
 					log.info("hdfsPath.getPathSuffix() = " + hdfsPath.getPathSuffix());
 
 					HttpDelete httpDel = null;
@@ -118,23 +118,25 @@ public class SDPInsertApiHdfsDataAccess {
 					}
 
 					log.info("httpDel = " + httpDel);
+					if (httpDel != null) {
+						HttpResponse responseDel = client.execute(httpDel, context);
 
-					HttpResponse responseDel = client.execute(httpDel, context);
-
-					if (responseDel.getStatusLine().getStatusCode() == 404) {
-						String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject404();
-						String body = SDPInsertApiConfig.getInstance().getDeleteMailBody404();
-						mailer.sendEmail(mailToAddress, mailFromAddress, subject, body + apiBaseUrl + "/" + hdfsPath.getPathSuffix());
-					} else if (responseDel.getStatusLine().getStatusCode() == 500) {
-						String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject500();
-						String body = SDPInsertApiConfig.getInstance().getDeleteMailBody500();
-						mailer.sendEmail(mailToAddress, mailFromAddress, subject, body + apiBaseUrl + "/" + hdfsPath.getPathSuffix());
-						return "KO - Server Error " + response.getStatusLine().getReasonPhrase();
-					} else {
-						// 200 HTTP STATUS CODE
-						String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject200();
-						String body = SDPInsertApiConfig.getInstance().getDeleteMailBody200();
-						mailer.sendEmail(mailToAddress, mailFromAddress, subject, body + apiBaseUrl + "/" + hdfsPath.getPathSuffix());
+						if (responseDel.getStatusLine().getStatusCode() == 404) {
+							String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject404();
+							String body = SDPInsertApiConfig.getInstance().getDeleteMailBody404();
+							mailer.sendEmail(mailToAddress, mailFromAddress, subject, body + apiBaseUrl + "/" + hdfsPath.getPathSuffix());
+						} else if (responseDel.getStatusLine().getStatusCode() == 500) {
+							String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject500();
+							String body = SDPInsertApiConfig.getInstance().getDeleteMailBody500();
+							mailer.sendEmail(mailToAddress, mailFromAddress, subject, body + apiBaseUrl + "/" + hdfsPath.getPathSuffix());
+							return "KO - Server Error " + response.getStatusLine().getReasonPhrase();
+						} else {
+							// 200 HTTP STATUS CODE
+							String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject200();
+							String body = SDPInsertApiConfig.getInstance().getDeleteMailBody200();
+							mailer.sendEmail(mailToAddress, mailFromAddress, subject, body + apiBaseUrl + "/" + hdfsPath.getPathSuffix());
+							numOfFileDeleted++;
+						}
 					}
 				}
 			}
@@ -147,7 +149,7 @@ public class SDPInsertApiHdfsDataAccess {
 			e.printStackTrace();
 			return "KO - Server Error " + e.getMessage();
 		}
-		return "OK";
+		return "OK - Number of file deleted: " + numOfFileDeleted;
 	}
 
 	public static void main(String[] args) {
@@ -155,15 +157,12 @@ public class SDPInsertApiHdfsDataAccess {
 
 		String json = "{\"FileStatuses\":{\"FileStatus\":[{\"accessTime\":1486640438707,\"blockSize\":134217728,\"childrenNum\":0,\"fileId\":36847018,\"group\":\"hdfs\",\"length\":158,\"modificationTime\":1485871427236,\"owner\":\"sdp\",\"pathSuffix\":\"589099251319c5f6e45a0ffa-ProvaCancell_697-1.csv\",\"permission\":\"640\",\"replication\":3,\"storagePolicy\":0,\"type\":\"FILE\"},{\"accessTime\":1485937962368,\"blockSize\":134217728,\"childrenNum\":0,\"fileId\":36968258,\"group\":\"hdfs\",\"length\":137,\"modificationTime\":1485937962604,\"owner\":\"sdp\",\"pathSuffix\":\"589197b7abe55b2aaaa99819-ProvaCancell_697-1.csv\",\"permission\":\"640\",\"replication\":3,\"storagePolicy\":0,\"type\":\"FILE\"},{\"accessTime\":1485959260011,\"blockSize\":134217728,\"childrenNum\":0,\"fileId\":36994105,\"group\":\"hdfs\",\"length\":116,\"modificationTime\":1485959260243,\"owner\":\"sdp\",\"pathSuffix\":\"5891eb90e3d02fd6c7259323-ProvaCancell_697-2.csv\",\"permission\":\"640\",\"replication\":3,\"storagePolicy\":0,\"type\":\"FILE\"},{\"accessTime\":1486456356915,\"blockSize\":134217728,\"childrenNum\":0,\"fileId\":37735252,\"group\":\"hdfs\",\"length\":305,\"modificationTime\":1486456357144,\"owner\":\"sdp\",\"pathSuffix\":\"589980d2753a098f8686fff3-ProvaCancell_697-2.csv\",\"permission\":\"640\",\"replication\":3,\"storagePolicy\":0,\"type\":\"FILE\"}]}}";
 		try {
-			POJOHdfs  pojoHdfs = mapper.readValue(json, POJOHdfs.class);
+			POJOHdfs pojoHdfs = mapper.readValue(json, POJOHdfs.class);
 			System.out.println("ecco " + pojoHdfs);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	
+
 }
-
-
