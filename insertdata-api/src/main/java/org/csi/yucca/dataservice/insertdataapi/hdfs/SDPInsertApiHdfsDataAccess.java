@@ -106,7 +106,7 @@ public class SDPInsertApiHdfsDataAccess {
 				List<FileStatus> hdfsPaths = pojoHdfs.getFileStatuses().getFileStatus();
 				for (FileStatus hdfsPath : hdfsPaths) {
 					
-					log.info("hdfsPath = " + hdfsPath);
+					log.info("hdfsPath.getPathSuffix() = " + hdfsPath.getPathSuffix());
 
 					HttpDelete httpDel = null;
 					if (null != datasetVersion) {
@@ -117,7 +117,7 @@ public class SDPInsertApiHdfsDataAccess {
 						httpDel = new HttpDelete(apiBaseUrl + "/" + hdfsPath.getPathSuffix() + "?op=DELETE");
 					}
 
-					log.info("httpgetDel = " + httpDel);
+					log.info("httpDel = " + httpDel);
 
 					HttpResponse responseDel = client.execute(httpDel, context);
 
