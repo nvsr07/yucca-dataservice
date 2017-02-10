@@ -105,19 +105,21 @@ public class SDPInsertApiHdfsDataAccess {
 
 				List<FileStatus> hdfsPaths = pojoHdfs.getFileStatuses().getFileStatus();
 				for (FileStatus hdfsPath : hdfsPaths) {
+					
+					log.info("hdfsPath = " + hdfsPath);
 
-					HttpDelete httpgetDel = null;
+					HttpDelete httpDel = null;
 					if (null != datasetVersion) {
 						if (hdfsPath.getPathSuffix().endsWith("-" + datasetVersion + ".csv")) {
-							httpgetDel = new HttpDelete(apiBaseUrl + "/" + hdfsPath.getPathSuffix() + "?op=DELETE");
+							httpDel = new HttpDelete(apiBaseUrl + "/" + hdfsPath.getPathSuffix() + "?op=DELETE");
 						}
 					} else {
-						httpgetDel = new HttpDelete(apiBaseUrl + "/" + hdfsPath.getPathSuffix() + "?op=DELETE");
+						httpDel = new HttpDelete(apiBaseUrl + "/" + hdfsPath.getPathSuffix() + "?op=DELETE");
 					}
 
-					log.info("httpgetDel = " + httpgetDel);
+					log.info("httpgetDel = " + httpDel);
 
-					HttpResponse responseDel = client.execute(httpgetDel, context);
+					HttpResponse responseDel = client.execute(httpDel, context);
 
 					if (responseDel.getStatusLine().getStatusCode() == 404) {
 						String subject = SDPInsertApiConfig.getInstance().getDeleteMailSubject404();
