@@ -1,23 +1,28 @@
-
 package org.csi.yucca.dataservice.insertdataapi.hdfs.model;
 
-import com.google.gson.annotations.Expose;
+import java.util.List;
+
+import org.codehaus.jackson.annotate.JsonProperty;
 
 public class FileStatuses {
 
-    @Expose
-    private FileStatus[] FileStatus;
+	@JsonProperty("FileStatus")
+	private List<FileStatus> fileStatus;
 
-    public FileStatus[] getFileStatus (){
-        return FileStatus;
-    }
+	public FileStatuses() {
+		super();
+	}
 
-    public void setFileStatus (FileStatus[] FileStatus){
-        this.FileStatus = FileStatus;
-    }
+	public List<FileStatus> getFileStatus() {
+		return fileStatus;
+	}
 
-    @Override
-    public String toString(){
-        return "ClassPojo [FileStatus = "+FileStatus+"]";
-    }
+	public void setFileStatus(List<FileStatus> fileStatus) {
+		this.fileStatus = fileStatus;
+	}
+
+	@Override
+	public String toString() {
+		return "ClassPojo [FileStatus = " + fileStatus + "]";
+	}
 }

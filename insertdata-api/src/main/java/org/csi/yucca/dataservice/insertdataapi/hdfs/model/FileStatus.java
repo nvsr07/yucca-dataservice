@@ -28,6 +28,10 @@ public class FileStatus {
 
 	private String storagePolicy;
 
+	public FileStatus() {
+		super();
+	}
+
 	public String getFileId() {
 		return fileId;
 	}
