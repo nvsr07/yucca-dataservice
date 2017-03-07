@@ -114,9 +114,12 @@ public class FieldsMongoDto {
 	}
 
 
-	public boolean validateValue(String valueToCheck, boolean isVerOneRequired) {
-		if ((this.datasetVersion!=1 || !isVerOneRequired) && valueToCheck==null) return true ;
-		if (this.datasetVersion==1 && valueToCheck==null) return false ;
+	public boolean validateValue(String valueToCheck, boolean isNullValid) {
+		//if ((this.datasetVersion!=1 || !isVerOneRequired) && valueToCheck==null) return true ;
+		//if (this.datasetVersion==1 && valueToCheck==null) return false ;
+		
+		// null value is always validated
+		if (valueToCheck == null) return isNullValid; 
 		
 		if (DATA_TYPE_INT.equals(this.fieldType)) return validateInt(valueToCheck); 
 		if (DATA_TYPE_LONG.equals(this.fieldType)) return validateLong(valueToCheck); 

@@ -625,19 +625,20 @@ public class InsertApiLogic {
 		while (itCampiJson.hasNext()) {
 			String jsonField = (String) itCampiJson.next();
 
-			// 1. verifico che il campo sia tra quelli presenti nei metadati
-
 			FieldsMongoDto campoMongo = campiMongo.get(jsonField);
 			FieldsMongoDto campoMongoV1 = campiMongoV1.get(jsonField);
+			
+			// check if jsonField is in metadata definition. If not, there is a component unknown 
 			if (null == campoMongo)
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INVALID_COMPONENTS, " component " + jsonField + " not found in stream configuration ("
 						+ insStrConst + ")");
 
+			
 			String valore = null;
 			if (null != (components.get(jsonField)))
 				valore = (components.get(jsonField)).toString();
 
-			if (!campoMongo.validateValue(valore, isVerOneRequired))
+			if (!campoMongo.validateValue(valore, true))
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE, " - field " + jsonField + " (" + insStrConst + "): " + valore);
 
 			log.finest("[InsertApiLogic::parseCompnents] ---------------- campo : " + campoMongo.getFieldName());
@@ -647,18 +648,16 @@ public class InsertApiLogic {
 				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.versione=" + campoMongoV1.getDatasetVersion());
 				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.nome=" + campoMongoV1.getFieldName());
 				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.gettype=" + campoMongoV1.getFieldType());
-				if (null != campoMongoV1)
+				if (null != campoMongoV1) {
 					log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->" + campoMongoV1.validateValue(valore, isVerOneRequired));
-				numCampiInV1++;
+					numCampiInV1++;
+				}
 			}
 			log.finest("[InsertApiLogic::parseCompnents] .................");
 			log.finest("[InsertApiLogic::parseCompnents]          jsonField=" + jsonField);
 			log.finest("[InsertApiLogic::parseCompnents]          insStrConst=" + insStrConst);
 			log.finest("[InsertApiLogic::parseCompnents]          valore=" + valore);
 
-			if (null != campoMongoV1 && !campoMongoV1.validateValue(valore, isVerOneRequired))
-				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE, " - field " + jsonField + " (" + insStrConst + "): "
-						+ ((valore == null) ? "null" : valore));
 
 			(campiMongo.get(jsonField)).setSuccessChecked(true);
 
@@ -669,8 +668,8 @@ public class InsertApiLogic {
 
 		}
 
-		if (numCampiInV1 != campiMongoV1.size())
-			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INVALID_COMPONENTS, "fields present in dataset v1 definition must be not null");
+		if (isVerOneRequired && (numCampiInV1 != campiMongoV1.size()))
+			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INVALID_COMPONENTS, "fields present in dataset v1 definition must be presents");
 
 		if (currRigaIns != null) {
 			currRigaIns = insStrConst + ", " + currRigaIns;
@@ -816,7 +815,7 @@ public class InsertApiLogic {
 
 				// System.out.println(" TIMETIME parseMisura -- valore ("+i+") recuperati oggetti--> "+System.currentTimeMillis());
 
-				if (!campotimeStamp.validateValue(timeStamp, true))
+				if (!campotimeStamp.validateValue(timeStamp, false))
 					throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE, " - field time (" + insStrConstBase + "): " + timeStamp);
 
 				// insStrConst+= ", time: {$date :\""+timeStamp+"\"} ";
