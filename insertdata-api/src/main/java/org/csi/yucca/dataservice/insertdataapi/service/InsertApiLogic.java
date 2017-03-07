@@ -226,6 +226,9 @@ public class InsertApiLogic {
 					streamCode = infoStream.getStreamCode();
 
 				}
+				if ("bulkDataset".equals(infoDataset.getDatasetSubType())) {
+					isVerOneRequired = true;
+				}
 
 				// se dataset � dataset va bene cosi'
 
