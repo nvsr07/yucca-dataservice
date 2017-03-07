@@ -1865,17 +1865,22 @@ public class SDPDataApiMongoAccess {
 
 					if (campoOperazione.get(chiave)!=null) {
 						String valore=rs.getString(chiaveEdm);
+						
+						
 						if (null!=valore) {
 							if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
 								misura.put(chiaveEdm, Boolean.valueOf(valore));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
 								misura.put(chiaveEdm, valore);
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
-								misura.put(chiaveEdm, Integer.parseInt(valore));
+								//misura.put(chiaveEdm, Integer.parseInt(valore));
+								misura.put(chiaveEdm, rs.getInt(chiaveEdm));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
-								misura.put(chiaveEdm, Long.parseLong(valore.replace(',','.')));
+								//misura.put(chiaveEdm, Long.parseLong(valore.replace(',','.')));
+								misura.put(chiaveEdm, rs.getLong(chiaveEdm));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
-								misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								//misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								misura.put(chiaveEdm, rs.getDouble(chiaveEdm));
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
 								//								Object dataObj=obj.get(chiave);
 								//								misura.put(chiave, dataObj);
@@ -1883,7 +1888,8 @@ public class SDPDataApiMongoAccess {
 								//								Object dataObj=obj.get(chiave);
 								//								misura.put(chiave, dataObj);
 							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
-								misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								//misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								misura.put(chiaveEdm, rs.getDouble(chiaveEdm));
 
 							}					
 						}
