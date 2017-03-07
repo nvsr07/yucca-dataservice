@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
@@ -376,9 +377,13 @@ public class SDPInsertApiMongoDataAccess {
 			DBCollection coll = db.getCollection(SDPInsertApiConfig.getInstance().getMongoCfgCollection(SDPInsertApiConfig.MONGO_DB_CFG_METADATA));
 
 			DBObject obj = coll.findOne(query);
+			if (obj==null){
+				log.error("Metadata not found for "+idDataset+"/v"+datasetVersion);
+				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
+			}
 			ret = getCampiFromDbObject(obj);
 		} catch (Exception e) {
-			log.error("Error", e);
+			log.error("Error idDataset:"+idDataset+"]["+"datasetVersion:"+datasetVersion, e);
 			throw new InsertApiRuntimeException(e);
 		}
 		return ret;
