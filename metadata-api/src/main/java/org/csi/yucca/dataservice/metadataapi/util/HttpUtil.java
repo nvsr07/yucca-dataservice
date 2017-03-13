@@ -73,7 +73,13 @@ public class HttpUtil {
 
 		if (parameters != null) {
 			for (String key : parameters.keySet()) {
-				targetUrl += key + "=" + parameters.get(key) + "&";
+				//targetUrl += key + "=" + parameters.get(key) + "&";
+				// post.addParameter(key, parameters.get(key));
+				targetUrl += key
+						+ "="
+						+ parameters.get(key).replaceAll("  ", " ").replaceAll(" ", "%20").replaceAll("\\[", "%5B").replaceAll("\\]", "%5D").replaceAll(">", "%3E")
+								.replaceAll("<", "%3C") + "&";
+
 			}
 		}
 

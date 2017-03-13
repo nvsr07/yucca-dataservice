@@ -8,9 +8,9 @@
 	<packaging>war</packaging>
 	<name>metadataapi</name>
 	<scm>
-		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
-	</scm>
-
+    	<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+  	</scm>
+  	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -22,7 +22,36 @@
 				<version>2.4</version>
 				<configuration>
 					<webXml>${webXmlPath}/web.xml</webXml>
+				    <webResources> 
+				      <resource> 
+				        <directory>${project.build.directory}\generated-sources</directory> 
+				        <!--  <includes> 
+                    		<include>${project.build.directory}\*.html</include>
+				        </includes> -->
+				      </resource> 
+				    </webResources> 
 				</configuration>
+			</plugin>
+			
+			<plugin>
+			    <groupId>io.swagger</groupId>
+			    <artifactId>swagger-codegen-maven-plugin</artifactId>
+			    <version>2.2.1</version>
+			    <executions>
+			        <execution>
+			            <goals>
+			                <goal>generate</goal>
+			            </goals>
+			            <configuration>
+			                <inputSpec>src/main/swagger/v1.0/yaml/swagger.yaml</inputSpec>
+			                <language>html2</language>
+			                <configOptions>
+			                   <!-- <sourceFolder>src/gen/html2/main</sourceFolder>  -->
+			                   <output>${project.build.directory}/generated-sources/api-doc</output>
+			                </configOptions>
+			            </configuration>
+			        </execution>
+			    </executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -36,7 +65,7 @@
 			<name>Apache Maven2 Repository</name>
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
-	</repositories>
+    </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -118,11 +147,6 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
-			<version>4.2.3</version>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
@@ -223,25 +247,25 @@
 		<profile>
 			<id>int</id>
 			<build>
-				<plugins>
+				  <plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
+			        <groupId>org.apache.maven.plugins</groupId>
+			        <artifactId>maven-scm-plugin</artifactId>
+			        <version>1.9.5</version>
+			        <configuration>
+			          <connectionType>connection</connectionType>
+			        </configuration>
+			        <executions>
+			        	<execution>
+			        		<id>1</id>
+			        		<phase>validate</phase>
+				            <goals>
+				              <goal>checkout</goal>
+				            </goals>
+				          </execution>
+				    </executions>
+			      	</plugin>			
+				  </plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/matadataapi/resources/int</directory>
@@ -264,25 +288,25 @@
 		<profile>
 			<id>prod</id>
 			<build>
-				<plugins>
+				  <plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-scm-plugin</artifactId>
-						<version>1.9.5</version>
-						<configuration>
-							<connectionType>connection</connectionType>
-						</configuration>
-						<executions>
-							<execution>
-								<id>1</id>
-								<phase>validate</phase>
-								<goals>
-									<goal>checkout</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
+			        <groupId>org.apache.maven.plugins</groupId>
+			        <artifactId>maven-scm-plugin</artifactId>
+			        <version>1.9.5</version>
+			        <configuration>
+			          <connectionType>connection</connectionType>
+			        </configuration>
+			        <executions>
+			        	<execution>
+			        		<id>1</id>
+			        		<phase>validate</phase>
+				            <goals>
+				              <goal>checkout</goal>
+				            </goals>
+				          </execution>
+				    </executions>
+			      	</plugin>			
+				  </plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/matadataapi/resources/prod</directory>

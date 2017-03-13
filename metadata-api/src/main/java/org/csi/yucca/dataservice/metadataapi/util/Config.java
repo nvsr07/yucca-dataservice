@@ -13,12 +13,14 @@ public class Config {
 
 	public static final String SERVICE_BASE_URL = "SERVICE_BASE_URL";
 	public static final String MANAGEMENT_BASE_URL = "MANAGEMENT_BASE_URL";
-	
+
 	public static final String EXPOSED_API_BASE_URL = "EXPOSED_API_BASE_URL";
 
 	public static final String OAUTH_BASE_URL = "OAUTH_BASE_URL";
 	public static final String OAUTH_USERNAME = "OAUTH_USERNAME";
 	public static final String OAUTH_PASSWORD = "OAUTH_PASSWORD";
+
+	public static final String SEARCH_ENGINE_BASE_URL = "SEARCH_ENGINE_BASE_URL";
 
 	private static Map<String, String> params = null;
 	private static Config instance = null;
@@ -35,6 +37,8 @@ public class Config {
 		params.put(EXPOSED_API_BASE_URL, rb.getString(EXPOSED_API_BASE_URL));
 		params.put(OAUTH_BASE_URL, rb.getString(OAUTH_BASE_URL));
 		params.put(OAUTH_USERNAME, rb.getString(OAUTH_USERNAME));
+		params.put(SEARCH_ENGINE_BASE_URL, rb.getString(SEARCH_ENGINE_BASE_URL));
+
 		ResourceBundle rbSecret = ResourceBundle.getBundle("MetadataApiSecret");
 		params.put(OAUTH_PASSWORD, rbSecret.getString(OAUTH_PASSWORD));
 	}
@@ -81,5 +85,9 @@ public class Config {
 	public String getExposedApiBaseUrl() {
 		return params.get(EXPOSED_API_BASE_URL);
 	}
-	
+
+	public String getSearchEngineBaseUrl() {
+		return params.get(SEARCH_ENGINE_BASE_URL);
+	}
+
 }

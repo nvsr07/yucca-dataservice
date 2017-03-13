@@ -1,10 +1,23 @@
 package org.csi.yucca.dataservice.metadataapi.util;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
+import org.csi.yucca.dataservice.metadataapi.delegate.v01.resources.ResourcesDelegate;
+import org.csi.yucca.dataservice.metadataapi.delegate.v01.resources.StreamsForIcon;
+import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
+
+import com.google.gson.Gson;
 
 public class Util {
 	public static String nvl(Object o) {
@@ -137,6 +150,52 @@ public class Util {
 			}
 		}
 		return out;
+	}
+	
+	public static byte[] extractImageFromStream(String streamJson) throws IOException {
+		Gson gson = JSonHelper.getInstance();
+		StreamsForIcon streamsForIcon = gson.fromJson(streamJson, StreamsForIcon.class);
+		// InputStream streamIconIS = null;
+		BufferedImage imag = null;
+		if (streamsForIcon != null && streamsForIcon.getStreams() != null && streamsForIcon.getStreams().getStream() != null
+				&& streamsForIcon.getStreams().getStream().getStreamIcon() != null) {
+			String streamIcon = streamsForIcon.getStreams().getStream().getStreamIcon();
+
+			imag = readStreamImageBuffer(streamIcon);
+		} else
+			imag = ImageIO.read(ResourcesDelegate.class.getClassLoader().getResourceAsStream("stream-icon-default.png"));
+
+		byte[] iconBytes = null;
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		ImageIO.write(imag, "png", baos);
+		baos.flush();
+		iconBytes = baos.toByteArray();
+		baos.close();
+
+		return iconBytes;
+	}
+
+	public static  BufferedImage readStreamImageBuffer(String imageBase64) throws IOException {
+		BufferedImage imag = null;
+
+		if (imageBase64 != null) {
+			String[] imageBase64Array = imageBase64.split(",");
+
+			String imageBase64Clean;
+			if (imageBase64Array.length > 1) {
+				imageBase64Clean = imageBase64Array[1];
+			} else {
+				imageBase64Clean = imageBase64Array[0];
+			}
+
+			byte[] bytearray = Base64.decodeBase64(imageBase64Clean.getBytes());
+			imag = ImageIO.read(new ByteArrayInputStream(bytearray));
+		}
+		if (imageBase64 == null || imag == null) {
+			imag = ImageIO.read(ResourcesDelegate.class.getClassLoader().getResourceAsStream("entity-icon-default.png"));
+
+		}
+		return imag;
 	}
 
 }
