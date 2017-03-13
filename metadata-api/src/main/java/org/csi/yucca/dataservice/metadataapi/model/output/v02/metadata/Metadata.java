@@ -618,8 +618,7 @@ public class Metadata {
 			Opendata opendata = new Opendata();
 			opendata.setDataUpdateDate(searchEngineItem.getOpendataUpdateDateLong());
 			opendata.setMetadaUpdateDate(searchEngineItem.getOpendataMetaUpdateDateDate());
-			if (searchEngineItem.getOpendataLanguage() != null && searchEngineItem.getOpendataLanguage().size() > 0)
-				opendata.setLanguage(searchEngineItem.getOpendataLanguage().get(0));
+			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
 			metadata.setOpendata(opendata);
 
 		}

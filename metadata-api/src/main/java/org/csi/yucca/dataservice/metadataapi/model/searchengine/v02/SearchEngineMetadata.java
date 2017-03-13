@@ -70,11 +70,11 @@ public class SearchEngineMetadata {
 	private String lon;
 	private List<String> sdpComponentsName;
 	private String phenomenon;
-	private List<String> isCurrent;
-	private List<String> isOpendata;
-	private List<String> opendataUpdateDate;
-	private List<String> opendataMetaUpdateDate;
-	private List<String> opendataLanguage;
+	private String isCurrent;
+	private String isOpendata;
+	private String opendataUpdateDate;
+	private String opendataMetaUpdateDate;
+	private String opendataLanguage;
 	private List<String> soFps;
 	private List<String> soCategory;
 
@@ -597,11 +597,11 @@ public class SearchEngineMetadata {
 		this.idDataset = idDataset;
 	}
 
-	public List<String> getIsCurrent() {
+	public String getIsCurrent() {
 		return isCurrent;
 	}
 
-	public void setIsCurrent(List<String> isCurrent) {
+	public void setIsCurrent(String isCurrent) {
 		this.isCurrent = isCurrent;
 	}
 
@@ -621,35 +621,35 @@ public class SearchEngineMetadata {
 		this.soCategory = soCategory;
 	}
 
-	public List<String> getIsOpendata() {
+	public String getIsOpendata() {
 		return isOpendata;
 	}
 
-	public void setIsOpendata(List<String> isOpendata) {
+	public void setIsOpendata(String isOpendata) {
 		this.isOpendata = isOpendata;
 	}
 
-	public void setOpendataUpdateDate(List<String> opendataUpdateDate) {
+	public void setOpendataUpdateDate(String opendataUpdateDate) {
 		this.opendataUpdateDate = opendataUpdateDate;
 	}
 
-	public List<String> getOpendataUpdateDate() {
+	public String getOpendataUpdateDate() {
 		return opendataUpdateDate;
 	}
 
-	public List<String> getOpendataMetaUpdateDate() {
+	public String getOpendataMetaUpdateDate() {
 		return opendataMetaUpdateDate;
 	}
 
-	public void setOpendataMetaUpdateDate(List<String> opendataMetaUpdateDate) {
+	public void setOpendataMetaUpdateDate(String opendataMetaUpdateDate) {
 		this.opendataMetaUpdateDate = opendataMetaUpdateDate;
 	}
 
-	public List<String> getOpendataLanguage() {
+	public String getOpendataLanguage() {
 		return opendataLanguage;
 	}
 
-	public void setOpendataLanguage(List<String> opendataLanguage) {
+	public void setOpendataLanguage(String opendataLanguage) {
 		this.opendataLanguage = opendataLanguage;
 	}
 
@@ -673,9 +673,7 @@ public class SearchEngineMetadata {
 	}
 
 	public Boolean isOpendata() {
-		if (isOpendata != null && isOpendata.size() > 0)
-			return "true".equals(isOpendata.get(0));
-		return false;
+		return "true".equals(isOpendata);
 	}
 
 	public boolean isDcatReady() {
