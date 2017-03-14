@@ -77,14 +77,13 @@ public class MetadataDelegate {
 		}
 
 		if (dCatReady != null) {
-			searchUrl.append("&fq=dCatReady:"+(dCatReady?"1":"0"));
+			searchUrl.append("&fq=dCatReady:" + (dCatReady ? "1" : "0"));
 			params.put("dCatReady", "" + dCatReady);
 		}
-		
 
 		if (opendata != null) {
 			// FIXME opendata
-			params.put("opendata", ""+opendata);
+			params.put("opendata", "" + opendata);
 		}
 
 		if (facet != null) {
@@ -105,26 +104,34 @@ public class MetadataDelegate {
 		if (sort != null)
 			searchUrl.append("&sort=" + sort);
 
-		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
+		log.info("[MetadataDelegate::search] searchUrl: " + searchUrl);
 
 		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
 
 		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
 
 		Result result = new Result();
+		int discardedCount = 0;
+		if (searchEngineResult.getResponse() != null && searchEngineResult.getResponse().getDocs() != null) {
+			for (SearchEngineMetadata searchEngineItem : searchEngineResult.getResponse().getDocs()) {
+				try {
+					result.addMetadata(Metadata.createFromSearchEngineItem(searchEngineItem, lang));
+				} catch (Exception e) {
+					log.error("[MetadataDelegate::search] ERROR on metadata conversion - datasetCode:" + searchEngineItem.getDatasetCode() + "- streamCode:"
+							+ searchEngineItem.getStreamCode() + " - smartobjectCode:" + searchEngineItem.getSoCode() + " - ERROR:  " + e.getMessage());
+					discardedCount ++;
+				}
+			}
+			result.setCount(searchEngineResult.getResponse().getDocs().size()- discardedCount);
+
+		}
 		result.setStart(searchEngineResult.getResponse().getStart());
-		result.setTotalCount(searchEngineResult.getResponse().getNumFound());
-		Integer pageCount = new Double(Math.ceil(searchEngineResult.getResponse().getNumFound().doubleValue() / rows)).intValue();
+		Integer totalCount = searchEngineResult.getResponse().getNumFound() - discardedCount;
+		result.setTotalCount(totalCount);
+		Integer pageCount = new Double(Math.ceil(totalCount.doubleValue() / rows)).intValue();
 		result.setTotalPages(pageCount);
 
 		result.setParams(params);
-
-		if (searchEngineResult.getResponse() != null && searchEngineResult.getResponse().getDocs() != null) {
-			result.setCount(searchEngineResult.getResponse().getDocs().size());
-			for (SearchEngineMetadata searchEngineItem : searchEngineResult.getResponse().getDocs()) {
-				result.addMetadata(Metadata.createFromSearchEngineItem(searchEngineItem, lang));
-			}
-		}
 
 		if (searchEngineResult.getFacet_counts() != null) {
 			FacetCount facetCount = new FacetCount();
@@ -246,7 +253,7 @@ public class MetadataDelegate {
 
 	public String loadStreamMetadata(String userAuth, String tenantCode, String smartobjectCode, String streamCode, String version, String format, String lang) {
 		String query = "streamCode:" + streamCode;
-		return loadMetadata(query, format, lang);  // FIXME stream code in detail
+		return loadMetadata(query, format, lang); // FIXME stream code in detail
 
 	}
 
