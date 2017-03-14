@@ -13,8 +13,10 @@ public class ApplicationConfig extends Application {
 	private Set<Object> singletons = new HashSet<Object>();
 
 	public ApplicationConfig() {
-		singletons.add(new DetailService());
-		singletons.add(new SearchService());
+		//singletons.add(new DetailService());
+		//singletons.add(new SearchService());
+		singletons.add(new org.csi.yucca.dataservice.metadataapi.service.v01.MetadataService());
+		singletons.add(new org.csi.yucca.dataservice.metadataapi.service.v02.MetadataService());
 		singletons.add(new CkanService());
 		singletons.add(new CacheService());
 		singletons.add(new DcatService());

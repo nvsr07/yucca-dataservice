@@ -101,7 +101,7 @@ public class MetadataDelegate {
 		if (rows == null)
 			rows = 12;
 
-		searchUrl.append("&end=" + rows);
+		searchUrl.append("&rows=" + rows);
 		if (sort != null)
 			searchUrl.append("&sort=" + sort);
 
@@ -244,9 +244,9 @@ public class MetadataDelegate {
 
 	}
 
-	public String loadStreamMetadata(String userAuth, String organizationCode, String smartobjectCode, String streamCode, String version, String format, String lang) {
+	public String loadStreamMetadata(String userAuth, String tenantCode, String smartobjectCode, String streamCode, String version, String format, String lang) {
 		String query = "streamCode:" + streamCode;
-		return loadMetadata(query, format, lang);
+		return loadMetadata(query, format, lang);  // FIXME stream code in detail
 
 	}
 
