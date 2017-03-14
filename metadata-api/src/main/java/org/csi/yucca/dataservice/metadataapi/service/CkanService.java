@@ -1,5 +1,6 @@
 package org.csi.yucca.dataservice.metadataapi.service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
@@ -15,8 +16,9 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.delegate.v01.metadata.MetadataDelegate;
-import org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata;
+import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -34,21 +36,34 @@ public class CkanService extends AbstractService {
 	@Path("/2/package_list")
 	@Produces("application/json; charset=UTF-8")
 	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
-			@QueryParam("tenant") String tenant, @QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
+			@QueryParam("sort") String sort, @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
+			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
 
 		String userAuth = (String) request.getSession().getAttribute("userAuth");
-		List<Metadata> metadataList = MetadataDelegate.getInstance().search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
-				null);
-
-		List<String> packageIds = new LinkedList<String>();
-		for (Metadata metadata : metadataList) {
-			if (metadata.getDataset() != null && metadata.getDataset().getDatasetId() != null)
-				packageIds.add(metadata.getCkanPackageId());
-		}
-		Gson gson = JSonHelper.getInstance();
-		return gson.toJson(packageIds);
+		try {
+			Result searchResult = MetadataDelegate.getInstance()
+					.search(
+					userAuth, q, start, end, sort, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
+					null,null,true,null);
+	
+			if (searchResult!= null && searchResult.getMetadata()!=null)
+			{
+				List<String> packageIds = new LinkedList<String>();
+				for (Metadata metadata : searchResult.getMetadata()) {
+					packageIds.add(metadata.getCkanPackageId());
+				}
+				Gson gson = JSonHelper.getInstance();
+				return gson.toJson(packageIds);
+				
+			}
+			else 
+				return "[]";
+		} catch (UnsupportedEncodingException e) {
+			return new ErrorResponse("", "Invalid param").toJson();
+		}		
+		
 	}
 
 	@GET
@@ -59,8 +74,8 @@ public class CkanService extends AbstractService {
 		log.info("[SearchService::search] START - userAuth: " + userAuth);
 		String result = "";
 		try {
-			String apiName = Metadata.getApiNameFromCkanPackageId(packageId) + "_odata";
-			String metadata = MetadataDelegate.getInstance().loadMetadata(userAuth, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
+			String apiName = Metadata.getApiNameFromCkanPackageId(packageId);
+			String metadata = MetadataDelegate.getInstance().loadDatasetMetadata(userAuth, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
 
 			result = metadata;
 		} catch (Exception e) {
@@ -68,7 +83,6 @@ public class CkanService extends AbstractService {
 			error.setErrorCode("Error with packageId " + packageId);
 			error.setMessage(e.getMessage());
 			result = error.toJson();
-			throw new InternalServerErrorException("Error with packageId " + packageId + " - " + e.getMessage());
 		}
 		return result;
 

@@ -19,6 +19,7 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
 
+@Deprecated
 public class MetadataDelegate {
 
 	static Logger log = Logger.getLogger(MetadataDelegate.class);
@@ -38,6 +39,7 @@ public class MetadataDelegate {
 		return instance;
 	}
 
+	@Deprecated
 	public List<Metadata> search(String userAuth, String q, Integer start, Integer end, String tenant, String domain, Boolean opendata, Boolean geolocalizated, Double minLat,
 			Double minLon, Double maxLat, Double maxLon, String lang, Boolean dCatReady) throws NumberFormatException, UnknownHostException {
 
@@ -138,6 +140,7 @@ public class MetadataDelegate {
 
 	}
 
+	@Deprecated
 	public String loadMetadata(String userAuth, String apiName, String version, String format, String lang) {
 
 		String docName = apiName + "_internal_content";

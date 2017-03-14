@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.v01.i18n.I18nDelegate;
 import org.csi.yucca.dataservice.metadataapi.model.ckan.ExtraV2;
 import org.csi.yucca.dataservice.metadataapi.model.ckan.Resource;
@@ -14,6 +16,7 @@ import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngine
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineJsonFieldElement;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineJsonSo;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineMetadata;
+import org.csi.yucca.dataservice.metadataapi.service.CkanService;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.Util;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -29,6 +32,8 @@ public class Metadata {
 	public static final String METADATA_SUBTYPE_BULK = "bulk";
 	public static final String METADATA_SUBTYPE_BINARY = "binary";
 
+	static Logger log = Logger.getLogger(CkanService.class);
+	
 	private String name;
 	// private String code;
 	private String version;
@@ -273,7 +278,7 @@ public class Metadata {
 	}
 
 	public static String getApiNameFromCkanPackageId(String packageId) {
-		return packageId.substring(packageId.indexOf("_") + 1);
+		return StringUtils.substringAfter(packageId,"_");
 
 	}
 
@@ -591,8 +596,17 @@ public class Metadata {
 
 		if (searchEngineItem.getDatasetCode() != null) {
 			Dataset dataset = new Dataset();
-			if (searchEngineItem.getIdDataset() != null && searchEngineItem.getIdDataset().size() > 0)
-				dataset.setDatasetId(searchEngineItem.getIdDataset().get(0));
+//			if (searchEngineItem.getIdDataset() != null && searchEngineItem.getIdDataset().size() > 0)
+//				dataset.setDatasetId(searchEngineItem.getIdDataset().get(0));
+			// Id dataset calculated from datasetCode
+			
+			String idDataset = StringUtils.substringAfterLast(searchEngineItem.getDatasetCode(), "_");
+			try {
+				dataset.setDatasetId(Long.parseLong(idDataset));
+			} catch (NumberFormatException e) {
+				log.error("DatasetCode not ending with a long ["+searchEngineItem.getDatasetCode()+"]",e);
+			}
+			
 			dataset.setCode(searchEngineItem.getDatasetCode());
 			dataset.setDatasetType(searchEngineItem.getDataseType());
 			metadata.setDataset(dataset);

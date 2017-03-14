@@ -47,7 +47,8 @@ public class MetadataService extends AbstractService {
 		String result;
 		try {
 			Result searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(userAuth, q, start, rows, sort, tenant,
-					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, facetParams);
+					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, 
+					facetParams, null, null); // expose hasDataset, hasStream?
 			result = searchResult.toJson();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block

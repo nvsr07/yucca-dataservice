@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetCount;
@@ -42,7 +43,8 @@ public class MetadataDelegate {
 	}
 
 	public Result search(String userAuth, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
-			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, String lang, Boolean dCatReady, FacetParams facet)
+			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
+			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream)
 			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException {
 
 		log.info("[MetadataDelegate::search] START - userAuth: " + userAuth);
@@ -86,6 +88,65 @@ public class MetadataDelegate {
 			params.put("opendata", "" + opendata);
 		}
 
+		if (hasDataset != null || hasStream != null)
+		{
+			if (BooleanUtils.isTrue(hasDataset) &&
+				BooleanUtils.isTrue(hasStream) )
+			{
+				searchUrl.append("&fq=entityType:"+ URLEncoder.encode("\"stream dataset\"", "UTF-8"));
+				params.put("hasDataset", "true");
+				params.put("hasStream", "true");
+			}
+			else if (BooleanUtils.isFalse(hasDataset) &&
+					BooleanUtils.isFalse(hasStream))
+			{
+				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\" \"", "UTF-8"));
+				params.put("hasDataset", "false");
+				params.put("hasStream", "false");
+			}
+			else if (BooleanUtils.isFalse(hasDataset) &&
+					BooleanUtils.isTrue(hasStream))
+			{
+				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"stream\"", "UTF-8"));
+				params.put("hasDataset", "false");
+				params.put("hasStream", "true");
+			}
+			else if (BooleanUtils.isTrue(hasDataset) &&
+					BooleanUtils.isFalse(hasStream))
+			{
+				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"dataset\"", "UTF-8"));
+				params.put("hasDataset", "true");
+				params.put("hasStream", "false");
+			}
+			else if (hasDataset==null)
+			{
+				if (BooleanUtils.isTrue(hasStream))
+				{
+					searchUrl.append("&fq=entityType:"+URLEncoder.encode("(\"stream\" OR \"stream dataset\")", "UTF-8"));
+				}
+				else {
+					searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"dataset\"", "UTF-8"));
+				}
+				
+				params.put("hasStream", hasStream.toString());
+			}
+			else // hasStream ==null
+			{
+				if (BooleanUtils.isTrue(hasDataset))
+				{
+					searchUrl.append("&fq=entityType:"+URLEncoder.encode("(\"dataset\" OR \"stream dataset\")", "UTF-8"));
+				}
+				else {
+					searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"stream\"", "UTF-8"));
+				}
+				
+				params.put("hasDataset", hasDataset.toString());
+			}
+			
+		}
+
+
+		
 		if (facet != null) {
 			searchUrl.append("&" + facet.toSorlParams());
 			for (String facetKey : facet.getParamsMap().keySet()) {
