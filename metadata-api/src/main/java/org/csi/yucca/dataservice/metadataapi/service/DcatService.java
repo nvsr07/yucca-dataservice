@@ -1,9 +1,9 @@
 package org.csi.yucca.dataservice.metadataapi.service;
 
+import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -14,15 +14,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.delegate.v01.metadata.MetadataDelegate;
+import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.CatalogDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DatasetDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DistributionDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.LicenceTypeDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.VcardDCAT;
-import org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
+import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
-import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
@@ -37,9 +38,11 @@ public class DcatService extends AbstractService {
 	@GET
 	@Path("/dataset_list")
 	@Produces("application/ld+json; charset=UTF-8")
-	public String searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("page") Integer page, @QueryParam("tenant") String tenant,
-			@QueryParam("domain") String domain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized, @QueryParam("minLat") Double minLat,
-			@QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon, @QueryParam("lang") String lang)
+	public String searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("page") Integer page, 
+			 @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
+				@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
+				@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
+				@QueryParam("lang") String lang)
 			throws NumberFormatException, UnknownHostException {
 
 		SimpleDateFormat catalogDateFormat = new SimpleDateFormat("yyyy-MM-dd");// dd/MM/yyyy
@@ -66,112 +69,124 @@ public class DcatService extends AbstractService {
 		log.info("[DcatService::searchDCAT] numElementForPage: " + numElementForPage + ", end: " + end + ", start: " + start);
 		log.info("[DcatService::searchDCAT] query: " + q);
 
-		List<Metadata> metadataList = MetadataDelegate.getInstance().search(userAuth, q, start, end, tenant, domain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
-				true);
+		
+		Result searchResult;
+		try {
+			searchResult = MetadataDelegate.getInstance()
+					.search(
+					userAuth, q, start, numElementForPage, null, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
+					true,null,true,null);
+		} catch (UnsupportedEncodingException e) {
+			return new ErrorResponse("", "Invalid param").toJson();
+		}
 
 		Gson gson = JSonHelper.getInstance();
 		Config cfg = Config.getInstance();
 
-		for (Metadata metadata : metadataList) {
-			if (metadata.getDataset() != null && metadata.getDataset().getDatasetId() != null) {
+		if (searchResult!=null && searchResult.getMetadata()!=null)
+		{
+		
+			for (Metadata metadataST : searchResult.getMetadata()) {
+				if (metadataST.getDataset() != null && metadataST.getDataset().getDatasetId() != null) {
+	
+					DatasetDCAT dsDCAT = new DatasetDCAT();
+					
+					if (metadataST.getDcat()!=null)
+					{
+						if (metadataST.getDcat().getDcatCreatorName() != null) {
+							dsDCAT.getCreator().setName(metadataST.getDcat().getDcatCreatorName());
+						} else {
+							dsDCAT.getCreator().setName("CSI PIEMONTE");
+						}
+		
+						if (metadataST.getDcat().getDcatCreatorType() != null) {
+							dsDCAT.getCreator().setType(metadataST.getDcat().getDcatCreatorType());
+						} else {
+							dsDCAT.getCreator().setType("http://purl.org/adms/publishertype/Company");
+						}
+		
+						if (metadataST.getDcat().getDcatCreatorId() != null) {
+							dsDCAT.getCreator().setId(metadataST.getDcat().getDcatCreatorId());
+						} else {
+							dsDCAT.getCreator().setId("01995120019");
+						}
+		
+						if (metadataST.getDcat().getDcatRightsHolderName() != null) {
+							dsDCAT.getRightsHolder().setName(metadataST.getDcat().getDcatRightsHolderName());
+						} else {
+							dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
+						}
+		
+						if (metadataST.getDcat().getDcatRightsHolderType() != null) {
+							dsDCAT.getRightsHolder().setType(metadataST.getDcat().getDcatRightsHolderType());
+						} else {
+							dsDCAT.getRightsHolder().setType("http://purl.org/adms/publishertype/Company");
+						}
+		
+						if (metadataST.getDcat().getDcatRightsHolderId() != null) {
+							dsDCAT.getRightsHolder().setId(metadataST.getDcat().getDcatRightsHolderId());
+						} else {
+							dsDCAT.getRightsHolder().setId("01995120019");
+						}
 
-				Metadata metadataST = gson.fromJson(MetadataDelegate.getInstance().loadMetadata(userAuth, metadata.getCode() + "_odata", null, Constants.OUTPUT_FORMAT_JSON, lang),
-						Metadata.class);
+						VcardDCAT publisher = new VcardDCAT();
+						publisher.setHasEmail(metadataST.getDcat().getDcatEmailOrg());
+						publisher.setOrganizationName(metadataST.getDcat().getDcatNomeOrg());
+						dsDCAT.setContactPoint(publisher);
 
-				DatasetDCAT dsDCAT = new DatasetDCAT();
-
-				if (metadataST.getDcatCreatorName() != null) {
-					dsDCAT.getCreator().setName(metadataST.getDcatCreatorName());
-				} else {
-					dsDCAT.getCreator().setName("CSI PIEMONTE");
-				}
-
-				if (metadataST.getDcatCreatorType() != null) {
-					dsDCAT.getCreator().setType(metadataST.getDcatCreatorType());
-				} else {
-					dsDCAT.getCreator().setType("http://purl.org/adms/publishertype/Company");
-				}
-
-				if (metadataST.getDcatCreatorId() != null) {
-					dsDCAT.getCreator().setId(metadataST.getDcatCreatorId());
-				} else {
-					dsDCAT.getCreator().setId("01995120019");
-				}
-
-				if (metadataST.getDcatRightsHolderName() != null) {
-					dsDCAT.getRightsHolder().setName(metadataST.getDcatRightsHolderName());
-				} else {
-					dsDCAT.getRightsHolder().setName("CSI PIEMONTE");
-				}
-
-				if (metadataST.getDcatRightsHolderType() != null) {
-					dsDCAT.getRightsHolder().setType(metadataST.getDcatRightsHolderType());
-				} else {
-					dsDCAT.getRightsHolder().setType("http://purl.org/adms/publishertype/Company");
-				}
-
-				if (metadataST.getDcatRightsHolderId() != null) {
-					dsDCAT.getRightsHolder().setId(metadataST.getDcatRightsHolderId());
-				} else {
-					dsDCAT.getRightsHolder().setId("01995120019");
-				}
-
-				dsDCAT.setDescription(metadata.getDescription());
-				dsDCAT.setTitle(metadata.getName());
-				// V01 - fixed value
-				// http://publications.europa.eu/resource/authority/frequency/UNKNOWN
-
-				dsDCAT.setAccrualPeriodicity("http://publications.europa.eu/resource/authority/frequency/UNKNOWN");
-				// dsDCAT.setAccrualPeriodicity(metadata.getFps());
-
-				// String keyWords = "";
-				if (metadata.getTags() != null) {
-					for (String tag : metadata.getTags()) {
-						dsDCAT.addKeyword(tag);
 					}
-				}
-				dsDCAT.setTheme(metadata.getDomain());
-				dsDCAT.setAccessRights(metadata.getVisibility());
-				dsDCAT.setIdentifier(metadata.getCode() + "_" + metadata.getVersion());
-				if (metadata.getOpendata() != null)
-					dsDCAT.setModified(metadata.getOpendata().getDataUpdateDate());
-				dsDCAT.setVersionInfo(metadata.getVersion());
-				dsDCAT.setSubTheme(metadataST.getCodsubdomain());
-
-				DistributionDCAT distr = new DistributionDCAT();
-				distr.setAccessURL(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadata.getTenantCode() + "/" + metadata.getCode());
-				distr.setDownloadURL(cfg.getOauthBaseUrl() + "api/" + metadata.getCode() + "/download/" + metadataST.getDataset().getDatasetId() + "/all");
-
-				// https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
-				// distr.getLicense().setName(metadata.getLicense());
-				LicenceTypeDCAT licDist = new LicenceTypeDCAT();
-				if (metadata.getLicense() != null) {
-
-					if (metadata.getLicense().equals("CC BY 4.0")) {
-						licDist.setName("CC BY");
-						licDist.setType("https://creativecommons.org/licenses/by/4.0/");
-						licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
-						licDist.setVersion("4.0");
-					} else if (metadata.getLicense().equals("CC 0 1.0")) {
-						licDist.setName("CC 0");
-						licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
-						licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
-						licDist.setVersion("1.0");
-					} else {
-						licDist.setName(metadata.getLicense());
+					dsDCAT.setDescription(metadataST.getDescription());
+					dsDCAT.setTitle(metadataST.getName());
+					// V01 - fixed value
+					// http://publications.europa.eu/resource/authority/frequency/UNKNOWN
+	
+					dsDCAT.setAccrualPeriodicity("http://publications.europa.eu/resource/authority/frequency/UNKNOWN");
+					// dsDCAT.setAccrualPeriodicity(metadata.getFps());
+	
+					// String keyWords = "";
+					if (metadataST.getTags() != null) {
+						for (String tag : metadataST.getTags()) {
+							dsDCAT.addKeyword(tag);
+						}
 					}
-					distr.setLicense(licDist);
+					dsDCAT.setTheme(metadataST.getDomain());
+					dsDCAT.setAccessRights(metadataST.getVisibility());
+					dsDCAT.setIdentifier(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
+					if (metadataST.getOpendata() != null)
+						dsDCAT.setModified(metadataST.getOpendata().getDataUpdateDate());
+					dsDCAT.setVersionInfo(metadataST.getVersion());
+					dsDCAT.setSubTheme(metadataST.getSubdomainCode());
+	
+					DistributionDCAT distr = new DistributionDCAT();
+					distr.setAccessURL(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadataST.getTenantCode() + "/" + metadataST.getDataset().getCode());
+					distr.setDownloadURL(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/" + metadataST.getDataset().getDatasetId() + "/all");
+	
+					// https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
+					// distr.getLicense().setName(metadataST.getLicense());
+					LicenceTypeDCAT licDist = new LicenceTypeDCAT();
+					if (metadataST.getLicense() != null) {
+	
+						if (metadataST.getLicense().equals("CC BY 4.0")) {
+							licDist.setName("CC BY");
+							licDist.setType("https://creativecommons.org/licenses/by/4.0/");
+							licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
+							licDist.setVersion("4.0");
+						} else if (metadataST.getLicense().equals("CC 0 1.0")) {
+							licDist.setName("CC 0");
+							licDist.setType("https://creativecommons.org/publicdomain/zero/1.0/");
+							licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
+							licDist.setVersion("1.0");
+						} else {
+							licDist.setName(metadataST.getLicense());
+							
+						}
+						distr.setLicense(licDist);
+					}
+	
+					distr.setIssued(metadataST.getRegistrationDate());
+					dsDCAT.addDistribution(distr);
+					catalog.getDataset().add(dsDCAT);
 				}
-
-				distr.setIssued(metadata.getRegistrationDate());
-				dsDCAT.addDistribution(distr);
-
-				VcardDCAT publisher = new VcardDCAT();
-				publisher.setHasEmail(metadataST.getDcatEmailOrg());
-				publisher.setHasTelephone(metadataST.getDcatEmailOrg());
-				dsDCAT.setContactPoint(publisher);
-
-				catalog.getDataset().add(dsDCAT);
 			}
 		}
 		String json = gson.toJson(catalog).replaceAll("\"context\"", "\"@context\"").replaceAll("\"id\"", "\"@id\"").replaceAll("\"type\"", "\"@type\"");

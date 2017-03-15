@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetCount;
@@ -42,7 +43,8 @@ public class MetadataDelegate {
 	}
 
 	public Result search(String userAuth, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
-			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, String lang, Boolean dCatReady, FacetParams facet)
+			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
+			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream)
 			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException {
 
 		log.info("[MetadataDelegate::search] START - userAuth: " + userAuth);
@@ -77,15 +79,88 @@ public class MetadataDelegate {
 		}
 
 		if (dCatReady != null) {
-			searchUrl.append("&fq=dCatReady:" + (dCatReady ? "1" : "0"));
+			searchUrl.append("&fq=dCatReady:" + (dCatReady ? "true" : "false"));
 			params.put("dCatReady", "" + dCatReady);
 		}
 
 		if (opendata != null) {
-			// FIXME opendata
-			params.put("opendata", "" + opendata);
+			searchUrl.append("&fq=isOpendata:" + (opendata ? "true" : "false"));
+			params.put("opendata", ""+opendata);
 		}
 
+		if (hasDataset != null)
+		{
+			searchUrl.append("&fq=entityType:dataset");
+			params.put("hasDataset", "true");
+		}
+
+		if (hasStream != null)
+		{
+			searchUrl.append("&fq=entityType:stream");
+			params.put("hasStream", "true");
+		}
+
+		
+// OLD : used for entityType has stream		
+//		if (hasDataset != null || hasStream != null)
+//		{
+//			if (BooleanUtils.isTrue(hasDataset) &&
+//				BooleanUtils.isTrue(hasStream) )
+//			{
+//				searchUrl.append("&fq=entityType:"+ URLEncoder.encode("\"stream dataset\"", "UTF-8"));
+//				params.put("hasDataset", "true");
+//				params.put("hasStream", "true");
+//			}
+//			else if (BooleanUtils.isFalse(hasDataset) &&
+//					BooleanUtils.isFalse(hasStream))
+//			{
+//				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\" \"", "UTF-8"));
+//				params.put("hasDataset", "false");
+//				params.put("hasStream", "false");
+//			}
+//			else if (BooleanUtils.isFalse(hasDataset) &&
+//					BooleanUtils.isTrue(hasStream))
+//			{
+//				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"stream\"", "UTF-8"));
+//				params.put("hasDataset", "false");
+//				params.put("hasStream", "true");
+//			}
+//			else if (BooleanUtils.isTrue(hasDataset) &&
+//					BooleanUtils.isFalse(hasStream))
+//			{
+//				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"dataset\"", "UTF-8"));
+//				params.put("hasDataset", "true");
+//				params.put("hasStream", "false");
+//			}
+//			else if (hasDataset==null)
+//			{
+//				if (BooleanUtils.isTrue(hasStream))
+//				{
+//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("(\"stream\" OR \"stream dataset\")", "UTF-8"));
+//				}
+//				else {
+//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"dataset\"", "UTF-8"));
+//				}
+//				
+//				params.put("hasStream", hasStream.toString());
+//			}
+//			else // hasStream ==null
+//			{
+//				if (BooleanUtils.isTrue(hasDataset))
+//				{
+//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("(\"dataset\" OR \"stream dataset\")", "UTF-8"));
+//				}
+//				else {
+//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"stream\"", "UTF-8"));
+//				}
+//				
+//				params.put("hasDataset", hasDataset.toString());
+//			}
+//			
+//		}
+
+
+		
 		if (facet != null) {
 			searchUrl.append("&" + facet.toSorlParams());
 			for (String facetKey : facet.getParamsMap().keySet()) {
@@ -152,6 +227,7 @@ public class MetadataDelegate {
 
 	}
 
+	@Deprecated
 	public Result searchOld(String userAuth, String q, Integer start, Integer rows, String sort, String tenant, String domain, Boolean opendata, Boolean geolocalizated,
 			Double minLat, Double minLon, Double maxLat, Double maxLon, String lang, Boolean dCatReady, FacetParams facet) throws NumberFormatException, UnknownHostException {
 
@@ -252,8 +328,9 @@ public class MetadataDelegate {
 	}
 
 	public String loadStreamMetadata(String userAuth, String tenantCode, String smartobjectCode, String streamCode, String version, String format, String lang) {
-		String query = "streamCode:" + streamCode;
-		return loadMetadata(query, format, lang); // FIXME stream code in detail
+		String query = "(tenantCode:"+tenantCode+" AND streamCode:"+streamCode+" AND soCode:"+smartobjectCode+")";
+		//String apiName = tenant + "." + smartobjectCode + "_" + streamCode + "_stream";
+		return loadMetadata(query, format, lang); 
 
 	}
 
@@ -262,7 +339,7 @@ public class MetadataDelegate {
 		String result = null;
 		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
 
-		searchUrl.append("q=" + query + "&start=0&end=1");
+		searchUrl.append("q=*:*&fq=" + query + "&start=0&end=1");
 
 		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
 
@@ -281,9 +358,18 @@ public class MetadataDelegate {
 
 			if (format != null && format.equals(Constants.OUTPUT_FORMAT_CKAN))
 				result = metadata.toCkan();
+			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_STREAM))
+				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
+			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_DATASET))
+				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
+			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_LIST))
+				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_LIST);
+			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_JSON))
+				result = metadata.toV01(Constants.OUTPUT_FORMAT_JSON);
 			else
 				result = metadata.toJson();
 
+			
 		}
 		return result;
 	}

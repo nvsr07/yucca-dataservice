@@ -4,17 +4,18 @@ import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
 public class Dataset {
-	
 	public static final String DATASET_TYPE_BULK = "bulkDataset";
 	public static final String DATASET_TYPE_BINARY= "binaryDataset";
 	public static final String DATASET_TYPE_STREAM = "streamDataset";
 	public static final String DATASET_TYPE_SOCIAL = "socialDataset";
 
+
 	private Long datasetId;
 	private String code; 
 	private String datasetType;
+	private String datasetSubtype;
 	private String importFileType;
-
+	
 	public Dataset() {
 
 	}
@@ -54,6 +55,14 @@ public class Dataset {
 
 	public void setImportFileType(String importFileType) {
 		this.importFileType = importFileType;
+	}
+
+	public String getDatasetSubtype() {
+		return datasetSubtype;
+	}
+
+	public void setDatasetSubtype(String datasetSubtype) {
+		this.datasetSubtype = datasetSubtype;
 	}
 
 
