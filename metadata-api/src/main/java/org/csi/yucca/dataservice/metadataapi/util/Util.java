@@ -13,8 +13,8 @@ import java.util.TimeZone;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
-import org.csi.yucca.dataservice.metadataapi.delegate.v01.resources.ResourcesDelegate;
-import org.csi.yucca.dataservice.metadataapi.delegate.v01.resources.StreamsForIcon;
+import org.csi.yucca.dataservice.metadataapi.delegate.resources.ResourcesDelegate;
+import org.csi.yucca.dataservice.metadataapi.delegate.resources.StreamsForIcon;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;

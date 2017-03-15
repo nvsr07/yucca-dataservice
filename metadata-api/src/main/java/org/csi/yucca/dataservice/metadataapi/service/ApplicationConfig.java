@@ -18,7 +18,6 @@ public class ApplicationConfig extends Application {
 		singletons.add(new org.csi.yucca.dataservice.metadataapi.service.v01.MetadataService());
 		singletons.add(new org.csi.yucca.dataservice.metadataapi.service.v02.MetadataService());
 		singletons.add(new CkanService());
-		singletons.add(new CacheService());
 		singletons.add(new DcatService());
 		singletons.add(new ResourceService());
 	}

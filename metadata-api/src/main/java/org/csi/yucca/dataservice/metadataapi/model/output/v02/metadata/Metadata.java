@@ -8,9 +8,10 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.delegate.v01.i18n.I18nDelegate;
 import org.csi.yucca.dataservice.metadataapi.model.ckan.ExtraV2;
 import org.csi.yucca.dataservice.metadataapi.model.ckan.Resource;
+import org.csi.yucca.dataservice.metadataapi.model.output.v01.DatasetColumn;
+import org.csi.yucca.dataservice.metadataapi.model.output.v01.StreamComponent;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.stream.Twitter;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineJsonField;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineJsonFieldElement;
@@ -18,6 +19,7 @@ import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngine
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineMetadata;
 import org.csi.yucca.dataservice.metadataapi.service.CkanService;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
+import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.Util;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
@@ -314,13 +316,6 @@ public class Metadata {
 		this.detailUrl = detailUrl;
 	}
 
-	public int getDcatReady() {
-		return dcatReady;
-	}
-
-	public void setDcatReady(int dcatReady) {
-		this.dcatReady = dcatReady;
-	}
 
 	public static String getMetadataTypeStream() {
 		return METADATA_TYPE_STREAM;
@@ -413,8 +408,16 @@ public class Metadata {
 		org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset = new org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset();
 		ckanDataset.setId(getCkanPackageId());
 		ckanDataset.setName(getCkanPackageId());
-		ckanDataset.setTitle(getName());
-		ckanDataset.setNotes(getDescription());
+		if (getStream()!=null)
+		{
+			ckanDataset.setTitle(getName()+" - "+getTenantName());
+			ckanDataset.setNotes(getDescription()+" - "+getTenantName()+" - "+getStream().getSmartobject().getDescription());
+		}
+		else
+		{
+			ckanDataset.setTitle(getName());
+			ckanDataset.setNotes(getDescription()+" - "+getTenantName());
+		}
 		ckanDataset.setVersion(getVersion());
 
 		String metadataUrl = Config.getInstance().getUserportalBaseUrl() + "#/dataexplorer/dataset/" + getTenantCode() + "/" + getDataset().getCode();
@@ -511,11 +514,18 @@ public class Metadata {
 
 		metadata.setVersion(searchEngineItem.getVersion());
 		metadata.setName(searchEngineItem.getName()); // FIXME sicuro?
-		metadata.setDomain(I18nDelegate.translate(searchEngineItem.getDomainCode(), lang,
-				("en".equals(lang) ? searchEngineItem.getDomainLangEN() : searchEngineItem.getDomainLangIT())));
+//		metadata.setDomain(I18nDelegate.translate(searchEngineItem.getDomainCode(), lang,
+//				("en".equals(lang) ? searchEngineItem.getDomainLangEN() : searchEngineItem.getDomainLangIT())));
+//		metadata.setSubdomain(I18nDelegate.translate(searchEngineItem.getSubdomainCode(), lang,
+//				("en".equals(lang) ? searchEngineItem.getSubdomainLangEN() : searchEngineItem.getSubdomainLangIT())));
+
+		metadata.setDomain(
+				("en".equals(lang) ? searchEngineItem.getDomainLangEN() : searchEngineItem.getDomainLangIT()));
+		metadata.setSubdomain(
+				("en".equals(lang) ? searchEngineItem.getSubdomainLangEN() : searchEngineItem.getSubdomainLangIT()));
+
+		
 		metadata.setDomainCode(searchEngineItem.getDomainCode());
-		metadata.setSubdomain(I18nDelegate.translate(searchEngineItem.getSubdomainCode(), lang,
-				("en".equals(lang) ? searchEngineItem.getSubdomainLangEN() : searchEngineItem.getSubdomainLangIT())));
 		metadata.setVisibility(searchEngineItem.getVisibility());
 		metadata.setLicense(searchEngineItem.getLicenseCode());// FIXME sicuro?
 		metadata.setDisclaimer(searchEngineItem.getLicenceDescription());// FIXME
@@ -531,16 +541,18 @@ public class Metadata {
 
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
-			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
+//			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
+			metadata.setTags(
+					("en".equals(lang) ? searchEngineItem.getTagLangEN() : searchEngineItem.getTagLangIT()));
 		}
 
-		metadata.setType(searchEngineItem.getEntityType().get(0));
+		metadata.setType(searchEngineItem.getEntityType().toString());
 		metadata.setSubtype(metadata.getSubtype());
 
 		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "metadata/";
 		String iconUrl = Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + searchEngineItem.getTenantCode() + "/";
 
-		if (searchEngineItem.getEntityType().get(0).contains("stream")) {
+		if (searchEngineItem.getEntityType().contains("stream")) {
 			metadata.setDescription(searchEngineItem.getName());
 			detailUrl += searchEngineItem.getOrganizationCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			iconUrl += searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
@@ -609,13 +621,12 @@ public class Metadata {
 			
 			dataset.setCode(searchEngineItem.getDatasetCode());
 			dataset.setDatasetType(searchEngineItem.getDataseType());
+			dataset.setDatasetSubtype(searchEngineItem.getDatasetSubtype());
 			metadata.setDataset(dataset);
 		}
 
 		// Dcat
-		if (searchEngineItem.isDcatReady()) {
-			metadata.setDcatReady(1);
-
+		if (searchEngineItem.getDcatReady()) {
 			DCat dcat = new DCat();
 			dcat.setDcatCreatorName(searchEngineItem.getDcatCreatorName());
 			dcat.setDcatCreatorType(searchEngineItem.getDcatCreatorType());
@@ -628,7 +639,7 @@ public class Metadata {
 			metadata.setDcat(dcat);
 		}
 
-		if (searchEngineItem.isOpendata()) {
+		if (searchEngineItem.getIsOpendata()) {
 			Opendata opendata = new Opendata();
 			opendata.setDataUpdateDate(searchEngineItem.getOpendataUpdateDateLong());
 			opendata.setMetadaUpdateDate(searchEngineItem.getOpendataMetaUpdateDateDate());
@@ -733,6 +744,324 @@ public class Metadata {
 
 	public void setIsOpendata(Boolean isOpendata) {
 		this.isOpendata = isOpendata;
+	}
+
+	public String toV01(String outputFormatV01) {
+
+		
+		if (Constants.OUTPUT_FORMAT_V01_STREAM.equals(outputFormatV01) || 
+			Constants.OUTPUT_FORMAT_V01_DATASET.equals(outputFormatV01) )
+		{
+			org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata metadatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata();
+			if (getStream()!=null)
+			{
+				metadatav1.setType(METADATA_TYPE_STREAM);
+
+				if (Constants.OUTPUT_FORMAT_V01_STREAM.equals(outputFormatV01))
+					metadatav1.setCode(getTenantCode()+"."+getStream().getSmartobject().getCode()+"_"+getStream().getCode());
+				else
+					metadatav1.setCode(getDataset().getCode());
+				
+				metadatav1.setVersion("" + getVersion());
+				metadatav1.setName(getStream().getCode() + " - " + getStream().getSmartobject().getCode());
+				metadatav1.setDescription(getStream().getCode() + " - " +getStream().getSmartobject().getCode() + " - " + getStream().getSmartobject().getDescription());
+				metadatav1.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + this.tenantCode + "/" + this.getStream().getSmartobject().getCode() + "/"
+						+ this.getStream().getCode());
+
+				metadatav1.setFps(getFps());
+				
+				org.csi.yucca.dataservice.metadataapi.model.output.v01.Smartobject smartobjectv1 = 
+						new org.csi.yucca.dataservice.metadataapi.model.output.v01.Smartobject();
+				smartobjectv1.setCode(getStream().getSmartobject().getCode());
+				smartobjectv1.setName(getStream().getSmartobject().getName());
+				smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
+				smartobjectv1.setCategory(getStream().getSmartobject().getCategory());
+				smartobjectv1.setType(getStream().getSmartobject().getType());
+				if (getStream().getSmartobject().getType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
+					smartobjectv1.setTwtCount(getStream().getTwitter().getTwtCount());
+					smartobjectv1.setTwtGeolocLat(getStream().getTwitter().getTwtGeolocLat());
+					smartobjectv1.setTwtGeolocLon(getStream().getTwitter().getTwtGeolocLon());
+					smartobjectv1.setTwtGeolocRadius(getStream().getTwitter().getTwtGeolocRadius());
+					smartobjectv1.setTwtRatePercentage(getStream().getTwitter().getTwtRatePercentage());
+					smartobjectv1.setTwtMaxStreams(getStream().getTwitter().getTwtMaxStreams());
+					smartobjectv1.setTwtQuery(getStream().getTwitter().getTwtQuery());
+					smartobjectv1.setTwtLang(getStream().getTwitter().getTwtLang());
+				}
+
+				smartobjectv1.setAltitude(getStream().getSmartobject().getAltitude());
+				smartobjectv1.setBuilding(getStream().getSmartobject().getBuilding());
+				smartobjectv1.setFloor(Util.nvlt(getStream().getSmartobject().getFloor()));
+				smartobjectv1.setLatitude(getStream().getSmartobject().getLatitude());
+				smartobjectv1.setLongitude(getStream().getSmartobject().getLongitude());
+				smartobjectv1.setRoom(Util.nvlt(getStream().getSmartobject().getRoom()));
+			
+				org.csi.yucca.dataservice.metadataapi.model.output.v01.Stream streamv1 = 
+						new org.csi.yucca.dataservice.metadataapi.model.output.v01.Stream();
+				streamv1.setCode(getStream().getCode());
+				streamv1.setName(getTenantName()); // ?? FIXME
+				streamv1.setFps(getStream().getFps());
+				streamv1.setSavedata(getStream().getSavedata());
+				streamv1.setSmartobject(smartobjectv1);
+
+				if (getComponents()!= null && getComponents().size()>0)
+				{
+					StreamComponent[] componentsv1 = new StreamComponent[getComponents().size()];
+					int counter = 0;
+					for (Component component : getComponents()) {
+						StreamComponent compv1 = new StreamComponent();
+						compv1.setDatatype(component.getDatatype());
+						compv1.setMeasureunit(component.getMeasureunit());
+						compv1.setName(component.getName());
+						compv1.setPhenomenon(component.getPhenomenon());
+						compv1.setTolerance(component.getTolerance());
+						componentsv1[counter] = compv1;
+						counter++;
+					}
+					streamv1.setComponents(componentsv1);
+				}
+				
+				metadatav1.setStream(streamv1);
+
+				
+			} else {
+				
+				metadatav1.setType(METADATA_TYPE_DATASET);
+				metadatav1.setCode(getDataset().getCode());
+				metadatav1.setVersion("" + getVersion());
+				metadatav1.setName(getName());
+				metadatav1.setDescription(getDescription());
+				metadatav1.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + getTenantCode() + "/" + getDataset().getCode());
+				metadatav1.setFps(getFps());
+				
+			}
+
+			metadatav1.setDomain(getDomain());
+			metadatav1.setTenantCode(getTenantCode());
+			metadatav1.setTenantName(getTenantName());
+			metadatav1.setTagCodes(getTagCodes());
+			metadatav1.setTags(getTags());
+			metadatav1.setVisibility(getVisibility());
+			metadatav1.setLicense(getLicense());
+			metadatav1.setDisclaimer(getDisclaimer());
+			metadatav1.setCopyright(getCopyright());
+
+
+			
+			if (getDataset()!=null) {
+				org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset datasetv1 = 
+						new org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset();
+
+				datasetv1.setDatasetType(getDataset().getDatasetSubtype());
+				datasetv1.setDatasetId(getDataset().getDatasetId());
+				datasetv1.setImportFileType(getDataset().getImportFileType());
+
+				if (getComponents()!= null && getComponents().size()>0)
+				{
+					DatasetColumn[] columnsv1 = new DatasetColumn[getComponents().size()];
+					int counter = 0;
+					for (Component component : getComponents()) {
+						DatasetColumn column = new DatasetColumn();
+						column.setAlias(component.getAlias());
+						column.setName(component.getName());
+						column.setIskey(false);
+						column.setDatatype(component.getDatatype());
+						column.setMeasureunit(component.getMeasureunit());
+						columnsv1[counter] = column;
+						counter++;
+					}
+					datasetv1.setColumns(columnsv1);
+				}
+				metadatav1.setDataset(datasetv1);
+			}
+			
+			if (getIsopendata()) {
+				metadatav1.setIsopendata(getIsopendata());
+
+				org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = 
+						new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
+				opendatav1.setAuthor(getOpendata().getAuthor());
+				opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDate());
+				opendatav1.setLanguage(getOpendata().getLanguage());
+				opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
+				metadatav1.setOpendata(opendatav1);
+			}
+			
+			if (getDcat()!=null)  {
+				metadatav1.setDcatReady(1);
+				metadatav1.setDcatCreatorName(getDcat().getDcatCreatorName());
+				metadatav1.setDcatCreatorType(getDcat().getDcatCreatorType());
+				metadatav1.setDcatCreatorId(getDcat().getDcatCreatorId());
+				metadatav1.setDcatRightsHolderName(getDcat().getDcatRightsHolderName());
+				metadatav1.setDcatRightsHolderType(getDcat().getDcatRightsHolderType());
+				metadatav1.setDcatRightsHolderId(getDcat().getDcatRightsHolderId());
+				metadatav1.setDcatNomeOrg(getDcat().getDcatNomeOrg());
+				metadatav1.setDcatEmailOrg(getDcat().getDcatEmailOrg());
+			} else {
+				metadatav1.setDcatReady(0);
+			}
+		
+			return metadatav1.toJson();
+		}
+		else if (Constants.OUTPUT_FORMAT_V01_LIST.equals(outputFormatV01))
+		{
+			if (getStream()!=null)
+			{
+				String toAppend = "";
+				org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata 
+					metadatav1StreamSummary = getMetadatav1StreamSummaryFromObject(true);
+				
+				if (getDataset() != null) {
+					org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata 
+					metadatav1DatasetStreamSummary = getMetadatav1StreamSummaryFromObject(false);
+					
+					toAppend = "," + metadatav1DatasetStreamSummary.toJson();
+					
+				}
+				
+				return  metadatav1StreamSummary.toJson() + toAppend;
+			}
+
+			return getMetadatav1DatasetSummaryFromObject().toJson();
+		}
+		else
+			return "FORMAT NOT SUPPORTED";
+	}
+
+	private org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata getMetadatav1StreamSummaryFromObject(boolean codeForStream) {
+		org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata metadatav1StreamSummary = 
+				new org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata();
+		metadatav1StreamSummary.setType(METADATA_TYPE_STREAM);
+		if (codeForStream)
+			metadatav1StreamSummary.setCode(getTenantCode()+"."+getStream().getSmartobject().getCode()+"_"+getStream().getCode());
+		else
+			metadatav1StreamSummary.setCode(getDataset().getCode());
+
+		metadatav1StreamSummary.setVersion("" + getVersion());
+		metadatav1StreamSummary.setName(getStream().getCode() + " - " + getStream().getSmartobject().getCode());
+		metadatav1StreamSummary.setDescription(getStream().getCode() + " - " +getStream().getSmartobject().getCode() + " - " + getStream().getSmartobject().getDescription());
+		metadatav1StreamSummary.setFps(getFps());
+
+		metadatav1StreamSummary.setDomain(getDomain());
+		metadatav1StreamSummary.setTenantCode(getTenantCode());
+		metadatav1StreamSummary.setTenantName(getTenantName());
+		metadatav1StreamSummary.setTagCodes(getTagCodes());
+		metadatav1StreamSummary.setTags(getTags());
+		metadatav1StreamSummary.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + this.tenantCode + "/" + this.getStream().getSmartobject().getCode() + "/"
+				+ this.getStream().getCode());
+		metadatav1StreamSummary.setVisibility(getVisibility());
+		metadatav1StreamSummary.setLicense(getLicense());
+		metadatav1StreamSummary.setDisclaimer(getDisclaimer());
+		metadatav1StreamSummary.setCopyright(getCopyright());
+
+		org.csi.yucca.dataservice.metadataapi.model.output.v01.Stream streamv1 = 
+				new org.csi.yucca.dataservice.metadataapi.model.output.v01.Stream();
+		org.csi.yucca.dataservice.metadataapi.model.output.v01.Smartobject smartobjectv1 = 
+				new org.csi.yucca.dataservice.metadataapi.model.output.v01.Smartobject();
+		smartobjectv1.setCode(getStream().getSmartobject().getCode());
+		smartobjectv1.setName(getStream().getSmartobject().getName());
+		smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
+		streamv1.setSmartobject(smartobjectv1);
+		metadatav1StreamSummary.setStream(streamv1);
+		
+		if (getIsopendata()) {
+			metadatav1StreamSummary.setIsopendata(getIsopendata());
+
+			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = 
+					new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
+			opendatav1.setAuthor(getOpendata().getAuthor());
+			opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDate());
+			opendatav1.setLanguage(getOpendata().getLanguage());
+			opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
+			metadatav1StreamSummary.setOpendata(opendatav1);
+		}
+		
+		if (getDcat() != null)  {
+			metadatav1StreamSummary.setDcatReady(1);
+			metadatav1StreamSummary.setDcatCreatorName(getDcat().getDcatCreatorName());
+			metadatav1StreamSummary.setDcatCreatorType(getDcat().getDcatCreatorType());
+			metadatav1StreamSummary.setDcatCreatorId(getDcat().getDcatCreatorId());
+			metadatav1StreamSummary.setDcatRightsHolderName(getDcat().getDcatRightsHolderName());
+			metadatav1StreamSummary.setDcatRightsHolderType(getDcat().getDcatRightsHolderType());
+			metadatav1StreamSummary.setDcatRightsHolderId(getDcat().getDcatRightsHolderId());
+			metadatav1StreamSummary.setDcatNomeOrg(getDcat().getDcatNomeOrg());
+			metadatav1StreamSummary.setDcatEmailOrg(getDcat().getDcatEmailOrg());
+		}
+		else {			
+			metadatav1StreamSummary.setDcatReady(0);
+		}
+		
+		if (!codeForStream){
+			org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset datasetv1 = 
+					new org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset();
+			datasetv1.setDatasetId(getDataset().getDatasetId());
+			metadatav1StreamSummary.setDataset(datasetv1);
+
+		}
+		
+		metadatav1StreamSummary.setDetailUrl(Config.getInstance().getMetadataapiBaseUrl() + "detail/" + getTenantCode() + "/" + metadatav1StreamSummary.getCode() );
+		
+		return metadatav1StreamSummary;
+	}
+	
+	private org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata getMetadatav1DatasetSummaryFromObject() {
+		org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata metadatav1DatasetSummary = 
+				new org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata();
+		metadatav1DatasetSummary.setType(METADATA_TYPE_DATASET);
+		metadatav1DatasetSummary.setCode(getDataset().getCode());
+
+		metadatav1DatasetSummary.setVersion("" + getVersion());
+		metadatav1DatasetSummary.setName(getName());
+		metadatav1DatasetSummary.setDescription(getDescription());
+		metadatav1DatasetSummary.setFps(getFps());
+
+		metadatav1DatasetSummary.setDomain(getDomain());
+		metadatav1DatasetSummary.setTenantCode(getTenantCode());
+		metadatav1DatasetSummary.setTenantName(getTenantName());
+		metadatav1DatasetSummary.setTagCodes(getTagCodes());
+		metadatav1DatasetSummary.setTags(getTags());
+		metadatav1DatasetSummary.setIcon(Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + getTenantCode() + "/" + getDataset().getCode());
+		metadatav1DatasetSummary.setVisibility(getVisibility());
+		metadatav1DatasetSummary.setLicense(getLicense());
+		metadatav1DatasetSummary.setDisclaimer(getDisclaimer());
+		metadatav1DatasetSummary.setCopyright(getCopyright());
+
+
+		
+		if (getIsopendata()) {
+			metadatav1DatasetSummary.setIsopendata(getIsopendata());
+
+			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = 
+					new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
+			opendatav1.setAuthor(getOpendata().getAuthor());
+			opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDate());
+			opendatav1.setLanguage(getOpendata().getLanguage());
+			opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
+			metadatav1DatasetSummary.setOpendata(opendatav1);
+		}
+		
+		if (getDcat() != null)  {
+			metadatav1DatasetSummary.setDcatReady(1);
+			metadatav1DatasetSummary.setDcatCreatorName(getDcat().getDcatCreatorName());
+			metadatav1DatasetSummary.setDcatCreatorType(getDcat().getDcatCreatorType());
+			metadatav1DatasetSummary.setDcatCreatorId(getDcat().getDcatCreatorId());
+			metadatav1DatasetSummary.setDcatRightsHolderName(getDcat().getDcatRightsHolderName());
+			metadatav1DatasetSummary.setDcatRightsHolderType(getDcat().getDcatRightsHolderType());
+			metadatav1DatasetSummary.setDcatRightsHolderId(getDcat().getDcatRightsHolderId());
+			metadatav1DatasetSummary.setDcatNomeOrg(getDcat().getDcatNomeOrg());
+			metadatav1DatasetSummary.setDcatEmailOrg(getDcat().getDcatEmailOrg());
+		} else {
+			metadatav1DatasetSummary.setDcatReady(0);
+		}
+		
+		org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset datasetv1 = 
+				new org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset();
+		datasetv1.setDatasetId(getDataset().getDatasetId());
+		metadatav1DatasetSummary.setDataset(datasetv1);
+
+		
+		metadatav1DatasetSummary.setDetailUrl(Config.getInstance().getMetadataapiBaseUrl() + "detail/" + getTenantCode() + "/" + metadatav1DatasetSummary.getCode() );
+		
+		return metadatav1DatasetSummary;
 	}
 
 }

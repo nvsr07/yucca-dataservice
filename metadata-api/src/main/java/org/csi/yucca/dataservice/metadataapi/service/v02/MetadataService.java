@@ -51,8 +51,7 @@ public class MetadataService extends AbstractService {
 					facetParams, null, null); // expose hasDataset, hasStream?
 			result = searchResult.toJson();
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("UnsupportedEncodingException",e);
 			result = new ErrorResponse("", "Invalid param").toJson();
 		}
 

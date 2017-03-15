@@ -3,6 +3,7 @@ package org.csi.yucca.dataservice.metadataapi.model.searchengine.v02;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
@@ -11,7 +12,7 @@ public class SearchEngineMetadata {
 
 	private String id;
 	private List<String> entityType;
-	private List<Long> idDataset;
+//	private List<Long> idDataset;
 	private String name;
 	private String visibility;
 	private String copyright;
@@ -41,7 +42,7 @@ public class SearchEngineMetadata {
 	private String dcatRightsHolderName;
 	private String dcatRightsHolderType;
 	private String dcatRightsHolderId;
-	private String dcatReady;
+	private Boolean dcatReady;
 	private String datasetCode;
 	private String datasetDescription;
 	private String version;
@@ -71,7 +72,7 @@ public class SearchEngineMetadata {
 	private List<String> sdpComponentsName;
 	private String phenomenon;
 	private String isCurrent;
-	private String isOpendata;
+	private Boolean isOpendata;
 	private String opendataUpdateDate;
 	private String opendataMetaUpdateDate;
 	private String opendataLanguage;
@@ -335,13 +336,6 @@ public class SearchEngineMetadata {
 		this.dcatRightsHolderId = dcatRightsHolderId;
 	}
 
-	public String getDcatReady() {
-		return dcatReady;
-	}
-
-	public void setDcatReady(String dcatReady) {
-		this.dcatReady = dcatReady;
-	}
 
 	public String getDatasetCode() {
 		return datasetCode;
@@ -589,13 +583,13 @@ public class SearchEngineMetadata {
 		return ret;
 	}
 
-	public List<Long> getIdDataset() {
-		return idDataset;
-	}
-
-	public void setIdDataset(List<Long> idDataset) {
-		this.idDataset = idDataset;
-	}
+//	public List<Long> getIdDataset() {
+//		return idDataset;
+//	}
+//
+//	public void setIdDataset(List<Long> idDataset) {
+//		this.idDataset = idDataset;
+//	}
 
 	public String getIsCurrent() {
 		return isCurrent;
@@ -621,13 +615,6 @@ public class SearchEngineMetadata {
 		this.soCategory = soCategory;
 	}
 
-	public String getIsOpendata() {
-		return isOpendata;
-	}
-
-	public void setIsOpendata(String isOpendata) {
-		this.isOpendata = isOpendata;
-	}
 
 	public void setOpendataUpdateDate(String opendataUpdateDate) {
 		this.opendataUpdateDate = opendataUpdateDate;
@@ -672,12 +659,19 @@ public class SearchEngineMetadata {
 		return null;
 	}
 
-	public Boolean isOpendata() {
-		return "true".equals(isOpendata);
+	public Boolean getDcatReady() {
+		return BooleanUtils.isTrue(dcatReady);
 	}
 
-	public boolean isDcatReady() {
-		// TODO Auto-generated method stub
-		return "1".equals(dcatReady);
+	public void setDcatReady(Boolean dcatReady) {
+		this.dcatReady = dcatReady;
+	}
+
+	public Boolean getIsOpendata() {
+		return BooleanUtils.isTrue(isOpendata);
+	}
+
+	public void setIsOpendata(Boolean isOpendata) {
+		this.isOpendata = isOpendata;
 	}
 }

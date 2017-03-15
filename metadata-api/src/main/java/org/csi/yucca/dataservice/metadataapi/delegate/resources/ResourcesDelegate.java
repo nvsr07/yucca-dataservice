@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.metadataapi.delegate.v01.resources;
+package org.csi.yucca.dataservice.metadataapi.delegate.resources;
 
 import java.io.IOException;
 import java.util.HashMap;

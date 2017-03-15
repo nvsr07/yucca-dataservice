@@ -9,7 +9,6 @@ import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.testng.annotations.BeforeClass;
 
 public class RestBase {
 
@@ -37,7 +36,7 @@ public class RestBase {
 
 			// merge with secret
 
-			Iterator iterSecret = secretObject.keys();
+			Iterator<String> iterSecret = secretObject.keys();
 			String tmp_key;
 			while (iterSecret.hasNext()) {
 				tmp_key = (String) iterSecret.next();
