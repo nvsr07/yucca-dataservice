@@ -40,7 +40,7 @@ public class Metadata {
 	// private String code;
 	private String version;
 	private String description;
-	private String type;
+	private List<String> type;
 	private String subtype;
 	private String domainCode;
 	private String subdomainCode;
@@ -74,7 +74,6 @@ public class Metadata {
 	private DCat dcat;
 	private List<Component> components;
 
-	private int dcatReady;
 	private Boolean isOpendata;
 
 	public void setAuthor(String author) {
@@ -223,11 +222,11 @@ public class Metadata {
 		this.description = description;
 	}
 
-	public String getType() {
+	public List<String> getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(List<String> type) {
 		this.type = type;
 	}
 
@@ -438,10 +437,10 @@ public class Metadata {
 
 		String downloadCsvUrl = exposedApiBaseUrl + getDataset().getCode() + "/download/" + getDataset().getDatasetId() + "/";
 
-		if (METADATA_TYPE_DATASET.equals(getType()) && Dataset.DATASET_TYPE_BULK.equals(getDataset().getDatasetType())) {
-			downloadCsvUrl += "all";
-		} else {
+		if (getType().contains("stream")) {
 			downloadCsvUrl += "current";
+		} else {
+			downloadCsvUrl += "all";
 		}
 
 		resourceDownload.setUrl(downloadCsvUrl);
@@ -546,10 +545,10 @@ public class Metadata {
 					("en".equals(lang) ? searchEngineItem.getTagLangEN() : searchEngineItem.getTagLangIT()));
 		}
 
-		metadata.setType(searchEngineItem.getEntityType().toString());
+		metadata.setType(searchEngineItem.getEntityType());
 		metadata.setSubtype(metadata.getSubtype());
 
-		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "metadata/";
+		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "v02/detail/";
 		String iconUrl = Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + searchEngineItem.getTenantCode() + "/";
 
 		if (searchEngineItem.getEntityType().contains("stream")) {
@@ -644,6 +643,7 @@ public class Metadata {
 			opendata.setDataUpdateDate(searchEngineItem.getOpendataUpdateDateLong());
 			opendata.setMetadaUpdateDate(searchEngineItem.getOpendataMetaUpdateDateDate());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
+			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
 
 		}
@@ -670,70 +670,7 @@ public class Metadata {
 			}
 		}
 
-		// String detailUrl = Config.getInstance().getMetadataapiBaseUrl() +
-		// "detail/" + searchEngineItem.getExtraCodiceTenant() + "/";
-
-		// if (searchEngineItem.getName().endsWith("_odata")) {
-		// metadata.setType(METADATA_TYPE_DATASET);
-		// metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() +
-		// "resource/icon/" + searchEngineItem.getExtraCodiceTenant() + "/" +
-		// metadata.getCode());
-		// Dataset dataset = new Dataset();
-		//
-		// String[] nameSplitted = searchEngineItem.getName().split("_");
-		// String datasetId = nameSplitted[nameSplitted.length - 2];
-		// dataset.setDatasetId(new Long(datasetId));
-		// metadata.setDataset(dataset);
-		//
-		// detailUrl += metadata.getCode();
-		//
-		// } else if (searchEngineItem.getName().endsWith("_stream")) {
-		// metadata.setType(METADATA_TYPE_STREAM);
-		// metadata.setCode(searchEngineItem.getName().substring(0,
-		// searchEngineItem.getName().length() - 7));
-		// metadata.setName(searchEngineItem.getExtraCodiceStream() + " " +
-		// searchEngineItem.getExtraVirtualEntityCode());
-		// metadata.setIcon(Config.getInstance().getMetadataapiBaseUrl() +
-		// "resource/icon/" + searchEngineItem.getExtraCodiceTenant() + "/" +
-		// searchEngineItem.getExtraVirtualEntityCode() + "/"
-		// + searchEngineItem.getExtraCodiceStream());
-		//
-		// detailUrl += searchEngineItem.getExtraVirtualEntityCode() + "/" +
-		// searchEngineItem.getExtraCodiceStream();
-		//
-		// }
-		// metadata.setDetailUrl(detailUrl);
-		//
-		// if (!Util.isEmpty(searchEngineItem.getExtraVirtualEntityCode())) {
-		// Smartobject smartobject = new Smartobject();
-		// smartobject.setCode(searchEngineItem.getExtraVirtualEntityCode());
-		// smartobject.setName(searchEngineItem.getExtraVirtualEntityName());
-		// smartobject.setDescription(searchEngineItem.getExtraVirtualEntityDescription());
-		// smartobject.setLatitude(searchEngineItem.getExtraLatitude());
-		// smartobject.setLongitude(searchEngineItem.getExtraLongitude());
-		// Stream stream = metadata.getStream() == null ? new Stream() :
-		// metadata.getStream();
-		// stream.setSmartobject(smartobject);
-		// metadata.setStream(stream);
-		// }
-		//
-		// // private String provider;
-		// // private String rates;
-		// // private String endpoint;
-		// // private String thumbnailurl;
-		// // private String visibleRoles;
-		// // private String docName;
-		// // private String docSummary;
-		// // private String docSourceURL;
-		// // private String docFilePath;
-		// // private String extraApi;
-		//
-		// // private String extraVirtualEntityName;
-		// // private String extraVirtualEntityDescription;
-		// // private String extraVirtualEntityCode;
-		// // private String extraApiDescription;
-		// // private String extraDomain;
-		// // private String tags;
+	
 
 		return metadata;
 	}
@@ -887,7 +824,7 @@ public class Metadata {
 			}
 			
 			if (getDcat()!=null)  {
-				metadatav1.setDcatReady(1);
+				metadatav1.setDcatReady(true);
 				metadatav1.setDcatCreatorName(getDcat().getDcatCreatorName());
 				metadatav1.setDcatCreatorType(getDcat().getDcatCreatorType());
 				metadatav1.setDcatCreatorId(getDcat().getDcatCreatorId());
@@ -897,7 +834,7 @@ public class Metadata {
 				metadatav1.setDcatNomeOrg(getDcat().getDcatNomeOrg());
 				metadatav1.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 			} else {
-				metadatav1.setDcatReady(0);
+				metadatav1.setDcatReady(false);
 			}
 		
 			return metadatav1.toJson();
@@ -976,7 +913,7 @@ public class Metadata {
 		}
 		
 		if (getDcat() != null)  {
-			metadatav1StreamSummary.setDcatReady(1);
+			metadatav1StreamSummary.setDcatReady(true);
 			metadatav1StreamSummary.setDcatCreatorName(getDcat().getDcatCreatorName());
 			metadatav1StreamSummary.setDcatCreatorType(getDcat().getDcatCreatorType());
 			metadatav1StreamSummary.setDcatCreatorId(getDcat().getDcatCreatorId());
@@ -987,7 +924,7 @@ public class Metadata {
 			metadatav1StreamSummary.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 		}
 		else {			
-			metadatav1StreamSummary.setDcatReady(0);
+			metadatav1StreamSummary.setDcatReady(false);
 		}
 		
 		if (!codeForStream){
@@ -1040,7 +977,7 @@ public class Metadata {
 		}
 		
 		if (getDcat() != null)  {
-			metadatav1DatasetSummary.setDcatReady(1);
+			metadatav1DatasetSummary.setDcatReady(true);
 			metadatav1DatasetSummary.setDcatCreatorName(getDcat().getDcatCreatorName());
 			metadatav1DatasetSummary.setDcatCreatorType(getDcat().getDcatCreatorType());
 			metadatav1DatasetSummary.setDcatCreatorId(getDcat().getDcatCreatorId());
@@ -1050,7 +987,7 @@ public class Metadata {
 			metadatav1DatasetSummary.setDcatNomeOrg(getDcat().getDcatNomeOrg());
 			metadatav1DatasetSummary.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 		} else {
-			metadatav1DatasetSummary.setDcatReady(0);
+			metadatav1DatasetSummary.setDcatReady(false);
 		}
 		
 		org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset datasetv1 = 

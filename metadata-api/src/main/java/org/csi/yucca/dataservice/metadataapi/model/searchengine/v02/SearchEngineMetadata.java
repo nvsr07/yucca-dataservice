@@ -48,7 +48,6 @@ public class SearchEngineMetadata {
 	private String version;
 	private String dataseType;
 	private String datasetSubtype;
-	private String datasetTypeDescription;
 	private String streamCode;
 	private String twtQuery;
 	private String twtGeolocLat;
@@ -377,13 +376,6 @@ public class SearchEngineMetadata {
 		this.datasetSubtype = datasetSubtype;
 	}
 
-	public String getDatasetTypeDescription() {
-		return datasetTypeDescription;
-	}
-
-	public void setDatasetTypeDescription(String datasetTypeDescription) {
-		this.datasetTypeDescription = datasetTypeDescription;
-	}
 
 	public String getStreamCode() {
 		return streamCode;

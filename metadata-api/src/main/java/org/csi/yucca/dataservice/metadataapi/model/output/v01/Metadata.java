@@ -53,7 +53,7 @@ public class Metadata {
 	private Dataset dataset;
 	private Opendata opendata;
 
-	private int dcatReady;
+	private boolean dcatReady;
 	private String dcatCreatorName;
 	private String dcatCreatorType;
 	private String dcatCreatorId;
@@ -496,11 +496,11 @@ public class Metadata {
 		this.detailUrl = detailUrl;
 	}
 
-	public int getDcatReady() {
+	public boolean getDcatReady() {
 		return dcatReady;
 	}
 
-	public void setDcatReady(int dcatReady) {
+	public void setDcatReady(boolean dcatReady) {
 		this.dcatReady = dcatReady;
 	}
 
