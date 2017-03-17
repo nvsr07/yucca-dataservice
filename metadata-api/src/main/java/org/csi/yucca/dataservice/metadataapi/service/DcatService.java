@@ -12,9 +12,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
+import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.CatalogDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DatasetDCAT;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DistributionDCAT;
@@ -38,7 +41,7 @@ public class DcatService extends AbstractService {
 	@GET
 	@Path("/dataset_list")
 	@Produces("application/ld+json; charset=UTF-8")
-	public String searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("page") Integer page, 
+	public Response searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("page") Integer page, 
 			 @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
 				@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 				@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
@@ -60,7 +63,6 @@ public class DcatService extends AbstractService {
 		if (page == null)
 			page = 1;
 
-		String userAuth = (String) request.getSession().getAttribute("userAuth");
 
 		Integer numElementForPage = 10;
 		Integer end = page * numElementForPage;
@@ -74,10 +76,12 @@ public class DcatService extends AbstractService {
 		try {
 			searchResult = MetadataDelegate.getInstance()
 					.search(
-					userAuth, q, start, numElementForPage, null, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
+					request, q, start, numElementForPage, null, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
 					true,null,true,null);
 		} catch (UnsupportedEncodingException e) {
-			return new ErrorResponse("", "Invalid param").toJson();
+			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
+		} catch (UserWebServiceException e) {
+			return e.getResponse();
 		}
 
 		Gson gson = JSonHelper.getInstance();
@@ -190,6 +194,6 @@ public class DcatService extends AbstractService {
 			}
 		}
 		String json = gson.toJson(catalog).replaceAll("\"context\"", "\"@context\"").replaceAll("\"id\"", "\"@id\"").replaceAll("\"type\"", "\"@type\"");
-		return json;
+		return Response.ok(json).build();
 	}
 }

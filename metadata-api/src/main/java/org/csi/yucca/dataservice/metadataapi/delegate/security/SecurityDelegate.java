@@ -1,26 +1,23 @@
-package org.csi.yucca.dataservice.metadataapi.filter;
+package org.csi.yucca.dataservice.metadataapi.delegate.security;
 
-import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Path;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.container.PreMatching;
-import javax.ws.rs.container.ResourceInfo;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.Provider;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
-import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
+import org.apache.log4j.Logger;
+import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
+import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
+import org.csi.yucca.dataservice.metadataapi.service.AbstractService;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO;
@@ -28,42 +25,34 @@ import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_TokenValidationContextParam;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
 
-
-@Provider
-@PreMatching
-public class AuthorizationRequestFilter implements ContainerRequestFilter {
-
-	@Context
-	private ResourceInfo resourceInfo;
-	
-	@Context
-	private HttpServletRequest httpRequest;
-	
-	private ConfigurationContext configContext;
+public class SecurityDelegate {
+	static Logger log = Logger.getLogger(SecurityDelegate.class);
 	private String proxyHostname;
 	private int proxyPort;
 	private OAuth2TokenValidationServiceStub oAuth2TokenValidationServiceStub;
 
+	private static SecurityDelegate instance;
 
-	@Override
-	public void filter(ContainerRequestContext contReqCtx) throws IOException {
+	protected String SEARCH_ENGINE_BASE_URL = Config.getInstance().getSearchEngineBaseUrl();
 
+	private SecurityDelegate() {
+		super();
+	}
+
+	public static SecurityDelegate getInstance() {
+		if (instance == null)
+			instance = new SecurityDelegate();
+		return instance;
+	}
+
+	public List<String> getTenantAuthorized(HttpServletRequest httpRequest) throws UserWebServiceException{
 		try {
-
-			if (httpRequest.getSession().getAttribute("userAuth") != null)
-				httpRequest.getSession().removeAttribute("userAuth");
-
 			String authorizationHeader = httpRequest.getHeader(HttpHeaders.AUTHORIZATION);
-
 			if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-
 				String token = authorizationHeader.substring("Bearer".length()).trim();
 				if (token != "") {
-					configContext = ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null);
-
 					OAuth2TokenValidationRequestDTO dto = new OAuth2TokenValidationRequestDTO();
 					OAuth2TokenValidationRequestDTO_OAuth2AccessToken tokenDto = new OAuth2TokenValidationRequestDTO_OAuth2AccessToken();
-
 					tokenDto.setIdentifier(token);
 					tokenDto.setTokenType("bearer");
 					dto.setAccessToken(tokenDto);
@@ -73,28 +62,20 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 					OAuth2TokenValidationResponseDTO response = getOAuth2TokenValidationServiceStub().validate(dto);
 					String authorizedUser = response.getAuthorizedUser();
 					boolean isValidUser = response.getValid();
-
-					if (isValidUser) {
-						httpRequest.getSession().setAttribute("userAuth", authorizedUser);
+					if (!isValidUser)
+						throw new UserWebServiceException(Response.status(Status.UNAUTHORIZED).build());
+					else {
+						return Arrays.asList("sandbox","pippo"); // FIXME
 					}
-				}
+				}	
 			}
-
+			return null;
 		} catch (Exception e) {
-			contReqCtx.abortWith(Response.status(Status.UNAUTHORIZED).build());
+			throw new UserWebServiceException(Response.status(Status.UNAUTHORIZED).build());
 		}
 
 	}
-
-//	public void init(FilterConfig filterConfig) throws ServletException {
-//		try {
-//			getOAuth2TokenValidationServiceStub();
-//		} catch (AxisFault e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-
+	
 	private OAuth2TokenValidationServiceStub getOAuth2TokenValidationServiceStub() throws AxisFault {
 
 		if (oAuth2TokenValidationServiceStub == null) {
@@ -104,7 +85,9 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 
 			String oAuth2TokenValidationServiceEndPoint = oauthServerUrl + "/services/OAuth2TokenValidationService";
 
-			oAuth2TokenValidationServiceStub = new OAuth2TokenValidationServiceStub(configContext, oAuth2TokenValidationServiceEndPoint);
+			oAuth2TokenValidationServiceStub = new OAuth2TokenValidationServiceStub(
+					ConfigurationContextFactory.createConfigurationContextFromFileSystem(null, null)
+					, oAuth2TokenValidationServiceEndPoint);
 			ServiceClient oauth2TokenValidationService = oAuth2TokenValidationServiceStub._getServiceClient();
 			Options optionOauth2Validation = oauth2TokenValidationService.getOptions();
 			setProxyToOptions(optionOauth2Validation, oauthUsername, oauthPassword);
@@ -139,6 +122,8 @@ public class AuthorizationRequestFilter implements ContainerRequestFilter {
 		option.setProperty(HTTPConstants.AUTHENTICATE, auth);
 		option.setManageSession(true);
 	}
+
+
 
 
 }

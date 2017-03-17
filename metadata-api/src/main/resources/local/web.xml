@@ -9,6 +9,4 @@
 	<description>
        This is the Metadata API of The Smart Data Platform
     </description>
-	<!-- <context-param> <param-name>resteasy.providers</param-name> <param-value>org.csi.yucca.storage.metadataapi.filter.AuthorizationInterceptor</param-value> 
-		</context-param> -->
 </web-app>

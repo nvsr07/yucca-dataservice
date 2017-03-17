@@ -12,8 +12,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.service.AbstractService;
@@ -33,25 +35,23 @@ public class MetadataService extends AbstractService {
 	@Path("search/full")
 	// @Consumes({ "*/*", "application/vnd.sdp-metadata.v1+json" })
 	@Produces({ "application/json; charset=UTF-8", "application/vnd.sdp-metadata.v1+json" })
-	public String searchFull(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
+	public Response searchFull(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
 			@QueryParam("sort") String sort, @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
 
-		String userAuth = (String) request.getSession().getAttribute("userAuth");
-
-//		List<Metadata> metadataList = org.csi.yucca.dataservice.metadataapi.delegate.v01.metadata.MetadataDelegate.getInstance().search(userAuth, q, start, end, tenant, domain,
-//				opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null);
 
 		Result searchResult;
 		try {
-			searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(userAuth, q, start, end, sort, tenant,
+			searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(request, q, start, end, sort, tenant,
 					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, 
 					null, null, null); // expose hasDataset, hasStream?
 		} catch (UnsupportedEncodingException e) {
 			log.error("UnsupportedEncodingException",e);
-			return new ErrorResponse("", "Invalid param").toJson();
+			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
+		} catch (UserWebServiceException e) {
+			return e.getResponse();
 		} 
 
 		
@@ -68,37 +68,45 @@ public class MetadataService extends AbstractService {
 			response.setResult(listMetadataV1);
 		}
 		
-		return response.toJson();
+		return Response.ok(response.toJson()).build();
 	}
 	
 	@GET
 	@Path("detail/{tenant}/{datasetCode}")
 	@Produces("application/json; charset=UTF-8")
-	public String getDataset(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("datasetCode") String datasetCode,
+	public Response getDataset(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("datasetCode") String datasetCode,
 			@QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback) throws NumberFormatException, UnknownHostException {
 
-		String userAuth = (String) request.getSession().getAttribute("userAuth");
-		log.info("[SearchService::search] START - userAuth: " + userAuth);
+		log.info("[SearchService::search] START ");
 
-		String metadatav1 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
-				loadDatasetMetadata(userAuth, datasetCode, version, Constants.OUTPUT_FORMAT_V01_DATASET, lang);
+		String metadatav1;
+		try {
+			metadatav1 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
+					loadDatasetMetadata(request, datasetCode, version, Constants.OUTPUT_FORMAT_V01_DATASET, lang);
+		} catch (UserWebServiceException e) {
+			return e.getResponse();
+		}
 
-		return metadatav1;
+		return Response.ok(metadatav1).build();
 	}
 
 	@GET
 	@Path("detail/{tenant}/{smartobjectCode}/{streamCode}/")
 	@Produces("application/json; charset=UTF-8")
-	public String getStream(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("smartobjectCode") String smartobjectCode,
+	public Response getStream(@Context HttpServletRequest request, @PathParam("tenant") String tenant, @PathParam("smartobjectCode") String smartobjectCode,
 			@PathParam("streamCode") String streamCode, @QueryParam("version") String version, @QueryParam("lang") String lang, @QueryParam("callback") String callback)
 			throws NumberFormatException, UnknownHostException {
 
-		String userAuth = (String) request.getSession().getAttribute("userAuth");
 //		String apiName = tenant + "." + smartobjectCode + "_" + streamCode + "_stream";
-		String metadatav1 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
-				loadStreamMetadata(userAuth, tenant,smartobjectCode,streamCode, version, Constants.OUTPUT_FORMAT_V01_STREAM, lang);
+		String metadatav1;
+		try {
+			metadatav1 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
+					loadStreamMetadata(request, tenant,smartobjectCode,streamCode, version, Constants.OUTPUT_FORMAT_V01_STREAM, lang);
+		} catch (UserWebServiceException e) {
+			return e.getResponse();
+		}
 
-		return metadatav1;
+		return Response.ok(metadatav1).build();
 	}
 
 

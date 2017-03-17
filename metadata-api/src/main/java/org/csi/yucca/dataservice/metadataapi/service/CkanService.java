@@ -13,9 +13,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
+import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
@@ -34,17 +36,18 @@ public class CkanService extends AbstractService {
 	@GET
 	@Path("/2/package_list")
 	@Produces("application/json; charset=UTF-8")
-	public String searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
+	public Response searchCkan(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("start") Integer start, @QueryParam("end") Integer end,
 			@QueryParam("sort") String sort, @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
-
-		String userAuth = (String) request.getSession().getAttribute("userAuth");
+		
+		String result;
+		
 		try {
 			Result searchResult = MetadataDelegate.getInstance()
 					.search(
-					userAuth, q, start, end, sort, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
+					request, q, start, end, sort, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
 					null,null,true,null);
 	
 			if (searchResult!= null && searchResult.getMetadata()!=null)
@@ -54,36 +57,34 @@ public class CkanService extends AbstractService {
 					packageIds.add(metadata.getCkanPackageId());
 				}
 				Gson gson = JSonHelper.getInstance();
-				return gson.toJson(packageIds);
-				
+				result = gson.toJson(packageIds);
 			}
 			else 
-				return "[]";
+				result = "[]";
 		} catch (UnsupportedEncodingException e) {
-			return new ErrorResponse("", "Invalid param").toJson();
+			result = new ErrorResponse("", "Invalid param").toJson();
+		} catch (UserWebServiceException e) {
+			return e.getResponse();
 		}		
 		
+		return Response.ok(result).build();
 	}
 
 	@GET
 	@Path("/2/package_list/{packageId}")
 	@Produces("application/json; charset=UTF-8")
-	public String detailCkan(@Context HttpServletRequest request, @PathParam("packageId") String packageId, @QueryParam("lang") String lang) {
-		String userAuth = (String) request.getSession().getAttribute("userAuth");
-		log.info("[SearchService::search] START - userAuth: " + userAuth);
+	public Response detailCkan(@Context HttpServletRequest request, @PathParam("packageId") String packageId, @QueryParam("lang") String lang) {
+		log.info("[SearchService::search] START");
 		String result = "";
 		try {
 			String apiName = Metadata.getApiNameFromCkanPackageId(packageId);
-			String metadata = MetadataDelegate.getInstance().loadDatasetMetadata(userAuth, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
+			String metadata = MetadataDelegate.getInstance().loadDatasetMetadata(request, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
 
 			result = metadata;
-		} catch (Exception e) {
-			ErrorResponse error = new ErrorResponse();
-			error.setErrorCode("Error with packageId " + packageId);
-			error.setMessage(e.getMessage());
-			result = error.toJson();
+		} catch (UserWebServiceException e) {
+			return e.getResponse();
 		}
-		return result;
+		return Response.ok(result).build();
 
 	}
 
