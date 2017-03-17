@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
@@ -128,19 +129,36 @@ public class MetadataDelegate {
 
 		if (hasDataset != null)
 		{
-			searchUrl.append("&fq=entityType:dataset");
-			params.put("hasDataset", "true");
+			if (BooleanUtils.isTrue(hasDataset)) {
+				searchUrl.append("&fq=entityType:dataset");
+				params.put("hasDataset", "true");
+			} else {
+				searchUrl.append("&fq=-entityType:dataset");
+				params.put("hasDataset", "false");
+			}
 		}
 
 		if (hasStream != null)
 		{
-			searchUrl.append("&fq=entityType:stream");
-			params.put("hasStream", "true");
+			if (BooleanUtils.isTrue(hasStream)) {
+				searchUrl.append("&fq=entityType:stream");
+				params.put("hasStream", "true");
+			} else {
+				searchUrl.append("&fq=-entityType:stream");
+				params.put("hasStream", "false");
+			}
+			
+			
 		}
 
 		if (tags!=null)
 		{
-			
+			String[] tagsArr = StringUtils.split(tags,',');
+			for (int i = 0; i < tagsArr.length; i++) {
+				String tag = tagsArr[i];
+				searchUrl.append("&fq=tagCode:" +URLEncoder.encode(tag,"UTF-8"));		
+			} 
+			params.put("tags", ""+tags);
 		} 
 
 		if (BooleanUtils.isNotTrue(includeSandbox))

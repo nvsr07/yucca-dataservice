@@ -69,12 +69,27 @@
 					<thead><tr><th>Key</th><th>Desc</th><th>Valori previsti</th></tr></thead>
 					<tbody>
 						<tr><td>q</td><td>query di ricerca</td><td>Testo libero</td></tr>
-						<tr><td>tenant</td><td>Codice del tenant propietario dello stream/dataset</td><td>Se indicato un codice tenant non censito restituisce zero valori </td></tr>
+						<tr><td>tenant</td><td>Codice del tenant proprietario dello stream/dataset</td><td>Se indicato un codice tenant non censito restituisce zero valori </td></tr>
+						<tr><td>organization</td><td>Codice dell'organizzazione proprietaria dello stream/dataset</td><td>Se indicato un codice organizzazione non censita restituisce zero valori </td></tr>
 						<tr><td>domain</td><td>Codice dell'ambito dello stream/dataset</td><td>Se indicato un codice ambito non censito restituisce zero valori </td></tr>
 						<tr><td>opendata</td><td>Propriet&agrave; del dato/stream di essere opendata</td><td>Se indicato opendata=true filtra estraendo i dati opendata, se indicato con valore diverso da true estrae solo i dati NON opendata. Se omesso non filtra sulla propriet&agrave; opendata</td></tr>
 						<tr><td>start</td><td>Paginazione: prima riga da estrarre</td><td>Campo numerico intero (se omesso si parte da zero)</td></tr>
 						<tr><td>end</td><td>Paginazione: numero di righe da estrarre</td><td>Campo numerico intero (se omesso vengono estratte 12 righe). Valore massimo: 1000</td></tr>
 						<tr><td>lang</td><td>Lingua in cui si desidera avere l'ambito del e i tag associati al dataset/stream</td><td>Gestiti italiano (lang=it) e inglese (lang=en)</td></tr>
+					<tr><td>minLat</td><td>Minima latitudine del rettangolo contenente gli smartobject</td><td>Campo numerico </td></tr>
+					<tr><td>minLon</td><td>Minima longitudine del rettangolo contenente gli smartobject</td><td>Campo numerico </td></tr>
+					<tr><td>maxLat</td><td>Massima latitudine del rettangolo contenente gli smartobject</td><td>Campo numerico </td></tr>
+					<tr><td>maxLon</td><td>Massima longitudine del rettangolo contenente gli smartobject</td><td>Campo numerico </td></tr>
+					<tr><td>tags</td><td>Elenco dei tag associati al dataset/stream</td><td>Inserire i tagCode separati da virgola</td></tr>
+					<tr><td>visibility</td><td>Filtro sul tipo di visibilit&agrave;</td><td>Utilizzare i valori public o private. Non indicare il parametro per averli tutti</td></tr>
+					<tr><td>isSearchExact</td><td>Se valorizzato a true effettua la ricerca per parola esatta (invece che lemmattizzata)</td><td>Campo booleano (true/false)</td></tr>
+					<tr><td>includeSandbox</td><td>Indica che è necessario includere i dati di sandbox (di default non sono presenti)</td><td>Campo booleano (true/false)</td></tr>
+					<tr><td>hasStream</td><td>Se a true include solo i dataset/stream che hanno una componente stream (i formati CKAN e DCAT non consentono l'utilizzo di questo parametro) </td><td>Campo booleano (true/false). Non indicare il parametro per averli tutti</td></tr>
+					<tr><td>hasDataset</td><td>Se a true include solo i dataset/stream che hanno una componente dataset (i formati CKAN e DCAT non consentono l'utilizzo di questo parametro)s</td><td>Campo booleano (true/false). Non indicare il parametro per averli tutti</td></tr>
+					
+					
+					
+					
 					</tbody>
 				</table>
 			</div>
