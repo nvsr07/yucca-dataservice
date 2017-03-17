@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
@@ -48,7 +50,8 @@ public class MetadataDelegate {
 
 	public Result search(HttpServletRequest request, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
 			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
-			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream)
+			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream, 
+			String tags, String visibility, Boolean isSearchExact, Boolean includeSandbox)
 			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException,UserWebServiceException {
 
 		log.info("[MetadataDelegate::search] START ");
@@ -66,8 +69,14 @@ public class MetadataDelegate {
 
 		params.put("q", q);
 
-		searchUrl.append("&q=search_lemma:" + URLEncoder.encode(q, "UTF-8"));
-		
+		if (BooleanUtils.isTrue(isSearchExact))
+		{
+			searchUrl.append("&q=search_text:" + URLEncoder.encode(q, "UTF-8"));
+			params.put("isSearchExact", "true");
+		}
+		else {
+			searchUrl.append("&q=search_lemma:" + URLEncoder.encode(q, "UTF-8"));
+		}
 		
 		if (tenantAuthorized==null || tenantAuthorized.size()==0)
 		{
@@ -129,66 +138,17 @@ public class MetadataDelegate {
 			params.put("hasStream", "true");
 		}
 
-		
-// OLD : used for entityType has stream		
-//		if (hasDataset != null || hasStream != null)
-//		{
-//			if (BooleanUtils.isTrue(hasDataset) &&
-//				BooleanUtils.isTrue(hasStream) )
-//			{
-//				searchUrl.append("&fq=entityType:"+ URLEncoder.encode("\"stream dataset\"", "UTF-8"));
-//				params.put("hasDataset", "true");
-//				params.put("hasStream", "true");
-//			}
-//			else if (BooleanUtils.isFalse(hasDataset) &&
-//					BooleanUtils.isFalse(hasStream))
-//			{
-//				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\" \"", "UTF-8"));
-//				params.put("hasDataset", "false");
-//				params.put("hasStream", "false");
-//			}
-//			else if (BooleanUtils.isFalse(hasDataset) &&
-//					BooleanUtils.isTrue(hasStream))
-//			{
-//				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"stream\"", "UTF-8"));
-//				params.put("hasDataset", "false");
-//				params.put("hasStream", "true");
-//			}
-//			else if (BooleanUtils.isTrue(hasDataset) &&
-//					BooleanUtils.isFalse(hasStream))
-//			{
-//				searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"dataset\"", "UTF-8"));
-//				params.put("hasDataset", "true");
-//				params.put("hasStream", "false");
-//			}
-//			else if (hasDataset==null)
-//			{
-//				if (BooleanUtils.isTrue(hasStream))
-//				{
-//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("(\"stream\" OR \"stream dataset\")", "UTF-8"));
-//				}
-//				else {
-//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"dataset\"", "UTF-8"));
-//				}
-//				
-//				params.put("hasStream", hasStream.toString());
-//			}
-//			else // hasStream ==null
-//			{
-//				if (BooleanUtils.isTrue(hasDataset))
-//				{
-//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("(\"dataset\" OR \"stream dataset\")", "UTF-8"));
-//				}
-//				else {
-//					searchUrl.append("&fq=entityType:"+URLEncoder.encode("\"stream\"", "UTF-8"));
-//				}
-//				
-//				params.put("hasDataset", hasDataset.toString());
-//			}
-//			
-//		}
+		if (tags!=null)
+		{
+			
+		} 
 
-
+		if (BooleanUtils.isNotTrue(includeSandbox))
+		{
+			searchUrl.append("&fq=-tenantCode:sandbox");
+		} else {
+			params.put("includeSandbox", "true");
+		}
 		
 		if (facet != null) {
 			searchUrl.append("&" + facet.toSorlParams());
@@ -197,6 +157,11 @@ public class MetadataDelegate {
 			}
 		}
 
+		if (visibility != null) {
+			searchUrl.append("&fq=visibility:" +URLEncoder.encode(visibility,"UTF-8"));
+			params.put("visibility", ""+visibility);
+		}
+		
 		if (start == null)
 			start = 0;
 		searchUrl.append("&start=" + start);
@@ -257,19 +222,19 @@ public class MetadataDelegate {
 	}
 
 
-	public String loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String format, String lang) throws UserWebServiceException {
+	public Metadata loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String lang) throws UserWebServiceException {
 		String query = "datasetCode:" + datasetCode;
-		return loadMetadata(request,query, format, lang);
+		return loadMetadata(request,query, lang);
 
 	}
 
-	public String loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String format, String lang) throws UserWebServiceException {
+	public Metadata loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String lang) throws UserWebServiceException {
 		String query = "(tenantCode:"+tenantCode+" AND streamCode:"+streamCode+" AND soCode:"+smartobjectCode+")";
-		return loadMetadata(request,query, format, lang); 
+		return loadMetadata(request,query, lang); 
 
 	}
 
-	private String loadMetadata(HttpServletRequest request,String query, String format, String lang) throws UserWebServiceException {
+	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
@@ -306,27 +271,26 @@ public class MetadataDelegate {
 			ErrorResponse error = new ErrorResponse();
 			error.setErrorCode("NOT FOUND");
 			error.setMessage("Resource not found");
-			result = error.toJson();
+			throw new UserWebServiceException(Response.ok(error.toJson()).build());
 		} else {
 			SearchEngineMetadata searchEngineMetadata = searchEngineResult.getResponse().getDocs().get(0);
 			Metadata metadata = Metadata.createFromSearchEngineItem(searchEngineMetadata, lang);
-
-			if (format != null && format.equals(Constants.OUTPUT_FORMAT_CKAN))
-				result = metadata.toCkan();
-			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_STREAM))
-				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
-			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_DATASET))
-				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
-			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_LIST))
-				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_LIST);
-			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_JSON))
-				result = metadata.toV01(Constants.OUTPUT_FORMAT_JSON);
-			else
-				result = metadata.toJson();
+			return metadata;
+//			if (format != null && format.equals(Constants.OUTPUT_FORMAT_CKAN))
+//				result = metadata.toCkan();
+//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_STREAM))
+//				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
+//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_DATASET))
+//				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
+//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_LIST))
+//				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_LIST);
+//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_JSON))
+//				result = metadata.toV01(Constants.OUTPUT_FORMAT_JSON);
+//			else
+//				result = metadata.toJson();
 
 			
 		}
-		return result;
 	}
 
 }

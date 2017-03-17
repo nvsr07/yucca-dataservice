@@ -45,7 +45,8 @@ public class DcatService extends AbstractService {
 			 @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
 				@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 				@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
-				@QueryParam("lang") String lang)
+				@QueryParam("lang") String lang, @QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
+				@QueryParam("includeSandbox") Boolean includeSandbox)
 			throws NumberFormatException, UnknownHostException {
 
 		SimpleDateFormat catalogDateFormat = new SimpleDateFormat("yyyy-MM-dd");// dd/MM/yyyy
@@ -77,7 +78,7 @@ public class DcatService extends AbstractService {
 			searchResult = MetadataDelegate.getInstance()
 					.search(
 					request, q, start, numElementForPage, null, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
-					true,null,true,null);
+					true,null,true,null, tags, visibility, isSearchExact, includeSandbox);
 		} catch (UnsupportedEncodingException e) {
 			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
 		} catch (UserWebServiceException e) {

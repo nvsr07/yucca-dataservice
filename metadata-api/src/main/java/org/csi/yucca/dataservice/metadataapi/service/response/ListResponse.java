@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 public class ListResponse extends AbstractResponse {
 
 	private String message;
-	private List<String> result;
+	private List<Metadata> result;
 	private Integer count;
 
 	public ListResponse() {
@@ -29,11 +29,11 @@ public class ListResponse extends AbstractResponse {
 		this.message = message;
 	}
 
-	public List<String> getResult() {
+	public List<Metadata> getResult() {
 		return result;
 	}
 
-	public void setResult(List<String> result) {
+	public void setResult(List<Metadata> result) {
 		this.result = result;
 	}
 

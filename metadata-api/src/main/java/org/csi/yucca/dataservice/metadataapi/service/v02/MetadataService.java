@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.service.AbstractService;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.FacetParams;
@@ -38,7 +39,9 @@ public class MetadataService extends AbstractService {
 			@QueryParam("lang") String lang, @QueryParam("facet.field") String facetFields, @QueryParam("facet.prefix") String facetPrefix,
 			@QueryParam("facet.sort") String facetSort, @QueryParam("facet.contains") String facetContains,
 			@QueryParam("facet.contains.ignoreCase") String facetContainsIgnoreCase, @QueryParam("facet.limit") String facetLimit, @QueryParam("facet.offset") String facetOffset,
-			@QueryParam("facet.mincount") String facetMinCount, @QueryParam("facet.missing") String facetMissing) throws NumberFormatException, UnknownHostException {
+			@QueryParam("facet.mincount") String facetMinCount, @QueryParam("facet.missing") String facetMissing,
+			@QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
+			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("hasStream") Boolean hasStream, @QueryParam("hasDataset") Boolean hasDataset) throws NumberFormatException, UnknownHostException {
 
 
 		FacetParams facetParams = null;
@@ -49,7 +52,7 @@ public class MetadataService extends AbstractService {
 		try {
 			Result searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(request, q, start, rows, sort, tenant,
 					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, 
-					facetParams, null, null); // expose hasDataset, hasStream?
+					facetParams, hasDataset, hasStream, tags, visibility, isSearchExact, includeSandbox); // expose hasDataset, hasStream?
 			result = searchResult.toJson();
 		} catch (UnsupportedEncodingException e) {
 			log.error("UnsupportedEncodingException",e);
@@ -69,14 +72,14 @@ public class MetadataService extends AbstractService {
 
 		log.info("[SearchService::search] START");
 
-		String metadata;
+		Metadata metadata;
 		try {
-			metadata = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().loadDatasetMetadata(request, datasetCode, version,null,  lang);
+			metadata = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().loadDatasetMetadata(request, datasetCode, version,  lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
 		}
 
-		return Response.ok(metadata).build();
+		return Response.ok(metadata.toJson()).build();
 	}
 
 	@GET
@@ -88,14 +91,14 @@ public class MetadataService extends AbstractService {
 
 		log.info("[SearchService::search] START -");
 
-		String metadata;
+		Metadata metadata;
 		try {
 			metadata = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().loadStreamMetadata(request, tenantCode,
-					smartobjectCode, streamCode, version,null,  lang);
+					smartobjectCode, streamCode, version,  lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
 		}
 
-		return Response.ok(metadata).build();
+		return Response.ok(metadata.toJson()).build();
 	}
 }
