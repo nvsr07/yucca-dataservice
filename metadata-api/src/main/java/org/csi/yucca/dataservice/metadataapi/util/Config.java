@@ -19,7 +19,8 @@ public class Config {
 	public static final String OAUTH_BASE_URL = "OAUTH_BASE_URL";
 	public static final String OAUTH_USERNAME = "OAUTH_USERNAME";
 	public static final String OAUTH_PASSWORD = "OAUTH_PASSWORD";
-
+	public static final String OAUTH_ROLES_WEBSERVICE_URL = "OAUTH_ROLES_WEBSERVICE_URL";
+	
 	public static final String SEARCH_ENGINE_BASE_URL = "SEARCH_ENGINE_BASE_URL";
 
 	private static Map<String, String> params = null;
@@ -38,6 +39,7 @@ public class Config {
 		params.put(OAUTH_BASE_URL, rb.getString(OAUTH_BASE_URL));
 		params.put(OAUTH_USERNAME, rb.getString(OAUTH_USERNAME));
 		params.put(SEARCH_ENGINE_BASE_URL, rb.getString(SEARCH_ENGINE_BASE_URL));
+		params.put(OAUTH_ROLES_WEBSERVICE_URL,rb.getString(OAUTH_ROLES_WEBSERVICE_URL));
 
 		ResourceBundle rbSecret = ResourceBundle.getBundle("MetadataApiSecret");
 		params.put(OAUTH_PASSWORD, rbSecret.getString(OAUTH_PASSWORD));
@@ -73,7 +75,10 @@ public class Config {
 	public String getOauthPassword() {
 		return params.get(OAUTH_PASSWORD);
 	}
-
+	public String getOauthRolesWebserviceUrl()
+	{
+		return params.get(OAUTH_ROLES_WEBSERVICE_URL);
+	}
 	public String getServiceBaseUrl() {
 		return params.get(SERVICE_BASE_URL);
 	}
@@ -90,4 +95,6 @@ public class Config {
 		return params.get(SEARCH_ENGINE_BASE_URL);
 	}
 
+	
+	
 }
