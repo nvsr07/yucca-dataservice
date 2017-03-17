@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,28 @@ public class MetadataDelegate {
 		params.put("q", q);
 
 		searchUrl.append("&q=search_lemma:" + URLEncoder.encode(q, "UTF-8"));
+		
+		
+		if (tenantAuthorized==null || tenantAuthorized.size()==0)
+		{
+			searchUrl.append("&fq=visibility:public");
+		}
+		else {
+			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
+			
+			Iterator<String> iter = tenantAuthorized.iterator();
+			while(iter.hasNext())
+			{
+				String tenantAuth = iter.next();
+				searchTenants .append(tenantAuth);
+				if (iter.hasNext())
+					searchTenants.append(" OR ");
+			}
+			searchTenants.append("))");
+			
+			
+			searchUrl.append("&fq="+URLEncoder.encode(searchTenants.toString(), "UTF-8"));
+		}
 
 		if (domain != null) {
 			searchUrl.append("&fq=domainCode:" + URLEncoder.encode(domain, "UTF-8"));
@@ -255,6 +278,24 @@ public class MetadataDelegate {
 
 		searchUrl.append("q=*:*&fq=" + query + "&start=0&end=1");
 
+		if (tenantAuthorized==null || tenantAuthorized.size()==0)
+		{
+			searchUrl.append("&fq=visibility:public");
+		}
+		else {
+			searchUrl.append("&fq=(visibility:public OR tenantsCode:(");
+			
+			Iterator<String> iter = tenantAuthorized.iterator();
+			while(iter.hasNext())
+			{
+				String tenantAuth = iter.next();
+				searchUrl.append(tenantAuth);
+				if (iter.hasNext())
+					searchUrl.append(" OR ");
+			}
+			searchUrl.append("))");
+		}
+		
 		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
 
 		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);

@@ -1,12 +1,21 @@
 package org.csi.yucca.dataservice.metadataapi.delegate.security;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
@@ -15,15 +24,19 @@ import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
+import org.csi.yucca.dataservice.metadataapi.delegate.WebServiceDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
-import org.csi.yucca.dataservice.metadataapi.service.AbstractService;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.wso2.carbon.identity.oauth2.stub.OAuth2TokenValidationServiceStub;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_OAuth2AccessToken;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationRequestDTO_TokenValidationContextParam;
 import org.wso2.carbon.identity.oauth2.stub.dto.OAuth2TokenValidationResponseDTO;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 public class SecurityDelegate {
 	static Logger log = Logger.getLogger(SecurityDelegate.class);
@@ -65,7 +78,7 @@ public class SecurityDelegate {
 					if (!isValidUser)
 						throw new UserWebServiceException(Response.status(Status.UNAUTHORIZED).build());
 					else {
-						return Arrays.asList("sandbox","pippo"); // FIXME
+						return loadTenants(authorizedUser); 
 					}
 				}	
 			}
@@ -124,6 +137,69 @@ public class SecurityDelegate {
 	}
 
 
+	private List<String> loadTenants(String username) throws KeyManagementException, NoSuchAlgorithmException, IOException, ParserConfigurationException, SAXException {
 
+		log.debug("[SecurityDelegate::loadRoles] - START");
+		String filter = "*_subscriber";
+		List<String> roles = new LinkedList<String>();
+		try {
+
+			String xmlInput = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://org.apache.axis2/xsd\">";
+			xmlInput += "   <soapenv:Header/>";
+			xmlInput += "   <soapenv:Body>";
+			xmlInput += "      <xsd:getRolesOfUser>";
+			xmlInput += "         <xsd:userName>" + username + "</xsd:userName>";
+			xmlInput += "         <xsd:filter>" + filter + "</xsd:filter>";
+			xmlInput += "         <xsd:limit>-1</xsd:limit>";
+
+			xmlInput += "      </xsd:getRolesOfUser>";
+			xmlInput += "   </soapenv:Body>";
+			xmlInput += "</soapenv:Envelope>";
+
+			String SOAPAction = "getRolesOfUser";
+
+
+
+			String webserviceUrl = Config.getInstance().getOauthRolesWebserviceUrl();
+			String user = Config.getInstance().getOauthUsername();
+			String password = Config.getInstance().getOauthPassword();
+			
+			String webServiceResponse = WebServiceDelegate.callWebService(webserviceUrl, user, password, xmlInput, SOAPAction, "text/xml");
+			log.debug("[SecurityDelegate::loadRoles] - webServiceResponse: " + webServiceResponse);
+
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+
+			InputSource is = new InputSource(new StringReader(webServiceResponse));
+			Document doc = db.parse(is);
+
+			NodeList rolessNodeList = doc.getFirstChild().getFirstChild().getFirstChild().getChildNodes();
+			if (rolessNodeList != null) {
+				for (int i = 0; i < rolessNodeList.getLength(); i++) {
+
+					Node roleNode = rolessNodeList.item(i);
+
+					String selected = "";
+					String role = "";
+					for (int j = 0; j < roleNode.getChildNodes().getLength(); j++) {
+						Node node = roleNode.getChildNodes().item(j);
+						if ("ax2644:selected".equals(node.getNodeName())) {
+							selected = node.getTextContent();
+						} else if ("ax2644:itemName".equals(node.getNodeName())) {
+							role = node.getTextContent();
+						}
+					}
+
+					if (selected.equals("true") && !role.equals(""))
+						roles.add(role.replace("_subscriber", ""));
+
+				}
+			}
+
+		} finally {
+			log.debug("[SecurityDelegate::loadRoles] - END");
+		}
+		return roles;
+	}
 
 }
