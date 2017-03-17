@@ -1,5 +1,7 @@
 package org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -459,12 +461,12 @@ public class Metadata {
 				extras.setMetadata_created(Util.formatDateCkan(getOpendata().getMetadaCreateDate()));
 			if (getOpendata().getMetadaUpdateDate() != null)
 				extras.setMetadata_modified(Util.formatDateCkan(getOpendata().getMetadaUpdateDate()));
-			if (getRegistrationDate() != null)
-				extras.setPackage_created(Util.formatDateCkan(getRegistrationDate()));
 			if (getOpendata().getDataUpdateDate() != null)
 				extras.setPackage_modified(Util.formatDateCkan(new Date(getOpendata().getDataUpdateDate())));
 
 		}
+		if (getRegistrationDate() != null)
+			extras.setPackage_created(Util.formatDateCkan(getRegistrationDate()));
 
 		if (getDcat() != null) {
 			extras.setDcatCreatorName(getDcat().getDcatCreatorName());
@@ -477,6 +479,9 @@ public class Metadata {
 			extras.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 		}
 		ckanDataset.setLicense(getLicense());
+		
+		
+		
 		extras.setDisclaimer(getDisclaimer());
 		extras.setCopyright(getCopyright());
 
@@ -499,7 +504,8 @@ public class Metadata {
 			ckanDataset.setExtrasList(extrasList);
 		}
 
-		// if (getDataset().getImportFileType() != null)
+
+		
 		extras.setPackage_type("CSV");
 		ckanDataset.setExtras(extras);
 		return ckanDataset.toJson();
@@ -683,7 +689,7 @@ public class Metadata {
 		this.isOpendata = isOpendata;
 	}
 
-	public String toV01(String outputFormatV01) {
+	public List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> toV01(String outputFormatV01) {
 
 		
 		if (Constants.OUTPUT_FORMAT_V01_STREAM.equals(outputFormatV01) || 
@@ -706,6 +712,7 @@ public class Metadata {
 						+ this.getStream().getCode());
 
 				metadatav1.setFps(getFps());
+				metadatav1.setRegistrationDate(getRegistrationDate());
 				
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Smartobject smartobjectv1 = 
 						new org.csi.yucca.dataservice.metadataapi.model.output.v01.Smartobject();
@@ -811,7 +818,7 @@ public class Metadata {
 				metadatav1.setDataset(datasetv1);
 			}
 			
-			if (getIsopendata()) {
+			if (getIsopendata()!=null) {
 				metadatav1.setIsopendata(getIsopendata());
 
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = 
@@ -824,7 +831,7 @@ public class Metadata {
 			}
 			
 			if (getDcat()!=null)  {
-				metadatav1.setDcatReady(true);
+				metadatav1.setDcatReady(1);
 				metadatav1.setDcatCreatorName(getDcat().getDcatCreatorName());
 				metadatav1.setDcatCreatorType(getDcat().getDcatCreatorType());
 				metadatav1.setDcatCreatorId(getDcat().getDcatCreatorId());
@@ -834,16 +841,16 @@ public class Metadata {
 				metadatav1.setDcatNomeOrg(getDcat().getDcatNomeOrg());
 				metadatav1.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 			} else {
-				metadatav1.setDcatReady(false);
+				metadatav1.setDcatReady(0);
 			}
 		
-			return metadatav1.toJson();
+			return Arrays.asList(metadatav1);
 		}
 		else if (Constants.OUTPUT_FORMAT_V01_LIST.equals(outputFormatV01))
 		{
+			List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> metadatas = new ArrayList();
 			if (getStream()!=null)
 			{
-				String toAppend = "";
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata 
 					metadatav1StreamSummary = getMetadatav1StreamSummaryFromObject(true);
 				
@@ -851,17 +858,20 @@ public class Metadata {
 					org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata 
 					metadatav1DatasetStreamSummary = getMetadatav1StreamSummaryFromObject(false);
 					
-					toAppend = "," + metadatav1DatasetStreamSummary.toJson();
+					metadatas.add(metadatav1DatasetStreamSummary);
 					
 				}
-				
-				return  metadatav1StreamSummary.toJson() + toAppend;
+				metadatas.add(metadatav1StreamSummary);
+			
 			}
-
-			return getMetadatav1DatasetSummaryFromObject().toJson();
+			else {
+				metadatas.add(getMetadatav1DatasetSummaryFromObject());
+			}
+			
+			return  metadatas;
 		}
 		else
-			return "FORMAT NOT SUPPORTED";
+			return null;
 	}
 
 	private org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata getMetadatav1StreamSummaryFromObject(boolean codeForStream) {
@@ -900,7 +910,7 @@ public class Metadata {
 		streamv1.setSmartobject(smartobjectv1);
 		metadatav1StreamSummary.setStream(streamv1);
 		
-		if (getIsopendata()) {
+		if (getIsopendata()!=null) {
 			metadatav1StreamSummary.setIsopendata(getIsopendata());
 
 			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = 
@@ -913,7 +923,7 @@ public class Metadata {
 		}
 		
 		if (getDcat() != null)  {
-			metadatav1StreamSummary.setDcatReady(true);
+			metadatav1StreamSummary.setDcatReady(1);
 			metadatav1StreamSummary.setDcatCreatorName(getDcat().getDcatCreatorName());
 			metadatav1StreamSummary.setDcatCreatorType(getDcat().getDcatCreatorType());
 			metadatav1StreamSummary.setDcatCreatorId(getDcat().getDcatCreatorId());
@@ -924,7 +934,7 @@ public class Metadata {
 			metadatav1StreamSummary.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 		}
 		else {			
-			metadatav1StreamSummary.setDcatReady(false);
+			metadatav1StreamSummary.setDcatReady(0);
 		}
 		
 		if (!codeForStream){
@@ -964,7 +974,7 @@ public class Metadata {
 
 
 		
-		if (getIsopendata()) {
+		if (getIsopendata()!=null) {
 			metadatav1DatasetSummary.setIsopendata(getIsopendata());
 
 			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = 
@@ -977,7 +987,7 @@ public class Metadata {
 		}
 		
 		if (getDcat() != null)  {
-			metadatav1DatasetSummary.setDcatReady(true);
+			metadatav1DatasetSummary.setDcatReady(1);
 			metadatav1DatasetSummary.setDcatCreatorName(getDcat().getDcatCreatorName());
 			metadatav1DatasetSummary.setDcatCreatorType(getDcat().getDcatCreatorType());
 			metadatav1DatasetSummary.setDcatCreatorId(getDcat().getDcatCreatorId());
@@ -987,7 +997,7 @@ public class Metadata {
 			metadatav1DatasetSummary.setDcatNomeOrg(getDcat().getDcatNomeOrg());
 			metadatav1DatasetSummary.setDcatEmailOrg(getDcat().getDcatEmailOrg());
 		} else {
-			metadatav1DatasetSummary.setDcatReady(false);
+			metadatav1DatasetSummary.setDcatReady(0);
 		}
 		
 		org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset datasetv1 = 

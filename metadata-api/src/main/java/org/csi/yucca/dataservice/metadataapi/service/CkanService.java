@@ -40,7 +40,9 @@ public class CkanService extends AbstractService {
 			@QueryParam("sort") String sort, @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
-			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
+			@QueryParam("lang") String lang,
+			@QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
+			@QueryParam("includeSandbox") Boolean includeSandbox) throws NumberFormatException, UnknownHostException {
 		
 		String result;
 		
@@ -48,7 +50,7 @@ public class CkanService extends AbstractService {
 			Result searchResult = MetadataDelegate.getInstance()
 					.search(
 					request, q, start, end, sort, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
-					null,null,true,null);
+					null,null,true,null, tags, visibility, isSearchExact, includeSandbox);
 	
 			if (searchResult!= null && searchResult.getMetadata()!=null)
 			{
@@ -78,9 +80,9 @@ public class CkanService extends AbstractService {
 		String result = "";
 		try {
 			String apiName = Metadata.getApiNameFromCkanPackageId(packageId);
-			String metadata = MetadataDelegate.getInstance().loadDatasetMetadata(request, apiName, null, Constants.OUTPUT_FORMAT_CKAN, lang);
+			Metadata metadata = MetadataDelegate.getInstance().loadDatasetMetadata(request, apiName, null, lang);
 
-			result = metadata;
+			result = metadata.toCkan();
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
 		}

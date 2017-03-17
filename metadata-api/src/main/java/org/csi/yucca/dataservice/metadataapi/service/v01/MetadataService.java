@@ -3,6 +3,8 @@ package org.csi.yucca.dataservice.metadataapi.service.v01;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -39,14 +41,15 @@ public class MetadataService extends AbstractService {
 			@QueryParam("sort") String sort, @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
-			@QueryParam("lang") String lang) throws NumberFormatException, UnknownHostException {
+			@QueryParam("lang") String lang, @QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
+			@QueryParam("includeSandbox") Boolean includeSandbox,@QueryParam("hasStream") Boolean hasStream, @QueryParam("hasDataset") Boolean hasDataset) throws NumberFormatException, UnknownHostException {
 
 
 		Result searchResult;
 		try {
 			searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(request, q, start, end, sort, tenant,
 					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, 
-					null, null, null); // expose hasDataset, hasStream?
+					null, hasDataset, hasStream, tags, visibility, isSearchExact, includeSandbox); // expose hasDataset, hasStream?
 		} catch (UnsupportedEncodingException e) {
 			log.error("UnsupportedEncodingException",e);
 			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
@@ -60,10 +63,9 @@ public class MetadataService extends AbstractService {
 
 		if (searchResult!=null && searchResult.getMetadata()!=null)
 		{
-			ArrayList<String> listMetadataV1 = new ArrayList();
+			ArrayList<Metadata> listMetadataV1 = new ArrayList();
 			for (org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata metadatav2 : searchResult.getMetadata()) {
-				String metadatav1 = metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_LIST);
-				listMetadataV1.add(metadatav1);
+				listMetadataV1.addAll(metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_LIST));
 			}
 			response.setResult(listMetadataV1);
 		}
@@ -79,15 +81,20 @@ public class MetadataService extends AbstractService {
 
 		log.info("[SearchService::search] START ");
 
-		String metadatav1;
+		org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata metadatav2;
 		try {
-			metadatav1 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
-					loadDatasetMetadata(request, datasetCode, version, Constants.OUTPUT_FORMAT_V01_DATASET, lang);
+			metadatav2 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
+					loadDatasetMetadata(request, datasetCode, version, lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
 		}
 
-		return Response.ok(metadatav1).build();
+		List<Metadata> v01s = metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
+		if (v01s!=null && !v01s.isEmpty())
+			return Response.ok(v01s.get(0).toJson()).build();
+		else {
+			return Response.ok("").build();
+		}
 	}
 
 	@GET
@@ -98,15 +105,19 @@ public class MetadataService extends AbstractService {
 			throws NumberFormatException, UnknownHostException {
 
 //		String apiName = tenant + "." + smartobjectCode + "_" + streamCode + "_stream";
-		String metadatav1;
+		org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata metadatav2;
 		try {
-			metadatav1 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
-					loadStreamMetadata(request, tenant,smartobjectCode,streamCode, version, Constants.OUTPUT_FORMAT_V01_STREAM, lang);
+			metadatav2 = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().
+					loadStreamMetadata(request, tenant,smartobjectCode,streamCode, version, lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
 		}
-
-		return Response.ok(metadatav1).build();
+		List<Metadata> v01s = metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
+		if (v01s!=null && !v01s.isEmpty())
+			return Response.ok(v01s.get(0).toJson()).build();
+		else {
+			return Response.ok("").build();
+		}
 	}
 
 
