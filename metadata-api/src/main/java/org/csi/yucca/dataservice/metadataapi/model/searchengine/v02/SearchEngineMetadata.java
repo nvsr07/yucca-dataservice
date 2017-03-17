@@ -69,7 +69,7 @@ public class SearchEngineMetadata {
 	private String lat;
 	private String lon;
 	private List<String> sdpComponentsName;
-	private String phenomenon;
+	private List<String> phenomenon;
 	private String isCurrent;
 	private Boolean isOpendata;
 	private String opendataUpdateDate;
@@ -545,11 +545,11 @@ public class SearchEngineMetadata {
 		this.sdpComponentsName = sdpComponentsName;
 	}
 
-	public String getPhenomenon() {
+	public List<String> getPhenomenon() {
 		return phenomenon;
 	}
 
-	public void setPhenomenon(String phenomenon) {
+	public void setPhenomenon(List<String> phenomenon) {
 		this.phenomenon = phenomenon;
 	}
 

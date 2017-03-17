@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.BooleanUtils;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
+import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
+import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetCount;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetField;
@@ -42,13 +45,16 @@ public class MetadataDelegate {
 		return instance;
 	}
 
-	public Result search(String userAuth, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
+	public Result search(HttpServletRequest request, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
 			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
 			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream)
-			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException {
+			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException,UserWebServiceException {
 
-		log.info("[MetadataDelegate::search] START - userAuth: " + userAuth);
+		log.info("[MetadataDelegate::search] START ");
 
+		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
+		
+		
 		Map<String, String> params = new HashMap<String, String>();
 		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json");
 
@@ -227,114 +233,22 @@ public class MetadataDelegate {
 
 	}
 
-	@Deprecated
-	public Result searchOld(String userAuth, String q, Integer start, Integer rows, String sort, String tenant, String domain, Boolean opendata, Boolean geolocalizated,
-			Double minLat, Double minLon, Double maxLat, Double maxLon, String lang, Boolean dCatReady, FacetParams facet) throws NumberFormatException, UnknownHostException {
 
-		log.info("[MetadataDelegate::search] START - userAuth: " + userAuth);
-
-		// http://sdnet-slave8.sdp.csi.it:8983/solr/sdp_metasearch2_shard1_replica1/select?q=*%3A*&wt=json&indent=true&facet=true&facet.field=tenant_risorse&facet.field=Organizzazione&facet.prefix=C
-		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
-
-		// if (userAuth != null)
-		// parameters.put("username", userAuth);
-
-		String query = "";
-		if (q != null)
-			query += "(" + q + ")";
-		if (domain != null) {
-			if (!query.equals(""))
-				query += " AND ";
-			query += "(domainCode=" + domain + ")";
-		}
-
-		if (dCatReady != null && dCatReady) {
-			if (!query.equals(""))
-				query += " AND ";
-			query += " (dcatReady) ";
-		}
-
-		if (tenant != null && !tenant.trim().equals("")) {
-			if (!query.equals(""))
-				query += " AND ";
-			query += "(%22%5C%22tenantCode%5C%22+%3A+%5C%22" + tenant + "%5C%22%22) ";
-		}
-
-		if (opendata != null && opendata) {
-			if (!query.equals(""))
-				query += " AND ";
-			query += " (%22%5C%22isOpendata%5C%22%20%3A%20true%22) ";
-		}
-
-		if (query.equals(""))
-			query = "*:*";
-		searchUrl.append("q=" + query + "&");
-		if (facet != null) {
-			searchUrl.append(facet.toSorlParams() + "&");
-		}
-
-		if (start == null)
-			start = 0;
-		searchUrl.append("start=" + start + "&");
-
-		if (rows == null)
-			rows = 12;
-
-		searchUrl.append("end=" + rows + "&");
-		if (sort != null)
-			searchUrl.append("sort=" + sort + "&");
-
-		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
-
-		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
-
-		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
-
-		Result result = new Result();
-		result.setStart(searchEngineResult.getResponse().getStart());
-		result.setTotalCount(searchEngineResult.getResponse().getNumFound());
-		Integer pageCount = new Double(Math.ceil(searchEngineResult.getResponse().getNumFound().doubleValue() / rows)).intValue();
-		result.setTotalPages(pageCount);
-		if (searchEngineResult.getResponse() != null && searchEngineResult.getResponse().getDocs() != null) {
-			result.setCount(searchEngineResult.getResponse().getDocs().size());
-			for (SearchEngineMetadata searchEngineItem : searchEngineResult.getResponse().getDocs()) {
-				result.addMetadata(Metadata.createFromSearchEngineItem(searchEngineItem, lang));
-			}
-		}
-
-		if (searchEngineResult.getFacet_counts() != null) {
-			FacetCount facetCount = new FacetCount();
-			for (String facetKey : searchEngineResult.getFacet_counts().getFacet_fields().keySet()) {
-
-				List<Object> facetFieldValues = searchEngineResult.getFacet_counts().getFacet_fields().get(facetKey);
-				FacetField facetField = new FacetField(facetFieldValues);
-				facetCount.addFacetField(facetKey, facetField);
-			}
-			result.setFacetCount(facetCount);
-		}
-
-		Gson gson = JSonHelper.getInstance();
-		String json = gson.toJson(result);
-		log.info("[AbstractService::dopost] json: " + json);
-
-		return result;
-
-	}
-
-	public String loadDatasetMetadata(String userAuth, String datasetCode, String version, String format, String lang) {
+	public String loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String format, String lang) throws UserWebServiceException {
 		String query = "datasetCode:" + datasetCode;
-		return loadMetadata(query, format, lang);
+		return loadMetadata(request,query, format, lang);
 
 	}
 
-	public String loadStreamMetadata(String userAuth, String tenantCode, String smartobjectCode, String streamCode, String version, String format, String lang) {
+	public String loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String format, String lang) throws UserWebServiceException {
 		String query = "(tenantCode:"+tenantCode+" AND streamCode:"+streamCode+" AND soCode:"+smartobjectCode+")";
-		//String apiName = tenant + "." + smartobjectCode + "_" + streamCode + "_stream";
-		return loadMetadata(query, format, lang); 
+		return loadMetadata(request,query, format, lang); 
 
 	}
 
-	private String loadMetadata(String query, String format, String lang) {
+	private String loadMetadata(HttpServletRequest request,String query, String format, String lang) throws UserWebServiceException {
+
+		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
 		String result = null;
 		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
