@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
@@ -100,6 +101,40 @@ public class MetadataDelegate {
 			searchUrl.append("&fq="+URLEncoder.encode(searchTenants.toString(), "UTF-8"));
 		}
 
+		if (geolocalizated != null) {
+			// FIXME
+		}
+		
+		if (minLat!=null || minLon!=null || maxLon!=null || maxLat!=null)
+		{
+			double mxlon = NumberUtils.max((maxLon==null?180D:maxLon),180D);
+			double mxlat = NumberUtils.max((maxLat==null?90D:maxLat),90D);
+			double mnlon = NumberUtils.max((minLon==null?-180D:minLon),-180D);
+			double mnlat = NumberUtils.max((minLat==null?-90D:minLat),-90D);
+			
+			String geoStr  = "["+mnlat+","+mnlon+" TO "+mxlat+","+mxlon+"]";
+//			if (BooleanUtils.isTrue(geolocalizated))
+//			{
+//				
+//			}
+//			else {
+//				geoStr = "["+mnlat+","+mnlon+" TO "+mxlat+","+mxlon+"]";
+//			}
+			// TO_UNDERSTAND
+			
+			
+			searchUrl.append("&fq=geogeo:" + URLEncoder.encode(geoStr, "UTF-8"));
+			params.put("minLat", ""+mnlat);
+			params.put("minLon", ""+mnlon);
+			params.put("maxLat", ""+mxlat);
+			params.put("maxLon", ""+mxlon);
+			
+			
+			
+			
+		}
+		
+		
 		if (domain != null) {
 			searchUrl.append("&fq=domainCode:" + URLEncoder.encode(domain, "UTF-8"));
 			params.put("domain", domain);
