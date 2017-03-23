@@ -85,6 +85,9 @@ public class CkanService extends AbstractService {
 			result = metadata.toCkan();
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
+		} catch (Exception e) {
+			log.error("[MetadataService::getStream]"+e.getMessage(),e);
+			return Response.serverError().build();
 		}
 		return Response.ok(result).build();
 

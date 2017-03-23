@@ -59,6 +59,9 @@ public class MetadataService extends AbstractService {
 			result = new ErrorResponse("", "Invalid param").toJson();
 		} catch (UserWebServiceException  e2) {
 			return e2.getResponse();
+		} catch (Exception e) {
+			log.error("[MetadataService::getStream]"+e.getMessage(),e);
+			return Response.serverError().build();
 		}
 
 		return Response.ok(result).build();
@@ -77,6 +80,11 @@ public class MetadataService extends AbstractService {
 			metadata = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().loadDatasetMetadata(request, datasetCode, version,  lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
+		} catch (UnsupportedEncodingException e) {
+			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
+		} catch (Exception e) {
+			log.error("[MetadataService::getStream]"+e.getMessage(),e);
+			return Response.serverError().build();
 		}
 
 		return Response.ok(metadata.toJson()).build();
@@ -97,6 +105,11 @@ public class MetadataService extends AbstractService {
 					smartobjectCode, streamCode, version,  lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
+		} catch (UnsupportedEncodingException e) {
+			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
+		} catch (Exception e) {
+			log.error("[MetadataService::getStream]"+e.getMessage(),e);
+			return Response.serverError().build();
 		}
 
 		return Response.ok(metadata.toJson()).build();
