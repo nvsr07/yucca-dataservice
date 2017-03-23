@@ -275,19 +275,19 @@ public class MetadataDelegate {
 	}
 
 
-	public Metadata loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String lang) throws UserWebServiceException {
+	public Metadata loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String lang) throws UserWebServiceException, UnsupportedEncodingException {
 		String query = "datasetCode:" + datasetCode;
 		return loadMetadata(request,query, lang);
 
 	}
 
-	public Metadata loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String lang) throws UserWebServiceException {
+	public Metadata loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String lang) throws UserWebServiceException, UnsupportedEncodingException {
 		String query = "(tenantCode:"+tenantCode+" AND streamCode:"+streamCode+" AND soCode:"+smartobjectCode+")";
 		return loadMetadata(request,query, lang); 
 
 	}
 
-	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException {
+	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
@@ -301,17 +301,20 @@ public class MetadataDelegate {
 			searchUrl.append("&fq=visibility:public");
 		}
 		else {
-			searchUrl.append("&fq=(visibility:public OR tenantsCode:(");
+			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
 			
 			Iterator<String> iter = tenantAuthorized.iterator();
 			while(iter.hasNext())
 			{
 				String tenantAuth = iter.next();
-				searchUrl.append(tenantAuth);
+				searchTenants .append(tenantAuth);
 				if (iter.hasNext())
-					searchUrl.append(" OR ");
+					searchTenants.append(" OR ");
 			}
-			searchUrl.append("))");
+			searchTenants.append("))");
+			
+			
+			searchUrl.append("&fq="+URLEncoder.encode(searchTenants.toString(), "UTF-8"));
 		}
 		
 		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
