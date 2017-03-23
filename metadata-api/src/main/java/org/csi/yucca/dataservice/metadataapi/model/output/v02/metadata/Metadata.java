@@ -62,6 +62,7 @@ public class Metadata {
 	private String author;
 	private String language;
 	private Date registrationDate;
+	private Long registrationDateMillis;
 	private String externalreference;
 	private String license;
 	private String disclaimer;
@@ -531,6 +532,7 @@ public class Metadata {
 
 		
 		metadata.setDomainCode(searchEngineItem.getDomainCode());
+		metadata.setSubdomainCode(searchEngineItem.getSubdomainCode());
 		metadata.setVisibility(searchEngineItem.getVisibility());
 		metadata.setLicense(searchEngineItem.getLicenseCode());// FIXME sicuro?
 		metadata.setDisclaimer(searchEngineItem.getLicenceDescription());// FIXME
@@ -543,6 +545,9 @@ public class Metadata {
 		metadata.setLongitude(searchEngineItem.getLonDouble());
 		metadata.setOrganizationCode(searchEngineItem.getOrganizationCode());
 		metadata.setOrganizationDescription(searchEngineItem.getOrganizationDescription());
+		
+		metadata.setRegistrationDate(searchEngineItem.parseRegistrationDate());
+		metadata.setRegistrationDateMillis(searchEngineItem.getRegistrationDateMillis());
 
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
@@ -558,7 +563,7 @@ public class Metadata {
 		String iconUrl = Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + searchEngineItem.getTenantCode() + "/";
 
 		if (searchEngineItem.getEntityType().contains("stream")) {
-			metadata.setDescription(searchEngineItem.getName());
+			metadata.setDescription(searchEngineItem.getSoName());
 			detailUrl += searchEngineItem.getTenantCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			iconUrl += searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			Stream stream = new Stream();
@@ -648,6 +653,8 @@ public class Metadata {
 			Opendata opendata = new Opendata();
 			opendata.setDataUpdateDate(searchEngineItem.getOpendataUpdateDateLong());
 			opendata.setMetadaUpdateDate(searchEngineItem.getOpendataMetaUpdateDateDate());
+			if (searchEngineItem.getOpendataMetaUpdateDateDate()!=null)
+				opendata.setMetadaUpdateDateMillis(searchEngineItem.getOpendataMetaUpdateDateDate().getTime());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
@@ -1009,6 +1016,14 @@ public class Metadata {
 		metadatav1DatasetSummary.setDetailUrl(Config.getInstance().getMetadataapiBaseUrl() + "detail/" + getTenantCode() + "/" + metadatav1DatasetSummary.getCode() );
 		
 		return metadatav1DatasetSummary;
+	}
+
+	public Long getRegistrationDateMillis() {
+		return registrationDateMillis;
+	}
+
+	public void setRegistrationDateMillis(Long registrationDateMillis) {
+		this.registrationDateMillis = registrationDateMillis;
 	}
 
 }

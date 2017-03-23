@@ -14,6 +14,7 @@ public class Component {
 	private String phenomenon;
 	private String datatype;
 	private Integer inOrder;
+	private String sinceVersion;
 
 	public Component() {
 		super();
@@ -95,6 +96,7 @@ public class Component {
 			c.setDatatype(jsonFieldElement.getDataType());
 			c.setTolerance(jsonFieldElement.getTolerance());
 			c.setPhenomenon(jsonFieldElement.getPhenomenon());
+			c.setSinceVersion(jsonFieldElement.getSinceVersion());
 		}
 		return c;
 	}
@@ -105,5 +107,13 @@ public class Component {
 
 	public void setAlias(String alias) {
 		this.alias = alias;
+	}
+
+	public String getSinceVersion() {
+		return sinceVersion;
+	}
+
+	public void setSinceVersion(String sinceVersion) {
+		this.sinceVersion = sinceVersion;
 	}
 }

@@ -1,7 +1,10 @@
 package org.csi.yucca.dataservice.metadataapi.model.searchengine.v02;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -77,7 +80,8 @@ public class SearchEngineMetadata {
 	private String opendataLanguage;
 	private List<String> soFps;
 	private List<String> soCategory;
-
+	private String registrationDate;
+	
 	public SearchEngineMetadata() {
 		super();
 	}
@@ -665,5 +669,37 @@ public class SearchEngineMetadata {
 
 	public void setIsOpendata(Boolean isOpendata) {
 		this.isOpendata = isOpendata;
+	}
+	
+	public String getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(String registrationDate) {
+		this.registrationDate = registrationDate;
+	}
+
+	public Date parseRegistrationDate() {
+		Date result = null;
+		if (registrationDate != null) {
+			try {
+				// Dec 30, 2016 3:06:26 PM"
+				DateFormat parser = new SimpleDateFormat(
+						"MMM dd, yyyy h:mm:ss a", Locale.US);
+				result = parser.parse(registrationDate);
+			} catch (Exception e) {
+
+			}
+		}
+		return result;
+	}
+
+	public Long getRegistrationDateMillis() {
+		Long result = null;
+		Date d = parseRegistrationDate();
+		if (d != null) {
+			result = d.getTime();
+		}
+		return result;
 	}
 }
