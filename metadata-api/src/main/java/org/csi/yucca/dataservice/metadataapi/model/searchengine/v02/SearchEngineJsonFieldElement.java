@@ -10,6 +10,7 @@ public class SearchEngineJsonFieldElement {
 	private String measureUnitCategory;
 	private String phenomenon;
 	private String phenomenonCategory;
+	private String sinceVersion;
 
 	public SearchEngineJsonFieldElement() {
 		super();
@@ -77,6 +78,14 @@ public class SearchEngineJsonFieldElement {
 
 	public void setMeasureUnit(String measureUnit) {
 		this.measureUnit = measureUnit;
+	}
+
+	public String getSinceVersion() {
+		return sinceVersion;
+	}
+
+	public void setSinceVersion(String sinceVersion) {
+		this.sinceVersion = sinceVersion;
 	}
 
 	

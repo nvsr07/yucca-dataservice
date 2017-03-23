@@ -69,6 +69,7 @@ public class Metadata {
 	private Double latitude;
 	private Double longitude;
 	private String fps;
+	private Long registrationDateMillis;
 
 	private Stream stream;
 	private Dataset dataset;
@@ -529,8 +530,8 @@ public class Metadata {
 		metadata.setSubdomain(
 				("en".equals(lang) ? searchEngineItem.getSubdomainLangEN() : searchEngineItem.getSubdomainLangIT()));
 
-		
 		metadata.setDomainCode(searchEngineItem.getDomainCode());
+		metadata.setSubdomainCode(searchEngineItem.getSubdomainCode());
 		metadata.setVisibility(searchEngineItem.getVisibility());
 		metadata.setLicense(searchEngineItem.getLicenseCode());// FIXME sicuro?
 		metadata.setDisclaimer(searchEngineItem.getLicenceDescription());// FIXME
@@ -543,7 +544,8 @@ public class Metadata {
 		metadata.setLongitude(searchEngineItem.getLonDouble());
 		metadata.setOrganizationCode(searchEngineItem.getOrganizationCode());
 		metadata.setOrganizationDescription(searchEngineItem.getOrganizationDescription());
-
+		metadata.setRegistrationDate(searchEngineItem.parseRegistrationDate());
+		metadata.setRegistrationDateMillis(searchEngineItem.getRegistrationDateMillis());
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
 //			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
@@ -558,7 +560,7 @@ public class Metadata {
 		String iconUrl = Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + searchEngineItem.getTenantCode() + "/";
 
 		if (searchEngineItem.getEntityType().contains("stream")) {
-			metadata.setDescription(searchEngineItem.getName());
+			metadata.setDescription(searchEngineItem.getSoName());
 			detailUrl += searchEngineItem.getOrganizationCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			iconUrl += searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			Stream stream = new Stream();
@@ -848,7 +850,7 @@ public class Metadata {
 		}
 		else if (Constants.OUTPUT_FORMAT_V01_LIST.equals(outputFormatV01))
 		{
-			List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> metadatas = new ArrayList();
+			List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> metadatas = new ArrayList<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata>();
 			if (getStream()!=null)
 			{
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata 
@@ -1009,6 +1011,14 @@ public class Metadata {
 		metadatav1DatasetSummary.setDetailUrl(Config.getInstance().getMetadataapiBaseUrl() + "detail/" + getTenantCode() + "/" + metadatav1DatasetSummary.getCode() );
 		
 		return metadatav1DatasetSummary;
+	}
+
+	public Long getRegistrationDateMillis() {
+		return registrationDateMillis;
+	}
+
+	public void setRegistrationDateMillis(Long registrationDateMillis) {
+		this.registrationDateMillis = registrationDateMillis;
 	}
 
 }

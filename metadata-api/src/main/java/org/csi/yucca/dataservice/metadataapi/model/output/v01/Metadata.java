@@ -327,23 +327,23 @@ public class Metadata {
 
 	
 
-	private void addTagCode(String code) {
-		if (tagCodes == null)
-			tagCodes = new LinkedList<String>();
-
-		tagCodes.add(code);
-
-	}
-
-	private static String cleadMainCode(String mainCode) {
-		if (mainCode.endsWith("_odata"))
-			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
-		else if (mainCode.endsWith("_stream"))
-			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_stream"));
-
-		return mainCode;
-
-	}
+//	private void addTagCode(String code) {
+//		if (tagCodes == null)
+//			tagCodes = new LinkedList<String>();
+//
+//		tagCodes.add(code);
+//
+//	}
+//
+//	private static String cleadMainCode(String mainCode) {
+//		if (mainCode.endsWith("_odata"))
+//			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_odata"));
+//		else if (mainCode.endsWith("_stream"))
+//			mainCode = mainCode.substring(0, mainCode.lastIndexOf("_stream"));
+//
+//		return mainCode;
+//
+//	}
 
 	
 	
