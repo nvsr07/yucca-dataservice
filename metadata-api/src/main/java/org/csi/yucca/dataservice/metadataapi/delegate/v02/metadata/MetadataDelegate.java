@@ -294,11 +294,11 @@ public class MetadataDelegate {
 		String result = null;
 		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
 
-		searchUrl.append("q=*:*&fq=" + query + "&start=0&end=1");
+		searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query,"UTF-8") + "&start=0&end=1");
 
 		if (tenantAuthorized==null || tenantAuthorized.size()==0)
 		{
-			searchUrl.append("&fq=visibility:public");
+			searchUrl.append("&fq="+URLEncoder.encode("visibility:public","UTF-8"));
 		}
 		else {
 			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
