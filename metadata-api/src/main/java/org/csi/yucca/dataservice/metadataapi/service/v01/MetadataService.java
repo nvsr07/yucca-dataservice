@@ -87,9 +87,6 @@ public class MetadataService extends AbstractService {
 					loadDatasetMetadata(request, datasetCode, version, lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
-		} catch (Exception e) {
-			log.error("[MetadataService::getStream]"+e.getMessage(),e);
-			return Response.serverError().build();
 		}
 
 		List<Metadata> v01s = metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
@@ -114,9 +111,6 @@ public class MetadataService extends AbstractService {
 					loadStreamMetadata(request, tenant,smartobjectCode,streamCode, version, lang);
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
-		} catch (Exception e) {
-			log.error("[MetadataService::getStream]"+e.getMessage(),e);
-			return Response.serverError().build();
 		}
 		List<Metadata> v01s = metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
 		if (v01s!=null && !v01s.isEmpty())

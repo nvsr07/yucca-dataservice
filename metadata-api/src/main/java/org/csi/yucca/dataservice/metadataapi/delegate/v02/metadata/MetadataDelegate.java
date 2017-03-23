@@ -225,14 +225,14 @@ public class MetadataDelegate {
 
 	}
 
-	public Metadata loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String lang) throws UserWebServiceException, UnsupportedEncodingException {
+	public Metadata loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String lang) throws UserWebServiceException {
 		String query = "datasetCode:" + datasetCode;
 		return loadMetadata(request, query, lang);
 
 	}
 
 	public Metadata loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String lang)
-			throws UserWebServiceException, UnsupportedEncodingException {
+			throws UserWebServiceException {
 		String query = "(tenantCode:" + tenantCode + " AND streamCode:" + streamCode + " AND soCode:" + smartobjectCode + ")";
 		try {
 			query = URLEncoder.encode(query, "UTF-8");
@@ -242,32 +242,34 @@ public class MetadataDelegate {
 
 	}
 
-	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
+	private Metadata loadMetadata(HttpServletRequest request, String query, String lang) throws UserWebServiceException {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
 		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
 
-		searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query,"UTF-8") + "&start=0&end=1");
+		searchUrl.append("q=*:*&fq=" + query + "&start=0&end=1");
+		if (tenantAuthorized == null || tenantAuthorized.size() == 0) {
+			searchUrl.append("&fq=visibility:public");
+		} else {
+			StringBuffer params = new StringBuffer("");
+			params.append("(visibility:public OR tenantsCode:(");
 
-		if (tenantAuthorized==null || tenantAuthorized.size()==0)
-		{
-			searchUrl.append("&fq="+URLEncoder.encode("visibility:public","UTF-8"));
-		}
-		else {
-			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
-			
 			Iterator<String> iter = tenantAuthorized.iterator();
 			while (iter.hasNext()) {
 				String tenantAuth = iter.next();
-				searchTenants .append(tenantAuth);
+				searchUrl.append(tenantAuth);
 				if (iter.hasNext())
-					searchTenants.append(" OR ");
+					params.append(" OR ");
 			}
-			searchTenants.append("))");
-			
-			
-			searchUrl.append("&fq="+URLEncoder.encode(searchTenants.toString(), "UTF-8"));
+			params.append("))");
+
+			try {
+				searchUrl.append("&fq=" + URLEncoder.encode(params.toString(), "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				searchUrl.append("&fq=" + params.toString());
+				e.printStackTrace();
+			}
 		}
 
 		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);

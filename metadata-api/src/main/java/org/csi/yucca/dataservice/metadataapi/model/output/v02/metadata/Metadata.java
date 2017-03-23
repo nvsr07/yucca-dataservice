@@ -561,7 +561,7 @@ public class Metadata {
 
 		if (searchEngineItem.getEntityType().contains("stream")) {
 			metadata.setDescription(searchEngineItem.getSoName());
-			detailUrl += searchEngineItem.getTenantCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
+			detailUrl += searchEngineItem.getOrganizationCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			iconUrl += searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			Stream stream = new Stream();
 			stream.setCode(searchEngineItem.getStreamCode());
