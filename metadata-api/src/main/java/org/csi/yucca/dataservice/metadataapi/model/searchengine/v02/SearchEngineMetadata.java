@@ -726,7 +726,7 @@ public class SearchEngineMetadata {
 
 	public Long getOpendataUpdateDateMillis() {
 		Long result = null;
-		Date d = parseRegistrationDate();
+		Date d = parseOpendataUpdateDate();
 		if (d != null) {
 			result = d.getTime();
 		}
