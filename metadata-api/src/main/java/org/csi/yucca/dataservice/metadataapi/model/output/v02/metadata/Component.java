@@ -9,7 +9,8 @@ import com.google.gson.Gson;
 public class Component {
 	private String name;
 	private String alias;
-	private String measureunit;
+	private String measureUnit;
+	private String measureUnitCategory;
 	private Double tolerance;
 	private String phenomenon;
 	private String datatype;
@@ -33,12 +34,20 @@ public class Component {
 		this.name = name;
 	}
 
-	public String getMeasureunit() {
-		return measureunit;
+	public String getMeasureUnit() {
+		return measureUnit;
 	}
 
-	public void setMeasureunit(String measureunit) {
-		this.measureunit = measureunit;
+	public void setMeasureUnit(String measureUnit) {
+		this.measureUnit = measureUnit;
+	}
+
+	public String getMeasureUnitCategory() {
+		return measureUnitCategory;
+	}
+
+	public void setMeasureUnitCategory(String measureUnitCategory) {
+		this.measureUnitCategory = measureUnitCategory;
 	}
 
 	public Double getTolerance() {
@@ -79,7 +88,8 @@ public class Component {
 			c = new Component();
 			c.setName(jsonField.getFieldName());
 			c.setAlias(jsonField.getFieldAlias());
-			c.setMeasureunit(jsonField.getMeasureUnit());
+			c.setMeasureUnit(jsonField.getMeasureUnit());
+			c.setMeasureUnitCategory(jsonField.getMeasureUnitCategory());
 			c.setDatatype(jsonField.getDataType());
 			c.setInOrder(jsonField.getOrder());
 		}
@@ -92,7 +102,8 @@ public class Component {
 			c = new Component();
 			c.setName(jsonFieldElement.getComponentName());
 			c.setAlias(jsonFieldElement.getComponentAlias());
-			c.setMeasureunit(jsonFieldElement.getMeasureUnit());
+			c.setMeasureUnit(jsonFieldElement.getMeasureUnit());
+			c.setMeasureUnitCategory(jsonFieldElement.getMeasureUnitCategory());
 			c.setDatatype(jsonFieldElement.getDataType());
 			c.setTolerance(jsonFieldElement.getTolerance());
 			c.setPhenomenon(jsonFieldElement.getPhenomenon());
