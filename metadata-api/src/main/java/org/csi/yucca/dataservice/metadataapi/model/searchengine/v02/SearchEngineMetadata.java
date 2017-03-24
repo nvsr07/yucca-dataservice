@@ -15,7 +15,7 @@ public class SearchEngineMetadata {
 
 	private String id;
 	private List<String> entityType;
-	// private List<Long> idDataset;
+//	private List<Long> idDataset;
 	private String name;
 	private String visibility;
 	private String copyright;
@@ -81,7 +81,7 @@ public class SearchEngineMetadata {
 	private List<String> soFps;
 	private List<String> soCategory;
 	private String registrationDate;
-
+	
 	public SearchEngineMetadata() {
 		super();
 	}
@@ -339,6 +339,7 @@ public class SearchEngineMetadata {
 		this.dcatRightsHolderId = dcatRightsHolderId;
 	}
 
+
 	public String getDatasetCode() {
 		return datasetCode;
 	}
@@ -378,6 +379,7 @@ public class SearchEngineMetadata {
 	public void setDatasetSubtype(String datasetSubtype) {
 		this.datasetSubtype = datasetSubtype;
 	}
+
 
 	public String getStreamCode() {
 		return streamCode;
@@ -577,13 +579,13 @@ public class SearchEngineMetadata {
 		return ret;
 	}
 
-	// public List<Long> getIdDataset() {
-	// return idDataset;
-	// }
-	//
-	// public void setIdDataset(List<Long> idDataset) {
-	// this.idDataset = idDataset;
-	// }
+//	public List<Long> getIdDataset() {
+//		return idDataset;
+//	}
+//
+//	public void setIdDataset(List<Long> idDataset) {
+//		this.idDataset = idDataset;
+//	}
 
 	public String getIsCurrent() {
 		return isCurrent;
@@ -608,6 +610,7 @@ public class SearchEngineMetadata {
 	public void setSoCategory(List<String> soCategory) {
 		this.soCategory = soCategory;
 	}
+
 
 	public void setOpendataUpdateDate(String opendataUpdateDate) {
 		this.opendataUpdateDate = opendataUpdateDate;
@@ -667,7 +670,7 @@ public class SearchEngineMetadata {
 	public void setIsOpendata(Boolean isOpendata) {
 		this.isOpendata = isOpendata;
 	}
-
+	
 	public String getRegistrationDate() {
 		return registrationDate;
 	}
@@ -681,7 +684,8 @@ public class SearchEngineMetadata {
 		if (registrationDate != null) {
 			try {
 				// Dec 30, 2016 3:06:26 PM"
-				DateFormat parser = new SimpleDateFormat("MMM dd, yyyy h:mm:ss a", Locale.US);
+				DateFormat parser = new SimpleDateFormat(
+						"MMM dd, yyyy h:mm:ss a", Locale.US);
 				result = parser.parse(registrationDate);
 			} catch (Exception e) {
 
@@ -698,5 +702,4 @@ public class SearchEngineMetadata {
 		}
 		return result;
 	}
-
 }

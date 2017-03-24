@@ -62,6 +62,7 @@ public class Metadata {
 	private String author;
 	private String language;
 	private Date registrationDate;
+	private Long registrationDateMillis;
 	private String externalreference;
 	private String license;
 	private String disclaimer;
@@ -69,7 +70,6 @@ public class Metadata {
 	private Double latitude;
 	private Double longitude;
 	private String fps;
-	private Long registrationDateMillis;
 
 	private Stream stream;
 	private Dataset dataset;
@@ -530,6 +530,7 @@ public class Metadata {
 		metadata.setSubdomain(
 				("en".equals(lang) ? searchEngineItem.getSubdomainLangEN() : searchEngineItem.getSubdomainLangIT()));
 
+		
 		metadata.setDomainCode(searchEngineItem.getDomainCode());
 		metadata.setSubdomainCode(searchEngineItem.getSubdomainCode());
 		metadata.setVisibility(searchEngineItem.getVisibility());
@@ -544,8 +545,10 @@ public class Metadata {
 		metadata.setLongitude(searchEngineItem.getLonDouble());
 		metadata.setOrganizationCode(searchEngineItem.getOrganizationCode());
 		metadata.setOrganizationDescription(searchEngineItem.getOrganizationDescription());
+		
 		metadata.setRegistrationDate(searchEngineItem.parseRegistrationDate());
 		metadata.setRegistrationDateMillis(searchEngineItem.getRegistrationDateMillis());
+
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
 //			metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(), lang));
@@ -561,7 +564,7 @@ public class Metadata {
 
 		if (searchEngineItem.getEntityType().contains("stream")) {
 			metadata.setDescription(searchEngineItem.getSoName());
-			detailUrl += searchEngineItem.getOrganizationCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
+			detailUrl += searchEngineItem.getTenantCode() + "/" + searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			iconUrl += searchEngineItem.getSoCode() + "/" + searchEngineItem.getStreamCode();
 			Stream stream = new Stream();
 			stream.setCode(searchEngineItem.getStreamCode());
@@ -650,6 +653,8 @@ public class Metadata {
 			Opendata opendata = new Opendata();
 			opendata.setDataUpdateDate(searchEngineItem.getOpendataUpdateDateLong());
 			opendata.setMetadaUpdateDate(searchEngineItem.getOpendataMetaUpdateDateDate());
+			if (searchEngineItem.getOpendataMetaUpdateDateDate()!=null)
+				opendata.setMetadaUpdateDateMillis(searchEngineItem.getOpendataMetaUpdateDateDate().getTime());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
@@ -756,7 +761,7 @@ public class Metadata {
 					for (Component component : getComponents()) {
 						StreamComponent compv1 = new StreamComponent();
 						compv1.setDatatype(component.getDatatype());
-						compv1.setMeasureunit(component.getMeasureUnit());
+						compv1.setMeasureunit(component.getMeasureunit());
 						compv1.setName(component.getName());
 						compv1.setPhenomenon(component.getPhenomenon());
 						compv1.setTolerance(component.getTolerance());
@@ -811,7 +816,7 @@ public class Metadata {
 						column.setName(component.getName());
 						column.setIskey(false);
 						column.setDatatype(component.getDatatype());
-						column.setMeasureunit(component.getMeasureUnit());
+						column.setMeasureunit(component.getMeasureunit());
 						columnsv1[counter] = column;
 						counter++;
 					}
@@ -850,7 +855,7 @@ public class Metadata {
 		}
 		else if (Constants.OUTPUT_FORMAT_V01_LIST.equals(outputFormatV01))
 		{
-			List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> metadatas = new ArrayList<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata>();
+			List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> metadatas = new ArrayList();
 			if (getStream()!=null)
 			{
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata 

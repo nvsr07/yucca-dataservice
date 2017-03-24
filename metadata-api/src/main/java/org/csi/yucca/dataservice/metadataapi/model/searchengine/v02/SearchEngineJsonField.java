@@ -9,7 +9,6 @@ public class SearchEngineJsonField {
 	private Integer sourceColumn;
 	private Integer isKey;
 	private String measureUnit;
-	private String measureUnitCategory;
 	private Integer order;
 
 	private List<SearchEngineJsonFieldElement> element;
@@ -64,14 +63,6 @@ public class SearchEngineJsonField {
 
 	public void setMeasureUnit(String measureUnit) {
 		this.measureUnit = measureUnit;
-	}
-
-	public String getMeasureUnitCategory() {
-		return measureUnitCategory;
-	}
-
-	public void setMeasureUnitCategory(String measureUnitCategory) {
-		this.measureUnitCategory = measureUnitCategory;
 	}
 
 	public Integer getOrder() {

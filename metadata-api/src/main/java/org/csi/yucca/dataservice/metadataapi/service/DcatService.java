@@ -83,6 +83,9 @@ public class DcatService extends AbstractService {
 			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
 		} catch (UserWebServiceException e) {
 			return e.getResponse();
+		} catch (Exception e) {
+			log.error("[MetadataService::getStream]"+e.getMessage(),e);
+			return Response.serverError().build();
 		}
 
 		Gson gson = JSonHelper.getInstance();
