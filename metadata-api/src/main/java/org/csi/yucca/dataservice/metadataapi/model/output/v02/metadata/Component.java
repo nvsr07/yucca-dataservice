@@ -13,6 +13,7 @@ public class Component {
 	private String measureUnitCategory;
 	private Double tolerance;
 	private String phenomenon;
+	private String phenomenonCategory;
 	private String datatype;
 	private Integer inOrder;
 	private String sinceVersion;
@@ -108,9 +109,10 @@ public class Component {
 			c.setTolerance(jsonFieldElement.getTolerance());
 			c.setPhenomenon(jsonFieldElement.getPhenomenon());
 			c.setSinceVersion(jsonFieldElement.getSinceVersion());
+			c.setPhenomenonCategory(jsonFieldElement.getPhenomenonCategory());
 		}
 		return c;
-	}
+	} 	
 
 	public String getAlias() {
 		return alias;
@@ -126,5 +128,13 @@ public class Component {
 
 	public void setSinceVersion(String sinceVersion) {
 		this.sinceVersion = sinceVersion;
+	}
+
+	public String getPhenomenonCategory() {
+		return phenomenonCategory;
+	}
+
+	public void setPhenomenonCategory(String phenomenonCategory) {
+		this.phenomenonCategory = phenomenonCategory;
 	}
 }

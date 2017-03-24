@@ -17,7 +17,7 @@ public class SearchEngineJsonField {
 	public SearchEngineJsonField() {
 		super();
 	}
-
+	
 	public String getFieldName() {
 		return fieldName;
 	}

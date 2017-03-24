@@ -42,14 +42,14 @@ public class MetadataService extends AbstractService {
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang, @QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
-			@QueryParam("includeSandbox") Boolean includeSandbox,@QueryParam("hasStream") Boolean hasStream, @QueryParam("hasDataset") Boolean hasDataset) throws NumberFormatException, UnknownHostException {
+			@QueryParam("includeSandbox") Boolean includeSandbox,@QueryParam("hasStream") Boolean hasStream, @QueryParam("hasDataset") Boolean hasDataset, @QueryParam("externalReference") String externalReference) throws NumberFormatException, UnknownHostException {
 
 
 		Result searchResult;
 		try {
 			searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(request, q, start, end, sort, tenant,
 					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, 
-					null, hasDataset, hasStream, tags, visibility, isSearchExact, includeSandbox); // expose hasDataset, hasStream?
+					null, hasDataset, hasStream, tags, visibility, isSearchExact, includeSandbox, externalReference); // expose hasDataset, hasStream?
 		} catch (UnsupportedEncodingException e) {
 			log.error("UnsupportedEncodingException",e);
 			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();

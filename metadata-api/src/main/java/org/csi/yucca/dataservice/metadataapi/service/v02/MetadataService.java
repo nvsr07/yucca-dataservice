@@ -41,7 +41,8 @@ public class MetadataService extends AbstractService {
 			@QueryParam("facet.contains.ignoreCase") String facetContainsIgnoreCase, @QueryParam("facet.limit") String facetLimit, @QueryParam("facet.offset") String facetOffset,
 			@QueryParam("facet.mincount") String facetMinCount, @QueryParam("facet.missing") String facetMissing,
 			@QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
-			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("hasStream") Boolean hasStream, @QueryParam("hasDataset") Boolean hasDataset) throws NumberFormatException, UnknownHostException {
+			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("hasStream") Boolean hasStream, @QueryParam("hasDataset") Boolean hasDataset,
+			@QueryParam("externalReference") String externalReference) throws NumberFormatException, UnknownHostException {
 
 
 		FacetParams facetParams = null;
@@ -52,7 +53,7 @@ public class MetadataService extends AbstractService {
 		try {
 			Result searchResult = org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate.getInstance().search(request, q, start, rows, sort, tenant,
 					organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang, null, 
-					facetParams, hasDataset, hasStream, tags, visibility, isSearchExact, includeSandbox); // expose hasDataset, hasStream?
+					facetParams, hasDataset, hasStream, tags, visibility, isSearchExact, includeSandbox, externalReference); // expose hasDataset, hasStream?
 			result = searchResult.toJson();
 		} catch (UnsupportedEncodingException e) {
 			log.error("UnsupportedEncodingException",e);

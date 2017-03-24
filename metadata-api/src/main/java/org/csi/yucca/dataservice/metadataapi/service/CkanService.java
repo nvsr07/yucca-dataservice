@@ -50,7 +50,7 @@ public class CkanService extends AbstractService {
 			Result searchResult = MetadataDelegate.getInstance()
 					.search(
 					request, q, start, end, sort, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon, maxLat, maxLon, lang,
-					null,null,true,null, tags, visibility, isSearchExact, includeSandbox);
+					null,null,true,null, tags, visibility, isSearchExact, includeSandbox, null);
 	
 			if (searchResult!= null && searchResult.getMetadata()!=null)
 			{

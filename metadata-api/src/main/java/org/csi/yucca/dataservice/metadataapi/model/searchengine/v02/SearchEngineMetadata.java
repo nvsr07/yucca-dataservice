@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -81,6 +82,7 @@ public class SearchEngineMetadata {
 	private List<String> soFps;
 	private List<String> soCategory;
 	private String registrationDate;
+	private String externalReference;
 	
 	public SearchEngineMetadata() {
 		super();
@@ -683,9 +685,8 @@ public class SearchEngineMetadata {
 		Date result = null;
 		if (registrationDate != null) {
 			try {
-				// Dec 30, 2016 3:06:26 PM"
-				DateFormat parser = new SimpleDateFormat(
-						"MMM dd, yyyy h:mm:ss a", Locale.US);
+				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
 				result = parser.parse(registrationDate);
 			} catch (Exception e) {
 
@@ -701,5 +702,13 @@ public class SearchEngineMetadata {
 			result = d.getTime();
 		}
 		return result;
+	}
+
+	public String getExternalReference() {
+		return externalReference;
+	}
+
+	public void setExternalReference(String externalReference) {
+		this.externalReference = externalReference;
 	}
 }

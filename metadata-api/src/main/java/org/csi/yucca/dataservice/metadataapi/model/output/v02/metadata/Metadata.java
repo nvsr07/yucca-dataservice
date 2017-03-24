@@ -541,7 +541,9 @@ public class Metadata {
 
 		metadata.setRegistrationDate(searchEngineItem.parseRegistrationDate());
 		metadata.setRegistrationDateMillis(searchEngineItem.getRegistrationDateMillis());
-
+		metadata.setExternalreference(searchEngineItem.getExternalReference());
+		
+		
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
 			// metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(),
@@ -597,6 +599,7 @@ public class Metadata {
 				twitter.setTwtUntil(searchEngineItem.getTwtUntil());
 				twitter.setTwtLastSearchId(searchEngineItem.getTwtLastSearchId());
 				stream.setTwitter(twitter);
+				
 			}
 			metadata.setStream(stream);
 		} else {
@@ -779,6 +782,7 @@ public class Metadata {
 			metadatav1.setLicense(getLicense());
 			metadatav1.setDisclaimer(getDisclaimer());
 			metadatav1.setCopyright(getCopyright());
+			metadatav1.setExternalreference(getExternalreference());
 
 			if (getDataset() != null) {
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset datasetv1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Dataset();

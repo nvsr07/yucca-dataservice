@@ -53,7 +53,7 @@ public class MetadataDelegate {
 	public Result search(HttpServletRequest request, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
 			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
 			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream, 
-			String tags, String visibility, Boolean isSearchExact, Boolean includeSandbox)
+			String tags, String visibility, Boolean isSearchExact, Boolean includeSandbox, String externalReference)
 			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException,UserWebServiceException {
 
 		log.info("[MetadataDelegate::search] START ");
@@ -150,6 +150,10 @@ public class MetadataDelegate {
 		if (organization != null) {
 			searchUrl.append("&fq=organizationCode:" + URLEncoder.encode(organization, "UTF-8"));
 			params.put("organization", organization);
+		}
+		if (externalReference != null) {
+			searchUrl.append("&fq=externalReference:" + URLEncoder.encode(externalReference, "UTF-8"));
+			params.put("externalReference", externalReference);
 		}
 
 		if (dCatReady != null) {
