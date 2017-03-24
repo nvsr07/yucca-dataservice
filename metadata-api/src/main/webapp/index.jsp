@@ -86,7 +86,8 @@
 					<tr><td>isSearchExact</td><td>Se valorizzato a true effettua la ricerca per parola esatta (invece che lemmattizzata)</td><td>Campo booleano (true/false).  Se omesso vale false.</td></tr>
 					<tr><td>includeSandbox</td><td>Indica che è necessario includere i dati di sandbox (di default non sono presenti)</td><td>Campo booleano (true/false). Se omesso vale false.</td></tr>
 					<tr><td>hasStream</td><td>Se a true include solo i dataset/stream che hanno una componente stream (i formati CKAN e DCAT non consentono l'utilizzo di questo parametro) </td><td>Campo booleano (true/false). Non indicare il parametro per averli tutti</td></tr>
-					<tr><td>hasDataset</td><td>Se a true include solo i dataset/stream che hanno una componente dataset (i formati CKAN e DCAT non consentono l'utilizzo di questo parametro)s</td><td>Campo booleano (true/false). Non indicare il parametro per averli tutti</td></tr>
+					<tr><td>hasDataset</td><td>Se a true include solo i dataset/stream che hanno una componente dataset (i formati CKAN e DCAT non consentono l'utilizzo di questo parametro)s/td><td>Campo booleano (true/false). Non indicare il parametro per averli tutti</td></tr>
+					<tr><td>externalReference</td><td>Filtra per il campo externalReference (wildcards consentite)</td><td>Campo stringa</td></tr>
 					
 					
 					
