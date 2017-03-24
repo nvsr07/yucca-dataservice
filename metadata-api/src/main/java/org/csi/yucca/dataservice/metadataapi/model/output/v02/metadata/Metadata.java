@@ -756,7 +756,7 @@ public class Metadata {
 					for (Component component : getComponents()) {
 						StreamComponent compv1 = new StreamComponent();
 						compv1.setDatatype(component.getDatatype());
-						compv1.setMeasureunit(component.getMeasureunit());
+						compv1.setMeasureunit(component.getMeasureUnit());
 						compv1.setName(component.getName());
 						compv1.setPhenomenon(component.getPhenomenon());
 						compv1.setTolerance(component.getTolerance());
@@ -811,7 +811,7 @@ public class Metadata {
 						column.setName(component.getName());
 						column.setIskey(false);
 						column.setDatatype(component.getDatatype());
-						column.setMeasureunit(component.getMeasureunit());
+						column.setMeasureunit(component.getMeasureUnit());
 						columnsv1[counter] = column;
 						counter++;
 					}
