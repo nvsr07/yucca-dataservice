@@ -56,13 +56,16 @@
 			<h2 id="search">Ricerca</h2>
 			<div class='indent'>
 				<p>
-					<strong>URL Base ricerca in formato JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/search/full?</code></pre>
+					<strong>URL Base ricerca in formato JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/search?</code></pre>
 				</p>
 				<p>
 					<strong>URL Base ricerca in formato CKAN</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/ckan/2/package_list?</code></pre>
 				</p>
 				<p>
 					<strong>URL Base per generazione di Data Catalog Interoperability Protocol (DCAT-AP-IT) in formato JSON+LD</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/dcat/dataset_list?</code></pre>
+				</p>
+				<p>
+					<i>V01 (deprecated) URL Base ricerca in formato JSON</i><pre><code>https://api.smartdatanet.it/metadataapi/api/search/full?</code></pre>
 				</p>
 				<strong>Parametri</strong> 
 				<table>
@@ -98,7 +101,7 @@
 			<h2 id="detail">Dettaglio</h2>
 			<div class='indent'>
 				<p>
-					<strong>URL Base dettaglio stream in formato JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span>/<span class='url-dynamic-parameter-stream'>{{streamCode}}</span>?</code></pre>
+					<strong>URL Base dettaglio stream in formato JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span>/<span class='url-dynamic-parameter-stream'>{{streamCode}}</span>?</code></pre>
 				dove: 
 					<ul>
 						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> &egrave; il codice dell'organizzazione proprietaria dello stream </li>
@@ -107,8 +110,7 @@
 					</ul>
 				</p>
 				<p>
-
-					<strong>URL Base dettaglio dataset in formato JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span></code></pre>
+				<strong>URL Base dettaglio dataset in formato JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span></code></pre>
 					dove: 
 					<ul>
 						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> &egrave; il codice dell'organizzazione proprietaria dello stream</li>
@@ -120,6 +122,23 @@
 					dove: 
 					<ul>
 						<li><span class='url-dynamic-parameter-package-id'>{{packageId}}</span> &egrave; il packageId preso dalla lista restituita dalla ricerca (sempre in formato ckan)</li>
+					</ul>
+				</p>
+				<p>
+					<i>V01 (deprecated) URL Base dettaglio stream in formato JSON</i><pre><code>https://api.smartdatanet.it/metadataapi/api/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span>/<span class='url-dynamic-parameter-stream'>{{streamCode}}</span>?</code></pre>
+				dove: 
+					<ul>
+						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> &egrave; il codice dell'organizzazione proprietaria dello stream </li>
+						<li><span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span> &egrave; il codice dello Smart Object utilizzato dallo stream</li>
+						<li><span class='url-dynamic-parameter-stream'>{{streamCode}}</span> &egrave; il codice dello stream </li>
+					</ul>
+				</p>
+				<p>
+				<i>V01 (deprecated) URL Base dettaglio dataset in formato JSON</i><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span></code></pre>
+					dove: 
+					<ul>
+						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> &egrave; il codice dell'organizzazione proprietaria dello stream</li>
+						<li><span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span> &egrave; il codice del dataset </li>
 					</ul>
 				</p>
 			

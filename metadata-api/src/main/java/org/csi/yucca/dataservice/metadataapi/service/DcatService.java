@@ -161,7 +161,7 @@ public class DcatService extends AbstractService {
 					dsDCAT.setAccessRights(metadataST.getVisibility());
 					dsDCAT.setIdentifier(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
 					if (metadataST.getOpendata() != null)
-						dsDCAT.setModified(metadataST.getOpendata().getDataUpdateDate());
+						dsDCAT.setModified(metadataST.getOpendata().getDataUpdateDateMillis());
 					dsDCAT.setVersionInfo(metadataST.getVersion());
 					dsDCAT.setSubTheme(metadataST.getSubdomainCode());
 	

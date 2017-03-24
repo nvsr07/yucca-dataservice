@@ -649,14 +649,6 @@ public class SearchEngineMetadata {
 		return fps;
 	}
 
-	public Long getOpendataUpdateDateLong() {
-		return null;
-	}
-
-	public Date getOpendataMetaUpdateDateDate() {
-		return null;
-	}
-
 	public Boolean getDcatReady() {
 		return BooleanUtils.isTrue(dcatReady);
 	}
@@ -703,7 +695,32 @@ public class SearchEngineMetadata {
 		}
 		return result;
 	}
+	
+	public Date parseOpendataUpdateDate() {
+		Date result = null;
+		if (opendataUpdateDate != null) {
+			try {
+				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+				result = parser.parse(opendataUpdateDate);
+			} catch (Exception e) {
 
+			}
+		}
+		return result;
+	}
+
+	public Long getOpendataUpdateDateMillis() {
+		Long result = null;
+		Date d = parseRegistrationDate();
+		if (d != null) {
+			result = d.getTime();
+		}
+		return result;
+	}
+
+
+	
 	public String getExternalReference() {
 		return externalReference;
 	}

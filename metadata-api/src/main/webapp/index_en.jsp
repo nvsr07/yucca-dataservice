@@ -56,10 +56,16 @@
 			<h2 id="search">Search</h2>
 			<div class='indent'>
 				<p>
-					<strong>Base Search URL with output in JSON format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/search/full?</code></pre>
+					<strong>Base search Url format JSON</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/search?</code></pre>
 				</p>
 				<p>
-					<strong>Base Search URL with output in CKAN format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/ckan/2/package_list?</code></pre>
+					<strong>Base search Url format CKAN</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/ckan/2/package_list?</code></pre>
+				</p>
+				<p>
+					<strong>Base Url Data Catalog Interoperability Protocol (DCAT-AP-IT) format JSON+LD</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/dcat/dataset_list?</code></pre>
+				</p>
+				<p>
+					<i>V01 (deprecated) Base search Url format JSON</i><pre><code>https://api.smartdatanet.it/metadataapi/api/search/full?</code></pre>
 				</p>
 				<strong>Parameters</strong> 
 				<table>
@@ -72,13 +78,25 @@
 						<tr><td>start</td><td>Pagination: first  row that will be extract</td><td>Numeric (if omitted, it will used zero)</td></tr>
 						<tr><td>end</td><td>Pagination: number of row that will be extract</td><td>Numeric (if omitted, it will used 12). Max value: 1000</td></tr>
 						<tr><td>lang</td><td>Lang for the domain and tags of the dataset/stream</td><td>Language managed: italian (lang=it), english(lang=en)</td></tr>
+					<tr><td>minLat</td><td>Minimal latitude of square</td><td>Numeric Field min=-90.0 max=90.0 </td></tr>
+					<tr><td>minLon</td><td>Minimal longitude of square</td><td>Numeric Field min=-180.0 max=180.0</td></tr>
+					<tr><td>maxLat</td><td>Max latitude of square</td><td>Numeric Field min=-90.0 max=90.0</td></tr>
+					<tr><td>maxLon</td><td>Max longitude of square</td><td>Numeric Field min=-180.0 max=180.0</td></tr>
+					<tr><td>tags</td><td>List of tags of dataset/stream</td><td>List of tagsCode comma separated</td></tr>
+					<tr><td>visibility</td><td>Filter on visibility</td><td>public/private</td></tr>
+					<tr><td>isSearchExact</td><td>If true does exact match</td><td>Boolean (true/false). Default false.</td></tr>
+					<tr><td>includeSandbox</td><td>If true includes data from sandbox</td><td>Boolean (true/false). Default false.</td></tr>
+					<tr><td>hasStream</td><td>If true includes only dataset/stream with a stream (CKAN and DCAT doesn't accept this parameter) </td><td>Boolean (true/false).</td></tr>
+					<tr><td>hasDataset</td><td>If true includes only dataset/stream with a dataset (CKAN and DCAT doesn't accept this parameter) </td><td>Boolean (true/false).</td></tr>
+					<tr><td>externalReference</td><td>Seaqrch for externalReference (wildcards permitted)</td><td>String field</td></tr>
+
 					</tbody>
 				</table>
 			</div>
 			<h2 id="detail">Detail</h2>
 			<div class='indent'>
 				<p>
-					<strong>Base Detail URL for stream with output in JSON format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span>/<span class='url-dynamic-parameter-stream'>{{streamCode}}</span>?</code></pre>
+					<strong>Base Detail URL for stream with output in JSON format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span>/<span class='url-dynamic-parameter-stream'>{{streamCode}}</span>?</code></pre>
 				where: 
 					<ul>
 						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> is the Tenant code of the owner of the stream</li>
@@ -87,8 +105,7 @@
 					</ul>
 				</p>
 				<p>
-
-					<strong>Base Detail URL for dataset with output in JSON format </strong><pre><code>https://api.smartdatanet.it/metadataapi/api/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span></code></pre>
+					<strong>Base Detail URL for dataset with output in JSON format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span></code></pre>
 					where: 
 					<ul>
 						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> is the Tenant code of the owner of the stream</li>
@@ -96,10 +113,27 @@
 					</ul>
 				</p>
 				<p>
-					<strong>Base Detail URL  with output in JSON format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/ckan/2/package_list/<span class='url-dynamic-parameter-package-id'>{{packageId}}</span></code></pre> 
+					<strong>Base Detail URL  with output in CKAN format</strong><pre><code>https://api.smartdatanet.it/metadataapi/api/ckan/2/package_list/<span class='url-dynamic-parameter-package-id'>{{packageId}}</span></code></pre> 
 					where:
 					<ul>
 						<li><span class='url-dynamic-parameter-package-id'>{{packageId}}</span> is the packageId retrieved from the list returned with the search (in ckan format)</li>
+					</ul>
+				</p>
+				<p>
+					<i>V01 (deprecated) Base Detail URL for stream with output in JSON format</i><pre><code>https://api.smartdatanet.it/metadataapi/api/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span>/<span class='url-dynamic-parameter-stream'>{{streamCode}}</span>?</code></pre>
+				dove: 
+					<ul>
+						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> &egrave; il codice dell'organizzazione proprietaria dello stream </li>
+						<li><span class='url-dynamic-parameter-smartobject'>{{smartobjectCode}}</span> &egrave; il codice dello Smart Object utilizzato dallo stream</li>
+						<li><span class='url-dynamic-parameter-stream'>{{streamCode}}</span> &egrave; il codice dello stream </li>
+					</ul>
+				</p>
+				<p>
+				<i>V01 (deprecated) Base Detail URL for dataset with output in JSON format</i><pre><code>https://api.smartdatanet.it/metadataapi/api/v02/detail/<span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span>/<span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span></code></pre>
+					dove: 
+					<ul>
+						<li><span class='url-dynamic-parameter-tenant'>{{tenantCode}}</span> &egrave; il codice dell'organizzazione proprietaria dello stream</li>
+						<li><span class='url-dynamic-parameter-dataset'>{{datasetCode}}</span> &egrave; il codice del dataset </li>
 					</ul>
 				</p>
 			

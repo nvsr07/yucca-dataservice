@@ -5,7 +5,8 @@ import java.util.Date;
 
 public class Opendata{
 	private String author;
-	private Long dataUpdateDate;
+	private Date dataUpdateDate;
+	private Long dataUpdateDateMillis;
 	private Date metadaUpdateDate;
 	private Long metadaUpdateDateMillis;
 	
@@ -27,11 +28,11 @@ public class Opendata{
 		this.author = author;
 	}
 
-	public Long getDataUpdateDate() {
+	public Date getDataUpdateDate() {
 		return dataUpdateDate;
 	}
 
-	public void setDataUpdateDate(Long dataUpdateDate) {
+	public void setDataUpdateDate(Date dataUpdateDate) {
 		this.dataUpdateDate = dataUpdateDate;
 	}
 
@@ -81,6 +82,14 @@ public class Opendata{
 
 	public void setMetadaUpdateDateMillis(Long metadaUpdateDateMillis) {
 		this.metadaUpdateDateMillis = metadaUpdateDateMillis;
+	}
+
+	public Long getDataUpdateDateMillis() {
+		return dataUpdateDateMillis;
+	}
+
+	public void setDataUpdateDateMillis(Long dataUpdateDateMillis) {
+		this.dataUpdateDateMillis = dataUpdateDateMillis;
 	}
 
 }

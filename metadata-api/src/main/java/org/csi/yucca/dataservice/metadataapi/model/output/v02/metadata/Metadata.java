@@ -459,7 +459,7 @@ public class Metadata {
 			if (getOpendata().getMetadaUpdateDate() != null)
 				extras.setMetadata_modified(Util.formatDateCkan(getOpendata().getMetadaUpdateDate()));
 			if (getOpendata().getDataUpdateDate() != null)
-				extras.setPackage_modified(Util.formatDateCkan(new Date(getOpendata().getDataUpdateDate())));
+				extras.setPackage_modified(Util.formatDateCkan(getOpendata().getDataUpdateDate()));
 
 		}
 		if (getRegistrationDate() != null)
@@ -648,10 +648,9 @@ public class Metadata {
 
 		if (searchEngineItem.getIsOpendata()) {
 			Opendata opendata = new Opendata();
-			opendata.setDataUpdateDate(searchEngineItem.getOpendataUpdateDateLong());
-			opendata.setMetadaUpdateDate(searchEngineItem.getOpendataMetaUpdateDateDate());
-			if (searchEngineItem.getOpendataMetaUpdateDateDate() != null)
-				opendata.setMetadaUpdateDateMillis(searchEngineItem.getOpendataMetaUpdateDateDate().getTime());
+			opendata.setDataUpdateDate(searchEngineItem.parseOpendataUpdateDate());
+			opendata.setDataUpdateDateMillis(searchEngineItem.getOpendataUpdateDateMillis());
+//			opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
@@ -814,7 +813,7 @@ public class Metadata {
 
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
 				opendatav1.setAuthor(getOpendata().getAuthor());
-				opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDate());
+				opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDateMillis());
 				opendatav1.setLanguage(getOpendata().getLanguage());
 				opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
 				metadatav1.setOpendata(opendatav1);
@@ -895,7 +894,7 @@ public class Metadata {
 
 			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
 			opendatav1.setAuthor(getOpendata().getAuthor());
-			opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDate());
+			opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDateMillis());
 			opendatav1.setLanguage(getOpendata().getLanguage());
 			opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
 			metadatav1StreamSummary.setOpendata(opendatav1);
@@ -953,7 +952,7 @@ public class Metadata {
 
 			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
 			opendatav1.setAuthor(getOpendata().getAuthor());
-			opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDate());
+			opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDateMillis());
 			opendatav1.setLanguage(getOpendata().getLanguage());
 			opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
 			metadatav1DatasetSummary.setOpendata(opendatav1);
