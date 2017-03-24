@@ -8,11 +8,16 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.log4j.Logger;
+import org.csi.yucca.dataservice.metadataapi.service.v02.MetadataService;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
 
 public class SearchEngineMetadata {
+
+	
+	static Logger log = Logger.getLogger(SearchEngineMetadata.class);
 
 	private String id;
 	private List<String> entityType;
@@ -565,6 +570,7 @@ public class SearchEngineMetadata {
 			try {
 				ret = new Double(getLat());
 			} catch (Exception e) {
+				log.error("ERROR Parsing getLatDouble"+getLat(),e);
 			}
 		}
 		return ret;
@@ -576,6 +582,7 @@ public class SearchEngineMetadata {
 			try {
 				ret = new Double(getLon());
 			} catch (Exception e) {
+				log.error("ERROR Parsing getLonDouble"+getLon(),e);
 			}
 		}
 		return ret;
@@ -644,6 +651,7 @@ public class SearchEngineMetadata {
 			try {
 				fps = new Double(soFps.get(0));
 			} catch (Exception e) {
+				log.error("ERROR Parsing getFps"+soFps,e);
 			}
 		}
 		return fps;
@@ -681,7 +689,7 @@ public class SearchEngineMetadata {
 				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
 				result = parser.parse(registrationDate);
 			} catch (Exception e) {
-
+				log.error("ERROR Parsing parseRegistrationDate "+registrationDate,e);
 			}
 		}
 		return result;
@@ -700,11 +708,17 @@ public class SearchEngineMetadata {
 		Date result = null;
 		if (opendataUpdateDate != null) {
 			try {
+				Long millis = Long.parseLong(opendataUpdateDate);
+				return new Date(millis);
+			} catch (NumberFormatException e1) {
+				log.error("ERROR Parsing parseOpendataUpdateDate "+opendataUpdateDate,e1);
+			}
+			try {
 				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
 				result = parser.parse(opendataUpdateDate);
 			} catch (Exception e) {
-
+				log.error("ERROR Parsing parseOpendataUpdateDate "+opendataUpdateDate,e);
 			}
 		}
 		return result;
