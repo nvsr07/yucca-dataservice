@@ -81,6 +81,7 @@ public class SearchEngineMetadata {
 	private List<String> phenomenon;
 	private String isCurrent;
 	private Boolean isOpendata;
+	private String opendataAuthor;
 	private String opendataUpdateDate;
 	private String opendataMetaUpdateDate;
 	private String opendataLanguage;
@@ -685,7 +686,7 @@ public class SearchEngineMetadata {
 		Date result = null;
 		if (registrationDate != null) {
 			try {
-				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
 				result = parser.parse(registrationDate);
 			} catch (Exception e) {
@@ -714,7 +715,7 @@ public class SearchEngineMetadata {
 				log.error("ERROR Parsing parseOpendataUpdateDate "+opendataUpdateDate,e1);
 			}
 			try {
-				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
 				result = parser.parse(opendataUpdateDate);
 			} catch (Exception e) {
@@ -741,5 +742,13 @@ public class SearchEngineMetadata {
 
 	public void setExternalReference(String externalReference) {
 		this.externalReference = externalReference;
+	}
+
+	public String getOpendataAuthor() {
+		return opendataAuthor;
+	}
+
+	public void setOpendataAuthor(String opendataAuthor) {
+		this.opendataAuthor = opendataAuthor;
 	}
 }

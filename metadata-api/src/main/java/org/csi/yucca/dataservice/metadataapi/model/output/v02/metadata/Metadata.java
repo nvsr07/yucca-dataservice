@@ -651,6 +651,7 @@ public class Metadata {
 			opendata.setDataUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setDataUpdateDateMillis(searchEngineItem.getOpendataUpdateDateMillis());
 //			opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
+			opendata.setAuthor(searchEngineItem.getOpendataAuthor());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
