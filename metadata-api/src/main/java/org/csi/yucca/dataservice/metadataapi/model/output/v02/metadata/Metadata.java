@@ -581,7 +581,6 @@ public class Metadata {
 			if (searchEngineItem.getSoCategory() != null && searchEngineItem.getSoCategory().size() > 0)
 				smartobject.setCategory(searchEngineItem.getSoCategory().get(0));
 
-			stream.setSmartobject(smartobject);
 
 			if (searchEngineItem.getTwtQuery() != null) {
 				// metadata.setSubtype(METADATA_SUBTYPE_SOCIAL);
@@ -600,7 +599,12 @@ public class Metadata {
 				twitter.setTwtLastSearchId(searchEngineItem.getTwtLastSearchId());
 				stream.setTwitter(twitter);
 				
+				smartobject.setType(Smartobject.SMARTOBJECT_TYPE_TWITTER);
 			}
+			else {
+				smartobject.setType(Smartobject.SMARTOBJECT_TYPE_DEVICE);
+			}
+			stream.setSmartobject(smartobject);
 			metadata.setStream(stream);
 		} else {
 			metadata.setDescription(searchEngineItem.getDatasetDescription());
@@ -718,6 +722,8 @@ public class Metadata {
 				smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
 				smartobjectv1.setCategory(getStream().getSmartobject().getCategory());
 				smartobjectv1.setType(getStream().getSmartobject().getType());
+				
+				
 				if (getStream().getSmartobject().getType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
 					smartobjectv1.setTwtCount(getStream().getTwitter().getTwtCount());
 					smartobjectv1.setTwtGeolocLat(getStream().getTwitter().getTwtGeolocLat());
