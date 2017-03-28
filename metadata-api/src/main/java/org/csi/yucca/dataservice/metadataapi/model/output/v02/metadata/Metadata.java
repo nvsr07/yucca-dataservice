@@ -573,7 +573,7 @@ public class Metadata {
 			if (searchEngineItem.getLat() != null)
 				smartobject.setLatitude(searchEngineItem.getLatDouble());
 			if (searchEngineItem.getLon() != null)
-				smartobject.setLatitude(searchEngineItem.getLonDouble());
+				smartobject.setLongitude(searchEngineItem.getLonDouble());
 
 			smartobject.setCode(searchEngineItem.getSoCode());
 			smartobject.setName(searchEngineItem.getSoName());
