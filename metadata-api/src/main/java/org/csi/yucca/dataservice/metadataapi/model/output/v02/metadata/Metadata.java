@@ -796,7 +796,8 @@ public class Metadata {
 				datasetv1.setDatasetType(getDataset().getDatasetSubtype());
 				datasetv1.setDatasetId(getDataset().getDatasetId());
 				datasetv1.setImportFileType(getDataset().getImportFileType());
-
+				datasetv1.setCode(getDataset().getCode());
+				
 				if (getComponents() != null && getComponents().size() > 0) {
 					DatasetColumn[] columnsv1 = new DatasetColumn[getComponents().size()];
 					int counter = 0;
