@@ -89,6 +89,7 @@ public class SearchEngineMetadata {
 	private List<String> soCategory;
 	private String registrationDate;
 	private String externalReference;
+	private String soType;
 	
 	public SearchEngineMetadata() {
 		super();
@@ -750,5 +751,13 @@ public class SearchEngineMetadata {
 
 	public void setOpendataAuthor(String opendataAuthor) {
 		this.opendataAuthor = opendataAuthor;
+	}
+
+	public String getSoType() {
+		return soType;
+	}
+
+	public void setSoType(String soType) {
+		this.soType = soType;
 	}
 }

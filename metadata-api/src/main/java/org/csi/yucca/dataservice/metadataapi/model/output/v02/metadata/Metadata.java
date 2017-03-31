@@ -580,9 +580,10 @@ public class Metadata {
 			smartobject.setDescription(searchEngineItem.getSoDescription());
 			if (searchEngineItem.getSoCategory() != null && searchEngineItem.getSoCategory().size() > 0)
 				smartobject.setCategory(searchEngineItem.getSoCategory().get(0));
-
-
-			if (searchEngineItem.getTwtQuery() != null) {
+			
+			smartobject.setType(searchEngineItem.getSoType());
+			
+			if (searchEngineItem.getSoType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
 				// metadata.setSubtype(METADATA_SUBTYPE_SOCIAL);
 				Twitter twitter = new Twitter();
 				twitter.setTwtRatePercentage(searchEngineItem.getTwtRatePercentage());
@@ -599,11 +600,9 @@ public class Metadata {
 				twitter.setTwtLastSearchId(searchEngineItem.getTwtLastSearchId());
 				stream.setTwitter(twitter);
 				
-				smartobject.setType(Smartobject.SMARTOBJECT_TYPE_TWITTER);
+				
 			}
-			else {
-				smartobject.setType(Smartobject.SMARTOBJECT_TYPE_DEVICE);
-			}
+			
 			stream.setSmartobject(smartobject);
 			metadata.setStream(stream);
 		} else {
@@ -894,6 +893,8 @@ public class Metadata {
 		smartobjectv1.setCode(getStream().getSmartobject().getCode());
 		smartobjectv1.setName(getStream().getSmartobject().getName());
 		smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
+		smartobjectv1.setType(getStream().getSmartobject().getType());
+
 		streamv1.setSmartobject(smartobjectv1);
 		metadatav1StreamSummary.setStream(streamv1);
 
