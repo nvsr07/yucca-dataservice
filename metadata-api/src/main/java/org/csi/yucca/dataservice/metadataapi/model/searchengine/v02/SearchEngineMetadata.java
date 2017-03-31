@@ -684,14 +684,25 @@ public class SearchEngineMetadata {
 	}
 
 	public Date parseRegistrationDate() {
+		return parseDate(registrationDate);
+	}
+
+	private Date parseDate(String date) {
 		Date result = null;
-		if (registrationDate != null) {
+		if (date != null) {
 			try {
 				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
-				result = parser.parse(registrationDate);
+				result = parser.parse(date);
 			} catch (Exception e) {
-				log.error("ERROR Parsing parseRegistrationDate "+registrationDate,e);
+				try {
+					DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+					parser.setTimeZone(TimeZone.getTimeZone("UTC"));
+					result = parser.parse(date);
+				} catch (Exception eq)
+				{
+					log.error("ERROR Parsing date "+date,eq);
+				}
 			}
 		}
 		return result;
@@ -707,23 +718,7 @@ public class SearchEngineMetadata {
 	}
 	
 	public Date parseOpendataUpdateDate() {
-		Date result = null;
-		if (opendataUpdateDate != null) {
-			try {
-				Long millis = Long.parseLong(opendataUpdateDate);
-				return new Date(millis);
-			} catch (NumberFormatException e1) {
-				log.error("ERROR Parsing parseOpendataUpdateDate "+opendataUpdateDate,e1);
-			}
-			try {
-				DateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-				parser.setTimeZone(TimeZone.getTimeZone("UTC"));
-				result = parser.parse(opendataUpdateDate);
-			} catch (Exception e) {
-				log.error("ERROR Parsing parseOpendataUpdateDate "+opendataUpdateDate,e);
-			}
-		}
-		return result;
+		return parseDate(opendataUpdateDate);
 	}
 
 	public Long getOpendataUpdateDateMillis() {
