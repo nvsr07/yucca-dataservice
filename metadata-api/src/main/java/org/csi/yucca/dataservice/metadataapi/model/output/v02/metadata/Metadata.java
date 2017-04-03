@@ -567,9 +567,9 @@ public class Metadata {
 			smartobject.setDescription(searchEngineItem.getSoDescription());
 			if (searchEngineItem.getSoCategory() != null && searchEngineItem.getSoCategory().size() > 0)
 				smartobject.setCategory(searchEngineItem.getSoCategory().get(0));
-			
+
 			smartobject.setType(searchEngineItem.getSoType());
-			
+
 			if (searchEngineItem.getSoType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
 				// metadata.setSubtype(METADATA_SUBTYPE_SOCIAL);
 				Twitter twitter = new Twitter();
@@ -586,14 +586,9 @@ public class Metadata {
 				twitter.setTwtUntil(searchEngineItem.getTwtUntil());
 				twitter.setTwtLastSearchId(searchEngineItem.getTwtLastSearchId());
 				stream.setTwitter(twitter);
-<<<<<<< HEAD
 
-=======
-				
-				
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice.git
 			}
-			
+
 			stream.setSmartobject(smartobject);
 			metadata.setStream(stream);
 		} else {
@@ -704,8 +699,7 @@ public class Metadata {
 				smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
 				smartobjectv1.setCategory(getStream().getSmartobject().getCategory());
 				smartobjectv1.setType(getStream().getSmartobject().getType());
-				
-				
+
 				if (getStream().getSmartobject().getType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
 					smartobjectv1.setTwtCount(getStream().getTwitter().getTwtCount());
 					smartobjectv1.setTwtGeolocLat(getStream().getTwitter().getTwtGeolocLat());
@@ -779,7 +773,7 @@ public class Metadata {
 				datasetv1.setDatasetId(getDataset().getDatasetId());
 				datasetv1.setImportFileType(getDataset().getImportFileType());
 				datasetv1.setCode(getDataset().getCode());
-				
+
 				if (getComponents() != null && getComponents().size() > 0) {
 					DatasetColumn[] columnsv1 = new DatasetColumn[getComponents().size()];
 					int counter = 0;
