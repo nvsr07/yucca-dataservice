@@ -81,7 +81,12 @@
 					</execution>
 				</executions>
 				<configuration>
-					<file>${project.build.directory}/generated-sources/docs/api/v02/index.html</file>
+				 <basedir>${project.build.directory}/generated-sources/docs/api/</basedir>
+			        <includes>
+			          <include>v01/index.html</include>
+			          <include>v02/index.html</include>
+			        </includes>
+				<!-- 	<file>${project.build.directory}/generated-sources/docs/api/v02/index.html</file>  -->
 					<replacements>
 						<replacement>
 							<token>&lt;/head&gt;</token>
