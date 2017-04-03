@@ -157,8 +157,8 @@ public class MetadataDelegate {
 		}
 
 		if (dCatReady != null) {
-			searchUrl.append("&fq=dCatReady:" + (dCatReady ? "true" : "false"));
-			params.put("dCatReady", "" + dCatReady);
+			searchUrl.append("&fq=dcatReady:" + (dCatReady ? "true" : "false"));
+			params.put("dcatReady", "" + dCatReady);
 		}
 
 		if (opendata != null) {

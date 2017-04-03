@@ -560,17 +560,17 @@ public class Metadata {
 			if (searchEngineItem.getLat() != null)
 				smartobject.setLatitude(searchEngineItem.getLatDouble());
 			if (searchEngineItem.getLon() != null)
-				smartobject.setLatitude(searchEngineItem.getLonDouble());
+				smartobject.setLongitude(searchEngineItem.getLonDouble());
 
 			smartobject.setCode(searchEngineItem.getSoCode());
 			smartobject.setName(searchEngineItem.getSoName());
 			smartobject.setDescription(searchEngineItem.getSoDescription());
 			if (searchEngineItem.getSoCategory() != null && searchEngineItem.getSoCategory().size() > 0)
 				smartobject.setCategory(searchEngineItem.getSoCategory().get(0));
-
-			stream.setSmartobject(smartobject);
-
-			if (searchEngineItem.getTwtQuery() != null) {
+			
+			smartobject.setType(searchEngineItem.getSoType());
+			
+			if (searchEngineItem.getSoType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
 				// metadata.setSubtype(METADATA_SUBTYPE_SOCIAL);
 				Twitter twitter = new Twitter();
 				twitter.setTwtRatePercentage(searchEngineItem.getTwtRatePercentage());
@@ -586,8 +586,15 @@ public class Metadata {
 				twitter.setTwtUntil(searchEngineItem.getTwtUntil());
 				twitter.setTwtLastSearchId(searchEngineItem.getTwtLastSearchId());
 				stream.setTwitter(twitter);
+<<<<<<< HEAD
 
+=======
+				
+				
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice.git
 			}
+			
+			stream.setSmartobject(smartobject);
 			metadata.setStream(stream);
 		} else {
 			metadata.setDescription(searchEngineItem.getDatasetDescription());
@@ -697,6 +704,8 @@ public class Metadata {
 				smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
 				smartobjectv1.setCategory(getStream().getSmartobject().getCategory());
 				smartobjectv1.setType(getStream().getSmartobject().getType());
+				
+				
 				if (getStream().getSmartobject().getType().equals(Smartobject.SMARTOBJECT_TYPE_TWITTER)) {
 					smartobjectv1.setTwtCount(getStream().getTwitter().getTwtCount());
 					smartobjectv1.setTwtGeolocLat(getStream().getTwitter().getTwtGeolocLat());
@@ -769,7 +778,8 @@ public class Metadata {
 				datasetv1.setDatasetType(getDataset().getDatasetSubtype());
 				datasetv1.setDatasetId(getDataset().getDatasetId());
 				datasetv1.setImportFileType(getDataset().getImportFileType());
-
+				datasetv1.setCode(getDataset().getCode());
+				
 				if (getComponents() != null && getComponents().size() > 0) {
 					DatasetColumn[] columnsv1 = new DatasetColumn[getComponents().size()];
 					int counter = 0;
@@ -866,6 +876,8 @@ public class Metadata {
 		smartobjectv1.setCode(getStream().getSmartobject().getCode());
 		smartobjectv1.setName(getStream().getSmartobject().getName());
 		smartobjectv1.setDescription(getStream().getSmartobject().getDescription());
+		smartobjectv1.setType(getStream().getSmartobject().getType());
+
 		streamv1.setSmartobject(smartobjectv1);
 		metadatav1StreamSummary.setStream(streamv1);
 
