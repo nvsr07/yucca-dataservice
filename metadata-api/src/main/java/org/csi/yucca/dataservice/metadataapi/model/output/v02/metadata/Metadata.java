@@ -39,7 +39,6 @@ public class Metadata {
 	static Logger log = Logger.getLogger(CkanService.class);
 
 	private String name;
-	// private String code;
 	private String version;
 	private String description;
 	private List<String> type;
@@ -58,7 +57,6 @@ public class Metadata {
 	private List<String> tags;
 	private String icon;
 	private String visibility;
-	private Boolean isopendata;
 	private String author;
 	private String language;
 	private Date registrationDate;
@@ -76,8 +74,6 @@ public class Metadata {
 	private Opendata opendata;
 	private DCat dcat;
 	private List<Component> components;
-
-	private Boolean isOpendata;
 
 	public void setAuthor(String author) {
 		this.author = author;
@@ -139,14 +135,6 @@ public class Metadata {
 
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
-	}
-
-	public Boolean getIsopendata() {
-		return isopendata;
-	}
-
-	public void setIsopendata(Boolean isopendata) {
-		this.isopendata = isopendata;
 	}
 
 	public String getAuthor() {
@@ -542,8 +530,7 @@ public class Metadata {
 		metadata.setRegistrationDate(searchEngineItem.parseRegistrationDate());
 		metadata.setRegistrationDateMillis(searchEngineItem.getRegistrationDateMillis());
 		metadata.setExternalreference(searchEngineItem.getExternalReference());
-		
-		
+
 		if (searchEngineItem.getTagCode() != null) {
 			metadata.setTagCodes(searchEngineItem.getTagCode());
 			// metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(),
@@ -599,7 +586,7 @@ public class Metadata {
 				twitter.setTwtUntil(searchEngineItem.getTwtUntil());
 				twitter.setTwtLastSearchId(searchEngineItem.getTwtLastSearchId());
 				stream.setTwitter(twitter);
-				
+
 			}
 			metadata.setStream(stream);
 		} else {
@@ -650,7 +637,7 @@ public class Metadata {
 			Opendata opendata = new Opendata();
 			opendata.setDataUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setDataUpdateDateMillis(searchEngineItem.getOpendataUpdateDateMillis());
-//			opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
+			// opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setAuthor(searchEngineItem.getOpendataAuthor());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
 			opendata.setOpendata(true);
@@ -681,14 +668,6 @@ public class Metadata {
 		}
 
 		return metadata;
-	}
-
-	public Boolean getIsOpendata() {
-		return isOpendata;
-	}
-
-	public void setIsOpendata(Boolean isOpendata) {
-		this.isOpendata = isOpendata;
 	}
 
 	public List<org.csi.yucca.dataservice.metadataapi.model.output.v01.Metadata> toV01(String outputFormatV01) {
@@ -809,8 +788,8 @@ public class Metadata {
 				metadatav1.setDataset(datasetv1);
 			}
 
-			if (getIsopendata() != null) {
-				metadatav1.setIsopendata(getIsopendata());
+			if (getOpendata() != null) {
+				metadatav1.setIsopendata(getOpendata().isOpendata());
 
 				org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
 				opendatav1.setAuthor(getOpendata().getAuthor());
@@ -890,8 +869,8 @@ public class Metadata {
 		streamv1.setSmartobject(smartobjectv1);
 		metadatav1StreamSummary.setStream(streamv1);
 
-		if (getIsopendata() != null) {
-			metadatav1StreamSummary.setIsopendata(getIsopendata());
+		if (getOpendata() != null) {
+			metadatav1StreamSummary.setIsopendata(getOpendata().isOpendata());
 
 			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
 			opendatav1.setAuthor(getOpendata().getAuthor());
@@ -948,8 +927,8 @@ public class Metadata {
 		metadatav1DatasetSummary.setDisclaimer(getDisclaimer());
 		metadatav1DatasetSummary.setCopyright(getCopyright());
 
-		if (getIsopendata() != null) {
-			metadatav1DatasetSummary.setIsopendata(getIsopendata());
+		if (getOpendata() != null) {
+			metadatav1DatasetSummary.setIsopendata(getOpendata().isOpendata());
 
 			org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata opendatav1 = new org.csi.yucca.dataservice.metadataapi.model.output.v01.Opendata();
 			opendatav1.setAuthor(getOpendata().getAuthor());

@@ -1,0 +1,962 @@
+swagger: '2.0'
+info:
+  version: '2.0.0'
+  title: Smart Data Platform Metadata Api 
+  description: |
+        # Search metadata API
+        To view the metadata of private stream/dataset, is necessary authenticate the call with a token oAuth, adding in the **HTTP header** the attribute 
+        `Authorization`  `Bearer myTokenOauth`
+        Is possible to use any token recovered from Userportal to find private stream / dataset visible from the user owner of the token.
+        The oAuth token are avaible in the section Subscriptions in the [Userportal](https://userportal.smartdatanet.it/userportal) (visible only if logged in)
+        More details on the [Developer Center](http://developer.smartdatanet.it/docs/utilizzo-dello-store-e-dei-token-oauth-2/) in the section **Come accedere ai servizi di lettura autenticandosi con Oauth**
+  
+  contact:
+    name: Yucca Smart Data Platform
+    email: smartdatanet@csi.it
+    url: http://www.smartdatanet.it
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+host: api.smartdatanet.it
+basePath: /metadataapi
+
+schemes:
+ - https
+ 
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+- name: metadata
+  description: Metadata Api
+- name: ckan
+  description: Metadata Api in the ckan standard
+- name: dcat
+  description: Api related in the dcat standard
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /api/v02/search:
+    get: 
+      tags: 
+        - metadata
+      summary: search metadata
+      operationId: searchMetadata
+      description: |
+        Search metadata
+        For private dataset use the oauth token (top of the page for details)
+      security:
+        - Bearer: []
+      parameters:
+      - $ref: '#/parameters/q'
+      - $ref: '#/parameters/tenant'
+      - $ref: '#/parameters/organization'
+      - $ref: '#/parameters/domain'
+      - $ref: '#/parameters/subdomain'
+      - $ref: '#/parameters/opendata'
+      - $ref: '#/parameters/start'
+      - $ref: '#/parameters/end'
+      - $ref: '#/parameters/lang'
+      - $ref: '#/parameters/minLat'
+      - $ref: '#/parameters/minLon'
+      - $ref: '#/parameters/maxLat'
+      - $ref: '#/parameters/maxLon'
+      - $ref: '#/parameters/tags'
+      - $ref: '#/parameters/visibility'
+      - $ref: '#/parameters/isSearchExact'
+      - $ref: '#/parameters/includeSandbox'
+      - $ref: '#/parameters/hasStream'
+      - $ref: '#/parameters/hasDataset'
+      - $ref: '#/parameters/externalReference'
+      - $ref: '#/parameters/facet_field'
+      - $ref: '#/parameters/facet_prefix'
+      - $ref: '#/parameters/facet_sort'
+      - $ref: '#/parameters/facet_contains'
+      - $ref: '#/parameters/facet_contains_ignoreCase'
+      - $ref: '#/parameters/facet_limit'
+      - $ref: '#/parameters/facet_offset'
+      - $ref: '#/parameters/facet_mincount'
+      - $ref: '#/parameters/facet_missing'
+      
+      
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+             $ref: '#/definitions/SearchResult'
+        500:
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/ErrorResponse'
+
+  /api/ckan/2/package_list:
+    get: 
+      tags: 
+        - ckan
+      summary: search metadata using the ckan standard
+      operationId: searchMetadataCkan
+      description: |
+        Search metadata using the ckan standard
+        For private dataset use the oauth token (top of the page for details)
+      parameters:
+      - $ref: '#/parameters/q'
+      - $ref: '#/parameters/tenant'
+      - $ref: '#/parameters/domain'
+      - $ref: '#/parameters/opendata'
+      - $ref: '#/parameters/start'
+      - $ref: '#/parameters/end'
+      - $ref: '#/parameters/lang'
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+             $ref: '#/definitions/CkanPackageList'
+        500:
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/ErrorResponse'
+
+  /api/dcat/dataset_list:
+    get: 
+      tags: 
+        - dcat
+      summary: search metadata using the dcat standard
+      operationId: searchMetadataDcat
+      description: |
+        Search metadata using the dcat standard
+        For private dataset use the oauth token (top of the page for details)
+      parameters:
+      - $ref: '#/parameters/q'
+      - $ref: '#/parameters/tenant'
+      - $ref: '#/parameters/domain'
+      - $ref: '#/parameters/opendata'
+      - $ref: '#/parameters/start'
+      - $ref: '#/parameters/end'
+      - $ref: '#/parameters/lang'
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+             $ref: '#/definitions/DcatMetadataCollection'
+        500:
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/ErrorResponse'
+
+  /api/v02/detail/{{tenantCode}}/{{smartobjectCode}}/{{streamCode}}:
+    get: 
+      tags: 
+        - metadata
+      summary: load the detail of the stream metadata indetified by tenant code, smartobject code and stream code
+      operationId: streamMetadataDetail
+      description: |
+        load the detail of the stream metadata indetified by tenant code, smartobject code and stream code
+        For private dataset use the oauth token (top of the page for details)
+      parameters:
+      - $ref: '#/parameters/tenantCode'
+      - $ref: '#/parameters/smartobjectCode'
+      - $ref: '#/parameters/streamCode'
+      responses:
+        200:
+          description: Detail of the Metadata
+          schema:
+             $ref: '#/definitions/Metadata'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/ErrorResponse'
+
+  /api/v02/detail/{tenantCode}/{datasetCode}:
+    get: 
+      tags: 
+        - metadata
+      summary: load the detail of the dataset metadata indetified by tenant code  and  dataset code 
+      operationId: datasetMetadataDetail
+      description: |
+        load the detail of the dataset metadata indetified by tenant code  and  dataset code 
+        For private dataset use the oauth token (top of the page for details)
+      parameters:
+      - $ref: '#/parameters/tenantCode'
+      - $ref: '#/parameters/datasetCode'
+      responses:
+        200:
+          description: Detail of the Metadata
+          schema:
+             $ref: '#/definitions/Metadata'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/ErrorResponse'
+             
+  /ckan/2/package_list/{packageId}:
+    get: 
+      tags: 
+        - ckan
+      summary: load the detail of the dataset metadata indetified by the packageId using the ckan standard
+      operationId: metadataDetailCkan
+      description: |
+       load the detail of the dataset metadata indetified by the packageId using the ckan standard
+        For private dataset use the oauth token (top of the page for details)
+      parameters:
+      - $ref: '#/parameters/ckanPackageId'
+      responses:
+        200:
+          description: Detail of the Metadata
+          schema:
+             $ref: '#/definitions/CkanPackage'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/ErrorResponse'
+
+             
+definitions:
+    SearchResult:
+      properties:
+        start:
+          type: integer
+          format: int32
+        count:
+          type: integer
+          format: int32
+          description: number of metadata in response
+        totalCount:
+          type: integer
+          format: int32
+          description: total number of metadata found
+        totalPages:
+          type: integer
+          format: int32
+          description: total pages of metadata
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: map with all the parameters used
+        metadata:
+          type: array
+          items:
+            $ref: '#/definitions/Metadata'
+        facetCount:
+          type: object
+          additionalProperties:
+            $ref: '#/definitions/FacetField'
+          description: map with a list facet for the fields requested
+        
+    FacetField:
+      type: object
+      additionalProperties:
+       type: number
+       format: double
+      description: map with a list items of the element of the facet with the occorrence count
+    
+
+    Metadata:
+      properties:
+        name:
+          type: string
+        type:
+          type: array
+          enum:
+            - stream
+            - dataset
+          items:
+            type: string
+        subtype:
+          type: string
+        version:
+          type: integer
+          format: int32
+        code:
+          type: string
+        description:
+          type: string
+        domain:
+          type: string
+          description: domain in the language requested by the parametr lang (default italian)
+        domainCode:
+          type: string
+        subdomain:
+          type: string
+          description: subdomain in the language requested by the parametr lang (default italian)
+        subdomainCode:
+          type: string
+        tenantCode:
+          type: string
+        tenantName:
+          type: string
+        tenantDelegateCodes:
+          type: array
+          items:
+            type: string
+          description: codes of authorized tenants
+        organizationCode:
+          type: string
+        organizationDescription:
+          type: string
+        tagCodes: 
+          type: array
+          items: 
+              type: string  
+        tags: 
+          type: array
+          items: 
+            type: string  
+          description: tags in the language requested by the parametr lang (default italian)
+        icon:
+          type: string
+          description: url of the icon
+        visibility:
+          type: string
+          enum:
+            - public
+            - private
+        author:
+          type: string
+        language:
+          type: string
+        registrationDate:
+          type: string
+        registrationDateMillis:
+          type: number
+          format: int64
+          description: Time in milliseconds since the UNIX epoch (January 1, 1970 00:00:00 UTC) of the registration date
+        externalreference:
+          type: string
+          description: optional reference to other system identifier
+        license:
+          type: string
+        disclaimer:
+          type: string
+        copyright:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        stream:
+           $ref: '#/definitions/Stream'
+        dataset:
+           $ref: '#/definitions/Dataset'
+        opendata:
+           $ref: '#/definitions/Opendata'
+        dcat:
+           $ref: '#/definitions/Dcat'
+        detailUrl:
+          type: string
+        compoents:
+          type: array
+          items:
+            $ref: '#/definitions/Component'
+
+    Smartobject:
+       properties:
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        type:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        altitude:
+          type: number
+          format: double
+        building:
+          type: string
+        floor:
+          type: string
+        room:
+          type: string
+        mobile:
+          type: boolean
+        esposition:
+          type: string
+        twtCount:
+          type: number
+          format: int32
+        twtGeolocLat:
+          type: number
+          format: double
+
+    Twitter: 
+        twtCount:
+          type: number
+        twtGeolocLat:
+          type: number
+          format: double
+        twtGeolocLon:
+          type: number
+          format: double
+        twtGeolocRadius:
+          type: number
+          format: double
+        twtRatePercentage:
+          type: number
+          format: int32
+        twtMaxStreams:
+          type: number
+          format: int32
+        twtQuery:
+          type: string
+        twtLang:
+          type: string
+        twtGeolocUnit:
+          type: string
+        twtLocale:
+          type: string
+        twtResultType:
+          type: string
+        twtUntil:
+          type: string
+        twtLastSearchId:
+          type: string
+          
+    Stream:
+       properties:
+        code:
+          type: string
+        fps:
+          type: number
+          format: double
+        saveData:
+          type: boolean
+        smartobject:
+            $ref: '#/definitions/Smartobject'
+        twitter:
+            $ref: '#/definitions/Twitter'
+
+            
+    Component:
+       properties:
+        name:
+          type: string
+        alias:
+          type: string
+        dataType:
+          type: string
+        measureUnit:
+          type: string
+        measureUnitCategory:
+          type: string
+        phenomenon:
+          type: string
+        phenomenonCategory:
+          type: string
+        tolerance:
+          type: string
+        datatype:
+          type: string
+        inOrder:
+          type: number
+          format: int32
+        sinceVersion:
+          type: string
+
+    Dataset:
+       properties:
+        datasetId:
+          type: number
+          format: int64
+        code:
+          type: string
+        name:
+          type: string
+        datasetType:
+          type: string
+        datasetSubtype:
+          type: string
+        importFileType:
+          type: string
+
+    Opendata:
+       properties:
+        author:
+          type: string
+        dataUpdateDate:
+          type: integer
+          format: int64
+        language:
+          type: string
+        metadaUpdateDate:
+          type: string
+          format: date-time
+    
+    Dcat:
+       properties:
+        dcatCreatorName:
+          type: string
+        dcatCreatorType:
+          type: string
+        dcatCreatorId:
+          type: string
+        dcatRightsHolderName:
+          type: string
+        dcatRightsHolderId:
+          type: string
+        dcatRightsHolderType:
+          type: string
+        dcatNomeOrg:
+          type: string
+        dcatEmailOrg:
+          type: string
+
+                                            
+    #Ckan
+    CkanPackageList:
+        properties:
+            type: array
+            items: 
+                type: string  
+            
+    CkanPackage:
+        properties:
+          id:
+              type: string
+          name:
+              type: string
+          title:
+              type: string
+          revision_id:
+              type: string
+          maintainer:
+              type: string
+          maintainer_email:
+              type: string
+          license_id:
+              type: string
+          license:
+              type: string
+          license_title:
+              type: string
+          license_url:
+              type: string
+          metadata_created:
+              type: string
+          metadata_modified:
+              type: string
+          author:
+              type: string
+          author_email:
+              type: string
+          download_url:
+              type: string
+          state:
+              type: string
+          version:
+              type: string
+          type:
+              type: string
+          notes:
+              type: string
+          notes_rendered:
+              type: string
+          isopen:
+              type: boolean
+          tags:
+              type: array
+              items:
+                  type: string  
+          resources:
+              type: array
+              items:
+                properties:
+                   id:
+                       type: string  
+                   resource_group_id:
+                       type: string  
+                   name:
+                       type: string  
+                   description:
+                       type: string  
+                   created:
+                       type: string  
+                   url:
+                       type: string  
+                   webstore_url:
+                       type: string  
+                   cache_last_updated:
+                       type: string  
+                   package_id:
+                       type: string  
+                   webstore_last_updated:
+                       type: string  
+                   size:
+                       type: integer  
+                   position:
+                       type: integer  
+                   resource_type:
+                       type: string  
+                   last_modified:
+                       type: string  
+                   hash:
+                       type: string  
+                   format:
+                       type: string  
+                   mimetype:
+                       type: string  
+                   mimetype_inner:
+                       type: string  
+                   cache_url:
+                       type: string  
+          url:
+              type: string
+          ckan_url:
+              type: string
+          extras:
+              type: array
+              items:
+                properties:
+                   package_id:
+                       type: string  
+                   topic:
+                       type: string  
+                   hidden_field:
+                       type: string  
+                   metadata_created:
+                       type: string  
+                   metadata_modified:
+                       type: string  
+                   package_created:
+                       type: string  
+                   package_modified:
+                       type: string  
+                   tag:
+                       type: string  
+                   title:
+                       type: string  
+                   description:
+                       type: string  
+                   license_id:
+                       type: string  
+                   package_type:
+                       type: string  
+                   resource:
+                       type: array
+                       items:
+                           type: string  
+                   extrasList:
+                       properties:
+                           resource:
+                               type: array
+                               items:
+                                  type: string  
+
+    #Dcat
+    DcatMetadataCollection:
+        properties:
+            "@context": 
+                type: string
+            "@id":
+                type: string
+            
+            "@type":
+                type: string
+            description: 
+                type: string
+            title:
+                type: string
+            homepage:
+                type: string
+            language: 
+                type: string
+            modified: 
+                type: string
+            themes: 
+                type: string
+            spatial: 
+                type: string
+            license: 
+                properties:
+                    licenseType:
+                        type: string
+                    name:
+                        type: string
+            publisher:
+                    properties:
+                        name:
+                            type: string
+                        "@type":
+                            type: string
+                        "@id":
+                            type: string
+                        publisherType:
+                            type: string
+            dataset: 
+                type: array
+                items:
+                    properties:
+                        description: 
+                            type: string
+                        title: 
+                            type: string
+                        contactPoint: 
+                            properties:
+                            "@type":
+                                type: string
+                            hasEmail:
+                                type: string
+                            hasTelephone:
+                                type: string
+                        keyword: 
+                            type: array
+                            items:
+                                type: string
+                        creator:
+                                properties:
+                                    name:
+                                        type: string
+                                    "@type":
+                                        type: string
+                                    "@id":
+                                        type: string
+                        theme: 
+                            type: string
+                        accessRights: 
+                            type: string
+                        accrualPeriodicity: 
+                            type: string
+                        identifier: 
+                            type: string
+                        "@type": 
+                            type: string
+                        versionInfo: 
+                            type: string
+                        rightsHolder:
+                            properties:
+                                name:
+                                    type: string
+                                "@type":
+                                    type: string
+                                "@id":
+                                    type: string
+                        distribution:
+                            type: array
+                            items:
+                                    properties:
+                                        accessURL:
+                                            type: string
+                                        format:
+                                            type: string
+                                        license:
+                                            properties:
+                                                name:
+                                                    type: string
+                        downloadURL:
+                            type: string
+                        language:
+                            type: string
+                        "@type":
+                            type: string
+
+    ErrorResponse:
+       errorCode:
+         type: string
+       message:
+         type: string
+         
+
+parameters:   
+   q:
+      name: "q"
+      in: "query"
+      description: "search query, free text"
+      type: "string"
+   tenant:
+      name: "tenant"
+      in: "query"
+      description: "tenant code of the owner of the stream/dataset"
+      type: "string"
+   organization:
+      name: "organization"
+      in: "query"
+      description: "organization code of the owner of the stream/dataset"
+      type: "string"
+   domain:
+      name: "domain"
+      in: "query"
+      description: "Domain code of the stream/dataset"
+      type: "string"
+      example: "Tourism"
+   subdomain:
+      name: "subdomain"
+      in: "query"
+      description: "Subdomain code of the stream/dataset"
+      type: "string"
+      example: "Culture"
+   opendata:
+      name: "opendata"
+      in: "query"
+      description: "Properties of the dataset/stream to be opendata"
+      type: "string"
+   start:
+      name: "start"
+      in: "query"
+      description: "Pagination: first row that will be extract"
+      type: "integer"
+   end:
+      name: "end"
+      in: "query"
+      description: "Pagination: number of row that will be extract"
+      type: "integer"       
+   lang:
+      name: "lang"
+      in: "query"
+      description: "Lang for the domain and tags of the dataset/stream. Language managed: italian (lang=it), english(lang=en)"
+      type: "string"
+   minLat:
+      name: "minLat"
+      in: "query"
+      description: "Geolocalized search - Minimum latitude of the rectangle containing  smartobject: min=-90.0 max=90.0"
+      type: "number"
+   minLon:
+      name: "minLon"
+      in: "query"
+      description: "Geolocalized search - Minimum longitude of the rectangle containing  smartobject: min=-180.0 max=180.0"
+      type: "number"
+   maxLat:
+      name: "maxLat"
+      in: "query"
+      description: "Geolocalized search - Maximum latitude of the rectangle containing  smartobject: min=-90.0 max=90.0"
+      type: "string"
+   maxLon:
+      name: "maxLon"
+      in: "query"
+      description: "Geolocalized search - Maximum longitude of the rectangle containing  smartobject: min=-180.0 max=180.0"
+      type: "number"
+   tags:
+      name: "tags"
+      in: "query"
+      description: "List of tags related to dataset/stream. Enter comma-separated tagCode"
+      type: "string"
+   visibility:
+      name: "visibility"
+      in: "query"
+      description: "Visibility type: public (visibility=public) or private  (visibility=private)"
+      type: "string"
+   isSearchExact:
+      name: "isSearchExact"
+      in: "query"
+      description: "Flag for the exact search: isSearchExact=true (default value false)"
+      type: "boolean"
+   includeSandbox:
+      name: "includeSandbox"
+      in: "query"
+      description: "Flag for the search also among sandbox data: includeSandbox=true (default value false)"
+      type: "boolean"
+   hasStream:
+      name: "hasStream"
+      in: "query"
+      description: "Flag for search only data with a stream component: hasStream=true"
+      type: "boolean"
+   hasDataset:
+      name: "hasDataset"
+      in: "query"
+      description: "Flag for search only data with a dataset component: hasStream=true"
+      type: "boolean"
+   externalReference:
+      name: "externalReference"
+      in: "query"
+      description: "Filter on external reference"
+      type: "string"
+   facet_field:
+      name: "facet.field"
+      in: "query"
+      description: "List of comma separate fields to be treated as a facet."
+      type: "string"
+   facet_prefix:
+      name: "facet.prefix"
+      in: "query"
+      description: "Limits the terms used for faceting to those that begin with the specified prefix."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_sort:
+      name: "facet.sort"
+      in: "query"
+      description: "Controls how faceted results are sorted."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_contains:
+      name: "facet.contains"
+      in: "query"
+      description: "Limits the terms used for faceting to those that contain the specified substring."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_contains_ignoreCase:
+      name: "facet.contains.ignoreCase"
+      in: "query"
+      description: "If facet.contains is used, ignore case when searching for the specified substring."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_limit:
+      name: "facet.limit"
+      in: "query"
+      description: "Controls how many constraints should be returned for each facet."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_offset:
+      name: "facet.offset"
+      in: "query"
+      description: "Specifies an offset into the facet results at which to begin displaying facets."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_mincount:
+      name: "facet.mincount"
+      in: "query"
+      description: "Specifies the minimum counts required for a facet field to be included in the response."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+   facet_missing:
+      name: "facet.missing"
+      in: "query"
+      description: "Controls whether Solr should compute a count of all matching results which have no value for the field, in addition to the term-based constraints of a facet field."
+      type: "string"
+      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+
+
+   # path params   
+   tenantCode:
+      name: "tenantCode"
+      in: "path"
+      description: "Tenant code of the owner of the stream"
+      type: "string"
+   smartobjectCode:
+      name: "smartobjectCode"
+      in: "path"
+      description: "Smart Object code used by the stream"
+      type: "string"
+   streamCode:
+      name: "streamCode"
+      in: "path"
+      description: "Code of the stream"
+      type: "string"            
+   datasetCode:
+      name: "datasetCode"
+      in: "path"
+      description: "Code of the dataset"
+      type: "string"
+   ckanPackageId:
+      name: "ckanPackageId"
+      in: "path"
+      description: "Package id of the dataset"
+      type: "string"
+                  

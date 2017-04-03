@@ -39,6 +39,7 @@
 			    <version>2.2.1</version>
 			    <executions>
 			        <execution>
+			            <id>api-v01</id>
 			            <goals>
 			                <goal>generate</goal>
 			            </goals>
@@ -47,7 +48,21 @@
 			                <language>html2</language>
 			                <configOptions>
 			                   <!-- <sourceFolder>src/gen/html2/main</sourceFolder>  -->
-			                   <output>${project.build.directory}/generated-sources/api-doc</output>
+			                   <output>${project.build.directory}/generated-sources/api-doc/v01</output>
+			                </configOptions>
+			            </configuration>
+			        </execution>
+			        <execution>
+			            <id>api-v02</id>
+			            <goals>
+			                <goal>generate</goal>
+			            </goals>
+			            <configuration>
+			                <inputSpec>src/main/swagger/v02/yaml/swagger.yaml</inputSpec>
+			                <language>html2</language>
+			                <configOptions>
+			                   <!-- <sourceFolder>src/gen/html2/main</sourceFolder>  -->
+			                   <output>${project.build.directory}/generated-sources/api-doc/v02</output>
 			                </configOptions>
 			            </configuration>
 			        </execution>

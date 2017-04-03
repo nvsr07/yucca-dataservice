@@ -4,12 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
-import org.csi.yucca.dataservice.metadataapi.service.v02.MetadataService;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
