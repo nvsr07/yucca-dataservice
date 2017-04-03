@@ -1,0 +1,9 @@
+/* light blue #00bbf0
+  light gray #e3e4e6
+  light green #dbd91b
+  green #009640 */
+body{background-color: white;}
+.sidenav{background:#00bbf0 url("https://userportal.smartdatanet.it/userportal/img/familyidentity/logosdp-top-navbar.png") 20px 20px    no-repeat; padding-top: 96px;}
+.sidenav > li.nav-header > a{background-color:#000; color: #fff; border-color: #000;}
+.sidenav > li > a{color: #000;}
+.sidenav > li > a:hover{text-decoration: underline; background-color:transparent; color: #000;}
