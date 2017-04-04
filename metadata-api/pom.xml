@@ -24,7 +24,7 @@
 					<webXml>${webXmlPath}/web.xml</webXml>
 					<webResources>
 						<resource>
-							<directory>${project.build.directory}\generated-sources</directory>
+							<directory>${project.build.directory}/generated-sources</directory>
 							<includes>
 								<include>**/*.html</include>
 							</includes>
