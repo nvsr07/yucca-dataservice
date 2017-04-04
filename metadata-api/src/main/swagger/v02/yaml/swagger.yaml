@@ -221,6 +221,7 @@ paths:
              
 definitions:
     SearchResult:
+      type: object
       properties:
         start:
           type: integer
@@ -261,6 +262,7 @@ definitions:
     
 
     Metadata:
+      type: object
       properties:
         name:
           type: string
@@ -361,6 +363,7 @@ definitions:
             $ref: '#/definitions/Component'
 
     Smartobject:
+       type: object
        properties:
         name:
           type: string
@@ -399,6 +402,8 @@ definitions:
           format: double
 
     Twitter: 
+      type: object
+      properties:  
         twtCount:
           type: number
         twtGeolocLat:
@@ -432,6 +437,7 @@ definitions:
           type: string
           
     Stream:
+       type: object
        properties:
         code:
           type: string
@@ -447,6 +453,7 @@ definitions:
 
             
     Component:
+       type: object
        properties:
         name:
           type: string
@@ -473,6 +480,7 @@ definitions:
           type: string
 
     Dataset:
+       type: object
        properties:
         datasetId:
           type: number
@@ -489,6 +497,7 @@ definitions:
           type: string
 
     Opendata:
+       type: object
        properties:
         author:
           type: string
@@ -502,6 +511,7 @@ definitions:
           format: date-time
     
     Dcat:
+       type: object
        properties:
         dcatCreatorName:
           type: string
@@ -523,12 +533,12 @@ definitions:
                                             
     #Ckan
     CkanPackageList:
-        properties:
-            type: array
-            items: 
-                type: string  
+      type: array
+      items: 
+          type: string  
             
     CkanPackage:
+        type: object
         properties:
           id:
               type: string
@@ -579,6 +589,7 @@ definitions:
           resources:
               type: array
               items:
+                type: object
                 properties:
                    id:
                        type: string  
@@ -625,6 +636,7 @@ definitions:
           extras:
               type: array
               items:
+                type: object
                 properties:
                    package_id:
                        type: string  
@@ -655,6 +667,7 @@ definitions:
                        items:
                            type: string  
                    extrasList:
+                       type: object
                        properties:
                            resource:
                                type: array
@@ -663,6 +676,7 @@ definitions:
 
     #Dcat
     DcatMetadataCollection:
+        type: object
         properties:
             "@context": 
                 type: string
@@ -685,43 +699,48 @@ definitions:
                 type: string
             spatial: 
                 type: string
-            license: 
+            license:
+                type: object 
                 properties:
                     licenseType:
                         type: string
                     name:
                         type: string
             publisher:
-                    properties:
-                        name:
-                            type: string
-                        "@type":
-                            type: string
-                        "@id":
-                            type: string
-                        publisherType:
-                            type: string
+              type: object
+              properties:
+                  name:
+                      type: string
+                  "@type":
+                      type: string
+                  "@id":
+                      type: string
+                  publisherType:
+                      type: string
             dataset: 
                 type: array
                 items:
+                    type: object
                     properties:
                         description: 
                             type: string
                         title: 
                             type: string
                         contactPoint: 
+                            type: object
                             properties:
-                            "@type":
+                              "@type":
                                 type: string
-                            hasEmail:
+                              hasEmail:
                                 type: string
-                            hasTelephone:
+                              hasTelephone:
                                 type: string
                         keyword: 
                             type: array
                             items:
                                 type: string
                         creator:
+                                type: object
                                 properties:
                                     name:
                                         type: string
@@ -737,11 +756,10 @@ definitions:
                             type: string
                         identifier: 
                             type: string
-                        "@type": 
-                            type: string
                         versionInfo: 
                             type: string
                         rightsHolder:
+                            type: object
                             properties:
                                 name:
                                     type: string
@@ -752,15 +770,17 @@ definitions:
                         distribution:
                             type: array
                             items:
-                                    properties:
-                                        accessURL:
-                                            type: string
-                                        format:
-                                            type: string
-                                        license:
-                                            properties:
-                                                name:
-                                                    type: string
+                              type: object
+                              properties:
+                                  accessURL:
+                                      type: string
+                                  format:
+                                      type: string
+                                  license:
+                                      type: object
+                                      properties:
+                                          name:
+                                              type: string
                         downloadURL:
                             type: string
                         language:
@@ -769,10 +789,12 @@ definitions:
                             type: string
 
     ErrorResponse:
-       errorCode:
-         type: string
-       message:
-         type: string
+      type: object
+      properties:
+        errorCode:
+          type: string
+        message:
+          type: string
          
 
 parameters:   
@@ -796,13 +818,11 @@ parameters:
       in: "query"
       description: "Domain code of the stream/dataset"
       type: "string"
-      example: "Tourism"
    subdomain:
       name: "subdomain"
       in: "query"
       description: "Subdomain code of the stream/dataset"
       type: "string"
-      example: "Culture"
    opendata:
       name: "opendata"
       in: "query"
@@ -888,49 +908,49 @@ parameters:
       in: "query"
       description: "Limits the terms used for faceting to those that begin with the specified prefix."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_sort:
       name: "facet.sort"
       in: "query"
       description: "Controls how faceted results are sorted."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_contains:
       name: "facet.contains"
       in: "query"
       description: "Limits the terms used for faceting to those that contain the specified substring."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_contains_ignoreCase:
       name: "facet.contains.ignoreCase"
       in: "query"
       description: "If facet.contains is used, ignore case when searching for the specified substring."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_limit:
       name: "facet.limit"
       in: "query"
       description: "Controls how many constraints should be returned for each facet."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_offset:
       name: "facet.offset"
       in: "query"
       description: "Specifies an offset into the facet results at which to begin displaying facets."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_mincount:
       name: "facet.mincount"
       in: "query"
       description: "Specifies the minimum counts required for a facet field to be included in the response."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
    facet_missing:
       name: "facet.missing"
       in: "query"
       description: "Controls whether Solr should compute a count of all matching results which have no value for the field, in addition to the term-based constraints of a facet field."
       type: "string"
-      url: https://cwiki.apache.org/confluence/display/solr/Faceting
+      #url: https://cwiki.apache.org/confluence/display/solr/Faceting
 
 
    # path params   

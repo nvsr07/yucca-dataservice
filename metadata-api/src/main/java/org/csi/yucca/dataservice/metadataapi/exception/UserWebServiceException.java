@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 
 public class UserWebServiceException extends Exception implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private Response response;
 	
 	public UserWebServiceException(Response response) {

@@ -25,7 +25,6 @@ import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngine
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineResult;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
-import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.FacetParams;
 import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -295,7 +294,6 @@ public class MetadataDelegate {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
-		String result = null;
 		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
 
 		searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query,"UTF-8") + "&start=0&end=1");

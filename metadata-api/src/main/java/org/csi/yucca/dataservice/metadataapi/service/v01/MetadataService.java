@@ -3,7 +3,6 @@ package org.csi.yucca.dataservice.metadataapi.service.v01;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletContext;
@@ -63,7 +62,7 @@ public class MetadataService extends AbstractService {
 
 		if (searchResult!=null && searchResult.getMetadata()!=null)
 		{
-			ArrayList<Metadata> listMetadataV1 = new ArrayList();
+			ArrayList<Metadata> listMetadataV1 = new ArrayList<Metadata>();
 			for (org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata metadatav2 : searchResult.getMetadata()) {
 				listMetadataV1.addAll(metadatav2.toV01(Constants.OUTPUT_FORMAT_V01_LIST));
 			}

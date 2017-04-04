@@ -193,6 +193,7 @@ paths:
              
 definitions:
     MetadataCollectionItem:
+      type: object
       properties:
         name:
           type: string
@@ -219,7 +220,8 @@ definitions:
               type: string  
         tags: 
           type: array
-          items: string  
+          items: 
+              type: string  
           description: tags in the language requested by the parametr lang (default italian)
         icon:
           type: string
@@ -258,8 +260,10 @@ definitions:
           type: number
           format: double
         stream:
+          type: object
           properties:
             smartobject:
+              type: object
               properties:
                name:
                  type: string
@@ -276,7 +280,8 @@ definitions:
 
            
         dataset:
-           properties:
+          type: object
+          properties:
                datasetId:
                    type: number
                    format: int64
@@ -284,6 +289,7 @@ definitions:
           type: string
 
     Metadata:
+      type: object
       properties:
         name:
           type: string
@@ -306,10 +312,12 @@ definitions:
           type: string
         tagCodes: 
           type: array
-          items: string  
+          items: 
+            type: string  
         tags: 
           type: array
-          items: string  
+          items: 
+            type: string  
           description: tags in the language requested by the parametr lang (default italian)
         icon:
           type: string
@@ -356,6 +364,7 @@ definitions:
        
        
     Smartobject:
+       type: object
        properties:
         name:
           type: string
@@ -407,6 +416,7 @@ definitions:
           
 
     Stream:
+       type: object
        properties:
         name:
           type: string
@@ -425,6 +435,7 @@ definitions:
                 $ref: '#/definitions/Component'
             
     Component:
+       type: object
        properties:
         name:
           type: string
@@ -438,6 +449,7 @@ definitions:
           type: string
 
     Dataset:
+       type: object
        properties:
         name:
           type: string
@@ -449,6 +461,7 @@ definitions:
                 $ref: '#/definitions/Column'
 
     Column:
+       type: object
        properties:
         name:
           type: string
@@ -462,6 +475,7 @@ definitions:
           type: boolean
 
     Opendata:
+       type: object
        properties:
         author:
           type: string
@@ -475,6 +489,7 @@ definitions:
           format: date-time
     
     MetadataCollection:
+        type: object
         properties:
             count:
                 type: integer
@@ -486,12 +501,12 @@ definitions:
                       
     #Ckan
     CkanPackageList:
-        properties:
-            type: array
-            items: 
-                type: string  
-            
+      type: array
+      items: 
+          type: string  
+          
     CkanPackage:
+        type: object
         properties:
           id:
               type: string
@@ -542,6 +557,7 @@ definitions:
           resources:
               type: array
               items:
+                type: object
                 properties:
                    id:
                        type: string  
@@ -588,6 +604,7 @@ definitions:
           extras:
               type: array
               items:
+                type: object
                 properties:
                    package_id:
                        type: string  
@@ -618,6 +635,7 @@ definitions:
                        items:
                            type: string  
                    extrasList:
+                       type: object
                        properties:
                            resource:
                                type: array
@@ -626,6 +644,7 @@ definitions:
 
     #Dcat
     DcatMetadataCollection:
+        type: object
         properties:
             "@context": 
                 type: string
@@ -649,12 +668,14 @@ definitions:
             spatial: 
                 type: string
             license: 
+                type: object
                 properties:
                     licenseType:
                         type: string
                     name:
                         type: string
             publisher:
+                    type: object
                     properties:
                         name:
                             type: string
@@ -667,71 +688,77 @@ definitions:
             dataset: 
                 type: array
                 items:
-                    properties:
-                        description: 
+                  type: object
+                  properties:
+                    description: 
+                        type: string
+                    title: 
+                        type: string
+                    contactPoint: 
+                        type: object
+                        properties:
+                          "@type":
                             type: string
-                        title: 
+                          hasEmail:
                             type: string
-                        contactPoint: 
-                            properties:
-                            "@type":
-                                type: string
-                            hasEmail:
-                                type: string
-                            hasTelephone:
-                                type: string
-                        keyword: 
-                            type: array
-                            items:
-                                type: string
-                        creator:
-                                properties:
-                                    name:
-                                        type: string
-                                    "@type":
-                                        type: string
-                                    "@id":
-                                        type: string
-                        theme: 
+                          hasTelephone:
                             type: string
-                        accessRights: 
+                    keyword: 
+                        type: array
+                        items:
                             type: string
-                        accrualPeriodicity: 
-                            type: string
-                        identifier: 
-                            type: string
-                        "@type": 
-                            type: string
-                        versionInfo: 
-                            type: string
-                        rightsHolder:
-                            properties:
-                                name:
-                                    type: string
-                                "@type":
-                                    type: string
-                                "@id":
-                                    type: string
-                        distribution:
-                            type: array
-                            items:
-                                    properties:
-                                        accessURL:
-                                            type: string
-                                        format:
-                                            type: string
-                                        license:
-                                            properties:
-                                                name:
-                                                    type: string
-                        downloadURL:
-                            type: string
-                        language:
-                            type: string
-                        "@type":
-                            type: string
+                    creator:
+                      type: object
+                      properties:
+                          name:
+                              type: string
+                          "@type":
+                              type: string
+                          "@id":
+                              type: string
+                    theme: 
+                        type: string
+                    accessRights: 
+                        type: string
+                    accrualPeriodicity: 
+                        type: string
+                    identifier: 
+                        type: string
+                    "@type": 
+                        type: string
+                    versionInfo: 
+                        type: string
+                    rightsHolder:
+                      type: object
+                      properties:
+                          name:
+                              type: string
+                          "@type":
+                              type: string
+                          "@id":
+                              type: string
+                    distribution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                              accessURL:
+                                  type: string
+                              format:
+                                  type: string
+                              license:
+                                  type: object
+                                  properties:
+                                      name:
+                                          type: string
+                    downloadURL:
+                        type: string
+                    language:
+                        type: string
 
     GenericError:
+      type: object
+      properties:
        errorCode:
          type: string
        message:
@@ -753,7 +780,6 @@ parameters:
       in: "query"
       description: "Domain code of the stream/dataset"
       type: "string"
-      example: "Agriculture"
    opendata:
       name: "opendata"
       in: "query"
