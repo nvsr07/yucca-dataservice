@@ -9,7 +9,7 @@ info:
         Is possible to use any token recovered from Userportal to find private stream / dataset visible from the user owner of the token.
         The oAuth token are avaible in the section Subscriptions in the [Userportal](https://userportal.smartdatanet.it/userportal) (visible only if logged in)
         More details on the [Developer Center](http://developer.smartdatanet.it/docs/utilizzo-dello-store-e-dei-token-oauth-2/) in the section **Come accedere ai servizi di lettura autenticandosi con Oauth**
-  
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
   contact:
     name: Yucca Smart Data Platform
     email: smartdatanet@csi.it
@@ -54,6 +54,7 @@ paths:
       description: |
         Search metadata
         For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
       security:
         - Bearer: []
       parameters:
@@ -106,6 +107,7 @@ paths:
       description: |
         Search metadata using the dcat standard
         For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
       parameters:
       - $ref: '#/parameters/q'
       - $ref: '#/parameters/tenant'
@@ -133,6 +135,7 @@ paths:
       description: |
         load the detail of the stream metadata indetified by tenant code, smartobject code and stream code
         For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
       parameters:
       - $ref: '#/parameters/tenantCode'
       - $ref: '#/parameters/smartobjectCode'
@@ -156,6 +159,7 @@ paths:
       description: |
         load the detail of the dataset metadata indetified by tenant code  and  dataset code 
         For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
       parameters:
       - $ref: '#/parameters/tenantCode'
       - $ref: '#/parameters/datasetCode'
@@ -178,6 +182,7 @@ paths:
       description: |
        load the detail of the dataset metadata indetified by the packageId using the ckan standard
         For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
       parameters:
       - $ref: '#/parameters/ckanPackageId'
       responses:
