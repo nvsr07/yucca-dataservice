@@ -512,12 +512,6 @@ public class Metadata {
 		extras.setDomain(getDomain());
 		extras.setSubdomain(getSubdomain());
 		
-		if(getDcat() !=null){
-			extras.setCreator_name(getDcat().getDcatCreatorName());
-			extras.setOrganization_name(getDcat().getDcatNomeOrg());
-			extras.setOrganization_email(getDcat().getDcatEmailOrg());
-			
-		}
 		extras.setPackage_type("CSV");
 		ckanDataset.setExtras(extras);
 		return ckanDataset.toJson();

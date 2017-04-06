@@ -53,14 +53,7 @@ public class ExtraV2 {
 	private String subdomain;
 
 	private String stream_fps;
-	
-	private String creator_name;
-	private String organization_email;
-	private String organization_name;
 
-	// contact_name ???
-	// contact_email ???
-	// organization_name ??? tenant? da chiedere
 	public Long getDataset_id() {
 		return dataset_id;
 	}
@@ -394,30 +387,6 @@ public class ExtraV2 {
 
 	public void setRegistration_date_millis(Long registration_date_millis) {
 		this.registration_date_millis = registration_date_millis;
-	}
-
-	public String getCreator_name() {
-		return creator_name;
-	}
-
-	public void setCreator_name(String creator_name) {
-		this.creator_name = creator_name;
-	}
-
-	public String getOrganization_email() {
-		return organization_email;
-	}
-
-	public void setOrganization_email(String organization_email) {
-		this.organization_email = organization_email;
-	}
-
-	public String getOrganization_name() {
-		return organization_name;
-	}
-
-	public void setOrganization_name(String organization_name) {
-		this.organization_name = organization_name;
 	}
 
 }
