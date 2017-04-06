@@ -50,7 +50,7 @@ public class ExtraV2 {
 	private String domain;
 	private String subdomain;
 
-	private String stream_fps;
+	private Double stream_fps;
 
 	public Long getDataset_id() {
 		return dataset_id;
@@ -156,11 +156,11 @@ public class ExtraV2 {
 		this.subdomain = subdomain;
 	}
 
-	public String getStream_fps() {
+	public Double getStream_fps() {
 		return stream_fps;
 	}
 
-	public void setStream_fps(String stream_fps) {
+	public void setStream_fps(Double stream_fps) {
 		this.stream_fps = stream_fps;
 	}
 

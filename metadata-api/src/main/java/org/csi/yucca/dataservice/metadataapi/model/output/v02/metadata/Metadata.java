@@ -506,8 +506,8 @@ public class Metadata {
 			extras.setSmartobject_altitude(getStream().getSmartobject().getAltitude());
 			extras.setSmartobject_building(getStream().getSmartobject().getBuilding());
 		}
-
-		extras.setStream_fps(getFps());
+		if (getStream() != null)
+		extras.setStream_fps(getStream().getFps());
 
 		extras.setDomain(getDomain());
 		extras.setSubdomain(getSubdomain());
