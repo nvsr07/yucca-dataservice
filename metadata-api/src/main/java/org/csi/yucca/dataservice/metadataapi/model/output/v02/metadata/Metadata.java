@@ -483,11 +483,11 @@ public class Metadata {
 				resourcesList.add(resource.createResourceV2());
 			}
 			extrasList.put("resource", resourcesList);
-			ckanDataset.setExtrasList(extrasList);
 		}
 		if (getComponents() != null) {
 			extrasList.put("resource", getComponents());
 		}
+		ckanDataset.setExtrasList(extrasList);
 
 		if (getDataset() != null)
 			extras.setDataset_id(getDataset().getDatasetId());
