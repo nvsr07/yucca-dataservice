@@ -37,8 +37,6 @@ public class ExtraV2 {
 	private List<Component> components;
 
 	private Long dataset_id;
-	private Date registration_date;
-	private Long registration_date_millis;
 	private String smartobject_code;
 	private String smartobject_name;
 	private String smartobject_description;
@@ -373,20 +371,10 @@ public class ExtraV2 {
 		this.components = components;
 	}
 
-	public Date getRegistration_date() {
-		return registration_date;
-	}
-
-	public void setRegistration_date(Date registration_date) {
-		this.registration_date = registration_date;
-	}
-
-	public Long getRegistration_date_millis() {
-		return registration_date_millis;
-	}
-
-	public void setRegistration_date_millis(Long registration_date_millis) {
-		this.registration_date_millis = registration_date_millis;
+	public void addComponent(Component component) {
+		if (getComponents() == null)
+			components = new LinkedList<Component>();
+		components.add(component);
 	}
 
 }

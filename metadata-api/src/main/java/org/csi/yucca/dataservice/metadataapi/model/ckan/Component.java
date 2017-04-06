@@ -14,6 +14,16 @@ public class Component {
 		super();
 	}
 
+	
+	public Component(String name, String measureUnit, Double tolerance, String phenomenon) {
+		super();
+		this.name = name;
+		this.measureUnit = measureUnit;
+		this.tolerance = tolerance;
+		this.phenomenon = phenomenon;
+	}
+
+
 	public String toJson() {
 		Gson gson = JSonHelper.getInstance();
 		return gson.toJson(this);

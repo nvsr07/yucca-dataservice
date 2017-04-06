@@ -483,17 +483,17 @@ public class Metadata {
 				resourcesList.add(resource.createResourceV2());
 			}
 			extrasList.put("resource", resourcesList);
+			ckanDataset.setExtrasList(extrasList);
 		}
 		if (getComponents() != null) {
-			extrasList.put("resource", getComponents());
+			for (Component c : getComponents()) {
+				extras.addComponent(new org.csi.yucca.dataservice.metadataapi.model.ckan.Component(c.getName(), c.getMeasureUnit(), c.getTolerance(), c.getPhenomenon()));
+			}
 		}
-		ckanDataset.setExtrasList(extrasList);
 
 		if (getDataset() != null)
 			extras.setDataset_id(getDataset().getDatasetId());
 
-		extras.setRegistration_date(getRegistrationDate());
-		extras.setRegistration_date_millis(getRegistrationDateMillis());
 		if (getStream() != null && getStream().getSmartobject() != null) {
 			extras.setSmartobject_code(getStream().getSmartobject().getCode());
 			extras.setSmartobject_name(getStream().getSmartobject().getName());
@@ -506,12 +506,12 @@ public class Metadata {
 			extras.setSmartobject_altitude(getStream().getSmartobject().getAltitude());
 			extras.setSmartobject_building(getStream().getSmartobject().getBuilding());
 		}
-		
+
 		extras.setStream_fps(getFps());
 
 		extras.setDomain(getDomain());
 		extras.setSubdomain(getSubdomain());
-		
+
 		extras.setPackage_type("CSV");
 		ckanDataset.setExtras(extras);
 		return ckanDataset.toJson();
