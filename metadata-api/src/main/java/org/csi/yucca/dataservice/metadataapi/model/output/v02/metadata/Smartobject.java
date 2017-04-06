@@ -25,6 +25,7 @@ public class Smartobject {
 	private String building;
 	private String floor;
 	private String room;
+	private String model;
 
 	public Smartobject() {
 		super();
@@ -141,17 +142,27 @@ public class Smartobject {
 
 	public static Smartobject createFromSearchEngineJsonSo(SearchEngineJsonSo jsonSo) {
 		Smartobject s = null;
-		if (jsonSo != null && jsonSo.getPosition() != null && jsonSo.getPosition().size() > 0) {
+		if (jsonSo != null) {
 			s = new Smartobject();
-			SearchEngineJsonSoPosition soPosition = jsonSo.getPosition().get(0);
-			s.setLatitude(soPosition.getLat());
-			s.setLongitude(soPosition.getLon());
-			s.setAltitude(soPosition.getElevation());
-			s.setFloor(soPosition.getFloor());
-			s.setRoom(soPosition.getRoom());
-
+			s.setModel(jsonSo.getModel());
+			if (jsonSo.getPosition() != null && jsonSo.getPosition().size() > 0) {
+				SearchEngineJsonSoPosition soPosition = jsonSo.getPosition().get(0);
+				s.setLatitude(soPosition.getLat());
+				s.setLongitude(soPosition.getLon());
+				s.setAltitude(soPosition.getElevation());
+				s.setFloor(soPosition.getFloor());
+				s.setRoom(soPosition.getRoom());
+			}
 		}
 		return s;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
 	}
 
 }

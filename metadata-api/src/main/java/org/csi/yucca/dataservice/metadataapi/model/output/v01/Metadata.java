@@ -441,7 +441,7 @@ public class Metadata {
 				resourcesList.add(resource.createResourceV2());
 
 			}
-			Map<String, List<String>> extrasList = new HashMap<String, List<String>>();
+			Map<String, List<?>> extrasList = new HashMap<String, List<?>>();
 			extrasList.put("resource", resourcesList);
 			ckanDataset.setExtrasList(extrasList);
 		}

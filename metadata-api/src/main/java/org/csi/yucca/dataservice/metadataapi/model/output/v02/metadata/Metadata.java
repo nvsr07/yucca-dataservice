@@ -476,17 +476,48 @@ public class Metadata {
 			}
 		}
 
+		Map<String, List<?>> extrasList = new HashMap<String, List<?>>();
 		if (ckanDataset.getResources() != null) {
-			List<String> resourcesList = new LinkedList<String>();
+			List<Object> resourcesList = new LinkedList<Object>();
 			for (Resource resource : ckanDataset.getResources()) {
 				resourcesList.add(resource.createResourceV2());
-
 			}
-			Map<String, List<String>> extrasList = new HashMap<String, List<String>>();
 			extrasList.put("resource", resourcesList);
 			ckanDataset.setExtrasList(extrasList);
 		}
+		if (getComponents() != null) {
+			extrasList.put("resource", getComponents());
+		}
 
+		if (getDataset() != null)
+			extras.setDataset_id(getDataset().getDatasetId());
+
+		extras.setRegistration_date(getRegistrationDate());
+		extras.setRegistration_date_millis(getRegistrationDateMillis());
+		if (getStream() != null && getStream().getSmartobject() != null) {
+			extras.setSmartobject_code(getStream().getSmartobject().getCode());
+			extras.setSmartobject_name(getStream().getSmartobject().getName());
+			extras.setSmartobject_description(getStream().getSmartobject().getDescription());
+			extras.setSmartobject_model(getStream().getSmartobject().getModel());
+			extras.setSmartobject_room(getStream().getSmartobject().getRoom());
+			extras.setSmartobject_floor(getStream().getSmartobject().getFloor());
+			extras.setSmartobject_latitude(getStream().getSmartobject().getLatitude());
+			extras.setSmartobject_longitude(getStream().getSmartobject().getLongitude());
+			extras.setSmartobject_altitude(getStream().getSmartobject().getAltitude());
+			extras.setSmartobject_building(getStream().getSmartobject().getBuilding());
+		}
+		
+		extras.setStream_fps(getFps());
+
+		extras.setDomain(getDomain());
+		extras.setSubdomain(getSubdomain());
+		
+		if(getDcat() !=null){
+			extras.setCreator_name(getDcat().getDcatCreatorName());
+			extras.setOrganization_name(getDcat().getDcatNomeOrg());
+			extras.setOrganization_email(getDcat().getDcatEmailOrg());
+			
+		}
 		extras.setPackage_type("CSV");
 		ckanDataset.setExtras(extras);
 		return ckanDataset.toJson();

@@ -38,7 +38,7 @@ public class Dataset {
 	private String url;
 	private String ckan_url;
 	private ExtraV2 extras;
-	private Map<String, List<String>> extrasList;
+	private Map<String, List<?>> extrasList;
 
 	public Dataset() {
 	}
@@ -294,11 +294,11 @@ public class Dataset {
 		return gson.toJson(this);
 	}
 
-	public Map<String, List<String>> getExtrasList() {
+	public Map<String, List<?>> getExtrasList() {
 		return extrasList;
 	}
 
-	public void setExtrasList(Map<String, List<String>> extrasList) {
+	public void setExtrasList(Map<String, List<?>> extrasList) {
 		this.extrasList = extrasList;
 	}
 
