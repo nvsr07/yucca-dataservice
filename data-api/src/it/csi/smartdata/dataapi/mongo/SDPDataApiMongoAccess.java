@@ -3205,11 +3205,11 @@ public class SDPDataApiMongoAccess {
 				try {
 					deltaTime=System.currentTimeMillis()-starTtime;
 				} catch (Exception e) {}
-				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query executed in ("+skippedDocs+")--> "+deltaTime);				
 				
 				
 				
 				String nextCursorMark = rsp.getNextCursorMark();
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] total data query executed in ("+skippedDocs+")--> "+deltaTime + "  nrec:"+results.getNumFound()+"     nextcur:"+nextCursorMark);				
 
 
 				if (skippedDocs>=skipL) {
