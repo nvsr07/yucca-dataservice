@@ -235,6 +235,29 @@ public class SDPInsertApiPhoenixDataAccess {
 				log.info("Insert Phoenix ---------- BEFORE COMMIT");
 				conn.commit();
 				log.info("Insert Phoenix ---------- END COMMIT");
+			} catch (ArrayIndexOutOfBoundsException ae) {
+				log.error("Insert Phoenix ARRAYINDEXOUTOFBOUND", ae);
+				try {
+					log.info("stmt closed?"+stmt.isClosed());
+					try{
+						log.info("Retry ......");
+						stmt.executeBatch();
+						conn.commit();
+					} catch (Throwable e) {
+						log.info("Retry FAILED",e);
+						try {
+							conn.rollback();
+						} catch (SQLException e1) {
+							log.error("Impossible to rollback", e1);
+						}
+						throw new InsertApiRuntimeException(e);
+					}
+					log.info("Retry SUCCESS");
+					conn.rollback();
+				} catch (SQLException e1) {
+					log.error("Impossible to rollback", e1);
+				}
+				return result == null ? -1 : result.getInsertedCount();
 			} catch (Exception e) {
 				log.error("Insert Phoenix Error", e);
 				try {
