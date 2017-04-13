@@ -230,8 +230,11 @@ public class SDPInsertApiPhoenixDataAccess {
 
 			}
 			try {
+				log.info("Insert Phoenix ---------- BEFORE EXECUTE BATCH");
 				stmt.executeBatch();
+				log.info("Insert Phoenix ---------- BEFORE COMMIT");
 				conn.commit();
+				log.info("Insert Phoenix ---------- END COMMIT");
 			} catch (Exception e) {
 				log.error("Insert Phoenix Error", e);
 				try {
