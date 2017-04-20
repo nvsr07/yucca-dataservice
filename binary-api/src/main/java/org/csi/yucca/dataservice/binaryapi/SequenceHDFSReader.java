@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
@@ -52,6 +53,7 @@ public class SequenceHDFSReader extends Reader {
 	Reader in;
 	StringReader buf;
 	CSVReader csvIn;
+	int maxFields;
 	/**
 	 * Initializes a newly created <code>SequenceInputStream</code> by
 	 * remembering the argument, which must be an <code>Enumeration</code> that
@@ -61,14 +63,16 @@ public class SequenceHDFSReader extends Reader {
 	 * <code>SequenceInputStream</code>. After each input stream from the
 	 * enumeration is exhausted, it is closed by calling its <code>close</code>
 	 * method.
+	 * @param maxFields 
 	 * 
 	 * @param e
 	 *            an enumeration of input streams.
 	 * @see java.util.Enumeration
 	 */
 	public SequenceHDFSReader(
-			Enumeration<? extends String> paths) {
+			Enumeration<? extends String> paths, int maxFields) {
 		this.paths = paths;
+		this.maxFields = maxFields;
 		try {
 			firstPath();
 		} catch (IOException ex) {
@@ -132,6 +136,8 @@ public class SequenceHDFSReader extends Reader {
 				nextPath();
 			}
 			else {
+				if (maxFields>fields.length)
+					Arrays.copyOf(fields, maxFields);
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
 				csvw.writeNext(fields);
