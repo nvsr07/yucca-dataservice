@@ -189,11 +189,11 @@ public class BinaryService {
 						LOG.info("[BinaryService::downloadCSVFile] - typeDirectory => " + typeDirectory);
 						LOG.info("[BinaryService::downloadCSVFile] - subTypeDirectory => " + subTypeDirectory);
 					} else if (mdMetadata.getConfigData().getSubtype().equals("streamDataset")) {
-						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion==0?1:dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
 					} else if (mdMetadata.getConfigData().getSubtype().equals("socialDataset")) {
-						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion==0?1:dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
 					}
