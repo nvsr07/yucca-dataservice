@@ -212,9 +212,12 @@ public class BinaryService {
 					String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/"
 							+ dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 					LOG.info("[BinaryService::downloadCSVFile] - hdfsDirectory = " + hdfsDirectory);
+					
+					String headerLine = "========================================="; // TODO: estrarre header in funzione del tipo  
+					
 					Reader is = null;
 					try {
-						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length);
+						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length, headerLine);
 					} catch (Exception e) {
 						LOG.error("[BinaryService::downloadCSVFile] - Internal error during READDIR", e);
 						throw new WebApplicationException(

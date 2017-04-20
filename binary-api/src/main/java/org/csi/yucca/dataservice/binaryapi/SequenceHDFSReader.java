@@ -54,6 +54,7 @@ public class SequenceHDFSReader extends Reader {
 	StringReader buf;
 	CSVReader csvIn;
 	int maxFields;
+	String headerLine;
 	/**
 	 * Initializes a newly created <code>SequenceInputStream</code> by
 	 * remembering the argument, which must be an <code>Enumeration</code> that
@@ -64,15 +65,17 @@ public class SequenceHDFSReader extends Reader {
 	 * enumeration is exhausted, it is closed by calling its <code>close</code>
 	 * method.
 	 * @param maxFields 
+	 * @param headerLine 
 	 * 
 	 * @param e
 	 *            an enumeration of input streams.
 	 * @see java.util.Enumeration
 	 */
 	public SequenceHDFSReader(
-			Enumeration<? extends String> paths, int maxFields) {
+			Enumeration<? extends String> paths, int maxFields, String headerLine) {
 		this.paths = paths;
 		this.maxFields = maxFields;
+		this.headerLine = headerLine;
 		try {
 			firstPath();
 		} catch (IOException ex) {
@@ -94,12 +97,13 @@ public class SequenceHDFSReader extends Reader {
             if (p == null)
                 throw new NullPointerException();
             
-            csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)),',','"');
-            nextLine();
+            csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)),',','"',1);
+            nextLine(true);
         }
         else csvIn = null;
 
     }
+
 
 	/**
 	 * Continues reading in the next stream if an EOF is reached.
@@ -116,7 +120,7 @@ public class SequenceHDFSReader extends Reader {
 				throw new NullPointerException();
 
 			csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
-			nextLine();
+			nextLine(false);
 
 			
 			
@@ -128,7 +132,7 @@ public class SequenceHDFSReader extends Reader {
 	/**
 	 * Continues reading in the next line if an EOF is reached.
 	 */
-	final void nextLine() throws IOException {
+	final void nextLine(boolean writeHeader) throws IOException {
 		if (csvIn!=null)
 		{
 			String[] fields = csvIn.readNext();
@@ -136,13 +140,17 @@ public class SequenceHDFSReader extends Reader {
 				nextPath();
 			}
 			else {
-				if (maxFields>fields.length)
-					Arrays.copyOf(fields, maxFields);
+				if (maxFields>fields.length) {
+					fields = Arrays.copyOf(fields, maxFields);
+				}
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
 				csvw.writeNext(fields);
 				csvw.flush();
-				buf = new StringReader(sw.toString());
+				if (writeHeader)
+					buf = new StringReader(headerLine+"\n"+sw.toString());
+				else
+					buf = new StringReader(sw.toString());
 				csvw.close();
 			}
 		}
@@ -173,7 +181,7 @@ public class SequenceHDFSReader extends Reader {
 
 		int n = buf.read(c, off, len);
 		if (n <= 0) {
-			nextLine();
+			nextLine(false);
 			return read(c, off, len);
 		}
 		return n;
