@@ -485,7 +485,7 @@ public class Metadata {
 			extrasList.put("resource", resourcesList);
 			ckanDataset.setExtrasList(extrasList);
 		}
-		if (getComponents() != null) {
+		if (getComponents() != null && getStream()!=null) {
 			for (Component c : getComponents()) {
 				extras.addComponent(new org.csi.yucca.dataservice.metadataapi.model.ckan.Component(c.getName(), c.getMeasureUnit(), c.getTolerance(), c.getPhenomenon()));
 			}

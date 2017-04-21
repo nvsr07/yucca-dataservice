@@ -1,6 +1,5 @@
 package org.csi.yucca.dataservice.metadataapi.model.ckan;
 
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
