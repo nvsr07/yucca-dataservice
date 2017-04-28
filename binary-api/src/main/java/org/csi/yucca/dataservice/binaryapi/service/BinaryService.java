@@ -127,12 +127,12 @@ public class BinaryService {
 								.build());
 			} else {
 				if (datasetVersion.equals("all")) {
-					if (!mdMetadata.getConfigData().getSubtype().equals("bulkDataset")) {
-						throw new WebApplicationException(
-								Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
-										.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
-										.build());
-					}
+//					if (!mdMetadata.getConfigData().getSubtype().equals("bulkDataset")) {
+//						throw new WebApplicationException(
+//								Response.status(Response.Status.NOT_FOUND).type(MediaType.APPLICATION_JSON)
+//										.entity("{\"error_name\":\"Binary not found\", \"error_code\":\"E118\", \"output\":\"NONE\", \"message\":\"All available only for bulk dataset\"}")
+//										.build());
+//					}
 					LOG.info("[BinaryService::downloadCSVFile] - Richiesto caricamento ALL");
 					dsVersion = 0;
 					LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
@@ -189,11 +189,11 @@ public class BinaryService {
 						LOG.info("[BinaryService::downloadCSVFile] - typeDirectory => " + typeDirectory);
 						LOG.info("[BinaryService::downloadCSVFile] - subTypeDirectory => " + subTypeDirectory);
 					} else if (mdMetadata.getConfigData().getSubtype().equals("streamDataset")) {
-						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion==0?1:dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
 					} else if (mdMetadata.getConfigData().getSubtype().equals("socialDataset")) {
-						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion);
+						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion==0?1:dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
 					}
@@ -212,9 +212,12 @@ public class BinaryService {
 					String hdfsDirectory = "/" + Config.getHdfsRootDir() + "/" + organizationCode + PATH_RAWDATA + "/"
 							+ dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 					LOG.info("[BinaryService::downloadCSVFile] - hdfsDirectory = " + hdfsDirectory);
+					
+					String headerLine = "========================================="; // TODO: estrarre header in funzione del tipo  
+					
 					Reader is = null;
 					try {
-						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion);
+						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length, headerLine);
 					} catch (Exception e) {
 						LOG.error("[BinaryService::downloadCSVFile] - Internal error during READDIR", e);
 						throw new WebApplicationException(
