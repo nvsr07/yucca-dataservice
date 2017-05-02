@@ -211,6 +211,42 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>pochdp</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<build>
+                  <plugins>
+                    <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.9.5</version>
+                    <configuration>
+                      <connectionType>connection</connectionType>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>1</id>
+                            <phase>validate</phase>
+                            <goals>
+                              <goal>checkout</goal>
+                            </goals>
+                          </execution>
+                    </executions>
+                      </plugin>            
+                  </plugins>			
+			
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/data_ingest_binary/pochdp</directory>
+					</resource>
+				</resources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/data_ingest_binary/pochdp/</webXmlPath>
+			</properties>
+		</profile>		
+		<profile>
 			<id>prod</id>
 			<build>
                   <plugins>
