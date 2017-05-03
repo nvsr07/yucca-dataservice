@@ -49,7 +49,7 @@ public class DCatCatalog extends DCatObject {
 
 	public DCatCatalog() {
 		setId("dataset_catalog");
-		types.add("dcat:Catalog");
+		addType("dcat:Catalog");
 		datasets = new LinkedList<DCatDataset>();
 		language = new IdString("http://publications.europa.eu/resource/authority/language/ITA");
 		themes = new IdString("http://eurovoc.europa.eu");

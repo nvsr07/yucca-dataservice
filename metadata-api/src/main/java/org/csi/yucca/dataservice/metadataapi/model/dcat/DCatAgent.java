@@ -15,7 +15,7 @@ public class DCatAgent extends DCatObject {
 
 	public DCatAgent() {
 		// id = "01995120019";
-		types.add("foaf:Agent");
+		addType("foaf:Agent");
 		// type.add("http://dati.gov.it/onto/dcatapit#\"Agent");
 		// type.add("http://purl.org/adms/publishertype/Company");
 

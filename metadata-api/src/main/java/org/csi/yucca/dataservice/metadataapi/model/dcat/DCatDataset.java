@@ -80,7 +80,7 @@ public class DCatDataset extends DCatObject {
 
 	public DCatDataset() {
 		super();
-		types.add("dcat:Dataset");
+		addType("dcat:Dataset");
 		creator = DCatSdpHelper.getCSIAgentDcat();
 	}
 
