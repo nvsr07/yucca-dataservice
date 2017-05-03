@@ -22,6 +22,7 @@ public class DCatContext {
 		schema = "http://schema.org/";
 		vcard = "http://www.w3.org/2006/vcard/ns#";
 		xsd = "http://www.w3.org/2001/XMLSchema#";
+
 	}
 
 	public String getAdms() {

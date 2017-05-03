@@ -5,23 +5,23 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-public class DCatResult extends DCatObject {
+public class DCatResult{
 
 	@SerializedName("@context")
-	private DCatContext context;
+	private String context;
 	@SerializedName("@graph")
 	private List<DCatObject> items;
 
 	public DCatResult() {
 		super();
-		this.setContext(new DCatContext());
+		this.setContext("https://raw.githubusercontent.com/insideout10/open_data_dcat_ap/develop/data/v1.01/context.it.jsonld");
 	}
 
-	public DCatContext getContext() {
+	public String getContext() {
 		return context;
 	}
 
-	public void setContext(DCatContext context) {
+	public void setContext(String context) {
 		this.context = context;
 	}
 

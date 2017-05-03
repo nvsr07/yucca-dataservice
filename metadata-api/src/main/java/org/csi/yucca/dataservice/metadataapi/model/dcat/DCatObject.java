@@ -18,7 +18,6 @@ public abstract class DCatObject {
 	protected List<String> types;
 
 	public DCatObject() {
-		types = new LinkedList<String>();
 	}
 
 	public String getId() {

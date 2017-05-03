@@ -9,8 +9,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class DCatCatalog extends DCatObject {
 
-	@SerializedName("@context")
-	private String context;
 
 	// mandatory
 	@SerializedName("dcterms:title")
@@ -52,19 +50,10 @@ public class DCatCatalog extends DCatObject {
 	public DCatCatalog() {
 		setId("dataset_catalog");
 		types.add("dcat:Catalog");
-		context = "https://raw.githubusercontent.com/insideout10/open_data_dcat_ap/develop/data/v1.01/context.it.jsonld";
 		datasets = new LinkedList<DCatDataset>();
 		language = new IdString("http://publications.europa.eu/resource/authority/language/ITA");
 		themes = new IdString("http://eurovoc.europa.eu");
 		setPublisher(DCatSdpHelper.getCSIAgentDcat());
-	}
-
-	public String getContext() {
-		return context;
-	}
-
-	public void setContext(String context) {
-		this.context = context;
 	}
 
 	public I18NString getTitle_it() {
