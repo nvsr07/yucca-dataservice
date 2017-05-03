@@ -14,6 +14,9 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -22,11 +25,21 @@ import com.google.gson.stream.JsonWriter;
 public class JSonHelper {
 	private static Gson gson;
 
+	private static Gson gsonDcat;
+
 	public static Gson getInstance() {
 		if (gson == null)
 			gson = new GsonBuilder().setExclusionStrategies(new GSONExclusionStrategy()).disableHtmlEscaping().setPrettyPrinting()
-					.registerTypeAdapter(Date.class, new DateDeserializer()).registerTypeAdapter(Boolean.class, booleanAsIntAdapter).registerTypeAdapter(boolean.class, booleanAsIntAdapter).create();
+					.registerTypeAdapter(Date.class, new DateDeserializer()).registerTypeAdapter(boolean.class, booleanAsIntAdapter).create();
 		return gson;
+	}
+
+	public static Gson getInstanceDcat() {
+		if (gsonDcat == null)
+			gsonDcat = new GsonBuilder().setExclusionStrategies(new GSONExclusionStrategy()).disableHtmlEscaping().setPrettyPrinting()
+					.registerTypeAdapter(Date.class, new DcatDateSerializer()).registerTypeAdapter(Date.class, new DateDeserializer())
+					.registerTypeAdapter(Boolean.class, booleanAsIntAdapter).create();
+		return gsonDcat;
 	}
 
 	private static final TypeAdapter<Boolean> booleanAsIntAdapter = new TypeAdapter<Boolean>() {
@@ -73,5 +86,15 @@ public class JSonHelper {
 			throw new JsonParseException("Unparseable date: \"" + jsonElement.getAsString() + "\". Supported formats: " + Arrays.toString(DATE_FORMATS));
 		}
 
+	}
+
+	private static class DcatDateSerializer implements JsonSerializer<Date> {
+
+		private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		@Override
+		public JsonElement serialize(Date date, Type typeOfSrc, JsonSerializationContext context) {
+			return new JsonPrimitive(dateFormat.format(date));
+		}
 	}
 }
