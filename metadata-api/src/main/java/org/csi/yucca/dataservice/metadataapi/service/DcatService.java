@@ -21,6 +21,7 @@ import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatCatalog;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDataset;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDate;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDistribution;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatResult;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.I18NString;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.IdString;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatLicenseType;
@@ -204,7 +205,9 @@ public class DcatService extends AbstractService {
 				}
 			}
 		}
-		String json = gson.toJson(catalog);//.replaceAll("\"context\"", "\"@context\"").replaceAll("\"id\"", "\"@id\"").replaceAll("\"type\"", "\"@type\"");
+		DCatResult result = new DCatResult();
+		result.addItem(catalog);
+		String json = gson.toJson(result);//.replaceAll("\"context\"", "\"@context\"").replaceAll("\"id\"", "\"@id\"").replaceAll("\"type\"", "\"@type\"");
 		return Response.ok(json).build();
 	}
 }
