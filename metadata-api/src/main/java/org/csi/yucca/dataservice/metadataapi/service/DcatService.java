@@ -106,48 +106,61 @@ public class DcatService extends AbstractService {
 						DCatAgent creator = new DCatAgent();
 						if (metadataST.getDcat().getDcatCreatorName() != null) {
 							creator.setName(new I18NString("it", metadataST.getDcat().getDcatCreatorName()));
+							if (metadataST.getDcat().getDcatCreatorType() != null) {
+								creator.addType(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatCreatorType()));
+							} else {
+								creator.addType("http://purl.org/adms/publishertype/Company");
+							}
+							if (metadataST.getDcat().getDcatCreatorId() != null) {
+								creator.setId(metadataST.getDcat().getDcatCreatorId());
+							} else {
+								creator.setId(metadataST.getDcat().getDcatCreatorName());
+							}
 						} else {
-							creator.setName(new I18NString("it",  "CSI PIEMONTE"));
+							creator = DCatSdpHelper.getCSIAgentDcat();
 						}
 
-						if (metadataST.getDcat().getDcatCreatorType() != null) {
-							creator.addType(metadataST.getDcat().getDcatCreatorType());
-						} else {
-							creator.addType("http://purl.org/adms/publishertype/Company");
-						}
 
-						if (metadataST.getDcat().getDcatCreatorId() != null) {
-							creator.setId(metadataST.getDcat().getDcatCreatorId());
-						} else {
-							creator.setId("01995120019");
-						}
 						dsDCAT.setCreator(creator);
 
 						DCatAgent rightsHolder = new DCatAgent();
 						if (metadataST.getDcat().getDcatRightsHolderName() != null) {
 							rightsHolder.setName(new I18NString("it", metadataST.getDcat().getDcatRightsHolderName()));
+							if (metadataST.getDcat().getDcatRightsHolderType() != null) {
+								rightsHolder.addType(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatRightsHolderType()));
+							} else {
+								rightsHolder.addType("http://purl.org/adms/publishertype/Company");
+							}
+							
+							if (metadataST.getDcat().getDcatRightsHolderId() != null) {
+								rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderId());
+							} else {
+								rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderName());
+							}
+							
 						} else {
-							rightsHolder.setName(new I18NString("it", "CSI PIEMONTE"));
+							rightsHolder = DCatSdpHelper.getCSIAgentDcat();
 						}
 
-						if (metadataST.getDcat().getDcatRightsHolderType() != null) {
-							rightsHolder.addType(metadataST.getDcat().getDcatRightsHolderType());
-						} else {
-							rightsHolder.addType("http://purl.org/adms/publishertype/Company");
-						}
-
-						if (metadataST.getDcat().getDcatRightsHolderId() != null) {
-							rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderId());
-						} else {
-							rightsHolder.setId("01995120019");
-						}
 						
 						dsDCAT.setRightsHolder(rightsHolder);
 
-						DCatVCard publisher = new DCatVCard();
-						publisher.setHasEmail(new IdString(metadataST.getDcat().getDcatEmailOrg()));
-						publisher.setName(metadataST.getDcat().getDcatNomeOrg());
-						dsDCAT.setContactPoint(publisher);
+						DCatVCard publisherVCard = new DCatVCard();
+						publisherVCard.setHasEmail(new IdString(metadataST.getDcat().getDcatEmailOrg()));
+						publisherVCard.setName(metadataST.getDcat().getDcatNomeOrg());
+						dsDCAT.setContactPoint(publisherVCard);
+						
+						
+						DCatAgent publisher = new DCatAgent();
+						if (metadataST.getDcat().getDcatNomeOrg() != null) {
+							publisher.setName(new I18NString("it", metadataST.getDcat().getDcatNomeOrg()));
+							publisher.addType("http://purl.org/adms/publishertype/Company");
+							publisher.setId(metadataST.getDcat().getDcatNomeOrg());
+						} else {
+							publisher = DCatSdpHelper.getCSIAgentDcat();
+						}
+
+						dsDCAT.setPublisher(publisher);
 
 					}
 					dsDCAT.setDescription(new I18NString("it", metadataST.getDescription()));
@@ -164,7 +177,7 @@ public class DcatService extends AbstractService {
 							dsDCAT.addKeyword(tag);
 						}
 					}
-					dsDCAT.setTheme(DCatSdpHelper.getDcatTheme(metadataST.getDomain()));
+					dsDCAT.setTheme(DCatSdpHelper.getDcatTheme(metadataST.getDomainCode()));
 					// dsDCAT.setAccessRights(metadataST.getVisibility());
 					dsDCAT.setIdentifier(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
 					if (metadataST.getOpendata() != null && metadataST.getOpendata().getDataUpdateDate() != null)
@@ -182,19 +195,21 @@ public class DcatService extends AbstractService {
 					DCatLicenseType licenseDistribution = new DCatLicenseType();
 					if (metadataST.getLicense() != null) {
 
-						if (metadataST.getLicense().equals("CC BY 4.0")) {
+						if (metadataST.getLicense().startsWith("CC BY")) {
 							licenseDistribution.setName("CC BY");
-							licenseDistribution.addType("https://creativecommons.org/licenses/by/4.0/");
-							//licDist.setLicenseType("http://purl.org/adms/licencetype/Attribution");
-							licenseDistribution.setVersion("4.0");
-						} else if (metadataST.getLicense().equals("CC 0 1.0")) {
+							String version = metadataST.getLicense().substring(metadataST.getLicense().lastIndexOf(" ")+1);
+							licenseDistribution.addType("https://creativecommons.org/licenses/by/"+version+"/");
+							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/Attribution"));
+							licenseDistribution.setVersion(version);
+						} else if (metadataST.getLicense().startsWith("CC 0")) {
 							licenseDistribution.setName("CC 0");
-							licenseDistribution.addType("https://creativecommons.org/publicdomain/zero/1.0/");
-							//licDist.setLicenseType("http://purl.org/adms/licencetype/PublicDomain");
-							licenseDistribution.setVersion("1.0");
+							String version = metadataST.getLicense().substring(metadataST.getLicense().lastIndexOf(" ")+1);
+							licenseDistribution.addType("https://creativecommons.org/publicdomain/zero/"+version+"/");
+							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/PublicDomain"));
+							licenseDistribution.setVersion(version);
 						} else {
 							licenseDistribution.setName(metadataST.getLicense());
-
+							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/UnknownIPR"));
 						}
 						distribution.setLicense(licenseDistribution);
 					}
@@ -202,12 +217,14 @@ public class DcatService extends AbstractService {
 					//distr.setIssued(new DcatDate(metadataST.getRegistrationDate()));
 					dsDCAT.addDistribution(distribution);
 					catalog.addDataset(dsDCAT);
+					catalog.setPublisher(DCatSdpHelper.getCSIAgentDcat());
+
 				}
 			}
 		}
 		DCatResult result = new DCatResult();
 		result.addItem(catalog);
-		String json = gson.toJson(result);//.replaceAll("\"context\"", "\"@context\"").replaceAll("\"id\"", "\"@id\"").replaceAll("\"type\"", "\"@type\"");
+		String json = gson.toJson(result);
 		return Response.ok(json).build();
 	}
 }

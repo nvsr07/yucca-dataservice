@@ -3,6 +3,8 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.csi.yucca.dataservice.metadataapi.util.DCatSdpHelper;
+
 import com.google.gson.annotations.SerializedName;
 
 public class DCatDistribution extends DCatObject{
@@ -14,7 +16,7 @@ public class DCatDistribution extends DCatObject{
 	private IdString accessURL;
 
 	@SerializedName("dcterms:license")
-	private DCatLicenseType license = new DCatLicenseType();
+	private DCatLicenseType license;
 
 	// reccomended
 	@SerializedName("dcterms:description")
@@ -48,12 +50,8 @@ public class DCatDistribution extends DCatObject{
 		addType("dcat:Distribution");
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public void setId(String id) {
-		this.id = id;
+		this.id = BASE_ID + "distribution/" + DCatSdpHelper.cleanForId(id);
 	}
 
 	public List<String> getTypes() {

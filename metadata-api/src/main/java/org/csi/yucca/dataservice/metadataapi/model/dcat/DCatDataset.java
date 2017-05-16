@@ -23,7 +23,7 @@ public class DCatDataset extends DCatObject {
 	@SerializedName("dcterms:modified")
 	private DCatDate modified;
 
-	@SerializedName("dcterms:theme")
+	@SerializedName("dcat:theme")
 	private DCatTheme theme;
 
 	@SerializedName("dcterms:rightsHolder")
@@ -83,6 +83,11 @@ public class DCatDataset extends DCatObject {
 		addType("dcat:Dataset");
 		creator = DCatSdpHelper.getCSIAgentDcat();
 	}
+	
+	public void setId(String id) {
+		this.id = BASE_ID + "dataset/" + DCatSdpHelper.cleanForId(id);
+	}
+
 
 	public String getIdentifier() {
 		return identifier;

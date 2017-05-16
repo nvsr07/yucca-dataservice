@@ -58,4 +58,10 @@ public class DCatSdpHelper {
 		return csiAgentDcat;
 
 	}
+
+	public static String cleanForId(String dcatCreatorName) {
+		if (dcatCreatorName != null)
+			return dcatCreatorName.replaceAll("[^a-zA-Z0-9]", "");
+		return "";
+	}
 }

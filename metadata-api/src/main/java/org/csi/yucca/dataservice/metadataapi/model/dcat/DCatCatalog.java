@@ -56,6 +56,10 @@ public class DCatCatalog extends DCatObject {
 		setPublisher(DCatSdpHelper.getCSIAgentDcat());
 	}
 
+	public void setId(String id) {
+		this.id = BASE_ID + "catalog/" + DCatSdpHelper.cleanForId(id);
+	}
+
 	public I18NString getTitle_it() {
 		return title_it;
 	}

@@ -3,6 +3,8 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.csi.yucca.dataservice.metadataapi.util.DCatSdpHelper;
+
 import com.google.gson.annotations.SerializedName;
 
 public class DCatVCard extends DCatObject{
@@ -31,6 +33,11 @@ public class DCatVCard extends DCatObject{
 		types.add("vcard:Kind");
 
 	}
+	
+	public void setId(String id) {
+		this.id = BASE_ID + "vcard/" + DCatSdpHelper.cleanForId(id);
+	}
+
 
 	public List<String> getTypes() {
 		return types;

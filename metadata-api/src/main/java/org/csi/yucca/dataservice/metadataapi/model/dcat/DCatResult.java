@@ -8,20 +8,20 @@ import com.google.gson.annotations.SerializedName;
 public class DCatResult{
 
 	@SerializedName("@context")
-	private String context;
+	private DCatContext context;
 	@SerializedName("@graph")
 	private List<DCatObject> items;
 
 	public DCatResult() {
 		super();
-		this.setContext("https://raw.githubusercontent.com/insideout10/open_data_dcat_ap/develop/data/v1.01/context.it.jsonld");
+		setContext(new DCatContext());
 	}
 
-	public String getContext() {
+	public DCatContext getContext() {
 		return context;
 	}
 
-	public void setContext(String context) {
+	public void setContext(DCatContext context) {
 		this.context = context;
 	}
 

@@ -1,5 +1,7 @@
 package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
+import org.csi.yucca.dataservice.metadataapi.util.DCatSdpHelper;
+
 import com.google.gson.annotations.SerializedName;
 
 public class DCatAgent extends DCatObject {
@@ -22,14 +24,11 @@ public class DCatAgent extends DCatObject {
 		// foaf_name = new I18NString("it", "CSI PIEMONTE");
 
 	}
-
-	public String getId() {
-		return id;
-	}
-
+	
 	public void setId(String id) {
-		this.id = id;
+		this.id = BASE_ID + "agent/" + DCatSdpHelper.cleanForId(id);
 	}
+
 
 	public String getDcterms_identifier() {
 		return dcterms_identifier;
