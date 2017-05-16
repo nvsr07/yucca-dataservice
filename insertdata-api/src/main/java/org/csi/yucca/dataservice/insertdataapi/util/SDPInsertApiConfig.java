@@ -17,6 +17,9 @@ public class SDPInsertApiConfig {
 
 	public static final String PHOENIX_URL = "PHOENIX_URL";
 	public static final String SOLR_URL = "SOLR_URL";
+	public static final String SOLR_TYPE_ACCESS = "SOLR_TYPE_ACCESS";
+	public static final String SOLR_USERNAME = "SOLR_USERNAME";
+	public static final String SOLR_PASSWORD = "SOLR_PASSWORD";
 
 	public static final String JMS_MB_INTERNAL_URL = "JMS_MB_INTERNAL_URL";
 	public static final String JMS_MB_INTERNAL_USERNAME = "JMS_MB_INTERNAL_USERNAME";
@@ -103,6 +106,11 @@ public class SDPInsertApiConfig {
 		params.put(PHOENIX_URL, rb.getString(PHOENIX_URL));
 		params.put(SOLR_URL, rb.getString(SOLR_URL));
 
+		params.put(SOLR_TYPE_ACCESS, rb.getString(SOLR_TYPE_ACCESS));
+		params.put(SOLR_USERNAME, rb.getString(SOLR_USERNAME));
+		params.put(SOLR_PASSWORD, rb.getString(SOLR_PASSWORD));
+
+		
 		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
 		params.put(JMS_MB_INTERNAL_USERNAME, rb.getString(JMS_MB_INTERNAL_USERNAME));
 		params.put(JMS_MB_INTERNAL_PASSWORD, rb.getString(JMS_MB_INTERNAL_PASSWORD));
@@ -197,6 +205,18 @@ public class SDPInsertApiConfig {
 
 	public String getSolrUrl() {
 		return params.get(SOLR_URL);
+	}
+	
+	public String getSolrTypeAccess(){
+		return params.get(SOLR_TYPE_ACCESS);
+	}
+	
+	public String getSolrUsername(){
+		return params.get(SOLR_USERNAME);
+	}
+	
+	public String getSolrPassword(){
+		return params.get(SOLR_PASSWORD);
 	}
 
 	public String getPhoenixUrl() {
