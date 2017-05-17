@@ -3,9 +3,11 @@ package it.csi.smartdata.dataapi.solr;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.SolrClient;
 
 public class CloudSolrSingleton {
-	private CloudSolrClient server;
+	//private CloudSolrClient server;
+	private SolrClient server;
 	
 	private CloudSolrSingleton() {
 		try {
@@ -23,7 +25,7 @@ public class CloudSolrSingleton {
 	    private static final CloudSolrSingleton INSTANCE = new CloudSolrSingleton();
 	  }
 
-	  public static CloudSolrClient getServer() {
+	  public static SolrClient getServer() {
 	    return SingletonHolder.INSTANCE.server;
 	  }
 

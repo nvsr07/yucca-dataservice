@@ -102,7 +102,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		if(top==null && resultSize>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())  throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+endindex,Locale.UK);
 
 
-		//se skip è valorizzato
+		//se skip e valorizzato
 		if(skip!=null) {
 			startindex=startindex+skip.intValue();
 		}
@@ -140,7 +140,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		log.debug("[SDPSingleProcessor::checkPagesData] skipParameter="+skip);
 		log.debug("[SDPSingleProcessor::checkPagesData] topParameter="+top);
 
-		//se skip è valorizzato
+		//se skip e valorizzato
 		if(skip!=null) {
 			startindex=startindex+skip.intValue();
 		}

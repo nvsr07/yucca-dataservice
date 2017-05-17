@@ -23,7 +23,7 @@ import org.apache.olingo.odata2.core.servlet.ODataServlet;
 import org.apache.olingo.odata2.core.servlet.RestUtil;
 public class SDPOdataServlet extends ODataServlet {
 	
-	// TODO Logger ... .verificare se questa classe serve o se si può usare la servlet di defaul
+	// TODO Logger ... .verificare se questa classe serve o se si puo usare la servlet di defaul
 	
 	
 	

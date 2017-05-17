@@ -13,6 +13,7 @@ import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
 import it.csi.smartdata.dataapi.odata.SDPOdataFilterExpression;
 import it.csi.smartdata.dataapi.odata.SDPPhoenixExpression;
 import it.csi.smartdata.dataapi.solr.CloudSolrSingleton;
+import it.csi.smartdata.dataapi.solr.KnoxSolrSingleton;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -33,9 +34,11 @@ import org.apache.olingo.odata2.api.edm.EdmSimpleTypeKind;
 import org.apache.olingo.odata2.api.edm.provider.Facets;
 import org.apache.olingo.odata2.api.edm.provider.Property;
 import org.apache.olingo.odata2.api.edm.provider.SimpleProperty;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
+import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
@@ -61,15 +64,33 @@ public class SDPDataApiMongoAccess {
 	private String codiceApi=null;
 
 
+	SolrClient server = null;
+	
 	public static final String DATA_TYPE_MEASURE="measures";
 	public static final String DATA_TYPE_DATA="data";
 	public static final String DATA_TYPE_SOCIAL="social";
 
-	public SDPDataApiMongoAccess (String codiceApi) {
+	public SDPDataApiMongoAccess (String codiceApi) throws Exception {
 		this.initConfDbObject(codiceApi);
+		
+		if ("KNOX".equalsIgnoreCase(SDPDataApiConfig.getInstance().getSolrTypeAccess()))
+		{
+			server = KnoxSolrSingleton.getServer();
+		}
+		else {
+			server = CloudSolrSingleton.getServer();
+		}
+		
 	}
 
-	public SDPDataApiMongoAccess () {
+	public SDPDataApiMongoAccess () throws Exception {
+		if ("KNOX".equalsIgnoreCase(SDPDataApiConfig.getInstance().getSolrTypeAccess()))
+		{
+			server = KnoxSolrSingleton.getServer();
+		}
+		else {
+			server = CloudSolrSingleton.getServer();
+		}
 	}
 
 
@@ -664,7 +685,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -736,7 +757,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 * 
 			 * la parte aggiunta a query tot per il dataset versione  deve essere  {datasetversion: {$in: [........ ] }}
 			 */
@@ -1058,7 +1079,7 @@ public class SDPDataApiMongoAccess {
 			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -1137,7 +1158,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 * 
 			 * la parte aggiunta a query tot per il dataset versione  deve essere  {datasetversion: {$in: [........ ] }}
 			 */
@@ -1570,7 +1591,7 @@ public class SDPDataApiMongoAccess {
 			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -2183,7 +2204,9 @@ public class SDPDataApiMongoAccess {
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
 
 
-			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			//CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			SolrClient solrServer = server;
+			
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
 
 			SolrQuery solrQuery = new SolrQuery();
@@ -2470,7 +2493,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -2543,7 +2566,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 * 
 			 * la parte aggiunta a query tot per il dataset versione  deve essere  {datasetversion: {$in: [........ ] }}
 			 */
@@ -2890,7 +2913,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -3074,7 +3097,8 @@ public class SDPDataApiMongoAccess {
 
 			/* CONTEGGIO */
 			String cursorMark = CursorMarkParams.CURSOR_MARK_START;
-			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			//CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			SolrClient solrServer = server;
 
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
@@ -3415,7 +3439,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -3570,7 +3594,9 @@ public class SDPDataApiMongoAccess {
 
 
 
-			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			//CloudSolrClient solrServer =  CloudSolrSingleton.getServer();
+			SolrClient solrServer = server;
+
 
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
@@ -3960,7 +3986,7 @@ public class SDPDataApiMongoAccess {
 
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
-			 * ATTENZIONE!!!!!! datasetVersion sarà un array da mettere in in
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
@@ -4115,7 +4141,9 @@ public class SDPDataApiMongoAccess {
 
 
 
-			CloudSolrClient solrServer =  CloudSolrSingleton.getServer();	
+			//CloudSolrClient solrServer =  CloudSolrSingleton.getServer();
+			SolrClient solrServer = server;
+
 
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/"+codiceTenant+"/" );
 			//HttpSolrServer solrServer = new HttpSolrServer( "http://sdnet-solr.sdp.csi.it:8983/solr/" );
@@ -4517,7 +4545,7 @@ public class SDPDataApiMongoAccess {
 		log.debug("[SDPDataApiMongoAccess::checkPagesData] skipParameter="+skip);
 		log.debug("[SDPDataApiMongoAccess::checkPagesData] topParameter="+top);
 
-		//se skip è valorizzato
+		//se skip e valorizzato
 		if(skip!=null) {
 			startindex=startindex+skip.intValue();
 		}
