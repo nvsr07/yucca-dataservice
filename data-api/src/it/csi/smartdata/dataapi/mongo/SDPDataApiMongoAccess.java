@@ -1863,6 +1863,11 @@ public class SDPDataApiMongoAccess {
 				String count=rs.getString("totale");
 
 
+				Integer dayOfweekInt=(dayofweek==null ? -1 : new Integer(dayofweek));
+				if (dayOfweekInt > 0) {
+					dayOfweekInt++;
+					if (dayOfweekInt > 7) dayOfweekInt=1; 
+				}
 
 				Map<String, Object> misura = new HashMap<String, Object>();
 				misura.put("dayofmonth",  (giorno==null ? -1 : new Integer(giorno)));
@@ -1872,7 +1877,7 @@ public class SDPDataApiMongoAccess {
 				//YUCCA-346
 				misura.put("minute",  (minuto==null ? -1 : new Integer(minuto)));
 				//YUCCA-388
-				misura.put("dayofweek",  (dayofweek==null ? -1 : new Integer(dayofweek)));
+				misura.put("dayofweek", dayOfweekInt );
 
 				//TODO solo se e' social
 				misura.put("retweetparentid",  (retweetparentid==null ? -1 : new Long(retweetparentid)));
