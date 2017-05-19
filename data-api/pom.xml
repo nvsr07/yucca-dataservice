@@ -163,11 +163,13 @@
 	<artifactId>json</artifactId>
 	<version>20140107</version>
 </dependency>
+<!--  
 	<dependency>
 		<groupId>org.apache.phoenix</groupId>
 		<artifactId>phoenix-server-client</artifactId>
 		<version>4.4.0.2.4.2.0-258</version>
 	</dependency>
+	-->
 <!--          <dependency>
                <artifactId>solr-solrj</artifactId>
                <groupId>org.apache.solr</groupId>
@@ -179,23 +181,20 @@
     <groupId>org.apache.solr</groupId>
     <artifactId>solr-solrj</artifactId>
 <!--     <version>5.5.3</version>  -->
-		    <version>5.2.1</version>
+		<version>5.5.2</version>
+		<!--      <version>5.2.1</version> -->
     
                <type>jar</type>
 </dependency>
 
-		<dependency>
-				<groupId>org.apache.phoenix</groupId>
-				<artifactId>phoenix-server-client</artifactId>
-				<version>4.4.0.2.4.2.0-258</version>
-		</dependency>
 
 
 
 		<dependency> 
 		<groupId>org.apache.phoenix</groupId> 
 		<artifactId>phoenix-core</artifactId>
-		<version>4.4.0.2.4.2.0-258</version>
+		<!--  <version>4.4.0.2.4.2.0-258</version> -->
+		<version>4.7.0.2.6.0.3-8</version>
 		<exclusions>
 	        <exclusion>
 	            <artifactId>jdk.tools</artifactId>
@@ -245,7 +244,8 @@
 		 <dependency> 
 			<groupId>org.apache.hbase</groupId> 
 			<artifactId>hbase-client</artifactId>
-			<version>1.1.2.2.4.2.0-258</version>
+			<!--  <version>1.1.2.2.4.2.0-258</version>-->
+			<version>1.1.2.2.6.0.3-8</version>
 			<exclusions>
 				<exclusion>
 	            	<artifactId>jdk.tools</artifactId>
@@ -261,7 +261,9 @@
 		<dependency> 
 			<groupId>org.apache.hbase</groupId> 
 			<artifactId>hbase-server</artifactId>
-			<version>1.1.2.2.4.2.0-258</version>
+			<!--  <version>1.1.2.2.4.2.0-258</version>-->
+			<version>1.1.2.2.6.0.3-8</version>
+			
 			<exclusions>
 		        <exclusion>
 		            <groupId>*</groupId>

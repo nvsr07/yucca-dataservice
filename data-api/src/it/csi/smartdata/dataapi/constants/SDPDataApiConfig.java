@@ -102,12 +102,31 @@ public class SDPDataApiConfig {
 		
 		params.put("SDP_MONGO_CFG_DEFAULT_USER", rb.getString("SDP_MONGO_CFG_DEFAULT_USER"));
 		params.put("SDP_MONGO_CFG_DEFAULT_PWD", rb.getString("SDP_MONGO_CFG_DEFAULT_PWD"));
+
 		
+		params.put("SOLR_TYPE_ACCESS", rb.getString("SOLR_TYPE_ACCESS"));
+		params.put("SOLR_USERNAME", rb.getString("SOLR_USERNAME"));
+		params.put("SOLR_PASSWORD", rb.getString("SOLR_PASSWORD"));
+
 		
+	
 		
 		
 	}
 
+	public String getSolrTypeAccess() {
+		return (params.get("SOLR_TYPE_ACCESS") != null ? params.get("SOLR_TYPE_ACCESS") : "");
+	}
+	
+	public String getSolrUsername(){
+		return (params.get("SOLR_USERNAME") != null ? params.get("SOLR_USERNAME") : "");
+		
+	}
+	
+	public String getSolrPassword() {
+		return (params.get("SOLR_PASSWORD") != null ? params.get("SOLR_PASSWORD") : "");
+		
+	}
 	
 	public String getPhoenixUrl() {
 		return params.get(SDP_PHOENIX_URL);

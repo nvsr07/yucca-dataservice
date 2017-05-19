@@ -52,7 +52,12 @@ public class SDPMongoOdataCast {
 	private ArrayList<DBObject> configObject=null;
 
 	public SDPMongoOdataCast () {
+		try {
 		mongoDataAccess = new SDPDataApiMongoAccess();
+		} catch (Exception e) {
+			//TODO log
+			e.printStackTrace();
+		}
 	}
 	private void initDbObject(String codiceApi) {
 		if (null==configObject || !codiceApi.equals(this.codiceApi)) {
