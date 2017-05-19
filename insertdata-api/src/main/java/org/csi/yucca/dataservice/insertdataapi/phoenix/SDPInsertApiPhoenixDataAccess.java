@@ -230,11 +230,8 @@ public class SDPInsertApiPhoenixDataAccess {
 
 			}
 			try {
-				log.info("Insert Phoenix ---------- BEFORE EXECUTE BATCH");
 				stmt.executeBatch();
-				log.info("Insert Phoenix ---------- BEFORE COMMIT");
 				conn.commit();
-				log.info("Insert Phoenix ---------- END COMMIT");
 			} catch (ArrayIndexOutOfBoundsException ae) {
 				log.error("Insert Phoenix ARRAYINDEXOUTOFBOUND", ae);
 				if (stmt != null)
@@ -300,7 +297,7 @@ public class SDPInsertApiPhoenixDataAccess {
 			String schema = "";
 			String table = "";
 
-			if (infoDataset.getDatasetType().equals("streamDataset")) {
+			if (infoDataset.getDatasetSubType().equals("streamDataset")) {
 				schema = conf.getMeasuresPhoenixSchemaName();
 				if (schema == null)
 					schema = "db_" + tenant;
@@ -308,7 +305,7 @@ public class SDPInsertApiPhoenixDataAccess {
 				if (table == null)
 					table = "measures";
 
-			} else if (infoDataset.getDatasetType().equals("socialDataset")) {
+			} else if (infoDataset.getDatasetSubType().equals("socialDataset")) {
 				schema = conf.getSocialPhoenixSchemaName();
 				if (schema == null)
 					schema = "db_" + tenant;
@@ -316,7 +313,7 @@ public class SDPInsertApiPhoenixDataAccess {
 				if (table == null)
 					table = "social";
 
-			} else if (infoDataset.getDatasetType().equals("binaryDataset")) {
+			} else if (infoDataset.getDatasetSubType().equals("binaryDataset")) {
 				schema = conf.getMediaPhoenixSchemaName();
 				if (schema == null)
 					schema = "db_" + tenant;
