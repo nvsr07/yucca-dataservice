@@ -4158,7 +4158,6 @@ public class SDPDataApiMongoAccess {
 			solrQuery.setRows(1);
 
 
-
 			long starTtime=0;
 			long deltaTime=-1;
 

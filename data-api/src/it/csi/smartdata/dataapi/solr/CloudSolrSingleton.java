@@ -22,7 +22,8 @@ public class CloudSolrSingleton {
 
 			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO java.security.auth.login.config --- " + System.getProperty("java.security.auth.login.config"));
 			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO solr.kerberos.jaas.appname ---" + System.getProperty("solr.kerberos.jaas.appname"));
-			
+			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO javax.security.auth.useSubjectCredsOnly ---" + System.getProperty("javax.security.auth.useSubjectCredsOnly"));
+						
 			
 			server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
 		} catch (Exception e) {
