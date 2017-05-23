@@ -17,6 +17,7 @@ public class CloudSolrSingleton {
 			System.out.println("------------------>>>> PRIMAAAAAAAAAAAAAAAAAA " + System.getProperty("java.security.auth.login.config"));
 			
 			System.setProperty("java.security.auth.login.config", "/appserv/jboss/ajb620/part001node01/standalone/configuration/jaas-client.conf");			
+			System.setProperty("solr.kerberos.jaas.appname", "Client");			
 			HttpClientUtil.setConfigurer( new Krb5HttpClientConfigurer());
 
 			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO java.security.auth.login.config --- " + System.getProperty("java.security.auth.login.config"));
