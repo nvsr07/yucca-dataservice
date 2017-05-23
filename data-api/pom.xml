@@ -169,7 +169,7 @@
 		<artifactId>phoenix-server-client</artifactId>
 		<version>4.4.0.2.4.2.0-258</version>
 	</dependency>
-	--> 
+	-->
 <!--          <dependency>
                <artifactId>solr-solrj</artifactId>
                <groupId>org.apache.solr</groupId>
@@ -578,13 +578,4 @@
 	</profiles>
 
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>4.4.1</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 </project>
