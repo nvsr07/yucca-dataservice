@@ -13,9 +13,16 @@ public class CloudSolrSingleton {
 	
 	private CloudSolrSingleton() {
 		try {
+			
+			System.out.println("------------------>>>> PRIMAAAAAAAAAAAAAAAAAA " + System.getProperty("java.security.auth.login.config"));
+			
 			System.setProperty("java.security.auth.login.config", "/appserv/jboss/ajb620/part001node01/standalone/configuration/jaas-client.conf");			
 			HttpClientUtil.setConfigurer( new Krb5HttpClientConfigurer());
-		server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
+
+			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO " + System.getProperty("java.security.auth.login.config"));
+			
+			
+			server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
 		} catch (Exception e) {
 			
 		}
