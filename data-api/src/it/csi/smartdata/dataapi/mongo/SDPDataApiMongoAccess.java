@@ -4183,12 +4183,23 @@ public class SDPDataApiMongoAccess {
 			deltaTime=-1;
 
 
+			int maxdocPerPage=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+			try {
+				maxdocPerPage=Integer.parseInt(MongoTenantDbSingleton.getInstance().getMaxDocPerPage(codiceTenantOrig));
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] max doc per page from configuration --> "+maxdocPerPage);
+				
+				maxdocPerPage=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+				
+			} catch (Exception e) {
+				
+			}
+			
 			/** nuovi controlli skip e limit **/
 			if (skipL<0) skipL=0;
 
 			//controlli sui valoris massimi ammessi 
 			if(skipL>0 && skipL>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
-			if(limitL> 0 && limitL>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+			if(limitL> 0 && limitL>maxdocPerPage) throw new SDPPageSizeException("invalid top value: max document per page = "+maxdocPerPage,Locale.UK);
 
 
 			//se lo skip porta oltre il numero di risultati eccezione
@@ -4197,7 +4208,7 @@ public class SDPDataApiMongoAccess {
 			if (limitL<0) {
 
 				// se limit non valorizzato si restituisce tutto il resultset (limit=cnt) e si solleva eccezione se il resulset supera il numero massimo di risultati per pagina
-				if ((cnt>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())) throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+				if ((cnt>maxdocPerPage)) throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+maxdocPerPage,Locale.UK);
 				limitL=cnt;
 			} 
 

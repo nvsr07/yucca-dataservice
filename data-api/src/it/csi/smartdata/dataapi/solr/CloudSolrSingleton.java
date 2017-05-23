@@ -2,8 +2,10 @@ package it.csi.smartdata.dataapi.solr;
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 
-import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpClientUtil;
+import org.apache.solr.client.solrj.impl.Krb5HttpClientConfigurer;
 
 public class CloudSolrSingleton {
 	//private CloudSolrClient server;
@@ -11,6 +13,7 @@ public class CloudSolrSingleton {
 	
 	private CloudSolrSingleton() {
 		try {
+			HttpClientUtil.setConfigurer( new Krb5HttpClientConfigurer());
 		server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
 		} catch (Exception e) {
 			

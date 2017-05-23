@@ -48,6 +48,11 @@ public class MongoTenantDbSingleton {
 	public static final String DB_MEDIA_PHOENIX="DBMEDIA_PHOENIX";
 	public static final String DB_SOCIAL_PHOENIX="DBSOCIAL_PHOENIX";	
 
+	
+	public static final String MAX_DOC_PER_PAGE="MAX_DOC_PER_PAGE";
+	
+	
+	
 	public static MongoTenantDbSingleton instance=null;
 	private static int anno_init = 0;
 	private static int mese_init = 0;
@@ -55,6 +60,7 @@ public class MongoTenantDbSingleton {
 
 
 	private static HashMap<String, DbConfDto> params = new HashMap<String, DbConfDto>();
+	private static HashMap<String, String> functionalParams = new HashMap<String, String>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 
 
@@ -243,6 +249,10 @@ public class MongoTenantDbSingleton {
 					params.put(tenant+"__"+DB_DATA, dataDb);
 					params.put(tenant+"__"+DB_DATA_TRASH, dataDbTrash);
 					params.put(tenant+"__"+DB_MEDIA, mediaDb);
+					
+					
+					functionalParams.put(tenant+"__"+MAX_DOC_PER_PAGE,takeNvlValues( obj.get("maxOdataResultPerPage")));
+					
 					log.info("[MongoTenantDbSingleton::MongoTenantDbSingleton] refresh add client  " +SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT)+"___"+SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT));
 					mongoConnection.put(SDPDataApiConfig.getInstance().getMongoCfgHost(SDPDataApiConfig.MONGO_DB_CFG_TENANT)+"___"+SDPDataApiConfig.getInstance().getMongoCfgPort(SDPDataApiConfig.MONGO_DB_CFG_TENANT), mongoClient);
 
@@ -267,6 +277,9 @@ public class MongoTenantDbSingleton {
 		return params.get(tenantCode+"__"+dbType);
 	}
 
+	public String getMaxDocPerPage(String tenantCode) {
+		return functionalParams.get(tenantCode+"__"+MAX_DOC_PER_PAGE);
+	}
 
 	private void reloadTenantDbConfiguration () {
 		try {
@@ -375,6 +388,9 @@ public class MongoTenantDbSingleton {
 					params.put(tenant+"__"+DB_DATA, dataDb);
 					params.put(tenant+"__"+DB_DATA_TRASH, dataDbTrash);
 					params.put(tenant+"__"+DB_MEDIA, mediaDb);	
+					
+					functionalParams.put(tenant+"__"+MAX_DOC_PER_PAGE,takeNvlValues( obj.get("maxOdataResultPerPage")));
+					
 				}
 			} finally {
 				cursor.close();
