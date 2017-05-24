@@ -73,7 +73,7 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 							+ " not false.  SPNego authentication may not be successful.");
 				}
 
-				Configuration.setConfiguration(jaasConfig);
+				//Configuration.setConfiguration(jaasConfig);
 				httpClient.getAuthSchemes().register("Negotiate",
 						new SPNegoSchemeFactory(true, false));
 
