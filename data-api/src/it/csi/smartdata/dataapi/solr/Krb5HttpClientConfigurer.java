@@ -139,7 +139,7 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 			String clientAppName = this.clienName;
 			if (true || this.initiateAppNames.contains(appName)) {
 				Krb5HttpClientConfigurer.logger
-						.debug("Using AppConfigurationEntry for appName '"
+						.info("Using AppConfigurationEntry for appName '"
 								+ clientAppName + "' instead of: " + appName);
 				return this.baseConfig.getAppConfigurationEntry(clientAppName);
 			}
