@@ -119,6 +119,11 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 			Krb5HttpClientConfigurer.logger.debug("Login prop: "
 					+ System.getProperty("java.security.auth.login.config"));
 
+			
+			Krb5HttpClientConfigurer.logger
+			.debug("BEGIN getAppConfigurationEntry invoked with appName: '"+appName );
+			
+			
 			String clientAppName = System.getProperty(
 					"solr.kerberos.jaas.appname", "Client");
 			if (true || this.initiateAppNames.contains(appName)) {
