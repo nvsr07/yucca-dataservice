@@ -56,6 +56,56 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 	public void configure(DefaultHttpClient httpClient, SolrParams config) {
 		super.configure(httpClient, config);
 
+		if (true || System.getProperty("java.security.auth.login.config") != null) {
+			String configValue = System
+					.getProperty("java.security.auth.login.config");
+			configValue = "dummyvalue";
+
+			if (configValue != null) {
+				logger.info("Setting up SPNego auth with config: "
+						+ configValue);
+				String useSubjectCredsProp = "javax.security.auth.useSubjectCredsOnly";
+				String useSubjectCredsVal = System
+						.getProperty("javax.security.auth.useSubjectCredsOnly");
+
+				if (useSubjectCredsVal == null) {
+					System.setProperty(
+							"javax.security.auth.useSubjectCredsOnly", "false");
+				} else if (!(useSubjectCredsVal.toLowerCase(Locale.ROOT)
+						.equals("false"))) {
+					logger.warn("System Property: javax.security.auth.useSubjectCredsOnly set to: "
+							+ useSubjectCredsVal
+							+ " not false.  SPNego authentication may not be successful.");
+				}
+
+				Configuration.setConfiguration(jaasConfig);
+				httpClient.getAuthSchemes().register("Negotiate",
+						new SPNegoSchemeFactory(true, false));
+
+				Credentials useJaasCreds = new Credentials() {
+					public String getPassword() {
+						return null;
+					}
+
+					public Principal getUserPrincipal() {
+						return null;
+					}
+				};
+				httpClient.getCredentialsProvider().setCredentials(
+						AuthScope.ANY, useJaasCreds);
+
+				httpClient
+						.addRequestInterceptor(this.bufferedEntityInterceptor);
+			} else {
+				httpClient.getCredentialsProvider().clear();
+			}
+		}
+	}
+	
+	
+	public void configure_orig(DefaultHttpClient httpClient, SolrParams config) {
+		super.configure(httpClient, config);
+
 		if (System.getProperty("java.security.auth.login.config") != null) {
 			String configValue = System
 					.getProperty("java.security.auth.login.config");
@@ -99,7 +149,7 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 				httpClient.getCredentialsProvider().clear();
 			}
 		}
-	}
+	}	
 
 	private static class SolrJaasConfiguration extends Configuration {
 		private Configuration baseConfig;
