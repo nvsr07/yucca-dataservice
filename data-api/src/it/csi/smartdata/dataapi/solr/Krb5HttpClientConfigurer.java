@@ -32,7 +32,7 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 	private static final Logger logger = LoggerFactory
 			.getLogger(Krb5HttpClientConfigurer.class);
 
-	private static final Configuration jaasConfig = new SolrJaasConfiguration();
+	private static final Configuration jaasConfig = new SolrJaasConfigurationCSI();
 	private HttpRequestInterceptor bufferedEntityInterceptor;
 
 	public Krb5HttpClientConfigurer() {
@@ -99,14 +99,17 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 		}
 	}
 
-	private static class SolrJaasConfiguration extends Configuration {
+	private static class SolrJaasConfigurationCSI extends Configuration {
 		private Configuration baseConfig;
 		private Set<String> initiateAppNames = new HashSet(
 				Arrays.asList(new String[] {
 						"com.sun.security.jgss.krb5.initiate",
 						"com.sun.security.jgss.initiate" }));
 
-		public SolrJaasConfiguration() {
+		public SolrJaasConfigurationCSI() {
+			
+			System.out.println("Krb5HttpClientConfigurer +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+			
 			try {
 				Krb5HttpClientConfigurer.logger.debug(" SolrJaasConfiguration costruttore");
 				
