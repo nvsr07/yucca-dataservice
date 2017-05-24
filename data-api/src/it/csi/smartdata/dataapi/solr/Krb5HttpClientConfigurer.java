@@ -133,21 +133,21 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 					+ System.getProperty("java.security.auth.login.config"));
 
 			
-			System.out.println("BEGIN getAppConfigurationEntry invoked with appName: '"+appName );
+			System.out.println("Krb5HttpClientConfigurer BEGIN getAppConfigurationEntry invoked with appName: '"+appName );
 			
 			
 			String clientAppName = System.getProperty(
 					"solr.kerberos.jaas.appname", "Client");
 			if (true || this.initiateAppNames.contains(appName)) {
-				System.out.println("Using AppConfigurationEntry for appName '"
+				System.out.println("Krb5HttpClientConfigurer Using AppConfigurationEntry for appName '"
 								+ clientAppName + "' instead of: " + appName);
 				
-				System.out.println("Using AppConfigurationEntry for appName '"
+				System.out.println("Krb5HttpClientConfigurer Using AppConfigurationEntry for appName '"
 						+ clientAppName + "' instead of: " + appName);
 				
 				AppConfigurationEntry [] aa= this.baseConfig.getAppConfigurationEntry(clientAppName);
 				for (int kk=0;aa!=null && kk<aa.length; kk++) {
-					System.out.println(" ---------- clientAppName " + clientAppName + "    " +aa[kk].toString() );
+					System.out.println(" Krb5HttpClientConfigurer ---------- clientAppName " + clientAppName + "    " +aa[kk].toString() );
 				}
 				return aa;
 				//return this.baseConfig.getAppConfigurationEntry(clientAppName);
