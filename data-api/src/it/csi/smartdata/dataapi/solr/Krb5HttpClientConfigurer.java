@@ -105,17 +105,19 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 				Arrays.asList(new String[] {
 						"com.sun.security.jgss.krb5.initiate",
 						"com.sun.security.jgss.initiate" }));
+		private static final Logger loggerJ = LoggerFactory
+				.getLogger(SolrJaasConfigurationCSI.class);
 
 		public SolrJaasConfigurationCSI() {
 			
 			System.out.println("Krb5HttpClientConfigurer +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
 			
 			try {
-				Krb5HttpClientConfigurer.logger.debug(" SolrJaasConfiguration costruttore");
+				loggerJ.debug(" SolrJaasConfiguration costruttore");
 				
 				this.baseConfig = Configuration.getConfiguration();
 			} catch (SecurityException e) {
-				Krb5HttpClientConfigurer.logger.error(" SolrJaasConfiguration costruttore " + e.toString());
+				loggerJ.error(" SolrJaasConfiguration costruttore " + e.toString());
 				this.baseConfig = null;
 			}
 		}
@@ -124,28 +126,28 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 			if (this.baseConfig == null)
 				return null;
 
-			Krb5HttpClientConfigurer.logger.debug("Login prop: "
+			loggerJ.debug("Login prop: "
 					+ System.getProperty("java.security.auth.login.config"));
 
 			
-			Krb5HttpClientConfigurer.logger
+			loggerJ
 			.debug("BEGIN getAppConfigurationEntry invoked with appName: '"+appName );
 			
 			
 			String clientAppName = System.getProperty(
 					"solr.kerberos.jaas.appname", "Client");
 			if (true || this.initiateAppNames.contains(appName)) {
-				Krb5HttpClientConfigurer.logger
+				loggerJ
 						.debug("Using AppConfigurationEntry for appName '"
 								+ clientAppName + "' instead of: " + appName);
 				
-				Krb5HttpClientConfigurer.logger
+				loggerJ
 				.debug("Using AppConfigurationEntry for appName '"
 						+ clientAppName + "' instead of: " + appName);
 				
 				AppConfigurationEntry [] aa= this.baseConfig.getAppConfigurationEntry(clientAppName);
 				for (int kk=0;aa!=null && kk<aa.length; kk++) {
-					Krb5HttpClientConfigurer.logger.debug(" ---------- clientAppName " + clientAppName + "    " +aa[kk].toString() );
+					loggerJ.debug(" ---------- clientAppName " + clientAppName + "    " +aa[kk].toString() );
 				}
 				return aa;
 				//return this.baseConfig.getAppConfigurationEntry(clientAppName);
