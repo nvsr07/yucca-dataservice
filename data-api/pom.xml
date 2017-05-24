@@ -181,7 +181,8 @@
     <groupId>org.apache.solr</groupId>
     <artifactId>solr-solrj</artifactId>
 <!--     <version>5.5.3</version>  -->
-		<version>5.5.2</version>
+		<!--   <version>5.5.2</version> -->
+ <version>5.5.4</version>		
 		<!--      <version>5.2.1</version> -->
     
                <type>jar</type>
