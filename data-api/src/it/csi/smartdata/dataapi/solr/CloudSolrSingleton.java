@@ -34,7 +34,7 @@ public class CloudSolrSingleton {
 //			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO solr.kerberos.jaas.appname ---" + System.getProperty("solr.kerberos.jaas.appname"));
 //			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO javax.security.auth.useSubjectCredsOnly ---" + System.getProperty("javax.security.auth.useSubjectCredsOnly"));
 						
-			//System.setProperty("solr.kerberos.jaas.appname", "CiccioPaseticcio");			
+			System.setProperty("solr.kerberos.jaas.appname", "CiccioPaseticcio");			
 			HttpClientUtil.setConfigurer( new  Krb5HttpClientConfigurer("KERBEROS-POCHDP"));
 			
 			server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
