@@ -126,6 +126,9 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 			if (this.baseConfig == null)
 				return null;
 
+			System.out.println("Krb5HttpClientConfigurer  Login prop: "
+					+ System.getProperty("java.security.auth.login.config"));
+			
 			loggerJ.debug("Login prop: "
 					+ System.getProperty("java.security.auth.login.config"));
 
