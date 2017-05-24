@@ -125,7 +125,17 @@ public class Krb5HttpClientConfigurer extends HttpClientConfigurer {
 				Krb5HttpClientConfigurer.logger
 						.debug("Using AppConfigurationEntry for appName '"
 								+ clientAppName + "' instead of: " + appName);
-				return this.baseConfig.getAppConfigurationEntry(clientAppName);
+				
+				Krb5HttpClientConfigurer.logger
+				.debug("Using AppConfigurationEntry for appName '"
+						+ clientAppName + "' instead of: " + appName);
+				
+				AppConfigurationEntry [] aa= this.baseConfig.getAppConfigurationEntry(clientAppName);
+				for (int kk=0;aa!=null && kk<aa.length; kk++) {
+					Krb5HttpClientConfigurer.logger.debug(" ---------- clientAppName " + clientAppName + "    " +aa[kk].toString() );
+				}
+				return aa;
+				//return this.baseConfig.getAppConfigurationEntry(clientAppName);
 			}
 			return this.baseConfig.getAppConfigurationEntry(appName);
 		}
