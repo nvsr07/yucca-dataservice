@@ -107,6 +107,7 @@ public class SDPDataApiConfig {
 		params.put("SOLR_TYPE_ACCESS", rb.getString("SOLR_TYPE_ACCESS"));
 		params.put("SOLR_USERNAME", rb.getString("SOLR_USERNAME"));
 		params.put("SOLR_PASSWORD", rb.getString("SOLR_PASSWORD"));
+		params.put("SOLR_SECURITY_DOMAIN_NAME", rb.getString("SOLR_SECURITY_DOMAIN_NAME"));
 
 		
 	
@@ -114,6 +115,12 @@ public class SDPDataApiConfig {
 		
 	}
 
+	
+	public String getSolrSecurityDomainName() {
+		return (params.get("SOLR_SECURITY_DOMAIN_NAME") != null ? params.get("SOLR_SECURITY_DOMAIN_NAME") : "");
+	}
+	
+	
 	public String getSolrTypeAccess() {
 		return (params.get("SOLR_TYPE_ACCESS") != null ? params.get("SOLR_TYPE_ACCESS") : "");
 	}

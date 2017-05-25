@@ -11,7 +11,7 @@ public class CloudSolrSingleton {
 	private SolrClient server;
 	
 	private CloudSolrSingleton() {
-		HttpClientUtil.setConfigurer( new  Krb5HttpClientConfigurer("KERBEROS-POCHDP"));
+		HttpClientUtil.setConfigurer( new  Krb5HttpClientConfigurer(SDPInsertApiConfig.getInstance().getSolrSecurityDomainName()));
 
 		server = new CloudSolrClient(SDPInsertApiConfig.getInstance().getSolrUrl());
     }

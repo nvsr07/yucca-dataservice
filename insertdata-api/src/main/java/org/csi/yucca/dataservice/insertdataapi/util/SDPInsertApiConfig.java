@@ -20,7 +20,10 @@ public class SDPInsertApiConfig {
 	public static final String SOLR_TYPE_ACCESS = "SOLR_TYPE_ACCESS";
 	public static final String SOLR_USERNAME = "SOLR_USERNAME";
 	public static final String SOLR_PASSWORD = "SOLR_PASSWORD";
+	public static final String SOLR_SECURITY_DOMAIN_NAME = "SOLR_SECURITY_DOMAIN_NAME";
 
+	
+	
 	public static final String JMS_MB_INTERNAL_URL = "JMS_MB_INTERNAL_URL";
 	public static final String JMS_MB_INTERNAL_USERNAME = "JMS_MB_INTERNAL_USERNAME";
 	public static final String JMS_MB_INTERNAL_PASSWORD = "JMS_MB_INTERNAL_PASSWORD";
@@ -46,6 +49,10 @@ public class SDPInsertApiConfig {
 	public static final String DELETE_MAIL_SUBJECT_200 = "DELETE_MAIL_SUBJECT_200";
 	public static final String DELETE_MAIL_BODY_200 = "DELETE_MAIL_BODY_200";
 
+	
+	public static final String SOLR_SECURITY_DOMAIN_NAME = "SOLR_SECURITY_DOMAIN_NAME";
+	
+	
 	public static SDPInsertApiConfig instance = null;
 	private static int anno_init = 0;
 	private static int mese_init = 0;
@@ -109,6 +116,7 @@ public class SDPInsertApiConfig {
 		params.put(SOLR_TYPE_ACCESS, rb.getString(SOLR_TYPE_ACCESS));
 		params.put(SOLR_USERNAME, rb.getString(SOLR_USERNAME));
 		params.put(SOLR_PASSWORD, rb.getString(SOLR_PASSWORD));
+		params.put(SOLR_SECURITY_DOMAIN_NAME, rb.getString(SOLR_SECURITY_DOMAIN_NAME));
 
 		
 		params.put(JMS_MB_INTERNAL_URL, rb.getString(JMS_MB_INTERNAL_URL));
@@ -134,7 +142,7 @@ public class SDPInsertApiConfig {
 		params.put(DELETE_MAIL_BODY_500, rb.getString(DELETE_MAIL_BODY_500));
 		params.put(DELETE_MAIL_SUBJECT_200, rb.getString(DELETE_MAIL_SUBJECT_200));
 		params.put(DELETE_MAIL_BODY_200, rb.getString(DELETE_MAIL_BODY_200));
-
+		
 	}
 
 	// MONGO_DB_DEFAULT
@@ -203,6 +211,11 @@ public class SDPInsertApiConfig {
 			return -1;
 	}
 
+	
+	public String getSolrSecurityDomainName() {
+		return (params.get(SOLR_SECURITY_DOMAIN_NAME) != null ? params.get(SOLR_SECURITY_DOMAIN_NAME) : "");
+	}
+	
 	public String getSolrUrl() {
 		return params.get(SOLR_URL);
 	}
