@@ -50,7 +50,6 @@ public class SDPInsertApiConfig {
 	public static final String DELETE_MAIL_BODY_200 = "DELETE_MAIL_BODY_200";
 
 	
-	public static final String SOLR_SECURITY_DOMAIN_NAME = "SOLR_SECURITY_DOMAIN_NAME";
 	
 	
 	public static SDPInsertApiConfig instance = null;
