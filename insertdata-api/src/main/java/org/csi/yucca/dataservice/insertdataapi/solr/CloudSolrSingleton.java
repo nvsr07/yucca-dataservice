@@ -1,7 +1,9 @@
 package org.csi.yucca.dataservice.insertdataapi.solr;
 
+
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpClientUtil;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 public class CloudSolrSingleton {
@@ -9,6 +11,8 @@ public class CloudSolrSingleton {
 	private SolrClient server;
 	
 	private CloudSolrSingleton() {
+		HttpClientUtil.setConfigurer( new  Krb5HttpClientConfigurer("KERBEROS-POCHDP"));
+
 		server = new CloudSolrClient(SDPInsertApiConfig.getInstance().getSolrUrl());
     }
 	
