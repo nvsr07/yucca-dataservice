@@ -225,6 +225,12 @@
 					<artifactId>commons-codec</artifactId>
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
+				<exclusion>
+    <groupId>org.apache.axis2.wso2</groupId>
+    <artifactId>axis2-client</artifactId>
+				</exclusion>
+
+				
 			</exclusions>
 <scope>compile</scope>
 			
@@ -240,6 +246,11 @@
 					<artifactId>commons-codec</artifactId>
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
+				<exclusion>
+    <groupId>org.apache.axis2.wso2</groupId>
+    <artifactId>axis2-client</artifactId>
+				</exclusion>
+				
 			</exclusions>
 <scope>compile</scope>
 		</dependency>
