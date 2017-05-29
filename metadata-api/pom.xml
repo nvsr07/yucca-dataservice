@@ -203,7 +203,6 @@
 		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
 			<version>[4.0,)</version> </dependency> -->
 
-		<!--  
 
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
@@ -215,6 +214,7 @@
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
+<scope>runtime</scope>
 			
 		</dependency>
 		
@@ -229,6 +229,7 @@
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
+<scope>runtime</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.securevault</groupId>
@@ -240,9 +241,9 @@
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
+<scope>runtime</scope>
 		</dependency>
 		
-		-->
 		
 		
 		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java -->
