@@ -172,11 +172,10 @@
 			<version>3.1</version>
 			<exclusions>
 				<exclusion>
-					<artifactid>commons-codec</artifactid>
-					<groupid>commons-codec</groupid>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec</groupId>
 				</exclusion>
 			</exclusions>
-			
 		</dependency>
 		
 		<dependency>
