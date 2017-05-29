@@ -343,13 +343,13 @@
 			<version>1.5.3</version>
 		</dependency>
 		
-		<!--  
+		  
 		<dependency>
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.6</version>
 		</dependency>
-		-->
+		
 	</dependencies>
 	<profiles>
 		<profile>
