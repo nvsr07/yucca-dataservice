@@ -377,7 +377,7 @@ public class MetadataDelegate {
 
 		if (tenantAuthorized==null || tenantAuthorized.size()==0)
 		{
-			query+= "AND (visibility:public)";
+			query+= " AND (visibility:public)";
 		}
 		else {
 			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
@@ -392,7 +392,7 @@ public class MetadataDelegate {
 			}
 			searchTenants.append("))");
 			
-			query+= "AND "+searchTenants.toString();
+			query+= " AND "+searchTenants.toString();
 			
 		}
 		
