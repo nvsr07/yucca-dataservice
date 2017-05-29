@@ -269,11 +269,15 @@
 			<version>2.6.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java-jena -->
+		
+		<!-- 
+		
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>
 			<artifactId>jsonld-java-jena</artifactId>
 			<version>0.4.1</version>
 		</dependency>
+		 -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
