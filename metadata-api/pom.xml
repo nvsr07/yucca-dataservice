@@ -170,6 +170,13 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactid>commons-codec</artifactid>
+					<groupid>commons-codec</groupid>
+				</exclusion>
+			</exclusions>
+			
 		</dependency>
 		
 		<dependency>
@@ -238,7 +245,7 @@
 			<exclusions>
 				<exclusion>
 					<artifactId>commons-codec</artifactId>
-					<groupId>commons-codec.wso2</groupId>
+					<groupId>commons-codec</groupId>
 				</exclusion>
 			</exclusions>
 <scope>compile</scope>
