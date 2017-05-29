@@ -213,7 +213,7 @@
 			<version>4.2.3</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>commons-codec</artifactId>
+					<artifactId>commons-codec.wso2</artifactId>
 					<groupId>commons-codec</groupId>
 				</exclusion>
 			</exclusions>
@@ -224,7 +224,7 @@
 			<version>1.0.0</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>commons-codec</artifactId>
+					<artifactId>commons-codec.wso2</artifactId>
 					<groupId>commons-codec</groupId>
 				</exclusion>
 			</exclusions>
