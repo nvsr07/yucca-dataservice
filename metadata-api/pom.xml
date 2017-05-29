@@ -206,6 +206,13 @@
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
 			<version>4.2.3</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-codec.wso2</artifactId>
+					<groupId>commons-codec</groupId>
+				</exclusion>
+			</exclusions>
+			
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
