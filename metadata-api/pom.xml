@@ -7,7 +7,7 @@
 	<version>1.7.0-001</version>
 	<packaging>war</packaging>
 	<name>metadataapi</name>
-	<scm>
+	<scm> 
 		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
 	</scm>
 
@@ -202,6 +202,9 @@
 		
 		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
 			<version>[4.0,)</version> </dependency> -->
+
+		<!--  
+
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
@@ -214,6 +217,8 @@
 			</exclusions>
 			
 		</dependency>
+		
+		
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.apimgt.keymgt.stub</artifactId>
@@ -236,6 +241,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
+		-->
+		
+		
 		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java -->
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>
