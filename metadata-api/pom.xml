@@ -211,6 +211,12 @@
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.apimgt.keymgt.stub</artifactId>
 			<version>4.2.3</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.securevault</groupId>
