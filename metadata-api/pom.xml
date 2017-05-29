@@ -208,8 +208,8 @@
 			<version>4.2.3</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>commons-codec.wso2</artifactId>
-					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
 			
@@ -220,8 +220,8 @@
 			<version>4.2.3</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>commons-codec.wso2</artifactId>
-					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -231,8 +231,8 @@
 			<version>1.0.0</version>
 			<exclusions>
 				<exclusion>
-					<artifactId>commons-codec.wso2</artifactId>
-					<groupId>commons-codec</groupId>
+					<artifactId>commons-codec</artifactId>
+					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
