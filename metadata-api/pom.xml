@@ -214,7 +214,7 @@
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
-<scope>runtime</scope>
+<scope>compile</scope>
 			
 		</dependency>
 		
@@ -229,7 +229,7 @@
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
-<scope>runtime</scope>
+<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.securevault</groupId>
@@ -241,7 +241,7 @@
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
 			</exclusions>
-<scope>runtime</scope>
+<scope>compile</scope>
 		</dependency>
 		
 		
