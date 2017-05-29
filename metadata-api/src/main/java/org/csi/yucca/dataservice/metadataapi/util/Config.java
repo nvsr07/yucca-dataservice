@@ -22,6 +22,11 @@ public class Config {
 	public static final String OAUTH_ROLES_WEBSERVICE_URL = "OAUTH_ROLES_WEBSERVICE_URL";
 	
 	public static final String SEARCH_ENGINE_BASE_URL = "SEARCH_ENGINE_BASE_URL";
+	public static final String SEARCH_ENGINE_COLLECTION = "SEARCH_ENGINE_COLLECTION";
+	public static final String SOLR_TYPE_ACCESS = "SOLR_TYPE_ACCESS";
+	public static final String SOLR_USERNAME = "SOLR_USERNAME";
+	public static final String SOLR_PASSWORD = "SOLR_PASSWORD";
+	public static final String SOLR_SECURITY_DOMAIN_NAME = "SOLR_SECURITY_DOMAIN_NAME";
 
 	private static Map<String, String> params = null;
 	private static Config instance = null;
@@ -41,8 +46,17 @@ public class Config {
 		params.put(SEARCH_ENGINE_BASE_URL, rb.getString(SEARCH_ENGINE_BASE_URL));
 		params.put(OAUTH_ROLES_WEBSERVICE_URL,rb.getString(OAUTH_ROLES_WEBSERVICE_URL));
 
+		
+		
+		params.put(SOLR_USERNAME,rb.getString(SOLR_USERNAME));
+		params.put(SOLR_SECURITY_DOMAIN_NAME,rb.getString(SOLR_SECURITY_DOMAIN_NAME));
+		params.put(SOLR_TYPE_ACCESS,rb.getString(SOLR_TYPE_ACCESS));
+		params.put(SEARCH_ENGINE_COLLECTION,rb.getString(SEARCH_ENGINE_COLLECTION));
+		
+		
 		ResourceBundle rbSecret = ResourceBundle.getBundle("MetadataApiSecret");
 		params.put(OAUTH_PASSWORD, rbSecret.getString(OAUTH_PASSWORD));
+		params.put(SOLR_PASSWORD, rbSecret.getString(SOLR_PASSWORD));
 	}
 
 	public static Config getInstance() {
@@ -94,7 +108,28 @@ public class Config {
 	public String getSearchEngineBaseUrl() {
 		return params.get(SEARCH_ENGINE_BASE_URL);
 	}
+	
+	public String getSearchEngineCollection() {
+		return params.get(SEARCH_ENGINE_COLLECTION);
+	}
+	
 
+	public String getSolrSecurityDomainName() {
+		return (params.get(SOLR_SECURITY_DOMAIN_NAME) != null ? params.get(SOLR_SECURITY_DOMAIN_NAME) : "");
+	}
+	
+	public String getSolrTypeAccess(){
+		return params.get(SOLR_TYPE_ACCESS);
+	}
+	
+	public String getSolrUsername(){
+		return params.get(SOLR_USERNAME);
+	}
+	
+	public String getSolrPassword(){
+		return params.get(SOLR_PASSWORD);
+	}
+	
 	
 	
 }

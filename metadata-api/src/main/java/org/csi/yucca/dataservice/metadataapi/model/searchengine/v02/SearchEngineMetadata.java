@@ -8,7 +8,10 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
+import org.json.JSONObject;
+import org.noggit.JSONUtil;
 
 import com.google.gson.Gson;
 
@@ -93,11 +96,23 @@ public class SearchEngineMetadata {
 		super();
 	}
 
+
 	public static SearchEngineMetadata fromJson(String json) {
 		Gson gson = JSonHelper.getInstance();
 		return gson.fromJson(json, SearchEngineMetadata.class);
 	}
 
+	
+	public static SearchEngineMetadata fromSolrDocument(SolrDocument curSolrDoc) {
+		Gson gson = JSonHelper.getInstance();
+		return gson.fromJson(JSONUtil.toJSON(curSolrDoc),SearchEngineMetadata.class);
+//		JSONObject json = new JSONObject(curSolrDoc);	
+//		Gson gson = JSonHelper.getInstance();
+//		return gson.fromJson(json.toString(), SearchEngineMetadata.class);
+		
+	}
+	
+	
 	public String getId() {
 		return id;
 	}
