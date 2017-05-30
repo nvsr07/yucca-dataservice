@@ -189,7 +189,7 @@ public class SDPMultiApiEdmProvider extends EdmProvider {
 		
 		//ENTITY SETS
 		List<EntitySet> entitySets = new ArrayList<EntitySet>();
-		EntitySet entityset=new EntitySet().setName(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).setEntityType( new FullQualifiedName(remoteNamespace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA)); 
+		EntitySet entityset=new EntitySet().setName(remoteApi+"__"+SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).setEntityType( new FullQualifiedName(remoteNamespace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA)); 
 		entitySets.add(entityset);
 		
 		entityContainer.setEntitySets(entitySets);
