@@ -1,9 +1,9 @@
 package it.csi.smartdata.dataapi.multiapi.servlet;
 
+
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConstants;
-import it.csi.smartdata.dataapi.servlet.SDPOdataFilter;
 import it.csi.smartdata.dataapi.util.AccountingLog;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class SDPOdataMultiApiFilter implements Filter{
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws ServletException, IOException {
-		log.debug("[SDPOdataMultiApiFilter::doFilter] BEGIN");
+		log.info("[SDPOdataMultiApiFilter::doFilter] BEGIN");
 		AccountingLog accLog=new AccountingLog(); 
 		long starTtime=0;
 		long deltaTime=-1;
@@ -62,21 +62,12 @@ public class SDPOdataMultiApiFilter implements Filter{
 			
 
 			String requestURI = request.getRequestURI();
-			log.debug("[SDPOdataMultiApiFilter::doFilter] requestURI="+requestURI);
+			log.info("[SDPOdataMultiApiFilter::doFilter] requestURI="+requestURI);
 
 			String webFilterPattern=SDPDataMultiApiConstants.SDP_WEB_FILTER_PATTERN;
 			String webServletUrl=SDPDataMultiApiConstants.SDP_WEB_SERVLET_URL;
 
-			try { 
-				webFilterPattern=SDPDataApiConfig.getInstance().getWebFilterPattern();
-			} catch (Exception e) {
-
-			}
-			try { 
-				webServletUrl=SDPDataApiConfig.getInstance().getWebServletUrl();
-			} catch (Exception e) {
-
-			}
+		
 			log.debug("[SDPOdataMultiApiFilter::doFilter] webFilterPattern="+webFilterPattern);
 			log.debug("[SDPOdataMultiApiFilter::doFilter] webServletUrl="+webServletUrl);
 
