@@ -21,7 +21,6 @@ public class SDPMultiApiServiceFactory extends ODataServiceFactory {
 		log.debug("[SDPMultiApiServiceFactory::createService] BEGIN");
 
 		try {
-
 			log.debug("[SDPMultiApiServiceFactory::createService] odc="+odc);
 			String uri=odc.getPathInfo().getRequestUri().toString();
 			String root=odc.getPathInfo().getServiceRoot().toString();
@@ -73,7 +72,10 @@ public class SDPMultiApiServiceFactory extends ODataServiceFactory {
 			} catch (Exception e ) {
 				log.warn("[SDPMultiApiServiceFactory::createService] error (ignored) handling webBaseUrl   "+e);
 			}
-			if (null!=webBaseUrl) singleProcessor.setBaseUrl(webBaseUrl+codiceApi+"/");
+			if (null!=webBaseUrl) 
+				//singleProcessor.setBaseUrl(webBaseUrl+codiceApi+"/");
+				singleProcessor.setBaseUrl("https://dddddddddddddddddddddddd");
+			
 			singleProcessor.setCodiceApi(codiceApi);
 			singleProcessor.setApacheUniqueId(apacheUniqueId);
 
