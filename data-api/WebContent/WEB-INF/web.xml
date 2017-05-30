@@ -56,7 +56,7 @@
 		<!--  
 		<servlet-class>org.apache.olingo.odata2.core.servlet.ODataServlet</servlet-class>
 		-->
-		<servlet-class>it.csi.smartdata.dataapi.multiapi.servlet.Provacontext</servlet-class>
+		<servlet-class>it.csi.smartdata.dataapi.multiapi.servlet.SDPOdataMultiApiServlet</servlet-class>
 		<init-param>
 			<param-name>org.apache.olingo.odata2.service.factory</param-name>
 			<param-value>it.csi.smartdata.dataapi.multiapi.odata.SDPMultiApiServiceFactory</param-value>

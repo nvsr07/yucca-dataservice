@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.ODataServiceFactory;
 import org.apache.olingo.odata2.core.servlet.ODataServlet;
 
-public class SDPOdataMultiApiServlet extends ODataServlet {
+public class SDPOdataMultiApiServlet extends OlingoServletRewrite {
 	
 	static Logger log = Logger.getLogger(SDPOdataMultiApiServlet.class.getPackage().getName());
 	

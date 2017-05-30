@@ -1,9 +1,8 @@
 package it.csi.smartdata.dataapi.multiapi.servlet;
 
 
-import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
-import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConstants;
+import it.csi.smartdata.dataapi.multiapi.proxy.OdataSingleton;
 import it.csi.smartdata.dataapi.util.AccountingLog;
 
 import java.io.IOException;
@@ -17,6 +16,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 public class SDPOdataMultiApiFilter implements Filter{
@@ -60,7 +60,6 @@ public class SDPOdataMultiApiFilter implements Filter{
 			accLog.setForwardefor(forwardefor);
 			accLog.setJwtData(jwt);
 			
-
 			String requestURI = request.getRequestURI();
 			log.info("[SDPOdataMultiApiFilter::doFilter] requestURI="+requestURI);
 
@@ -74,13 +73,15 @@ public class SDPOdataMultiApiFilter implements Filter{
 			if (requestURI.indexOf(webFilterPattern)!=-1) {
 				log.debug("[SDPOdataMultiApiFilter::doFilter] FILTERING");
 
-
 				String prima=requestURI.substring(0,requestURI.indexOf(webFilterPattern));
 				String dopo="";
 
 				String codiceApi=requestURI.substring(prima.length()+webFilterPattern.length());
 
+				
 
+				
+				
 				int indicea=requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
 				int indiceb=requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
 
@@ -101,53 +102,32 @@ public class SDPOdataMultiApiFilter implements Filter{
 					//codiceApi=codiceApi.substring(0, codiceApi.length()-1);
 				}
 
-				//				if (indice>0 && indice>requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)) 
-				//					indice=requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
-				//				if (indice>0 && indice>requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)) 
-				//					indice=requestURI.indexOf("$",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1);
+				String dopoCodiceApi = StringUtils.substringAfter(requestURI, codiceApi+"/");
 
+				String maybeDataset = StringUtils.substringBefore(dopoCodiceApi, "/");
+				
+				if (dopoCodiceApi!=null && maybeDataset!=null && maybeDataset.contains("__"))
+				{
+					log.info("[SDPOdataMultiApiFilter::doFilter] Url da proxare, dopoCodiceApi:"+dopoCodiceApi+", maybeDataset:"+maybeDataset);
+					
+					String dataset = StringUtils.substringBefore(maybeDataset, "__");
+					String queryString =StringUtils.substringBefore(maybeDataset, dataset+"/");
 
-
-
-				//				if (requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)>0) {
-				//					dopo=requestURI.substring(requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)+1);
-				//				}
-				//						
-				//						requestURI.substring(requestURI.indexOf("/",requestURI.indexOf(webFilterPattern)+webFilterPattern.length()+1)+1);
-
-
-
-
-				//if (dopo.length()>0) codiceApi=codiceApi.substring(0, codiceApi.indexOf(dopo)-1);
-				//else codiceApi=codiceApi.substring(0, codiceApi.length()-1);
-				String newURI=webServletUrl+dopo+"?codiceApi="+codiceApi+"&apacheUniqueId="+uniqueid;
-
-				//YUCCA-345
-				if ("csv".equals(request.getParameter("$format"))) {
-					newURI=SDPDataApiConstants.SDP_WEB_CSVSERVLET_URL+dopo+"?codiceApi="+codiceApi+"&restoUri="+dopo+"&apacheUniqueId="+uniqueid;
+					OdataSingleton.getInstance().getOdataResponse(dataset,queryString, res);
+					return;
+					
 				}
-
+				else {
+					log.info("[SDPOdataMultiApiFilter::doFilter] Url da NOproxare, dopoCodiceApi:"+dopoCodiceApi);
+				}
 
 				
-				String querString="-";
-				if (request.getQueryString()!=null && request.getQueryString().length()>0) {
-					newURI=newURI+"&"+request.getQueryString();
-					querString=request.getQueryString();
-				}
-
-				//YUCCA-345
-				if ("csv".equals(request.getParameter("$format"))) {
-
-					CharSequence toFind="$format=csv";
-					CharSequence toreplace="$format=json";
-
-					newURI=newURI.replace(toFind, toreplace);
-				}
-
+				
+				
+				String newURI=webServletUrl+dopo+"?codiceApi="+codiceApi+"&apacheUniqueId="+uniqueid;
 				
 				accLog.setPath(dopo);
 				accLog.setApicode(codiceApi);
-				accLog.setQuerString(querString);
 				
 
 				
@@ -191,4 +171,5 @@ public class SDPOdataMultiApiFilter implements Filter{
 		//
 	}
 
+	
 }

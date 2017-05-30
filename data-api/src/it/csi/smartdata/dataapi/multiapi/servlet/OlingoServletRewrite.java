@@ -32,7 +32,7 @@ import org.apache.olingo.odata2.core.exception.ODataRuntimeException;
 import org.apache.olingo.odata2.core.servlet.ODataExceptionWrapper;
 import org.apache.olingo.odata2.core.servlet.RestUtil;
 
-public class Provacontext extends HttpServlet {
+public class OlingoServletRewrite extends HttpServlet {
 
 	  private static final String HTTP_METHOD_OPTIONS = "OPTIONS";
 	  private static final String HTTP_METHOD_HEAD = "HEAD";
@@ -166,8 +166,8 @@ public class Provacontext extends HttpServlet {
 	      //FCCCCCCCCCCCCCCCCC
 	      PathInfoImpl aaa=(PathInfoImpl)odataRequest.getPathInfo();
 	      try {
-		      aaa.setServiceRoot(new URI("http://aaaaaaa/"));
-	    	  aaa.setRequestUri(new URI("http://bbbbbbbbbbbbbbbbbbbb/odata/SDPOdataMultiApiServlet.svc/?codiceApi=pippo&apacheUniqueId=-"));
+		      aaa.setServiceRoot(new URI("http://localhost:8080/odata/SmartDataOdataMultiApiService.svc/csi_sii/"));
+//	    	  aaa.setRequestUri(new URI("http://bbbbbbbbbbbbbbbbbbbb/odata/SDPOdataMultiApiServlet.svc/?codiceApi=pippo&apacheUniqueId=-"));
 	      } catch (Exception e ) {
 	    	  
 	      }

@@ -126,7 +126,7 @@ public class SDPMultiApiEdmProvider extends EdmProvider {
 
 	@Override
 	public List<Schema> getSchemas() throws ODataException {
-		log.debug("[SDPMultiApiEdmProvider::getSchemas] BEGIN " );
+		log.info("[SDPMultiApiEdmProvider::getSchemas] BEGIN "+codiceApi );
 		try {
 			
 			List<Schema> schemas = new ArrayList<Schema>();
