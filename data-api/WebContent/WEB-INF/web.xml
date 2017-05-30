@@ -23,7 +23,7 @@
 	</filter>
 	<filter>
 		<filter-name>SDPMultiApiurlRewriteFilter</filter-name>
-		<filter-class>it.csi.smartdata.dataapi.multiapi.servlet.SDPOdataMiltiApiFilter</filter-class>
+		<filter-class>it.csi.smartdata.dataapi.multiapi.servlet.SDPOdataMultiApiFilter</filter-class>
 	</filter>
 
 	<filter-mapping>
