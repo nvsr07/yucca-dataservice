@@ -113,7 +113,7 @@ public class SDPEdmProvider extends EdmProvider {
 	public List<Schema> getSchemas() throws ODataException {
 		log.debug("[SDPEdmProvider::getSchemas] BEGIN " );
 		try {
-			return mongoAccess.getSchemasInternal(this.codiceApi);
+			return mongoAccess.getSchemasInternal(this.codiceApi,null);
 		} catch (Exception ex) {
 			log.error("[SDPEdmProvider::getSchemas] unexpected exeption",ex);
 			ODataException oex = new ODataException("unexpected",ex);

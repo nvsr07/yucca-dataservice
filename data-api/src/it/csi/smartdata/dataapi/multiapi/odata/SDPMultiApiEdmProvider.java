@@ -33,7 +33,7 @@ public class SDPMultiApiEdmProvider extends EdmProvider {
 
 
 	//private ArrayList<DBObject> configObject=null;
-
+	private SDPMongoOdataCast mongoAccess= new SDPMongoOdataCast();
 	
 	private String codiceApi=null;
 
@@ -128,7 +128,20 @@ public class SDPMultiApiEdmProvider extends EdmProvider {
 	public List<Schema> getSchemas() throws ODataException {
 		log.debug("[SDPMultiApiEdmProvider::getSchemas] BEGIN " );
 		try {
-			return getSchemasInternal(this.codiceApi);
+			
+			List<Schema> schemas = new ArrayList<Schema>();
+			
+			List<Schema> cur= mongoAccess.getSchemasInternal("AlloggiVacan_1671" , "AlloggiVacan_1671__");
+			schemas.addAll(cur);
+			
+			cur= mongoAccess.getSchemasInternal("ScuolePiemon_1282" , "ScuolePiemon_1282__");
+			schemas.addAll(cur);
+			cur= mongoAccess.getSchemasInternal("Scuole_costr_1198" , "Scuole_costr_1198__");
+			schemas.addAll(cur);
+			
+			return schemas;
+			
+			
 		} catch (Exception ex) {
 			log.error("[SDPMultiApiEdmProvider::getSchemas] unexpected exeption",ex);
 			ODataException oex = new ODataException("unexpected",ex);

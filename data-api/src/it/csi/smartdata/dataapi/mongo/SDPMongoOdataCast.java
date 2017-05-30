@@ -227,8 +227,12 @@ public class SDPMongoOdataCast {
 
 		return null;
 	}
-
 	public EntitySet getEntitySet(final String entityContainer, final String name,String codiceApi) throws ODataException {
+		
+		return getEntitySet( entityContainer, name, codiceApi,"");
+		
+	}
+	public EntitySet getEntitySet(final String entityContainer, final String name,String codiceApi,String namePrefix) throws ODataException {
 
 		try {
 			log.debug("[SDPMongoOdataCast::getEntitySet] BEGIN");
@@ -284,7 +288,7 @@ public class SDPMongoOdataCast {
 						
 					} else if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType) &&  SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) ) {
 						if (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(name)) {
-							return new EntitySet().setName(name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA));
+							return new EntitySet().setName(namePrefix+name).setEntityType( new FullQualifiedName(nameSpace, SDPDataApiConstants.ENTITY_NAME_UPLOADDATA));
 						}
 
 						//1.2 binary
@@ -758,11 +762,13 @@ public class SDPMongoOdataCast {
 		}			
 	}
 
-	public List<Schema> getSchemasInternal(String codiceApi) throws ODataException,Exception {
+	public List<Schema> getSchemasInternal(String codiceApi, String entitySetPrefix) throws ODataException,Exception {
 		try {
 			log.debug("[SDPMongoOdataCast::getSchemasInternal] BEGIN");
 			log.info("[SDPMongoOdataCast::getSchemasInternal] codiceApi="+codiceApi);
 
+			if (entitySetPrefix==null || entitySetPrefix.trim().length()<=0) entitySetPrefix="";
+			
 			List<Schema> schemas = new ArrayList<Schema>();
 			initDbObject(codiceApi);
 			for (int i=0;i<this.configObject.size();i++) {
@@ -885,7 +891,7 @@ public class SDPMongoOdataCast {
 					entityContainer.setName(entContainerDB).setDefaultEntityContainer(true);
 
 					List<EntitySet> entitySets = new ArrayList<EntitySet>();
-					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA,codiceApi));
+					entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA,codiceApi,entitySetPrefix));
 
 					//1.2 binary
 					if (null!=binaryIdDataset)   entitySets.add(getEntitySet(entContainerDB, SDPDataApiConstants.ENTITY_SET_NAME_BINARY,codiceApi));
