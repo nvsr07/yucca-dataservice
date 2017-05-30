@@ -47,7 +47,7 @@ public class SDPMultiApiServiceFactory extends ODataServiceFactory {
 			log.debug("[SDPMultiApiServiceFactory::createService] uri " + resto);
 
 
-			SDPEdmProvider edmProvider = new SDPEdmProvider();
+			SDPMultiApiEdmProvider edmProvider = new SDPMultiApiEdmProvider();
 			edmProvider.setCodiceApi(codiceApi);
 			SDPSingleProcessor singleProcessor = new SDPSingleProcessor();
 

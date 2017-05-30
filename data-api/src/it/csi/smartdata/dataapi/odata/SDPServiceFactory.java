@@ -3,7 +3,6 @@ package it.csi.smartdata.dataapi.odata;
 
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
-import it.csi.smartdata.dataapi.multiapi.odata.SDPMultiApiEdmProvider;
 
 import java.util.StringTokenizer;
 
@@ -48,7 +47,7 @@ public class SDPServiceFactory extends ODataServiceFactory {
 			log.debug("[SDPServiceFactory::createService] uri " + resto);
 
 
-			SDPMultiApiEdmProvider edmProvider = new SDPMultiApiEdmProvider();
+			SDPEdmProvider edmProvider = new SDPEdmProvider();
 			edmProvider.setCodiceApi(codiceApi);
 			SDPSingleProcessor singleProcessor = new SDPSingleProcessor();
 
