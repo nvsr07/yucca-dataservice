@@ -179,13 +179,16 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 	}	
 
-
 	private int [] checkSkipTop(Integer skip,Integer top) throws Exception{
+		return checkSkipTop(skip,top,true,true);
+	}
+
+	private int [] checkSkipTop(Integer skip,Integer top,boolean checkSkip,boolean checkTop) throws Exception{
 
 		if (skip==null) skip=new Integer(-1);
 		if (top==null) top= new Integer(-1);
-		if(skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
-		if(top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+		if(checkSkip && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+		if(checkTop && top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
 
 
 
@@ -333,7 +336,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameCONST).getEntityType().getNamespace();
 					
 					
-					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop(),true,false);
 					int skip=skiptop[0];
 					int top=skiptop[1];
 					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
@@ -376,7 +379,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).getEntityType().getNamespace();
 
 
-					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop(),true,false);
 
 
 					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
