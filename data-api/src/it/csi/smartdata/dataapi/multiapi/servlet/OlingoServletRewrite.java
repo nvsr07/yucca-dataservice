@@ -1,5 +1,7 @@
 package it.csi.smartdata.dataapi.multiapi.servlet;
 
+import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -163,14 +165,14 @@ public class OlingoServletRewrite extends HttpServlet {
 	          .body(req.getInputStream())
 	          .build();
 
-	      //FCCCCCCCCCCCCCCCCC
+	      //CUSTOM
 	      PathInfoImpl aaa=(PathInfoImpl)odataRequest.getPathInfo();
 	      try {
-		      aaa.setServiceRoot(new URI("http://localhost:8080/odata/SmartDataOdataMultiApiService.svc/csi_sii/"));
-//	    	  aaa.setRequestUri(new URI("http://bbbbbbbbbbbbbbbbbbbb/odata/SDPOdataMultiApiServlet.svc/?codiceApi=pippo&apacheUniqueId=-"));
+		      aaa.setServiceRoot(new URI(SDPDataMultiApiConfig.instance.getMultiapiOdataBaseUrl()+"csi_sii/"));
 	      } catch (Exception e ) {
 	    	  
 	      }
+	      //CUSTOM
 	      
 	      
 	      ODataContextImpl context = new ODataContextImpl(odataRequest, serviceFactory);

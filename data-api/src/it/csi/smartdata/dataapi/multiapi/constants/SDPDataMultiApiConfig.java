@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 
 public class SDPDataMultiApiConfig {
 
-	public static final String API_ODATA_BASE_URL="API_ODATA_BASE_URL";
 
 	public final static SDPDataMultiApiConfig instance= new SDPDataMultiApiConfig();
 
@@ -19,14 +18,18 @@ public class SDPDataMultiApiConfig {
 		ResourceBundle rb= ResourceBundle.getBundle("SDPDataApiConfig");
 		params = new HashMap<String, String>();
 		params.put("API_EXTERNAL_ODATA_BASE_URL", rb.getString("API_EXTERNAL_ODATA_BASE_URL"));
+		params.put("MULTIAPI_ODATA_BASE_URL", rb.getString("MULTIAPI_ODATA_BASE_URL"));
 		
 	}
 
 	
-    public String getApiOdataBaseUrl() {
+    public String getApiExternalOdataBaseUrl() {
 		return params.get("API_EXTERNAL_ODATA_BASE_URL");
     }
     
+    public String getMultiapiOdataBaseUrl() {
+		return params.get("MULTIAPI_ODATA_BASE_URL");
+    }
     
   
     

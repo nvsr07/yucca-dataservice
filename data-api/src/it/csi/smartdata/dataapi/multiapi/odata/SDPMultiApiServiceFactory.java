@@ -1,6 +1,7 @@
 package it.csi.smartdata.dataapi.multiapi.odata;
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
+import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConfig;
 import it.csi.smartdata.dataapi.odata.SDPEdmProvider;
 import it.csi.smartdata.dataapi.odata.SDPSingleProcessor;
 
@@ -50,31 +51,9 @@ public class SDPMultiApiServiceFactory extends ODataServiceFactory {
 			edmProvider.setCodiceApi(codiceApi);
 			SDPSingleProcessor singleProcessor = new SDPSingleProcessor();
 
-			String webBaseUrl=null;
-			try {
-				webBaseUrl=SDPDataApiConfig.getInstance().getWebBaseUrl();
-				if (!webBaseUrl.toLowerCase().startsWith("http") ){
-					if (!webBaseUrl.startsWith("/")) webBaseUrl="/"+webBaseUrl; 
-					
-//					webBaseUrl=odc.getPathInfo().getServiceRoot().getScheme()+"://"+
-//					odc.getPathInfo().getServiceRoot().getHost()+":"+
-//					odc.getPathInfo().getServiceRoot().getPort()+webBaseUrl;
-					webBaseUrl="https://"+
-					odc.getPathInfo().getServiceRoot().getHost()+":"+
-					odc.getPathInfo().getServiceRoot().getPort()+webBaseUrl;
-				}
-				
-				
-				
-				webBaseUrl="https://"+SDPDataApiConfig.getInstance().getPubUri();
-				
-				
-			} catch (Exception e ) {
-				log.warn("[SDPMultiApiServiceFactory::createService] error (ignored) handling webBaseUrl   "+e);
-			}
+			String webBaseUrl=SDPDataMultiApiConfig.instance.getMultiapiOdataBaseUrl();
 			if (null!=webBaseUrl) 
-				//singleProcessor.setBaseUrl(webBaseUrl+codiceApi+"/");
-				singleProcessor.setBaseUrl("https://dddddddddddddddddddddddd");
+				singleProcessor.setBaseUrl(webBaseUrl+codiceApi+"/");
 			
 			singleProcessor.setCodiceApi(codiceApi);
 			singleProcessor.setApacheUniqueId(apacheUniqueId);

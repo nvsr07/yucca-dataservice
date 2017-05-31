@@ -1,5 +1,7 @@
 package it.csi.smartdata.dataapi.multiapi.proxy;
 
+import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConfig;
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -41,10 +43,8 @@ public class OdataSingleton {
 			ServletResponse res) throws IOException, URISyntaxException {
 		
 		log.info("[OdataSingleton::getOdataResponse] path:"+path+",queryString:"+params);
-		URIBuilder builder  = new URIBuilder("http://api.smartdatanet.it");
+		URIBuilder builder  = new URIBuilder(SDPDataMultiApiConfig.instance.getApiExternalOdataBaseUrl());
 		
-		builder.setHost("api.smartdatanet.it");
-		builder.setScheme("http");
 		builder.setPath("/api/"+path+"/");
 	
 		List<NameValuePair> nvpList = new ArrayList<>(params.size());
