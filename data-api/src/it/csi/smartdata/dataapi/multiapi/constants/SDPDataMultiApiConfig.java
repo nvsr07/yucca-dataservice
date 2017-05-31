@@ -34,7 +34,7 @@ public class SDPDataMultiApiConfig {
 
 	
     public String getMultiapiExternalOdataBaseUrl() {
-		return params.get("API_EXTERNAL_ODATA_BASE_URL");
+		return params.get("MULTIAPI_EXTERNAL_ODATA_BASE_URL");
     }
     
     public String getMultiapiOdataBaseUrl() {

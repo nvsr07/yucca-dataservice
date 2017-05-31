@@ -152,13 +152,13 @@ public class SDPOdataMultiApiFilter implements Filter{
 			
 			
 		} catch (Exception e) {
-			log.error("[SDPOdataMultiApiFilter::doFilter] " +e);
+			log.error("[SDPOdataMultiApiFilter::doFilter] " ,e);
 
 			accLog.setErrore(e.getMessage());
 			
 			if (e instanceof ServletException) throw (ServletException)e;
 			if (e instanceof IOException) throw (IOException)e;
-			throw new ServletException(e.getMessage());
+			throw new ServletException(e);
 
 		} finally {
 			try {
