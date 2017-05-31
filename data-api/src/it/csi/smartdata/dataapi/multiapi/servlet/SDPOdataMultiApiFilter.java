@@ -63,6 +63,7 @@ public class SDPOdataMultiApiFilter implements Filter{
 			String requestURI = request.getRequestURI();
 			log.info("[SDPOdataMultiApiFilter::doFilter] requestURI="+requestURI);
 
+			
 			String webFilterPattern=SDPDataMultiApiConstants.SDP_WEB_FILTER_PATTERN;
 			String webServletUrl=SDPDataMultiApiConstants.SDP_WEB_SERVLET_URL;
 
@@ -106,14 +107,21 @@ public class SDPOdataMultiApiFilter implements Filter{
 
 				String maybeDataset = StringUtils.substringBefore(dopoCodiceApi, "/");
 				
-				if (dopoCodiceApi!=null && maybeDataset!=null && maybeDataset.contains("__"))
+				if (maybeDataset!=null && maybeDataset.contains("__"))
 				{
 					log.info("[SDPOdataMultiApiFilter::doFilter] Url da proxare, dopoCodiceApi:"+dopoCodiceApi+", maybeDataset:"+maybeDataset);
 					
 					String dataset = StringUtils.substringBefore(maybeDataset, "__");
-					String queryString =StringUtils.substringBefore(maybeDataset, dataset+"/");
-
-					OdataSingleton.getInstance().getOdataResponse(dataset,queryString, res);
+					String entity =StringUtils.substringAfter(maybeDataset, "__");
+					
+					String pathOther = StringUtils.substringAfter(dopoCodiceApi, maybeDataset+"/");
+					
+// TODO: manage invalid access to api from here... (i.e. $metadata is not valid for single api)
+//					if (pathOther!=null && StringUtils.contains(pathOther, "$metadata"))
+//						OdataSingleton.INSTANCE.getOdataResponse(dataset+"/"+pathOther,req.getParameterMap(), res);
+//					else
+						OdataSingleton.INSTANCE.getOdataResponse(dataset+"/"+entity+"/"+pathOther,req.getParameterMap(), res);
+					log.info("[SDPOdataMultiApiFilter::doFilter] END");
 					return;
 					
 				}
@@ -135,6 +143,7 @@ public class SDPOdataMultiApiFilter implements Filter{
 				log.info("[SDPOdataMultiApiFilter::doFilter] codiceApi="+codiceApi);
 				log.info("[SDPOdataMultiApiFilter::doFilter] newURI="+newURI);
 				req.getRequestDispatcher(newURI).forward(req, res);
+				log.info("[SDPOdataMultiApiFilter::doFilter] END");
 			} else {
 				log.debug("[SDPOdataMultiApiFilter::doFilter] NO FILTER");
 
