@@ -2,6 +2,7 @@ package it.csi.smartdata.dataapi.multiapi.odata;
 
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.mongo.SDPMongoOdataCast;
+import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,13 +132,15 @@ public class SDPMultiApiEdmProvider extends EdmProvider {
 			
 			List<Schema> schemas = new ArrayList<Schema>();
 			
-			List<Schema> cur= mongoAccess.getSchemasInternal("AlloggiVacan_1671" , "AlloggiVacan_1671__");
-			schemas.addAll(cur);
+			List<String> ds = SDPDataMultiApiConfig.instance.getMultiapiDatasets();
 			
-			cur= mongoAccess.getSchemasInternal("ScuolePiemon_1282" , "ScuolePiemon_1282__");
-			schemas.addAll(cur);
-			cur= mongoAccess.getSchemasInternal("Scuole_costr_1198" , "Scuole_costr_1198__");
-			schemas.addAll(cur);
+			if (ds!=null)
+			{
+				for (String dataset : ds) {
+					List<Schema> cur= mongoAccess.getSchemasInternal(dataset, dataset+"__");
+					schemas.addAll(cur);
+				}
+			}
 			
 			return schemas;
 			
@@ -154,11 +157,17 @@ public class SDPMultiApiEdmProvider extends EdmProvider {
 	public List<Schema> getSchemasInternal(String codiceApi) throws ODataException,Exception {
 		List<Schema> schemas = new ArrayList<Schema>();
 		
-
-		schemas.add(getSchema("AlloggiVacan_1671","it.csi.smartdata.odata.regpie.AlloggiVacan_1671"));
-		schemas.add(getSchema("ScuolePiemon_1282","it.csi.smartdata.odata.regpie.ScuolePiemon_1282"));
-		schemas.add(getSchema("Scuole_costr_1198","it.csi.smartdata.odata.regpie.Scuole_costr_1198"));
-
+		List<String> ds = SDPDataMultiApiConfig.instance.getMultiapiDatasets();
+		List<String> packages = SDPDataMultiApiConfig.instance.getMultiapiDatasetSchemas();
+		
+		if (ds!=null)
+		{
+			int i=0;
+			for (String dataset : ds) {
+				schemas.add(getSchema(dataset,packages.get(i)));
+				i++;
+			}
+		}
 		
 		return schemas;
 		

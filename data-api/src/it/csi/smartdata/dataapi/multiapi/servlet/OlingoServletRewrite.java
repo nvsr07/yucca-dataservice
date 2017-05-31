@@ -168,7 +168,8 @@ public class OlingoServletRewrite extends HttpServlet {
 	      //CUSTOM
 	      PathInfoImpl aaa=(PathInfoImpl)odataRequest.getPathInfo();
 	      try {
-		      aaa.setServiceRoot(new URI(SDPDataMultiApiConfig.instance.getMultiapiOdataBaseUrl()+"csi_sii/"));
+		      aaa.setServiceRoot(new URI(SDPDataMultiApiConfig.instance.getMultiapiOdataBaseUrl()+
+		    		  SDPDataMultiApiConfig.instance.getMultiapiName()+"/"));
 	      } catch (Exception e ) {
 	    	  
 	      }

@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.ServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -43,7 +44,7 @@ public class OdataSingleton {
 			ServletResponse res) throws IOException, URISyntaxException {
 		
 		log.info("[OdataSingleton::getOdataResponse] path:"+path+",queryString:"+params);
-		URIBuilder builder  = new URIBuilder(SDPDataMultiApiConfig.instance.getApiExternalOdataBaseUrl());
+		URIBuilder builder  = new URIBuilder(SDPDataMultiApiConfig.instance.getMultiapiExternalOdataBaseUrl());
 		
 		builder.setPath("/api/"+path+"/");
 	
@@ -52,12 +53,21 @@ public class OdataSingleton {
 			if (entry.getValue()!=null && entry.getValue().length>0)
 				nvpList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()[0]));
 		}
-		
 		builder.setParameters(nvpList);
+	
 		
 		CloseableHttpClient client=  HttpClientBuilder.create().setConnectionManager(cm).build();
-		
 		HttpGet get = new HttpGet(builder.build());
+
+		String token = SDPDataMultiApiConfig.instance.getMultiapiToken();
+		if (token != null){
+			log.info("[OdataSingleton::getOdataResponse] Token defined!");
+			get.addHeader("Authorization", "Bearer "+token);
+		}
+		else {
+			log.info("[OdataSingleton::getOdataResponse] Token undefined!");
+		}
+		
 		
 		CloseableHttpResponse resp = client.execute(get);
 		
