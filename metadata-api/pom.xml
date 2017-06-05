@@ -7,7 +7,7 @@
 	<version>1.7.0-001</version>
 	<packaging>war</packaging>
 	<name>metadataapi</name>
-	<scm> 
+	<scm>
 		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
 	</scm>
 
@@ -170,89 +170,38 @@
 			<groupId>commons-httpclient</groupId>
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-codec</artifactId>
-					<groupId>commons-codec</groupId>
-				</exclusion>
-			</exclusions>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.solr</groupId>
-			<artifactId>solr-solrj</artifactId>
-			<version>5.5.4</version>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.5.2</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-codec</artifactId>
-					<groupId>commons-codec</groupId>
-				</exclusion>
-			</exclusions>			
+			<version>4.3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient-cache</artifactId>
-			<version>4.5.2</version>
+			<version>4.3.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpcore</artifactId>
-			<version>4.4.6</version>
+			<version>4.3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpmime</artifactId>
-			<version>4.5.2</version>
+			<version>4.3.5</version>
 		</dependency>
-		
-		
 		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
 			<version>[4.0,)</version> </dependency> -->
-
-
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.identity.oauth.stub</artifactId>
 			<version>4.2.3</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-codec</artifactId>
-					<groupId>commons-codec.wso2</groupId>
-				</exclusion>
-				<exclusion>
-    <groupId>org.apache.axis2.wso2</groupId>
-    <artifactId>axis2-client</artifactId>
-				</exclusion>
-
-				
-			</exclusions>
-<scope>compile</scope>
-			
 		</dependency>
-		
-		
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.apimgt.keymgt.stub</artifactId>
 			<version>4.2.3</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>commons-codec</artifactId>
-					<groupId>commons-codec.wso2</groupId>
-				</exclusion>
-				<exclusion>
-    <groupId>org.apache.axis2.wso2</groupId>
-    <artifactId>axis2-client</artifactId>
-				</exclusion>
-				
-			</exclusions>
-<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.wso2.securevault</groupId>
@@ -264,27 +213,19 @@
 					<groupId>commons-codec</groupId>
 				</exclusion>
 			</exclusions>
-<scope>compile</scope>
 		</dependency>
-		
-		
-		
 		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java -->
-		<!--  
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>
 			<artifactId>jsonld-java</artifactId>
 			<version>0.8.3</version>
 		</dependency>
-		-->
 		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java-tools -->
-		<!--  
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>
 			<artifactId>jsonld-java-tools</artifactId>
 			<version>0.8.3</version>
 		</dependency>
-		-->
 		<!-- https://mvnrepository.com/artifact/com.hp.hpl.jena/jena -->
 		<dependency>
 			<groupId>com.hp.hpl.jena</groupId>
@@ -292,15 +233,11 @@
 			<version>2.6.4</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java-jena -->
-		
-		<!-- 
-		
 		<dependency>
 			<groupId>com.github.jsonld-java</groupId>
 			<artifactId>jsonld-java-jena</artifactId>
 			<version>0.4.1</version>
 		</dependency>
-		 -->
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -342,14 +279,6 @@
 			<artifactId>replacer</artifactId>
 			<version>1.5.3</version>
 		</dependency>
-		
-		  
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.6</version>
-		</dependency>
-		
 	</dependencies>
 	<profiles>
 		<profile>

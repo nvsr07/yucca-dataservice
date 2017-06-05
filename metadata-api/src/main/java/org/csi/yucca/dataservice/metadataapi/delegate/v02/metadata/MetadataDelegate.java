@@ -15,10 +15,6 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.common.SolrDocumentList;
 import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
@@ -28,8 +24,6 @@ import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineMetadata;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineResult;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
-import org.csi.yucca.dataservice.metadataapi.solr.CloudSolrSingleton;
-import org.csi.yucca.dataservice.metadataapi.solr.KnoxSolrSingleton;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.FacetParams;
 import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
@@ -42,19 +36,11 @@ public class MetadataDelegate {
 	static Logger log = Logger.getLogger(MetadataDelegate.class);
 
 	private static MetadataDelegate instance;
-	SolrClient server = null;		
 
 	protected String SEARCH_ENGINE_BASE_URL = Config.getInstance().getSearchEngineBaseUrl();
 
 	private MetadataDelegate() {
 		//super();
-		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
-		{
-			server = KnoxSolrSingleton.getServer();
-		}
-		else {
-			server = CloudSolrSingleton.getServer();
-		}
 		
 	}
 
@@ -305,7 +291,7 @@ public class MetadataDelegate {
 
 	}
 
-	private Metadata loadMetadataHTTP(HttpServletRequest request,String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
+	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
@@ -367,71 +353,6 @@ public class MetadataDelegate {
 	}
 	
 	
-	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
-
-		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
-
-		//StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
-
-		//searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query,"UTF-8") + "&start=0&end=1");
-
-		if (tenantAuthorized==null || tenantAuthorized.size()==0)
-		{
-			//query+= " AND (visibility:public)";
-		}
-		else {
-			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
-			
-			Iterator<String> iter = tenantAuthorized.iterator();
-			while(iter.hasNext())
-			{
-				String tenantAuth = iter.next();
-				searchTenants .append(tenantAuth);
-				if (iter.hasNext())
-					searchTenants.append(" OR ");
-			}
-			searchTenants.append("))");
-			
-			query+= " AND "+searchTenants.toString();
-			
-		}
-		
-		log.info("[AbstractService::dopost] searchUrl: " + query);
-		try {
-
-		SolrClient solrServer = server;
-
-		SolrQuery solrQuery = new SolrQuery();
-		solrQuery.setQuery("*:*");
-		solrQuery.setFilterQueries(query);
-		solrQuery.setRows(1);
-		QueryResponse rsp = solrServer.query(Config.getInstance().getSearchEngineCollection(),solrQuery);
-		SolrDocumentList results = rsp.getResults();
-		
-
-		if (results == null || results.getNumFound() <= 0) {
-			ErrorResponse error = new ErrorResponse();
-			error.setErrorCode("NOT FOUND");
-			error.setMessage("Resource not found");
-			throw new UserWebServiceException(Response.ok(error.toJson()).build());
-		} else {
-			
-			
-			
-			SearchEngineMetadata searchEngineMetadata = SearchEngineMetadata.fromSolrDocument(results.get(0));
-			Metadata metadata = Metadata.createFromSearchEngineItem(searchEngineMetadata, lang);
-			return metadata;
-
-			
-		}
-		} catch (Exception e ) {
-			//TODO (aggiunto pereccezione solr .query
-			e.printStackTrace();
-			ErrorResponse error = new ErrorResponse();
-			error.setErrorCode("EXCEPTION");
-			error.setMessage(e.getMessage());
-			throw new UserWebServiceException(Response.ok(error.toJson()).build());
-		}
-	}	
+	
 
 }
