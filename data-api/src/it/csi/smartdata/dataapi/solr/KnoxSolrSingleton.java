@@ -1,6 +1,7 @@
 package it.csi.smartdata.dataapi.solr;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 
+import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -18,6 +19,9 @@ private SolrClient server;
 			CredentialsProvider provider = new BasicCredentialsProvider();
 			UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(
 					SDPDataApiConfig.instance.getSolrUsername(), SDPDataApiConfig.instance.getSolrPassword());
+			
+			provider.setCredentials(new AuthScope(AuthScope.ANY), credentials);
+			
 			clientBuilder.setDefaultCredentialsProvider(provider);
 		}
 		clientBuilder.setMaxConnTotal(128);

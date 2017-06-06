@@ -34,8 +34,17 @@ public class CloudSolrSingleton {
 //			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO solr.kerberos.jaas.appname ---" + System.getProperty("solr.kerberos.jaas.appname"));
 //			System.out.println("------------------>>>> DOPOOOOOOOOOOOOOOOO javax.security.auth.useSubjectCredsOnly ---" + System.getProperty("javax.security.auth.useSubjectCredsOnly"));
 						
-			//System.setProperty("solr.kerberos.jaas.appname", "KERBEROS-POCHDPdddd");			
-			HttpClientUtil.setConfigurer( new  Krb5HttpClientConfigurer(SDPDataApiConfig.getInstance().getSolrSecurityDomainName()));
+			//System.setProperty("solr.kerberos.jaas.appname", "KERBEROS-POCHDPdddd");		
+			
+			
+			
+			if (SDPDataApiConfig.getInstance().getSolrSecurityDomainName() != null && SDPDataApiConfig.getInstance().getSolrSecurityDomainName().trim().length()>0 && 
+					!(SDPDataApiConfig.getInstance().getSolrSecurityDomainName().equals("NO_SECURITY"))) {
+				HttpClientUtil.setConfigurer( new  Krb5HttpClientConfigurer(SDPDataApiConfig.getInstance().getSolrSecurityDomainName()));
+			}
+
+			
+			
 			//HttpClientUtil.setConfigurer( new  org.apache.solr.client.solrj.impl.Krb5HttpClientConfigurer());
 			
 			server = new CloudSolrClient(SDPDataApiConfig.getInstance().getSolrUrl());
