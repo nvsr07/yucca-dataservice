@@ -1,6 +1,5 @@
 package org.csi.yucca.dataservice.insertdataapi.solr;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -11,18 +10,14 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.impl.XMLResponseParser;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.UpdateResponse;
-import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
+import org.csi.yucca.dataservice.insertdataapi.solr.KnoxSolrSingleton.TEHttpSolrClient;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
@@ -188,6 +183,14 @@ public class SDPInsertApiSolrDataAccess {
 				list.add(doc);
 			}
 			try {
+				
+				if (server instanceof CloudSolrClient) {
+					((CloudSolrClient)server).setDefaultCollection(collection);
+				}
+				if (server instanceof TEHttpSolrClient) {
+					((CloudSolrClient)server).setDefaultCollection(collection);
+					
+				}
 				server.add(collection, list);
 				// server.commit(collection);
 				list.clear();
