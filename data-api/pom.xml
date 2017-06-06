@@ -35,9 +35,9 @@
 					<!-- <outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
 					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
 
-<!--  
-					<warName>DataApi</warName>
-					-->
+  
+					<warName>MultiDataApi-${version}</warName>
+					
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>

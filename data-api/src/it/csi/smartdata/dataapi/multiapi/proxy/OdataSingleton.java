@@ -1,7 +1,9 @@
 package it.csi.smartdata.dataapi.multiapi.proxy;
 
 import it.csi.smartdata.dataapi.multiapi.constants.SDPDataMultiApiConfig;
+import it.csi.smartdata.dataapi.multiapi.util.ReplacingInputStream;
 
+import java.io.FilterReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Map;
 import javax.servlet.ServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -60,7 +63,7 @@ public class OdataSingleton {
 		HttpGet get = new HttpGet(builder.build());
 
 		String token = SDPDataMultiApiConfig.instance.getMultiapiToken();
-		if (token != null){
+		if (StringUtils.isNotBlank(token)){
 			log.info("[OdataSingleton::getOdataResponse] Token defined!");
 			get.addHeader("Authorization", "Bearer "+token);
 		}
@@ -82,9 +85,14 @@ public class OdataSingleton {
 			res.setCharacterEncoding(resp.getEntity().getContentEncoding().getValue());
 		}
 	
-		IOUtils.copyLarge(resp.getEntity().getContent(), res.getOutputStream());
+		ReplacingInputStream ris = new ReplacingInputStream(resp.getEntity().getContent(), 
+				"AlloggiVacan_1671/DataEntities".getBytes("UTF-8"), 
+				"AlloggiVacan_1671__DataEntities".getBytes("UTF-8"));
+		
+		IOUtils.copyLarge(ris, res.getOutputStream());
 		
 		IOUtils.closeQuietly(resp.getEntity().getContent());
+		
 
 		get.releaseConnection();
 	}
