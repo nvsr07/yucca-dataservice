@@ -16,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -38,8 +39,8 @@ public class OdataSingleton {
 	{
 		
 		cm = new PoolingHttpClientConnectionManager();
-		cm.setMaxTotal(200);
-		cm.setDefaultMaxPerRoute(20);
+		cm.setMaxTotal(2000);
+		cm.setDefaultMaxPerRoute(2000);
 		
 	}
 
@@ -52,16 +53,45 @@ public class OdataSingleton {
 		builder.setPath("/api/"+path+"/");
 	
 		List<NameValuePair> nvpList = new ArrayList<>(params.size());
+		String topParaFound=null;
+		String skipParaFound=null;
 		for (Map.Entry<String, String[]> entry : params.entrySet()) {
 			if (entry.getValue()!=null && entry.getValue().length>0)
+			{
 				nvpList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()[0]));
+				if (entry.getKey().equals("$top"))
+					topParaFound = entry.getValue()[0];
+				if (entry.getKey().equals("$skip"))
+					skipParaFound = entry.getValue()[0];
+			}
 		}
+		int top;
+		int skip;
+		if (topParaFound==null){
+			nvpList.add(new BasicNameValuePair("$top", "5000"));
+			top = 10000;
+		}
+		else 
+			top = Integer.parseInt(topParaFound);
+		if (skipParaFound==null)
+			skip = 0;
+		else
+			skip = Integer.parseInt(skipParaFound);
+		
 		builder.setParameters(nvpList);
 	
+			
 		
 		CloseableHttpClient client=  HttpClientBuilder.create().setConnectionManager(cm).build();
 		HttpGet get = new HttpGet(builder.build());
+		RequestConfig requestConfig = RequestConfig.custom()
+				  .setSocketTimeout(1000*60*5)
+				  .setConnectTimeout(1000*60*5)
+				  .setConnectionRequestTimeout(1000*60*5)
+				  .build();
 
+		get.setConfig(requestConfig);
+		
 		String token = SDPDataMultiApiConfig.instance.getMultiapiToken();
 		if (StringUtils.isNotBlank(token)){
 			log.info("[OdataSingleton::getOdataResponse] Token defined!");
@@ -70,7 +100,6 @@ public class OdataSingleton {
 		else {
 			log.info("[OdataSingleton::getOdataResponse] Token undefined!");
 		}
-		
 		
 		CloseableHttpResponse resp = client.execute(get);
 		
@@ -86,8 +115,8 @@ public class OdataSingleton {
 		}
 	
 		ReplacingInputStream ris = new ReplacingInputStream(resp.getEntity().getContent(), 
-				"AlloggiVacan_1671/DataEntities".getBytes("UTF-8"), 
-				"AlloggiVacan_1671__DataEntities".getBytes("UTF-8"));
+				"/DataEntities".getBytes("UTF-8"), 
+				"__DataEntities".getBytes("UTF-8"));
 		
 		IOUtils.copyLarge(ris, res.getOutputStream());
 		
