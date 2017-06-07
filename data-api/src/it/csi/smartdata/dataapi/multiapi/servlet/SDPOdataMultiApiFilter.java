@@ -111,8 +111,8 @@ public class SDPOdataMultiApiFilter implements Filter{
 				{
 					log.info("[SDPOdataMultiApiFilter::doFilter] Url da proxare, dopoCodiceApi:"+dopoCodiceApi+", maybeDataset:"+maybeDataset);
 					
-					String dataset = StringUtils.substringBefore(maybeDataset, "__");
-					String entity =StringUtils.substringAfter(maybeDataset, "__");
+					String dataset = StringUtils.substringBeforeLast(maybeDataset, "__");
+					String entity =StringUtils.substringAfterLast(maybeDataset, "__");
 					
 					String pathOther = StringUtils.substringAfter(dopoCodiceApi, maybeDataset+"/");
 					
