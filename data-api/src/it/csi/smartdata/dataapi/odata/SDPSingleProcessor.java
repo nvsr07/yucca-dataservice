@@ -34,6 +34,7 @@ import org.apache.olingo.odata2.api.processor.ODataResponse;
 import org.apache.olingo.odata2.api.processor.ODataSingleProcessor;
 import org.apache.olingo.odata2.api.uri.ExpandSelectTreeNode;
 import org.apache.olingo.odata2.api.uri.KeyPredicate;
+import org.apache.olingo.odata2.api.uri.UriInfo;
 import org.apache.olingo.odata2.api.uri.UriParser;
 import org.apache.olingo.odata2.api.uri.expression.FilterExpression;
 import org.apache.olingo.odata2.api.uri.expression.OrderByExpression;
@@ -92,10 +93,10 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		//controlli ... sollevo eccezione quando:
 		// top valorizzato e > di maxsize
 		// top non valorizzato e size > max
-		
-		
-		
-		
+
+
+
+
 		if(top!=null && top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+endindex,Locale.UK);
 		if(top==null && resultSize>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())  throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+endindex,Locale.UK);
 
@@ -142,9 +143,9 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		if(skip!=null) {
 			startindex=startindex+skip.intValue();
 		}
-		
+
 		if(skip!=null && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max page = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
-		
+
 
 		//controlli ... sollevo eccezione quando:
 		// top valorizzato e > di maxsize
@@ -196,6 +197,32 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		return ret; 
 
 	}		
+	
+	
+	private String getNextUri(int skipOld,int topOld,String newUri,String entitiSetName,int recCount,GetEntitySetUriInfo uriInfo) throws Exception{
+
+		String nextUri=null;
+		if (topOld>0 && ((skipOld+topOld)<recCount) && SDPDataApiConfig.getInstance().isNextEnabled()) {
+			int skipNew=	skipOld+topOld;
+			nextUri=newUri+entitiSetName+"/?$top="+topOld+"&$skip="+skipNew;
+
+			if (uriInfo.getOrderBy()!=null) nextUri+="&$orderby="+uriInfo.getOrderBy().getUriLiteral();
+
+			if (uriInfo.getFilter()!=null) nextUri+="&$filter="+uriInfo.getFilter().getUriLiteral();
+			if (uriInfo.getFormat()!=null) nextUri+="&$format="+uriInfo.getFormat();
+			
+			String select="";
+			for (int k=0; uriInfo.getSelect()!=null && k<uriInfo.getSelect().size(); k++) {
+				select=select+ (select.length()==0 ? "" : ",") +uriInfo.getSelect().get(k).getProperty().getName();
+			}
+			if (select.length()>0) nextUri+="&$select="+select;
+			
+			
+		}	
+		
+		return nextUri;
+	}
+	
 
 	@Override
 	public ODataResponse readEntitySimpleProperty(final GetSimplePropertyUriInfo uriInfo,final String contentType) throws ODataException {
@@ -212,20 +239,20 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		AccountingLog accLog=new AccountingLog(); 
 		long starTtime=0;
 		long deltaTime=-1;
-		
-		
+
+
 		try {
 			starTtime=System.currentTimeMillis();
-			
-			
-			
+
+
+
 			log.debug("[SDPSingleProcessor::readEntitySet] BEGIN");
 			log.debug("[SDPSingleProcessor::readEntitySet] uriInfo="+uriInfo);
 			log.debug("[SDPSingleProcessor::readEntitySet] contentType="+contentType);
 			log.debug("[SDPSingleProcessor::readEntitySet] codiceApi="+codiceApi);
 			log.debug("[SDPSingleProcessor::readEntitySet] apacheUniqueId="+apacheUniqueId);
 			log.debug("[SDPSingleProcessor::readEntitySet] uriInfoDetail="+dump("uriInfo",uriInfo));
-			
+
 			accLog.setApicode(codiceApi);
 			accLog.setUniqueid(apacheUniqueId);
 			URI newUri=getContext().getPathInfo().getServiceRoot();
@@ -256,25 +283,25 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 				}
 				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
-				
-				
+
+
 				accLog.setPath(entitySet.getName());				
 				accLog.setQuerString(""+userQuery);
-				
+
 				if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS).equals(entitySet.getName()) || (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) {
-					
+
 					String setNameStatCONST=SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS;
 					String setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_MEASURES;
-					
+
 					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) {
 						setNameStatCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS;
 						setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL;
 					}
-					
+
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameStatCONST).getEntityType().getNamespace();
 					String timeGroupByParam=uriInfo.getCustomQueryOptions().get("timeGroupBy");
 					String timeGroupOperatorsParam=uriInfo.getCustomQueryOptions().get("timeGroupOperators");
-					
+
 					String timeGroupFilter=uriInfo.getCustomQueryOptions().get("timeGroupFilter");
 					Object userSourceEntityQuery=null;
 					if (null!=timeGroupFilter && timeGroupFilter.trim().length()>0) {
@@ -287,32 +314,32 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							log.debug("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
 						}
 					}
-					
-					
+
+
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 					int skip=skiptop[0];
 					int top=skiptop[1];
-					
+
 					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userSourceEntityQuery,orderQuery,-1,-1,
 							timeGroupByParam,timeGroupOperatorsParam,userQuery);
-					
-					
+
+
 					accLog.setDataOut(dataRes.getDati().size());
 					accLog.setTenantcode(dataRes.getTenant());
 					accLog.setDatasetcode(dataRes.getDatasetCode());
-					
-					
-					
+
+
+
 					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
 					int startindex=limiti[0];
 					int endindex=limiti[1];
-					
-					
+
+
 					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
 					for (int i=startindex;i<endindex;i++) {
 						misureNew.add(dataRes.getDati().get(i));
 					}
-					
+
 					ODataResponse ret= EntityProvider.writeFeed (
 							contentType,
 							entitySet,
@@ -325,41 +352,47 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									.build());
 
 					return ret;
-					
+
 				} else if ((SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).equals(entitySet.getName()) || (SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) {
 
 					String setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_MEASURES;
 					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) {
 						setNameCONST=SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL;
 					}
-					
+
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameCONST).getEntityType().getNamespace();
-					
-					
+
+
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop(),true,false);
 					int skip=skiptop[0];
 					int top=skiptop[1];
 					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
-			
+
 					accLog.setDataOut(dataRes.getDati().size());
 					accLog.setTenantcode(dataRes.getTenant());
 					accLog.setDatasetcode(dataRes.getDatasetCode());
-					
-					
-					
-//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
-//					int startindex=limiti[0];
-//					int endindex=limiti[1];
+
+
+
+					//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(), dataRes.getDati().size());
+					//					int startindex=limiti[0];
+					//					int endindex=limiti[1];
 
 
 					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-//					for (int i=startindex;i<endindex;i++) {
-//						misureNew.add(dataRes.getDati().get(i));
-//					}
+					//					for (int i=startindex;i<endindex;i++) {
+					//						misureNew.add(dataRes.getDati().get(i));
+					//					}
 					for (int i=0;i<dataRes.getDati().size();i++) {
-					misureNew.add(dataRes.getDati().get(i));
-				}
+						misureNew.add(dataRes.getDati().get(i));
+					}
 
+
+					int skipOld=(skiptop[0] <=0 ?0 : skiptop[0]);
+					int topOld=(skiptop[1] <=0 ?0 : skiptop[1]);
+
+					String nextUri=getNextUri(skipOld, topOld, ""+newUri, entitySet.getName(), dataRes.getTotalCount(), uriInfo);
+					
 
 
 					ODataResponse ret= EntityProvider.writeFeed (
@@ -370,7 +403,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(dataRes.getTotalCount())
-									.expandSelectTree(expandSelectTreeNode)
+									.expandSelectTree(expandSelectTreeNode).nextLink(nextUri)
 									.build());
 
 					return ret;
@@ -390,19 +423,28 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					accLog.setDataOut(dataRes.getDati().size());
 					accLog.setTenantcode(dataRes.getTenant());
 					accLog.setDatasetcode(dataRes.getDatasetCode());
-					
-//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
-//					int startindex=limiti[0];
-//					int endindex=limiti[1];
-//
+
+					//					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
+					//					int startindex=limiti[0];
+					//					int endindex=limiti[1];
+					//
 					List<Map<String, Object>> misureNew=new ArrayList<Map<String,Object>>();
-//					for (int i=startindex;i<endindex;i++) {
-//						misureNew.add(dataRes.getDati().get(i));
-//					}
+					//					for (int i=startindex;i<endindex;i++) {
+					//						misureNew.add(dataRes.getDati().get(i));
+					//					}
 
 					for (int i=0;i<dataRes.getDati().size();i++) {
-					misureNew.add(dataRes.getDati().get(i));
-				}
+						misureNew.add(dataRes.getDati().get(i));
+					}
+
+
+
+					
+					int skipOld=(skiptop[0] <=0 ?0 : skiptop[0]);
+					int topOld=(skiptop[1] <=0 ?0 : skiptop[1]);
+
+					String nextUri=getNextUri(skipOld, topOld, ""+newUri, entitySet.getName(), dataRes.getTotalCount(), uriInfo);
+					
 
 					ODataResponse ret= EntityProvider.writeFeed(
 							contentType,
@@ -412,9 +454,9 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(dataRes.getTotalCount())
-									.expandSelectTree(expandSelectTreeNode)
+									.expandSelectTree(expandSelectTreeNode).nextLink(nextUri)
 									.build()
-									);
+							);
 
 					return ret;
 
@@ -435,7 +477,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					accLog.setDataOut(dataRes.getDati().size());
 					accLog.setTenantcode(dataRes.getTenant());
 					accLog.setDatasetcode(dataRes.getDatasetCode());
-					
+
 					int [] limiti=checkPagesData(uriInfo.getSkip(), uriInfo.getTop(),dataRes.getDati().size());
 					int startindex=limiti[0];
 					int endindex=limiti[1];
@@ -482,8 +524,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				EdmEntitySet targetEntity=uriInfo.getNavigationSegments().get(0).getEntitySet();
 				EdmNavigationProperty prpnav=uriInfo.getNavigationSegments().get(0).getNavigationProperty();
 
-				
-				
+
+
 				Object userQuery=null;
 				Object orderQuery=null;
 				FilterExpression fe = uriInfo.getFilter();
@@ -501,8 +543,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 				}
 				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+targetEntity.getName());
-				
-				
+
+
 				accLog.setPath(entitySet.getName());				
 				accLog.setQuerString(""+userQuery);
 
@@ -527,7 +569,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 								}
 							}
 						}
-						
+
 						String nameSpaceTarget=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY).getEntityType().getNamespace();
 
 
@@ -567,34 +609,34 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 								);
 
 						return ret;						
-						
+
 					}
 
 					log.debug("[SDPSingleProcessor::readEntitySet] ENaaaaaaD");
 
 				} else if  (SDPDataApiConstants.ENTITY_SET_NAME_BINARY.equals(startEntity.getName())) {
-					
+
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_BINARY).getEntityType().getNamespace();
 
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
 					SDPDataResult dataRes  = new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),id,null,null,null,-1,-1);
-					
+
 
 					ArrayList<String> elencoIdBinary=new ArrayList<String>();
 					for (int i=0; dataRes!=null && dataRes.getDati()!=null && i<dataRes.getDati().size(); i++) {
 						Map<String, Object> cur=dataRes.getDati().get(i);
 						if (cur.containsKey("idBinary")) elencoIdBinary.add((String) cur.get("idBinary"));
 					}
-					
-					
+
+
 					if  (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(targetEntity.getName())) {
 
-						
+
 					}
 
-					
+
 				}
 				/*
 				 * if (ENTITY_SET_NAME_CARS.equals(entitySet.getName())) { int
@@ -616,7 +658,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		} catch (Exception e) {
 			log.error("[SDPSingleProcessor::readEntitySet] " + e);
 			accLog.setErrore(e.toString());
-			
+
 			if (e instanceof ODataException) throw (ODataException)e;
 			throw new ODataException(e);
 		} finally {
@@ -625,7 +667,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				accLog.setElapsed(deltaTime);
 			} catch (Exception e) {}
 			logAccounting.info(accLog.toString());				
-			
+
 			log.debug("[SDPSingleProcessor::readEntitySet] END");
 
 		}
@@ -736,11 +778,11 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			log.debug("[SDPSingleProcessor::readEntity] contentType="+contentType);
 			log.debug("[SDPSingleProcessor::readEntity] codiceApi="+codiceApi);
 			log.debug("[SDPSingleProcessor::readEntity] uriInfoDetail="+dump("uriInfo",uriInfo));
-			
+
 			accLog.setApicode(codiceApi);
-accLog.setUniqueid(apacheUniqueId);
-			
-			
+			accLog.setUniqueid(apacheUniqueId);
+
+
 			URI newUri=getContext().getPathInfo().getServiceRoot();
 			try {
 				newUri=new URI(this.baseUrl);
@@ -774,10 +816,10 @@ accLog.setUniqueid(apacheUniqueId);
 								.serviceRoot(newUri);
 
 						accLog.setDataOut(dataRes.getDati().size());
-		accLog.setTenantcode(dataRes.getTenant());
-		accLog.setDatasetcode(dataRes.getDatasetCode());
-						
-						
+						accLog.setTenantcode(dataRes.getTenant());
+						accLog.setDatasetcode(dataRes.getDatasetCode());
+
+
 						return EntityProvider.writeEntry(contentType, entitySet,
 								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
 					} else {
@@ -802,8 +844,8 @@ accLog.setUniqueid(apacheUniqueId);
 						ODataEntityProviderPropertiesBuilder propertiesBuilder = EntityProviderWriteProperties
 								.serviceRoot(newUri);
 						accLog.setDataOut(dataRes.getDati().size());
-		accLog.setTenantcode(dataRes.getTenant());
-		accLog.setDatasetcode(dataRes.getDatasetCode());
+						accLog.setTenantcode(dataRes.getTenant());
+						accLog.setDatasetcode(dataRes.getDatasetCode());
 
 						return EntityProvider.writeEntry(contentType, entitySet,
 								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
@@ -829,8 +871,8 @@ accLog.setUniqueid(apacheUniqueId);
 						ODataEntityProviderPropertiesBuilder propertiesBuilder = EntityProviderWriteProperties
 								.serviceRoot(newUri);
 						accLog.setDataOut(dataRes.getDati().size());
-		accLog.setTenantcode(dataRes.getTenant());
-		accLog.setDatasetcode(dataRes.getDatasetCode());
+						accLog.setTenantcode(dataRes.getTenant());
+						accLog.setDatasetcode(dataRes.getDatasetCode());
 
 						return EntityProvider.writeEntry(contentType, entitySet,
 								data, propertiesBuilder.expandSelectTree(expandSelectTreeNode).build());
@@ -865,10 +907,10 @@ accLog.setUniqueid(apacheUniqueId);
 			throw new ODataException(e);
 		} finally {
 			try {
-deltaTime=System.currentTimeMillis()-starTtime;
-accLog.setElapsed(deltaTime);
-} catch (Exception e) {}
-logAccounting.info(accLog.toString());				
+				deltaTime=System.currentTimeMillis()-starTtime;
+				accLog.setElapsed(deltaTime);
+			} catch (Exception e) {}
+			logAccounting.info(accLog.toString());				
 			log.debug("[SDPSingleProcessor::readEntity] END");
 
 		}

@@ -83,6 +83,7 @@ public class SDPDataApiConfig {
 		
 		params.put("SDP_MAX_DOCS_PER_PAGE", rb.getString("SDP_MAX_DOCS_PER_PAGE"));
 		params.put("SDP_MAX_SKIP_PAGE", rb.getString("SDP_MAX_SKIP_PAGE"));
+		params.put("SDP_ENABLE_NEXT", rb.getString("SDP_ENABLE_NEXT"));
 		
 		
 		
@@ -185,6 +186,11 @@ public class SDPDataApiConfig {
 		return params.get("SDP_MONGO_CFG_DEFAULT_PWD");
     }
     
+    
+    public boolean isNextEnabled() {
+    	if (null!=params.get("SDP_ENABLE_NEXT") && "true".equalsIgnoreCase(params.get("SDP_ENABLE_NEXT"))) return true;
+    	return false;
+    }
     
   
     
