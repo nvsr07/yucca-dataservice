@@ -118,7 +118,7 @@ public class OdataSingleton {
 		ReplacingInputStream ris = new ReplacingInputStream(
 				new ReplacingInputStream(resp.getEntity().getContent(), 
 						SDPDataMultiApiConfig.instance.getMultiapiExternalOdataBaseUrl().getBytes("UTF-8"), 
-						(SDPDataMultiApiConfig.instance.getMultiapiOdataBaseUrl()+SDPDataMultiApiConfig.instance.getMultiapiName()).getBytes("UTF-8")),
+						(SDPDataMultiApiConfig.instance.getMultiapiOdataBaseUrl()+SDPDataMultiApiConfig.instance.getMultiapiName()+"/").getBytes("UTF-8")),
 						"/DataEntities".getBytes("UTF-8"),
 						"__DataEntities".getBytes("UTF-8"));
 				
