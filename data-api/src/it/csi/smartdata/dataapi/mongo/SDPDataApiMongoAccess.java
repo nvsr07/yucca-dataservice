@@ -4187,7 +4187,6 @@ public class SDPDataApiMongoAccess {
 				maxdocPerPage=Integer.parseInt(MongoTenantDbSingleton.getInstance().getMaxDocPerPage(codiceTenantOrig));
 				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] max doc per page from configuration --> "+maxdocPerPage);
 				
-				maxdocPerPage=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
 				
 			} catch (Exception e) {
 				

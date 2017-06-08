@@ -183,11 +183,15 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 
 	private int [] checkSkipTop(Integer skip,Integer top) throws Exception{
+		return checkSkipTop(skip,top,true,true);
+	}
+
+	private int [] checkSkipTop(Integer skip,Integer top,boolean checkSkip,boolean checkTop) throws Exception{
 
 		if (skip==null) skip=new Integer(-1);
 		if (top==null) top= new Integer(-1);
-		if(skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
-		if(top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+		if(checkSkip && skip.intValue()>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
+		if(checkTop && top.intValue()>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
 
 
 
@@ -195,6 +199,31 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 		return ret; 
 
 	}		
+	
+	
+	private String getNextUri(int skipOld,int topOld,String newUri,String entitiSetName,int recCount,GetEntitySetUriInfo uriInfo) throws Exception{
+
+		String nextUri=null;
+		if (topOld>0 && ((skipOld+topOld)<recCount) && SDPDataApiConfig.getInstance().isNextEnabled()) {
+			int skipNew=	skipOld+topOld;
+			nextUri=newUri+entitiSetName+"/?$top="+topOld+"&$skip="+skipNew;
+
+			if (uriInfo.getOrderBy()!=null) nextUri+="&$orderby="+uriInfo.getOrderBy().getUriLiteral();
+
+			if (uriInfo.getFilter()!=null) nextUri+="&$filter="+uriInfo.getFilter().getUriLiteral();
+			if (uriInfo.getFormat()!=null) nextUri+="&$format="+uriInfo.getFormat();
+			
+			String select="";
+			for (int k=0; uriInfo.getSelect()!=null && k<uriInfo.getSelect().size(); k++) {
+				select=select+ (select.length()==0 ? "" : ",") +uriInfo.getSelect().get(k).getProperty().getName();
+			}
+			if (select.length()>0) nextUri+="&$select="+select;
+			
+			
+		}	
+		
+		return nextUri;
+	}
 
 	@Override
 	public ODataResponse readEntitySimpleProperty(final GetSimplePropertyUriInfo uriInfo,final String contentType) throws ODataException {
@@ -397,7 +426,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameCONST).getEntityType().getNamespace();
 					
 					
-					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop(),true,false);
 					int skip=skiptop[0];
 					int top=skiptop[1];
 					
@@ -427,6 +456,10 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					misureNew.add(dataRes.getDati().get(i));
 				}
 
+					int skipOld=(skiptop[0] <=0 ?0 : skiptop[0]);
+					int topOld=(skiptop[1] <=0 ?0 : skiptop[1]);
+
+					String nextUri=getNextUri(skipOld, topOld, ""+newUri, entitySet.getName(), new Long(dataRes.getTotalCount()).intValue(), uriInfo);
 
 
 					ODataResponse ret= EntityProvider.writeFeed (
@@ -437,7 +470,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
-									.expandSelectTree(expandSelectTreeNode)
+									.expandSelectTree(expandSelectTreeNode).nextLink(nextUri)
 									.build());
 
 					return ret;
@@ -446,7 +479,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA).getEntityType().getNamespace();
 
 
-					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
+					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop(),true,false);
 
 
 //					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
@@ -475,6 +508,13 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					misureNew.add(dataRes.getDati().get(i));
 				}
 
+					
+					int skipOld=(skiptop[0] <=0 ?0 : skiptop[0]);
+					int topOld=(skiptop[1] <=0 ?0 : skiptop[1]);
+
+					String nextUri=getNextUri(skipOld, topOld, ""+newUri, entitySet.getName(), new Long(dataRes.getTotalCount()).intValue(), uriInfo);
+					
+					
 					ODataResponse ret= EntityProvider.writeFeed(
 							contentType,
 							entitySet,
@@ -483,7 +523,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 									newUri)
 									.inlineCountType(InlineCount.ALLPAGES)
 									.inlineCount(new Long(dataRes.getTotalCount()).intValue())
-									.expandSelectTree(expandSelectTreeNode)
+									.expandSelectTree(expandSelectTreeNode).nextLink(nextUri)
 									.build()
 									);
 
