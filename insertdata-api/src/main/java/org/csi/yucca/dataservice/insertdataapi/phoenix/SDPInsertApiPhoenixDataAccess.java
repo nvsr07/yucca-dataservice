@@ -117,7 +117,8 @@ public class SDPInsertApiPhoenixDataAccess {
 					campiSQL += "_s VARCHAR";
 				} else if ("boolean".equalsIgnoreCase(tipo)) {
 					campiSQL += "," + nome;
-					campiSQL += "_b TINYINT";
+					//campiSQL += "_b TINYINT";
+					campiSQL += "_b BOOLEAN";
 				} else if ("datetime".equalsIgnoreCase(tipo)) {
 					campiSQL += "," + nome;
 					campiSQL += "_dt TIMESTAMP";
@@ -200,9 +201,11 @@ public class SDPInsertApiPhoenixDataAccess {
 							stmt.setString(pos, value.toString());
 					} else if ("boolean".equalsIgnoreCase(tipo)) {
 						if (null == value)
-							stmt.setNull(pos, java.sql.Types.TINYINT);
+							//stmt.setNull(pos, java.sql.Types.TINYINT);
+							stmt.setNull(pos, java.sql.Types.BOOLEAN);
 						else
-							stmt.setInt(pos, Boolean.parseBoolean(value.toString()) ? 1 : 0);
+							//stmt.setInt(pos, Boolean.parseBoolean(value.toString()) ? 1 : 0);
+							stmt.setBoolean(pos, Boolean.parseBoolean(value.toString()) );
 					} else if ("datetime".equalsIgnoreCase(tipo)) {
 						if (null == value)
 							stmt.setNull(pos, java.sql.Types.TIMESTAMP);
