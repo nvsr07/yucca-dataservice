@@ -41,7 +41,7 @@ public class HdfsFSUtils {
 		return input;
 	}
 
-	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine) throws Exception {
+	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine, String extractpostValuesMetadata) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"]");
 		Reader input = null;
 		try {
@@ -78,7 +78,7 @@ public class HdfsFSUtils {
 				logger.warn("[KnoxHdfsFSUtils::readDir] No elements found in :["+remotePath+"]");
 			}
 			
-			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine);
+			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
 			logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"] END");
 			return sis;
 		} catch (Exception e) {

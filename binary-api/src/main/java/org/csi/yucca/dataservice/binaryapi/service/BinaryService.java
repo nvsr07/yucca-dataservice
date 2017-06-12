@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.tika.exception.TikaException;
 import org.apache.tika.io.TikaInputStream;
@@ -39,8 +42,10 @@ import org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils;
 import org.csi.yucca.dataservice.binaryapi.model.api.Dataset;
 import org.csi.yucca.dataservice.binaryapi.model.api.MyApi;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
+import org.csi.yucca.dataservice.binaryapi.model.metadata.Field;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Metadata;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.Stream;
+import org.csi.yucca.dataservice.binaryapi.model.metadata.Tag;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 import org.csi.yucca.dataservice.binaryapi.mongo.singleton.MongoSingleton;
 import org.jboss.resteasy.plugins.providers.multipart.InputPart;
@@ -154,6 +159,7 @@ public class BinaryService {
 
 			String typeDirectory = "";
 			String subTypeDirectory = "";
+			String veName = null;
 			Boolean checkDataSet = false;
 			List<Dataset> myListDS = api.getDataset();
 
@@ -192,6 +198,8 @@ public class BinaryService {
 						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion==0?1:dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
 						subTypeDirectory = tmp.getStreamCode();
+						veName = tmp.getStreams().getStream().getVirtualEntityName();
+						
 					} else if (mdMetadata.getConfigData().getSubtype().equals("socialDataset")) {
 						Stream tmp = streamDAO.getStreamByDataset(idDataSet, dsVersion==0?1:dsVersion);
 						typeDirectory = "so_" + tmp.getStreams().getStream().getVirtualEntitySlug();
@@ -213,11 +221,13 @@ public class BinaryService {
 							+ dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 					LOG.info("[BinaryService::downloadCSVFile] - hdfsDirectory = " + hdfsDirectory);
 					
-					String headerLine = "========================================="; // TODO: estrarre header in funzione del tipo  
+					String headerLine = extractHeader(mdMetadata);
+					String extractpostValuesMetadata = extractPostValuesMetadata(mdMetadata, veName); // for streams, where we append some metadata to CSV
+					LOG.info("[BinaryService::downloadCSVFile] - headerLine = " + headerLine);
 					
 					Reader is = null;
 					try {
-						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length, headerLine);
+						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length, headerLine,extractpostValuesMetadata);
 					} catch (Exception e) {
 						LOG.error("[BinaryService::downloadCSVFile] - Internal error during READDIR", e);
 						throw new WebApplicationException(
@@ -261,6 +271,77 @@ public class BinaryService {
 				Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON)
 						.entity("{\"error_name\":\"Dataset not found\", \"error_code\":\"E119\", \"output\":\"NONE\", \"message\":\"null is inconsistent\"}")
 						.build());
+	}
+
+	private String extractPostValuesMetadata(Metadata mdMetadata, String veName) {
+		boolean isStream = mdMetadata.getConfigData().getSubtype().equals("streamDataset");
+		List<String> headerMetaFields = new ArrayList<String>();
+		String postValues = null;
+		
+		if (isStream)
+		{
+			headerMetaFields.add(StringUtils.replaceChars(""+veName, ',',' '));
+			if (mdMetadata.getInfo().getFields()!=null)
+			{
+				for (Field field : mdMetadata.getInfo().getFields()) {
+					headerMetaFields.add(""+field.getFieldAlias());
+					headerMetaFields.add(""+field.getMeasureUnit());
+					headerMetaFields.add(""+field.getDataType());
+				}
+			}
+			headerMetaFields.add(""+mdMetadata.getInfo().getFps());
+			List<String> tags = new ArrayList<String>();
+			if (mdMetadata.getInfo().getTags()!=null)
+			{
+				for (Tag tag : mdMetadata.getInfo().getTags()) {
+					tags.add(tag.getTagCode()); 
+				}
+			}
+			headerMetaFields.add(StringUtils.join(tags," "));
+			postValues = StringUtils.join(headerMetaFields.toArray(new String[0]),",");
+		}
+			
+			
+		return postValues;
+		
+	
+	}
+
+	private String extractHeader(Metadata mdMetadata) {
+		
+		boolean hasTime = mdMetadata.getConfigData().getSubtype().equals("streamDataset")||mdMetadata.getConfigData().getSubtype().equals("socialDataset") ;
+		boolean isStream = mdMetadata.getConfigData().getSubtype().equals("streamDataset");
+		
+		List<String> headerMetaFields = new ArrayList<String>();
+		List<String> headerFields = new ArrayList<String>();
+
+		if (isStream)
+			headerMetaFields.add("Sensor.Name");
+
+		if (hasTime)
+		{
+			headerFields.add("time");
+		}
+		if (mdMetadata.getInfo().getFields()!=null)
+		{
+			for (Field field : mdMetadata.getInfo().getFields()) {
+				headerFields.add(field.getFieldName());
+				if (isStream)
+				{
+					headerMetaFields.add(headerMetaFields+".fieldAlias");
+					headerMetaFields.add(headerMetaFields+".measureUnit");
+					headerMetaFields.add(headerMetaFields+".dataType");
+				}
+			}
+		}
+		if (isStream){
+			headerMetaFields.add("Dataset.frequency");
+			headerMetaFields.add("Dataset.Tags");
+			headerFields.add(StringUtils.join(headerMetaFields.toArray(new String[0]),","));
+		}
+		
+		
+		return StringUtils.join(headerFields.toArray(new String[0]),",");
 	}
 
 	@GET // ok

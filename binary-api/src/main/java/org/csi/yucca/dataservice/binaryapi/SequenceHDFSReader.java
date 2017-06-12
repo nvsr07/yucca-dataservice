@@ -55,6 +55,7 @@ public class SequenceHDFSReader extends Reader {
 	CSVReader csvIn;
 	int maxFields;
 	String headerLine;
+	String extractpostValuesMetadata;
 	/**
 	 * Initializes a newly created <code>SequenceInputStream</code> by
 	 * remembering the argument, which must be an <code>Enumeration</code> that
@@ -66,13 +67,14 @@ public class SequenceHDFSReader extends Reader {
 	 * method.
 	 * @param maxFields 
 	 * @param headerLine 
+	 * @param extractpostValuesMetadata 
 	 * 
 	 * @param e
 	 *            an enumeration of input streams.
 	 * @see java.util.Enumeration
 	 */
 	public SequenceHDFSReader(
-			Enumeration<? extends String> paths, int maxFields, String headerLine) {
+			Enumeration<? extends String> paths, int maxFields, String headerLine, String extractpostValuesMetadata) {
 		this.paths = paths;
 		this.maxFields = maxFields;
 		this.headerLine = headerLine;
