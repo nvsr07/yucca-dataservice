@@ -78,6 +78,7 @@ public class SequenceHDFSReader extends Reader {
 		this.paths = paths;
 		this.maxFields = maxFields;
 		this.headerLine = headerLine;
+		this.extractpostValuesMetadata = extractpostValuesMetadata;
 		try {
 			firstPath();
 		} catch (IOException ex) {
