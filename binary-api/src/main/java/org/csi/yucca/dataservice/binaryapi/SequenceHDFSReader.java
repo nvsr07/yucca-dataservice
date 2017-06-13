@@ -196,14 +196,11 @@ public class SequenceHDFSReader extends Reader {
 				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
-				if (writeHeader) {
-					csvw.writeNext(headerLine);
-					csvw.flush();
-				}
-//					buf = new StringReader(headerLine+"\n"+sw.toString());
-//				else
-//					buf = new StringReader(sw.toString());
 				csvw.writeNext(fields);
+				if (writeHeader) 
+					buf = new StringReader(Arrays.toString(headerLine)+"\n"+sw.toString());
+				else
+					buf = new StringReader(sw.toString());
 				csvw.flush();
 				csvw.close();
 			}
