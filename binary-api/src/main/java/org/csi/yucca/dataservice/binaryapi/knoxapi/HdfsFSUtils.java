@@ -3,18 +3,17 @@ package org.csi.yucca.dataservice.binaryapi.knoxapi;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.RootLogger;
+import org.csi.yucca.dataservice.binaryapi.HDFSFileProps;
 import org.csi.yucca.dataservice.binaryapi.ListOfFiles;
 import org.csi.yucca.dataservice.binaryapi.SequenceHDFSReader;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatus;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusContainer;
-import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatuses;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusesContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
-import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
 
 public class HdfsFSUtils {
 
@@ -40,14 +39,18 @@ public class HdfsFSUtils {
 		}
 		return input;
 	}
-
-	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine, String extractpostValuesMetadata) throws Exception {
+	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine, String[] extractpostValuesMetadata ) throws Exception {
+		return readDir( remotePath,  version,  maxFields,  headerLine,  extractpostValuesMetadata, null);
+	}
+	
+	
+	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine, String[] extractpostValuesMetadata,HashMap<Integer, Integer> mapVersionMaxFileds) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"]");
 		Reader input = null;
 		try {
 
 			FileStatusesContainer filesc  = new KnoxWebHDFSConnection().listStatus(remotePath);
-			ListOfFiles list = new ListOfFiles(new ArrayList<String>());
+			ListOfFiles list = new ListOfFiles();
 			
 			
 			Integer countFileIntoDir = 0;
@@ -59,10 +62,21 @@ public class HdfsFSUtils {
 					if (currentFile.getType().equals("FILE")) {
 						countFileIntoDir++;
 						String myFileName = currentFile.getPathSuffix();
+						String versionStr=myFileName.substring(myFileName.lastIndexOf("-") + 1,myFileName.lastIndexOf(".csv"));
+						logger.info("[KnoxHdfsFSUtils::readDir] :["+remotePath+"/"+currentFile.getPathSuffix()+"] has version="+versionStr);
 						if ((myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(version.toString()+".csv")) 
 								|| (version.equals(0))){
 							logger.info("[KnoxHdfsFSUtils::readDir] add element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
-							list.addElement(remotePath+"/"+currentFile.getPathSuffix());
+							
+							HDFSFileProps prp=new HDFSFileProps(); 
+							prp.setDatasetVersion(Integer.parseInt(versionStr));
+							prp.setFullFilePath(remotePath+"/"+currentFile.getPathSuffix());
+							if (version.equals(0) && null!=mapVersionMaxFileds && null!=mapVersionMaxFileds.get(new Integer(versionStr))) {
+								prp.setMaxFileds(mapVersionMaxFileds.get(new Integer(versionStr)));
+							}
+							
+							//list.addElement(remotePath+"/"+currentFile.getPathSuffix());
+							list.addElement(prp);
 						} else {
 							logger.info("[KnoxHdfsFSUtils::readDir] SKIP element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
 						}

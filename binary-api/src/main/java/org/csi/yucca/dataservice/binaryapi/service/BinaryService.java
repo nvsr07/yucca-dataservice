@@ -121,6 +121,9 @@ public class BinaryService {
 
 		LOG.info("[BinaryService::downloadCSVFile] - tenantCode! => " + tenantCode);
 
+		// multiVersion
+		HashMap<Integer, Integer> mapVersionMaxFileds=new HashMap<Integer, Integer>();
+		
 		if ((datasetVersion.equals("current")) || (datasetVersion.equals("all"))) {
 			LOG.info("[BinaryService::downloadCSVFile] - Current Version");
 
@@ -140,6 +143,12 @@ public class BinaryService {
 //					}
 					LOG.info("[BinaryService::downloadCSVFile] - Richiesto caricamento ALL");
 					dsVersion = 0;
+					
+					List<Metadata> mdMetadataAll=metadataDAO.getAllMetadaByBinaryID(idDataSet);
+					for (int k=0;mdMetadataAll!= null && k < mdMetadataAll.size();k++) {
+						mapVersionMaxFileds.put(mdMetadataAll.get(k).getDatasetVersion(), mdMetadataAll.get(k).getInfo().getFields().length);
+					}
+					
 					LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
 				} else {
 					dsVersion = mdMetadata.getDatasetVersion();
@@ -222,7 +231,7 @@ public class BinaryService {
 					LOG.info("[BinaryService::downloadCSVFile] - hdfsDirectory = " + hdfsDirectory);
 					
 					String headerLine = extractHeader(mdMetadata);
-					String extractpostValuesMetadata = extractPostValuesMetadata(mdMetadata, veName); // for streams, where we append some metadata to CSV
+					String[] extractpostValuesMetadata = extractPostValuesMetadata(mdMetadata, veName); // for streams, where we append some metadata to CSV
 					LOG.info("[BinaryService::downloadCSVFile] - headerLine = " + headerLine);
 					
 					Reader is = null;
@@ -273,7 +282,8 @@ public class BinaryService {
 						.build());
 	}
 
-	private String extractPostValuesMetadata(Metadata mdMetadata, String veName) {
+	private String[] extractPostValuesMetadata(Metadata mdMetadata, String veName) {
+	//private String extractPostValuesMetadata(Metadata mdMetadata, String veName) {
 		boolean isStream = mdMetadata.getConfigData().getSubtype().equals("streamDataset");
 		List<String> headerMetaFields = new ArrayList<String>();
 		String postValues = null;
@@ -302,7 +312,8 @@ public class BinaryService {
 		}
 			
 			
-		return postValues;
+		//return postValues;
+		return headerMetaFields.toArray(new String[0]);
 		
 	
 	}

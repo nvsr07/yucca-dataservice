@@ -175,6 +175,31 @@ public class MongoDBMetadataDAO {
 		return metadataLoaded;
 	}
 
+	
+	public List<Metadata> getAllMetadaByBinaryID(Long binaryIdDataset) {
+		BasicDBObject searchQuery = new BasicDBObject();
+		searchQuery.put("idDataset", binaryIdDataset);
+		
+		System.out.println("searchQuery in getCurrentMetadaByBinaryID = " + searchQuery.toString());
+
+		List<Metadata> ret = null;
+		DBCursor cursor =collection.find(searchQuery);
+		while (cursor.hasNext()) {
+			DBObject data = cursor.next();
+			ObjectId id = (ObjectId) data.get("_id");
+			Metadata metadataLoaded = Metadata.fromJson(JSON.serialize(data));
+			log.info("[MongoDBMetadataDAO::getCurrentMetadaByBinaryID] - Metadata = " + metadataLoaded.toJson());
+			log.info("[MongoDBMetadataDAO::getCurrentMetadaByBinaryID] - Metadata.getConfigData = " + metadataLoaded.getConfigData().toJson());
+			metadataLoaded.setId(id.toString());
+			if (ret==null) ret = new ArrayList<Metadata>();
+			ret.add(metadataLoaded);
+		}
+		
+		
+		return ret;
+	}
+	
+	
 	public Metadata readCurrentMetadataByTntAndIDDS(Long idDataset, Integer datasetVersion, String tenantCode) {
 		BasicDBObject searchQuery = new BasicDBObject();
 		List<BasicDBObject> obj = new ArrayList<BasicDBObject>();

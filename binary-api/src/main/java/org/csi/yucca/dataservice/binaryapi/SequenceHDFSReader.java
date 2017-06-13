@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Enumeration;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -49,13 +50,16 @@ import au.com.bytecode.opencsv.CSVWriter;
  * @since JDK1.0
  */
 public class SequenceHDFSReader extends Reader {
-	Enumeration<? extends String> paths;
+	Enumeration<? extends HDFSFileProps> paths;
 	Reader in;
 	StringReader buf;
 	CSVReader csvIn;
 	int maxFields;
+	int curMaxFields=0;
+	
+	
 	String headerLine;
-	String extractpostValuesMetadata;
+	String[] extractpostValuesMetadata;
 	/**
 	 * Initializes a newly created <code>SequenceInputStream</code> by
 	 * remembering the argument, which must be an <code>Enumeration</code> that
@@ -74,7 +78,7 @@ public class SequenceHDFSReader extends Reader {
 	 * @see java.util.Enumeration
 	 */
 	public SequenceHDFSReader(
-			Enumeration<? extends String> paths, int maxFields, String headerLine, String extractpostValuesMetadata) {
+			Enumeration<? extends HDFSFileProps> paths, int maxFields, String headerLine, String[] extractpostValuesMetadata) {
 		this.paths = paths;
 		this.maxFields = maxFields;
 		this.headerLine = headerLine;
@@ -96,7 +100,10 @@ public class SequenceHDFSReader extends Reader {
         }
 
         if (paths.hasMoreElements()) {
-        	String p = (String) paths.nextElement();
+        	//String p = (String) paths.nextElement();
+        	HDFSFileProps curF=(HDFSFileProps) paths.nextElement();
+        	String p = curF.getFullFilePath();
+        	curMaxFields=curF.getMaxFileds();
             if (p == null)
                 throw new NullPointerException();
             
@@ -117,8 +124,11 @@ public class SequenceHDFSReader extends Reader {
 		}
 
 		if (paths.hasMoreElements()) {
-			String p = (String) paths
-					.nextElement();
+			//String p = (String) paths.nextElement();
+        	HDFSFileProps curF=(HDFSFileProps) paths.nextElement();
+        	String p = curF.getFullFilePath();
+        	curMaxFields=curF.getMaxFileds();
+			
 			if (p == null)
 				throw new NullPointerException();
 
@@ -143,9 +153,18 @@ public class SequenceHDFSReader extends Reader {
 				nextPath();
 			}
 			else {
+				if (curMaxFields<fields.length) {
+					fields = Arrays.copyOf(fields, curMaxFields);
+				}
+				
 				if (maxFields>fields.length) {
 					fields = Arrays.copyOf(fields, maxFields);
 				}
+				
+				if (extractpostValuesMetadata!=null && extractpostValuesMetadata.length>0) {
+					fields=ArrayUtils.addAll(fields, extractpostValuesMetadata);
+				}
+				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
 				csvw.writeNext(fields);

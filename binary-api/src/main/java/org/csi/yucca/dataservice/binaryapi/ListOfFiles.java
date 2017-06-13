@@ -3,16 +3,20 @@ package org.csi.yucca.dataservice.binaryapi;
 import java.util.*;
 import java.io.*;
 
-public class ListOfFiles implements Enumeration<String> {
+public class ListOfFiles implements Enumeration<HDFSFileProps> {
 
-    private List<String> listOfFiles;
+    private List<HDFSFileProps> listOfFiles;
     private int current = 0;
 
-    public ListOfFiles(List<String> listOfFiles) {
+    public ListOfFiles() {
+    	this.listOfFiles=new ArrayList<HDFSFileProps>();
+    }    
+    
+    public ListOfFiles(List<HDFSFileProps> listOfFiles) {
         this.listOfFiles = listOfFiles;
     }
     
-    public void addElement(String element){
+    public void addElement(HDFSFileProps element){
     	listOfFiles.add(element);
     }
 
@@ -23,8 +27,8 @@ public class ListOfFiles implements Enumeration<String> {
             return false;
     }
 
-    public String nextElement() {
-    	String nextElement = null;
+    public HDFSFileProps nextElement() {
+    	HDFSFileProps nextElement = null;
 
         if (!hasMoreElements())
             throw new NoSuchElementException("No more files.");
@@ -36,8 +40,8 @@ public class ListOfFiles implements Enumeration<String> {
         return nextElement;
     }
 
-    public String prevElement() {
-    	String prevElement = null;
+    public HDFSFileProps prevElement() {
+    	HDFSFileProps prevElement = null;
 
 		current--;
 		if (current < 0)
