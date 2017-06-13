@@ -71,6 +71,9 @@ public class HdfsFSUtils {
 							HDFSFileProps prp=new HDFSFileProps(); 
 							prp.setDatasetVersion(Integer.parseInt(versionStr));
 							prp.setFullFilePath(remotePath+"/"+currentFile.getPathSuffix());
+
+							
+							logger.info("[KnoxHdfsFSUtils::readDir] add element:  versionStr="+versionStr +   "    maxfields="+mapVersionMaxFileds.get(new Integer(versionStr))    );
 							if (version.equals(0) && null!=mapVersionMaxFileds && null!=mapVersionMaxFileds.get(new Integer(versionStr))) {
 								prp.setMaxFileds(mapVersionMaxFileds.get(new Integer(versionStr)));
 							}
