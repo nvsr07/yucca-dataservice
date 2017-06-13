@@ -145,14 +145,14 @@ public class BinaryService {
 					
 					List<Metadata> mdMetadataAll=metadataDAO.getAllMetadaByBinaryID(idDataSet);
 					for (int k=0;mdMetadataAll!= null && k < mdMetadataAll.size();k++) {
-						mapVersionMaxFileds.put(mdMetadataAll.get(k).getDatasetVersion(), mdMetadataAll.get(k).getInfo().getFields().length);
-						LOG.info("[BinaryService::downloadCSVFile] - ))) aggiunti alla map (version,nfileds) --> " +mdMetadataAll.get(k).getDatasetVersion() +","+ mdMetadataAll.get(k).getInfo().getFields().length);
+						mapVersionMaxFileds.put(mdMetadataAll.get(k).getDatasetVersion(), getMaxFileds(mdMetadataAll.get(k)));
+						LOG.info("[BinaryService::downloadCSVFile] - ))) aggiunti alla map (version,nfileds) --> " +mdMetadataAll.get(k).getDatasetVersion() +","+ getMaxFileds(mdMetadataAll.get(k)));
 					}
 					
 					LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
 				} else {
 					dsVersion = mdMetadata.getDatasetVersion();
-					mapVersionMaxFileds.put(mdMetadata.getDatasetVersion(), mdMetadata.getInfo().getFields().length);
+					mapVersionMaxFileds.put(mdMetadata.getDatasetVersion(), getMaxFileds(mdMetadata));
 				}
 				LOG.info("[BinaryService::downloadCSVFile] - dsVersion a = " + dsVersion);
 			}
@@ -161,7 +161,7 @@ public class BinaryService {
 			dsVersion = Integer.parseInt(datasetVersion);
 			LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
 			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
-			mapVersionMaxFileds.put(mdMetadata.getDatasetVersion(), mdMetadata.getInfo().getFields().length);
+			mapVersionMaxFileds.put(mdMetadata.getDatasetVersion(), getMaxFileds(mdMetadata));
 		}
 
 		if (mdMetadata != null) {
@@ -321,6 +321,14 @@ public class BinaryService {
 	
 	}
 
+	
+	private int getMaxFileds(Metadata mdMetadata) {
+		boolean hasTime = mdMetadata.getConfigData().getSubtype().equals("streamDataset")||mdMetadata.getConfigData().getSubtype().equals("socialDataset") ;
+		if (hasTime) return mdMetadata.getInfo().getFields().length+1;
+		return mdMetadata.getInfo().getFields().length;
+		
+	}
+	
 	//private String extractHeader(Metadata mdMetadata) {
 	private String[] extractHeader(Metadata mdMetadata) {	
 		
