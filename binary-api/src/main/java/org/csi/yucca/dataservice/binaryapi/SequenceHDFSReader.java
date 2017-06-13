@@ -109,9 +109,9 @@ public class SequenceHDFSReader extends Reader {
                 throw new NullPointerException();
             
             
-            System.out.println("))) firstPath  p --> "+p);
-            System.out.println("))) firstPath  curMaxFields --> "+curMaxFields);
-            System.out.println("))) firstPath  maxFields --> "+maxFields);
+            //System.out.println("))) firstPath  p --> "+p);
+            //System.out.println("))) firstPath  curMaxFields --> "+curMaxFields);
+            //System.out.println("))) firstPath  maxFields --> "+maxFields);
             csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)),',','"',1);
             nextLine(true);
         }
@@ -137,9 +137,9 @@ public class SequenceHDFSReader extends Reader {
 			if (p == null)
 				throw new NullPointerException();
 
-            System.out.println("))) nextPath  p --> "+p);
-            System.out.println("))) nextPath  curMaxFields --> "+curMaxFields);
-            System.out.println("))) nextPath  maxFields --> "+maxFields);
+            //System.out.println("))) nextPath  p --> "+p);
+            //System.out.println("))) nextPath  curMaxFields --> "+curMaxFields);
+            //System.out.println("))) nextPath  maxFields --> "+maxFields);
 			
 			
 			csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
@@ -164,24 +164,24 @@ public class SequenceHDFSReader extends Reader {
 			}
 			else {
 				
-	            System.out.println("))) nextLine  fields.length --> "+fields.length);
-	            System.out.println("))) nextLine  curMaxFields --> "+curMaxFields);
-	            System.out.println("))) nextLine  maxFields --> "+maxFields);
-	            System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+(extractpostValuesMetadata!=null ? extractpostValuesMetadata.length :"null"));
-	            System.out.println("))) nextLine  headerLine.length --> "+(headerLine!=null ? headerLine.length :"null"));
+	            //System.out.println("))) nextLine  fields.length --> "+fields.length);
+	            //System.out.println("))) nextLine  curMaxFields --> "+curMaxFields);
+	            //System.out.println("))) nextLine  maxFields --> "+maxFields);
+	            //System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+(extractpostValuesMetadata!=null ? extractpostValuesMetadata.length :"null"));
+	            //System.out.println("))) nextLine  headerLine.length --> "+(headerLine!=null ? headerLine.length :"null"));
 				
 
 	            
-	            System.out.println("))) nextLine  FIELDS   0 ("+fields.length+")--> " +Arrays.toString(fields));
+	            //System.out.println("))) nextLine  FIELDS   0 ("+fields.length+")--> " +Arrays.toString(fields));
 	            
 				if (curMaxFields>0 && curMaxFields<fields.length) {
 					fields = Arrays.copyOf(fields, curMaxFields);
-		            System.out.println("))) nextLine  FIELDS   1 ("+fields.length+")--> " +Arrays.toString(fields));
+		            //System.out.println("))) nextLine  FIELDS   1 ("+fields.length+")--> " +Arrays.toString(fields));
 				}
 				
 				if (maxFields>fields.length) {
 					fields = Arrays.copyOf(fields, maxFields);
-		            System.out.println("))) nextLine  FIELDS   2 ("+fields.length+")--> " +Arrays.toString(fields));
+		            //System.out.println("))) nextLine  FIELDS   2 ("+fields.length+")--> " +Arrays.toString(fields));
 				}
 				
 				if (extractpostValuesMetadata!=null && extractpostValuesMetadata.length>0) {
@@ -189,10 +189,10 @@ public class SequenceHDFSReader extends Reader {
 //					int size=fields.length;
 //					fields = Arrays.copyOf(fields, size+extractpostValuesMetadata.length);
 //					for (int k=0;k<extractpostValuesMetadata.length;k++) fields[size+k]=extractpostValuesMetadata[k];
-		            System.out.println("))) nextLine  FIELDS   3 ("+fields.length+")--> " +Arrays.toString(fields));
+		            //System.out.println("))) nextLine  FIELDS   3 ("+fields.length+")--> " +Arrays.toString(fields));
 						
 				}
-	            System.out.println("))) nextLine  FIELDS   4 ("+fields.length+")--> " +Arrays.toString(fields));
+	            //System.out.println("))) nextLine  FIELDS   4 ("+fields.length+")--> " +Arrays.toString(fields));
 				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
