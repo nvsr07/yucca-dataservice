@@ -33,7 +33,6 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Enumeration;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -162,7 +161,11 @@ public class SequenceHDFSReader extends Reader {
 				}
 				
 				if (extractpostValuesMetadata!=null && extractpostValuesMetadata.length>0) {
-					fields=ArrayUtils.addAll(fields, extractpostValuesMetadata);
+					//fields=ArrayUtils.addAll(fields, extractpostValuesMetadata);
+					int size=fields.length;
+					fields = Arrays.copyOf(fields, size+extractpostValuesMetadata.length);
+					for (int k=0;k<extractpostValuesMetadata.length;k++) fields[size+k]=extractpostValuesMetadata[k];
+						
 				}
 				
 				StringWriter sw = new StringWriter();
