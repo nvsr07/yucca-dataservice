@@ -229,8 +229,8 @@ public class BinaryService {
 							+ dataDomain + "/" + typeDirectory + "/" + subTypeDirectory + "/";
 					LOG.info("[BinaryService::downloadCSVFile] - hdfsDirectory = " + hdfsDirectory);
 					
-					//String headerLine = extractHeader(mdMetadata);
-					String headerLine = "";
+					String headerLine = extractHeader(mdMetadata);
+					//String headerLine = "";
 					String[] extractpostValuesMetadata = extractPostValuesMetadata(mdMetadata, veName); // for streams, where we append some metadata to CSV
 					LOG.info("[BinaryService::downloadCSVFile] - headerLine = " + headerLine);
 					
@@ -339,9 +339,9 @@ public class BinaryService {
 				headerFields.add(field.getFieldName());
 				if (isStream)
 				{
-					headerMetaFields.add(headerMetaFields+".fieldAlias");
-					headerMetaFields.add(headerMetaFields+".measureUnit");
-					headerMetaFields.add(headerMetaFields+".dataType");
+					headerMetaFields.add(field.getFieldName()+".fieldAlias");
+					headerMetaFields.add(field.getFieldName()+".measureUnit");
+					headerMetaFields.add(field.getFieldName()+".dataType");
 				}
 			}
 		}
