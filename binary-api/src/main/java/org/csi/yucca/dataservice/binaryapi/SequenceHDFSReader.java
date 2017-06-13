@@ -107,6 +107,10 @@ public class SequenceHDFSReader extends Reader {
             if (p == null)
                 throw new NullPointerException();
             
+            
+            System.out.println("))) firstPath  p --> "+p);
+            System.out.println("))) firstPath  curMaxFields --> "+curMaxFields);
+            System.out.println("))) firstPath  maxFields --> "+maxFields);
             csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)),',','"',1);
             nextLine(true);
         }
@@ -132,6 +136,11 @@ public class SequenceHDFSReader extends Reader {
 			if (p == null)
 				throw new NullPointerException();
 
+            System.out.println("))) nextPath  p --> "+p);
+            System.out.println("))) nextPath  curMaxFields --> "+curMaxFields);
+            System.out.println("))) nextPath  maxFields --> "+maxFields);
+			
+			
 			csvIn = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
 			nextLine(false);
 
@@ -153,6 +162,13 @@ public class SequenceHDFSReader extends Reader {
 				nextPath();
 			}
 			else {
+				
+	            System.out.println("))) nextLine  fields.length --> "+fields.length);
+	            System.out.println("))) nextLine  curMaxFields --> "+curMaxFields);
+	            System.out.println("))) nextLine  maxFields --> "+maxFields);
+	            System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+extractpostValuesMetadata.length);
+				
+				
 				if (curMaxFields<fields.length) {
 					fields = Arrays.copyOf(fields, curMaxFields);
 				}
