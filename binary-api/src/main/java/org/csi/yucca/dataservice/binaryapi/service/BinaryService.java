@@ -152,6 +152,7 @@ public class BinaryService {
 					LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
 				} else {
 					dsVersion = mdMetadata.getDatasetVersion();
+					mapVersionMaxFileds.put(mdMetadata.getDatasetVersion(), mdMetadata.getInfo().getFields().length);
 				}
 				LOG.info("[BinaryService::downloadCSVFile] - dsVersion a = " + dsVersion);
 			}
@@ -160,6 +161,7 @@ public class BinaryService {
 			dsVersion = Integer.parseInt(datasetVersion);
 			LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
 			mdMetadata = metadataDAO.readCurrentMetadataByTntAndIDDS(idDataSet, dsVersion, tenantCode);
+			mapVersionMaxFileds.put(mdMetadata.getDatasetVersion(), mdMetadata.getInfo().getFields().length);
 		}
 
 		if (mdMetadata != null) {
