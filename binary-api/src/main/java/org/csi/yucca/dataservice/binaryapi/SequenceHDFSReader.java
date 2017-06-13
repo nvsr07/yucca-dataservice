@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
 
 import au.com.bytecode.opencsv.CSVReader;
@@ -58,7 +59,7 @@ public class SequenceHDFSReader extends Reader {
 	int curMaxFields=0;
 	
 	
-	String headerLine;
+	String[] headerLine;
 	String[] extractpostValuesMetadata;
 	/**
 	 * Initializes a newly created <code>SequenceInputStream</code> by
@@ -78,7 +79,7 @@ public class SequenceHDFSReader extends Reader {
 	 * @see java.util.Enumeration
 	 */
 	public SequenceHDFSReader(
-			Enumeration<? extends HDFSFileProps> paths, int maxFields, String headerLine, String[] extractpostValuesMetadata) {
+			Enumeration<? extends HDFSFileProps> paths, int maxFields, String[] headerLine, String[] extractpostValuesMetadata) {
 		this.paths = paths;
 		this.maxFields = maxFields;
 		this.headerLine = headerLine;
@@ -166,15 +167,21 @@ public class SequenceHDFSReader extends Reader {
 	            System.out.println("))) nextLine  fields.length --> "+fields.length);
 	            System.out.println("))) nextLine  curMaxFields --> "+curMaxFields);
 	            System.out.println("))) nextLine  maxFields --> "+maxFields);
-	            System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+extractpostValuesMetadata.length);
+	            System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+(extractpostValuesMetadata!=null ? extractpostValuesMetadata.length :"null"));
+	            System.out.println("))) nextLine  headerLine.length --> "+(headerLine!=null ? headerLine.length :"null"));
 				
-				
+
+	            
+	            System.out.println("))) nextLine  FIELDS   0 ("+fields.length+")--> " +Arrays.toString(fields));
+	            
 				if (curMaxFields>0 && curMaxFields<fields.length) {
 					fields = Arrays.copyOf(fields, curMaxFields);
+		            System.out.println("))) nextLine  FIELDS   1 ("+fields.length+")--> " +Arrays.toString(fields));
 				}
 				
 				if (maxFields>fields.length) {
 					fields = Arrays.copyOf(fields, maxFields);
+		            System.out.println("))) nextLine  FIELDS   2 ("+fields.length+")--> " +Arrays.toString(fields));
 				}
 				
 				if (extractpostValuesMetadata!=null && extractpostValuesMetadata.length>0) {
@@ -182,17 +189,22 @@ public class SequenceHDFSReader extends Reader {
 //					int size=fields.length;
 //					fields = Arrays.copyOf(fields, size+extractpostValuesMetadata.length);
 //					for (int k=0;k<extractpostValuesMetadata.length;k++) fields[size+k]=extractpostValuesMetadata[k];
+		            System.out.println("))) nextLine  FIELDS   3 ("+fields.length+")--> " +Arrays.toString(fields));
 						
 				}
+	            System.out.println("))) nextLine  FIELDS   4 ("+fields.length+")--> " +Arrays.toString(fields));
 				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
+				if (writeHeader) {
+					csvw.writeNext(headerLine);
+					csvw.flush();
+				}
+//					buf = new StringReader(headerLine+"\n"+sw.toString());
+//				else
+//					buf = new StringReader(sw.toString());
 				csvw.writeNext(fields);
 				csvw.flush();
-				if (writeHeader)
-					buf = new StringReader(headerLine+"\n"+sw.toString());
-				else
-					buf = new StringReader(sw.toString());
 				csvw.close();
 			}
 		}

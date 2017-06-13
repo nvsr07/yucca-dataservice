@@ -39,12 +39,12 @@ public class HdfsFSUtils {
 		}
 		return input;
 	}
-	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine, String[] extractpostValuesMetadata ) throws Exception {
+	public static Reader readDir(String remotePath, Integer version, int maxFields, String[] headerLine, String[] extractpostValuesMetadata ) throws Exception {
 		return readDir( remotePath,  version,  maxFields,  headerLine,  extractpostValuesMetadata, null);
 	}
 	
 	
-	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine, String[] extractpostValuesMetadata,HashMap<Integer, Integer> mapVersionMaxFileds) throws Exception {
+	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine[], String[] extractpostValuesMetadata,HashMap<Integer, Integer> mapVersionMaxFileds) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"]");
 		Reader input = null;
 		try {
