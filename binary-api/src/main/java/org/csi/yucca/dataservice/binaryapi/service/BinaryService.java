@@ -146,6 +146,7 @@ public class BinaryService {
 					List<Metadata> mdMetadataAll=metadataDAO.getAllMetadaByBinaryID(idDataSet);
 					for (int k=0;mdMetadataAll!= null && k < mdMetadataAll.size();k++) {
 						mapVersionMaxFileds.put(mdMetadataAll.get(k).getDatasetVersion(), mdMetadataAll.get(k).getInfo().getFields().length);
+						LOG.info("[BinaryService::downloadCSVFile] - ))) aggiunti alla map (version,nfileds) --> " +mdMetadataAll.get(k).getDatasetVersion() +","+ mdMetadataAll.get(k).getInfo().getFields().length);
 					}
 					
 					LOG.info("[BinaryService::downloadCSVFile] - dsVersion b = " + dsVersion);
@@ -236,7 +237,7 @@ public class BinaryService {
 					
 					Reader is = null;
 					try {
-						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length, headerLine,extractpostValuesMetadata);
+						is = org.csi.yucca.dataservice.binaryapi.knoxapi.HdfsFSUtils.readDir(hdfsDirectory, dsVersion, mdMetadata.getInfo().getFields().length, headerLine,extractpostValuesMetadata,mapVersionMaxFileds);
 					} catch (Exception e) {
 						LOG.error("[BinaryService::downloadCSVFile] - Internal error during READDIR", e);
 						throw new WebApplicationException(

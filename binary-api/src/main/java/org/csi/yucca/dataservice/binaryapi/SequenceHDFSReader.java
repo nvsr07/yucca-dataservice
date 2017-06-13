@@ -169,7 +169,7 @@ public class SequenceHDFSReader extends Reader {
 	            System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+extractpostValuesMetadata.length);
 				
 				
-				if (curMaxFields<fields.length) {
+				if (curMaxFields>0 && curMaxFields<fields.length) {
 					fields = Arrays.copyOf(fields, curMaxFields);
 				}
 				
