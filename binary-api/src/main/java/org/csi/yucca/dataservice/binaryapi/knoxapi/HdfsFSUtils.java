@@ -66,14 +66,14 @@ public class HdfsFSUtils {
 						logger.info("[KnoxHdfsFSUtils::readDir] :["+remotePath+"/"+currentFile.getPathSuffix()+"] has version="+versionStr);
 						if ((myFileName.substring(myFileName.lastIndexOf("-") + 1).equals(version.toString()+".csv")) 
 								|| (version.equals(0))){
-							logger.info("[KnoxHdfsFSUtils::readDir] add element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
+							logger.info("[KnoxHdfsFSUtils::readDir] ))) add element:["+remotePath+"/"+currentFile.getPathSuffix()+"]");
 							
 							HDFSFileProps prp=new HDFSFileProps(); 
 							prp.setDatasetVersion(Integer.parseInt(versionStr));
 							prp.setFullFilePath(remotePath+"/"+currentFile.getPathSuffix());
 
 							
-							logger.info("[KnoxHdfsFSUtils::readDir] add element:  versionStr="+versionStr +   "    maxfields="+mapVersionMaxFileds.get(new Integer(versionStr))    );
+							logger.info("[KnoxHdfsFSUtils::readDir] ))) add element:  versionStr="+versionStr +   "    maxfields="+mapVersionMaxFileds.get(new Integer(versionStr))    );
 							if (version.equals(0) && null!=mapVersionMaxFileds && null!=mapVersionMaxFileds.get(new Integer(versionStr))) {
 								prp.setMaxFileds(mapVersionMaxFileds.get(new Integer(versionStr)));
 							}
