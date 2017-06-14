@@ -360,7 +360,8 @@ public class BinaryService {
 		if (isStream){
 			headerMetaFields.add("Dataset.frequency");
 			headerMetaFields.add("Dataset.Tags");
-			headerFields.add(StringUtils.join(headerMetaFields.toArray(new String[0]),","));
+			//headerFields.add(StringUtils.join(headerMetaFields.toArray(new String[0]),","));
+			headerFields.addAll(headerMetaFields);
 		}
 		
 		
