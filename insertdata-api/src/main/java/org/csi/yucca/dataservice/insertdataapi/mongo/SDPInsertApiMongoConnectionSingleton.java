@@ -190,7 +190,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 			ServerAddress serverAddr=new ServerAddress(newHost,port);
 			arrServerAddr.add(serverAddr);
 		}
-		MongoCredential credential = MongoCredential.createMongoCRCredential(SDPInsertApiConfig.getInstance().getMongoDefaultUser(), 
+		MongoCredential credential = MongoCredential.createCredential(SDPInsertApiConfig.getInstance().getMongoDefaultUser(), 
 				"admin", 
 				SDPInsertApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
 		MongoClient mongoClient = null;
