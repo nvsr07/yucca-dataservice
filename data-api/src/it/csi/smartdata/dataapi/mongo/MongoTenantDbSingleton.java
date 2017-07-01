@@ -417,7 +417,7 @@ public class MongoTenantDbSingleton {
 		MongoClient mongoClient = null;
 		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
 				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
-			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+			MongoCredential credential = MongoCredential.createCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
 					"admin", 
 					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
 			mongoClient = new MongoClient(arrServerAddr,Arrays.asList(credential));
@@ -439,7 +439,7 @@ public class MongoTenantDbSingleton {
 		MongoClient mongoClient = null;
 		if (SDPDataApiConfig.getInstance().getMongoDefaultPassword()!=null && SDPDataApiConfig.getInstance().getMongoDefaultPassword().trim().length()>0 && 
 				SDPDataApiConfig.getInstance().getMongoDefaultUser()!=null && SDPDataApiConfig.getInstance().getMongoDefaultUser().trim().length()>0	) {
-			MongoCredential credential = MongoCredential.createMongoCRCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
+			MongoCredential credential = MongoCredential.createCredential(SDPDataApiConfig.getInstance().getMongoDefaultUser(), 
 					"admin", 
 					SDPDataApiConfig.getInstance().getMongoDefaultPassword().toCharArray());
 			mongoClient = new MongoClient(serverAddr,Arrays.asList(credential));
