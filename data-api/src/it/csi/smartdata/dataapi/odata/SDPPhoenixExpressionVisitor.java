@@ -454,7 +454,7 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 			
 			
 			String nome = (fieldAppendMap.get(this.entitySetName+"."+cur.getExpression().getUriLiteral()) == null ?cur.getExpression().getUriLiteral() : fieldAppendMap.get(this.entitySetName+"."+cur.getExpression().getUriLiteral()));
-			nome="\""+nome+"\"";
+			//nome="\""+nome+"\"";
 			if (ret==null) ret = nome+ " " + cur.getSortOrder();
 			else ret+=", "+nome+ " " + cur.getSortOrder();
 			
@@ -506,7 +506,8 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 	
 	
 	private String getFullFielName(String fieldNameInput,EdmType type) {
-		return "\""+getFullFielName( fieldNameInput, type,false)+"\"";
+		//return "\""+getFullFielName( fieldNameInput, type,false)+"\"";
+		return getFullFielName( fieldNameInput, type,false);
 	}
 	
 	
