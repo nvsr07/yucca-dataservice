@@ -101,39 +101,39 @@ public class SDPInsertApiPhoenixDataAccess {
 				String tipo = (field.getValue()).getFieldType();
 
 				if ("int".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_i INTEGER";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_i\" INTEGER";
 				} else if ("long".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_l BIGINT";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_l\" BIGINT";
 				} else if ("double".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_d DOUBLE";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_d\" DOUBLE";
 				} else if ("float".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_f FLOAT";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_f\" FLOAT";
 				} else if ("string".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_s VARCHAR";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_s\" VARCHAR";
 				} else if ("boolean".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
+					campiSQL += ",\"" + nome;
 					//campiSQL += "_b TINYINT";
-					campiSQL += "_b BOOLEAN";
+					campiSQL += "_b\" BOOLEAN";
 				} else if ("datetime".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_dt TIMESTAMP";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_dt\" TIMESTAMP";
 				} else if ("date".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_dt TIMESTAMP";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_dt\" TIMESTAMP";
 				} else if ("longitude".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_d DOUBLE";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_d\" DOUBLE";
 				} else if ("latitude".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_d DOUBLE";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_d\" DOUBLE";
 				} else if ("binary".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_s VARCHAR";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_s\" VARCHAR";
 				}
 
 				valuesSql += ",?";
@@ -163,7 +163,6 @@ public class SDPInsertApiPhoenixDataAccess {
 					Entry<String, FieldsMongoDto> field = fieldIter.next();
 					String nome = field.getKey();
 					String tipo = (field.getValue()).getFieldType();
-					campiSQL += "," + nome;
 
 					Object value = json.get(nome);
 
@@ -236,30 +235,30 @@ public class SDPInsertApiPhoenixDataAccess {
 				stmt.executeBatch();
 				conn.commit();
 			} catch (ArrayIndexOutOfBoundsException ae) {
-				log.error("Insert Phoenix ARRAYINDEXOUTOFBOUND", ae);
+				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ArrayIndexOutOfBoundsException I will RETRY", ae);
 				if (stmt != null)
 					log.info("stmt closed?"+stmt.isClosed());
 				try{
-					log.info("Retry ......");
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"]  start RETRY");
 					stmt.executeBatch();
 					conn.commit();
 				} catch (Throwable e) {
-					log.info("Retry FAILED",e);
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"]  RETRY FAILEDD", ae);
 					try {
 						conn.rollback();
 					} catch (SQLException e1) {
-						log.error("Impossible to rollback", e1);
+						log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ROLLBACK FAILED", e1);
 					}
 					throw new InsertApiRuntimeException(e);
 				}
-				log.info("Retry SUCCESS");
+				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] RETRY SUCCESS");
 				return result == null ? -1 : result.getInsertedCount();
 			} catch (Exception e) {
-				log.error("Insert Phoenix Error", e);
+				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] Excption", e);
 				try {
 					conn.rollback();
 				} catch (SQLException e1) {
-					log.error("Impossible to rollback", e1);
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ROLLBACK FAILED", e1);
 				}
 				throw new InsertApiRuntimeException(e);
 			} finally {
@@ -269,7 +268,7 @@ public class SDPInsertApiPhoenixDataAccess {
 					stmt.close();
 					conn.close();
 				} catch (SQLException e1) {
-					log.error("Impossible to close", e1);
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] CLOSED FAILED", e1);
 				}
 			}
 

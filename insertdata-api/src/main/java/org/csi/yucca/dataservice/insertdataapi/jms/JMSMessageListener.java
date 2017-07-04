@@ -116,7 +116,7 @@ public class JMSMessageListener implements MessageListener {
 
 	    Runnable sendMessageRunnable = new Runnable(){
 	        public void run(){
-				log.info("[JMSMessageListener::onMessage]  forwardMessage");
+//				log.info("[JMSMessageListener::onMessage]  forwardMessage");
 
 	        	forwardMessage(connectionFactoryExternal, message);
 	        }

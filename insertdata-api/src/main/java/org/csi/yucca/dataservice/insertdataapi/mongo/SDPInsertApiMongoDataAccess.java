@@ -175,7 +175,7 @@ public class SDPInsertApiMongoDataAccess {
 		} catch (ExecutionException e) {
 			throw new InsertApiRuntimeException(e);
 		}
-		log.info("Size:" + (ret == null ? 0 : ret.size()));
+		log.debug("Size:" + (ret == null ? 0 : ret.size()));
 		return ret;
 	}
 

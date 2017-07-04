@@ -178,18 +178,18 @@ public abstract class AbstractService {
 			// System.out.println(" TIMETIME inserimentoGeneralizzato -- fine --> "+System.currentTimeMillis());
 
 		} catch (InsertApiBaseException insEx) {
-			log.warn("[InsertApi::insertApi] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());
+			log.warn("[AbstractService::inserimentoGeneralizzato] InsertApiBaseException " + insEx.getErrorCode() + " - " + insEx.getErrorName());
 
 			outData.setInsertException((InsertApiBaseException) insEx);
 		} catch (Exception e) {
-			log.fatal("[InsertApi::insertApi] GenericException " + e);
+			log.fatal("[AbstractService::inserimentoGeneralizzato][codTenant:"+codTenant+"][datiDains.size:"+datiDains!=null?datiDains.size():0+"] GenericException " + e);
 			if (e instanceof InsertApiRuntimeException)
 				throw (InsertApiRuntimeException) e;
 			else
 				throw new InsertApiRuntimeException(e);
 		} finally {
 
-			log.debug("[InsertApi::inserimentoGeneralizzato] END ");
+			log.debug("[AbstractService::inserimentoGeneralizzato] END ");
 			// logAccounting.info(accLog.toString());
 
 		}
