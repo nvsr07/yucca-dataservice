@@ -1773,14 +1773,15 @@ public class SDPDataApiMongoAccess {
 
 
 				String campoCompleto=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
-
+				campoCompleto="\""+campoCompleto.toUpperCase()+"\"";
 				groupbysleect+=", "+opPhoenix + "(";
 				groupbysleect+=campoCompleto;
 				groupbysleect+= ")";
 				if (extraOp) {
 					groupbysleect+=  " WITHIN GROUP (ORDER BY "+campoCompleto+" asc) "; 
 				}
-				groupbysleect+=  " as " + field +"_sts";
+				//groupbysleect+=  " as " + field +"_sts";
+				groupbysleect+=  " as \"" + (field +"_sts").toUpperCase() +"\"";
 
 			}			
 
