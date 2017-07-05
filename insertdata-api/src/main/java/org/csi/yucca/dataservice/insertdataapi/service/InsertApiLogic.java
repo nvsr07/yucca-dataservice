@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -11,6 +12,7 @@ import java.util.logging.Logger;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
+import net.minidev.json.JSONStyle;
 
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
@@ -366,37 +368,61 @@ public class InsertApiLogic {
 
 	}
 
-	public static String getSmartobject_StreamFromJson(String tenant, String jsonInput) throws Exception {
-		String smartobjectStream = null;
+	public static JSONObject getSmartobject_StreamFromJson(String tenant, String jsonInput) throws Exception {
 
-		String sensor = null;
-		String application = null;
-		String stream = null;
+		JSONObject correctedMsg = new JSONObject();
+		
 
 		if (JsonPath.read(jsonInput, "$[0]") == null)
 			jsonInput = "[" + jsonInput + "]";
 
 		JSONObject ooo = JsonPath.read(jsonInput, "$[0]");
 
+		String oldSensor = (String) ooo.get("sensor");
+		String oldApplication = (String) ooo.get("application");
+		String oldStream = (String) ooo.get("stream");
+
+		
 		if (null == ooo)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_DATA_NOTARRAY);
 
-		sensor = (String) ooo.get("sensor");
-		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] sensor= " + sensor);
-		application = (String) ooo.get("application");
-		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] application= " + application);
-		stream = (String) ooo.get("stream");
-		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] stream= " + stream);
-		smartobjectStream = (sensor != null ? sensor : application) + "_" + stream;
-		log.finest("[InsertApiLogic::getSmartobjectStreamFromJson] smartobjectStream= " + smartobjectStream);
 
-		// TODO non so se e' bloccante ...
-		if (stream == null)
+		correctedMsg.put("stream", oldStream);
+		if (oldSensor!=null)
+			correctedMsg.put("sensor", oldSensor);
+		if (oldApplication!=null)
+			correctedMsg.put("application", oldApplication);
+		
+		JSONObject oldValues = (JSONObject) ooo.get("values");
+		String oldTime = (String) oldValues.get("time");
+		JSONObject oldComponents = (JSONObject) oldValues.get("components");
+		JSONObject newComponents = new JSONObject();
+
+		for (Iterator<Map.Entry<String, Object>> iterator = oldComponents.entrySet().iterator(); iterator.hasNext();) {
+			Map.Entry<String, Object> obj = iterator.next();
+			if (obj.getValue()!=null)
+				newComponents.put(obj.getKey(), String.valueOf(obj.getValue()));
+			else
+				newComponents.put(obj.getKey(), null);
+		}
+		
+		
+		JSONArray newValues = new JSONArray();
+		JSONObject newValue = new JSONObject();
+		newValue.put("time", oldTime);
+		newValue.put("components", newComponents);
+		newValues.add(newValue);
+		correctedMsg.put("values", newValues);
+
+		
+		
+		
+		if (oldStream == null)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_STREAM_MANCANTE);
-		if (sensor == null && application == null)
+		if (oldSensor == null && oldApplication == null)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE);
 
-		return smartobjectStream;
+		return correctedMsg;
 
 	}
 
@@ -851,10 +877,17 @@ public class InsertApiLogic {
 
 	}
 
-	public static void main(String[] args) {
-		for (int i = 0; i < 100; i++) {
-			System.out.println(ObjectId.get().toString());
-		}
+	public static void main(String[] args) throws Exception {
+		
+		String tenant = "pippo";
+		String jsonInput = "{\"stream\":\"symontest\",\"sensor\":\"20e\",\"values\":{\"time\":\"2014-05-13T17:08:58Z\","
+				+ "\"components\":{\"testvalue\":17.4}}}";
+		
+
+		jsonInput = "{stream:\"symontest\",\"sensor\":20e,\"values\":{\"time\":\"2014-05-13T17:08:58Z\","
+				+ "\"components\":{\"testvalue\":\"17.4\", boolean:true, boolean2:NaN, pippo:12d, nullato:null}}}";
+		
+		System.out.println(getSmartobject_StreamFromJson(tenant, jsonInput).toJSONString());	
 	}
 
 	public DatasetDeleteOutput deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {

@@ -16,6 +16,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import net.minidev.json.JSONObject;
+
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
@@ -48,7 +50,7 @@ public class StreamService extends AbstractService {
 		return new InsertApiLogic().parseJsonInputStream(codTenant, jsonData);
 	}
 
-	public String getSmartobject_StreamFromJson(String codTenant, String jsonData) throws Exception {
+	public JSONObject getSmartobject_StreamFromJson(String codTenant, String jsonData) throws Exception {
 		return InsertApiLogic.getSmartobject_StreamFromJson(codTenant, jsonData);
 	}
 
