@@ -1641,8 +1641,12 @@ public class SDPDataApiMongoAccess {
 				String nome=cur.getString("fieldName");
 				String tipo=cur.getString("dataType");
 				campoTipoMetadato.put(nome, tipo);
-				if (campiPh == null) campiPh=nome+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)+ " " + SDPDataApiConstants.SDP_DATATYPE_PHOENIXTYPES.get(tipo);
-				else campiPh+=","+nome+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)+ " " + SDPDataApiConstants.SDP_DATATYPE_PHOENIXTYPES.get(tipo);
+				
+//				if (campiPh == null) campiPh=nome+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)+ " " + SDPDataApiConstants.SDP_DATATYPE_PHOENIXTYPES.get(tipo);
+//				else campiPh+=","+nome+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)+ " " + SDPDataApiConstants.SDP_DATATYPE_PHOENIXTYPES.get(tipo);
+				String nomeTot="\""+(nome+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(tipo)).toUpperCase()+"\""+ " " + SDPDataApiConstants.SDP_DATATYPE_PHOENIXTYPES.get(tipo);
+				if (campiPh == null) campiPh=nomeTot;
+				else campiPh+=","+nomeTot;
 
 			}
 
