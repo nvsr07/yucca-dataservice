@@ -4228,21 +4228,22 @@ public class SDPDataApiMongoAccess {
 
 			if (null!=userOrderBy) {
 
-				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] ORDINE  "+((ArrayList<Object>)userOrderBy).get(0));
+				//log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] ORDINE  "+((ArrayList<Object>)userOrderBy).get(0));
 				
 				boolean orderByAllowed=false;
 				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
 					orderByAllowed=true;
-				} else if ((DATA_TYPE_MEASURE.equals(datatType) || DATA_TYPE_SOCIAL.equals(datatType) )&& ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
+				} else if ((DATA_TYPE_MEASURE.equals(datatType) || DATA_TYPE_SOCIAL.equals(datatType) )&& ((ArrayList<SortClause>)userOrderBy).size()<=1) {
 
 					SortClause elemOrder=(SortClause)((ArrayList<SortClause>)userOrderBy).get(0);
 					if (elemOrder.getItem().equalsIgnoreCase("time_dt")) orderByAllowed=true;
 					if (elemOrder.getItem().equalsIgnoreCase("retweetParentId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
 					if (elemOrder.getItem().equalsIgnoreCase("userId") && ("socialDataset".equalsIgnoreCase(streamSubtype))) orderByAllowed=true;
 					if (elemOrder.getItem().equalsIgnoreCase("id")) orderByAllowed=true;
-				} else if (DATA_TYPE_DATA.equals(datatType) && ((ArrayList<SDPMongoOrderElement>)userOrderBy).size()<=1) {
-					SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
-					if (elemOrder.getNomeCampo().equalsIgnoreCase("id")) orderByAllowed=true;
+				} else if (DATA_TYPE_DATA.equals(datatType) && ((ArrayList<SortClause>)userOrderBy).size()<=1) {
+					//SDPMongoOrderElement elemOrder=(SDPMongoOrderElement)((ArrayList<SDPMongoOrderElement>)userOrderBy).get(0);
+					SortClause elemOrder=(SortClause)((ArrayList<SortClause>)userOrderBy).get(0);
+					if (elemOrder.getItem().equalsIgnoreCase("id")) orderByAllowed=true;
 				}
 
 

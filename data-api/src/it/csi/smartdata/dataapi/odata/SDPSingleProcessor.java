@@ -311,7 +311,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				}
 				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
 
-				log.info("[SDPSingleProcessor::readEntitySet] ORDINE  "+((ArrayList<Object>)orderQuerySolr).get(0));
+				//log.info("[SDPSingleProcessor::readEntitySet] ORDINE  "+((ArrayList<Object>)orderQuerySolr).get(0));
 
 				
 				accLog.setPath(entitySet.getName());				
@@ -435,7 +435,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String dataType=SDPDataApiMongoAccess.DATA_TYPE_MEASURE;
 					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) dataType=SDPDataApiMongoAccess.DATA_TYPE_SOCIAL; 
 					
-					log.info("[SDPSingleProcessor::readEntitySet] ORDINE MISURE "+((ArrayList<Object>)orderQuerySolr).get(0));
+					//log.info("[SDPSingleProcessor::readEntitySet] ORDINE MISURE "+((ArrayList<Object>)orderQuerySolr).get(0));
 					
 					
 					//SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
@@ -492,7 +492,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 //							skiptop[0],
 //							skiptop[1]);
 					
-					log.info("[SDPSingleProcessor::readEntitySet] ORDINE BULK "+((ArrayList<Object>)orderQuerySolr).get(0).getClass());
+					//log.info("[SDPSingleProcessor::readEntitySet] ORDINE BULK "+((ArrayList<Object>)orderQuerySolr).get(0).getClass());
 					
 					
 					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
