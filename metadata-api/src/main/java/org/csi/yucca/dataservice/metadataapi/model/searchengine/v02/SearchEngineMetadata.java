@@ -93,11 +93,20 @@ public class SearchEngineMetadata {
 		super();
 	}
 
+
 	public static SearchEngineMetadata fromJson(String json) {
 		Gson gson = JSonHelper.getInstance();
 		return gson.fromJson(json, SearchEngineMetadata.class);
 	}
 
+	
+//	public static SearchEngineMetadata fromSolrDocument(SolrDocument curSolrDoc) {
+//		Gson gson = JSonHelper.getInstance();
+//		return gson.fromJson(JSONUtil.toJSON(curSolrDoc),SearchEngineMetadata.class);
+//		
+//	}
+	
+	
 	public String getId() {
 		return id;
 	}

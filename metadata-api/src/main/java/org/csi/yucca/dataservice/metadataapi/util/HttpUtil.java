@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
@@ -41,7 +43,14 @@ public class HttpUtil {
 
 			HttpMethod httpMethod = prepareCall(method, targetUrl, contentType, characterEncoding, parameters);
 
+			
+			//auth
+			
+			
+			
 			HttpClient httpclient = new HttpClient();
+			httpclient.getState().setCredentials(new AuthScope(AuthScope.ANY), new UsernamePasswordCredentials(Config.getInstance().getSolrUsername(), Config.getInstance().getSolrPassword()));
+			httpMethod.setDoAuthentication(true);
 			try {
 				resultCode = httpclient.executeMethod(httpMethod);
 				log.debug("[AbstractService::doPost] - get result: " + resultCode);

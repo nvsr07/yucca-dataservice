@@ -40,7 +40,8 @@ public class MetadataDelegate {
 	protected String SEARCH_ENGINE_BASE_URL = Config.getInstance().getSearchEngineBaseUrl();
 
 	private MetadataDelegate() {
-		super();
+		//super();
+		
 	}
 
 	public static MetadataDelegate getInstance() {
@@ -350,5 +351,8 @@ public class MetadataDelegate {
 			
 		}
 	}
+	
+	
+	
 
 }

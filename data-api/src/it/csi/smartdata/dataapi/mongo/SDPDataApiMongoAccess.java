@@ -1925,6 +1925,17 @@ public class SDPDataApiMongoAccess {
 			long starTtime=0;
 			long deltaTime=-1;
 
+			
+			int maxdocPerPage=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+			try {
+				maxdocPerPage=Integer.parseInt(MongoTenantDbSingleton.getInstance().getMaxDocPerPage(codiceTenant));
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] max doc per page from configuration --> "+maxdocPerPage);
+				
+				//maxdocPerPage=SDPDataApiConfig.getInstance().getMaxDocumentPerPage();
+				
+			} catch (Exception e) {
+				
+			}			
 
 			starTtime=System.currentTimeMillis();
 			cnt = collMisure.find( new BasicDBObject("$and", queryTotCnt)).count();
@@ -1943,7 +1954,7 @@ public class SDPDataApiMongoAccess {
 			
 			//controlli sui valoris massimi ammessi 
 			if(skip>0 && skip>SDPDataApiConfig.getInstance().getMaxSkipPages()) throw new SDPPageSizeException("invalid skip value: max skip = "+SDPDataApiConfig.getInstance().getMaxSkipPages(),Locale.UK);
-			if(limit> 0 && limit>SDPDataApiConfig.getInstance().getMaxDocumentPerPage()) throw new SDPPageSizeException("invalid top value: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+			if(limit> 0 && limit>maxdocPerPage) throw new SDPPageSizeException("invalid top value: max document per page = "+maxdocPerPage,Locale.UK);
 			
 
 			//se lo skip porta oltre il numero di risultati eccezione
@@ -1952,7 +1963,7 @@ public class SDPDataApiMongoAccess {
 			if (limit<0) {
 				
 				// se limit non valorizzato si restituisce tutto il resultset (limit=cnt) e si solleva eccezione se il resulset supera il numero massimo di risultati per pagina
-				if ((cnt>SDPDataApiConfig.getInstance().getMaxDocumentPerPage())) throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+SDPDataApiConfig.getInstance().getMaxDocumentPerPage(),Locale.UK);
+				if ((cnt>maxdocPerPage)) throw new SDPPageSizeException("too many documents; use top parameter: max document per page = "+maxdocPerPage,Locale.UK);
 				limit=cnt;
 			} 
 
