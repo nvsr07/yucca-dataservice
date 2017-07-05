@@ -1,5 +1,8 @@
 package org.csi.yucca.dataservice.metadataapi.model.dcat;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.csi.yucca.dataservice.metadataapi.util.DCatSdpHelper;
 
 import com.google.gson.annotations.SerializedName;
@@ -10,7 +13,10 @@ public class DCatAgent extends DCatObject {
 	private String dcterms_identifier;
 
 	@SerializedName("foaf:name")
-	private I18NString name;
+	private String name;
+
+	@SerializedName("dcterms:type")
+	private List<IdString> dcterms_types;
 
 	// private String publisherType =
 	// "http://purl.org/adms/publishertype/Company";
@@ -18,6 +24,7 @@ public class DCatAgent extends DCatObject {
 	public DCatAgent() {
 		// id = "01995120019";
 		addType("foaf:Agent");
+		addType("dcatapit:Agent");
 		// type.add("http://dati.gov.it/onto/dcatapit#\"Agent");
 		// type.add("http://purl.org/adms/publishertype/Company");
 
@@ -38,12 +45,25 @@ public class DCatAgent extends DCatObject {
 		this.dcterms_identifier = dcterms_identifier;
 	}
 
-	public I18NString getName() {
+	public String getName() {
 		return name;
 	}
 
-	public void setName(I18NString name) {
+	public void setName(String name) {
 		this.name = name;
 	}
 
+	public void addDcterms_type(IdString dcterms_type) {
+		if (getDcterms_types() == null)
+			setDcterms_types(new LinkedList<IdString>());
+		getDcterms_types().add(dcterms_type);
+	}
+
+	public List<IdString> getDcterms_types() {
+		return dcterms_types;
+	}
+
+	public void setDcterms_types(List<IdString> dcterms_types) {
+		this.dcterms_types = dcterms_types;
+	}
 }

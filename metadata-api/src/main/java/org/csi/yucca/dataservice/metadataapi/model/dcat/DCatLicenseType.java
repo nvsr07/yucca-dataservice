@@ -20,6 +20,7 @@ public class DCatLicenseType extends DCatObject {
 
 	public DCatLicenseType() {
 		this.addType("dcterms:LicenseDocument");
+		this.addType("dcatapit:LicenseDocument");
 	}
 
 	public String getName() {

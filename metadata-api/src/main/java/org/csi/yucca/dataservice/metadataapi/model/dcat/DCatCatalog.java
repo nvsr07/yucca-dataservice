@@ -50,9 +50,11 @@ public class DCatCatalog extends DCatObject {
 	public DCatCatalog() {
 		setId("dataset_catalog");
 		addType("dcat:Catalog");
+		addType("dcatapit:Catalog");
 		datasets = new LinkedList<DCatDataset>();
 		language = new IdString("http://publications.europa.eu/resource/authority/language/ITA");
-		themes = new IdString("http://eurovoc.europa.eu");
+		//themes = new IdString("http://eurovoc.europa.eu");
+		themes = new IdString("http://publications.europa.eu/resource/authority/data-theme");
 		setPublisher(DCatSdpHelper.getCSIAgentDcat());
 	}
 

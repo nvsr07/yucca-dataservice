@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatAgent;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatTheme;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.I18NString;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.IdString;
 
 public class DCatSdpHelper {
 
@@ -53,7 +53,9 @@ public class DCatSdpHelper {
 		if (csiAgentDcat == null) {
 			csiAgentDcat = new DCatAgent();
 			csiAgentDcat.setId("01995120019");
-			csiAgentDcat.setName(new I18NString("it", "CSI PIEMONTE"));
+			csiAgentDcat.setName("CSI PIEMONTE");
+			csiAgentDcat.setDcterms_identifier("01995120019");
+			csiAgentDcat.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
 		}
 		return csiAgentDcat;
 
