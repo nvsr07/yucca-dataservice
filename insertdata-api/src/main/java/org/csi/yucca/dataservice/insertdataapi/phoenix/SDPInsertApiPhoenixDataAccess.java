@@ -97,43 +97,43 @@ public class SDPInsertApiPhoenixDataAccess {
 
 			while (fieldIter.hasNext()) {
 				Entry<String, FieldsMongoDto> field = fieldIter.next();
-				String nome = field.getKey();
+				String nome = field.getKey().toUpperCase();
 				String tipo = (field.getValue()).getFieldType();
 
 				if ("int".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_i INTEGER";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_i\" INTEGER";
 				} else if ("long".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_l BIGINT";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_l\" BIGINT";
 				} else if ("double".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_d DOUBLE";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_d\" DOUBLE";
 				} else if ("float".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_f FLOAT";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_f\" FLOAT";
 				} else if ("string".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_s VARCHAR";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_s\" VARCHAR";
 				} else if ("boolean".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
+					campiSQL += ",\"" + nome;
 					//campiSQL += "_b TINYINT";
-					campiSQL += "_b BOOLEAN";
+					campiSQL += "_b\" BOOLEAN";
 				} else if ("datetime".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_dt TIMESTAMP";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_dt\" TIMESTAMP";
 				} else if ("date".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_dt TIMESTAMP";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_dt\" TIMESTAMP";
 				} else if ("longitude".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_d DOUBLE";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_d\" DOUBLE";
 				} else if ("latitude".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_d DOUBLE";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_d\" DOUBLE";
 				} else if ("binary".equalsIgnoreCase(tipo)) {
-					campiSQL += "," + nome;
-					campiSQL += "_s VARCHAR";
+					campiSQL += ",\"" + nome;
+					campiSQL += "_s\" VARCHAR";
 				}
 
 				valuesSql += ",?";
