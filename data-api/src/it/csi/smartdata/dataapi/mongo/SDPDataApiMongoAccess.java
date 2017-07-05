@@ -4228,6 +4228,8 @@ public class SDPDataApiMongoAccess {
 
 			if (null!=userOrderBy) {
 
+				log.info("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] ORDINE  "+userOrderBy.getClass());
+				
 				boolean orderByAllowed=false;
 				if (cnt<SDPDataApiConstants.SDP_MAX_DOC_FOR_ORDERBY) {
 					orderByAllowed=true;
