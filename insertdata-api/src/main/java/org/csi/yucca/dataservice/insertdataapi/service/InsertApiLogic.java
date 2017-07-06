@@ -393,7 +393,16 @@ public class InsertApiLogic {
 		if (oldApplication!=null)
 			correctedMsg.put("application", oldApplication);
 		
-		JSONObject oldValues = (JSONObject) ooo.get("values");
+		Object values = ooo.get("values");
+		
+		if (values instanceof JSONArray)
+		{
+			// "MEssage from internal! already correct format!");
+			return ooo;
+		}
+		
+		
+		JSONObject oldValues = (JSONObject) values;
 		String oldTime = (String) oldValues.get("time");
 		JSONObject oldComponents = (JSONObject) oldValues.get("components");
 		JSONObject newComponents = new JSONObject();
