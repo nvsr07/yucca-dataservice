@@ -102,38 +102,38 @@ public class SDPInsertApiPhoenixDataAccess {
 
 				if ("int".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_i\" INTEGER";
+					campiSQL += "_I\" INTEGER";
 				} else if ("long".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_l\" BIGINT";
+					campiSQL += "_L\" BIGINT";
 				} else if ("double".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_d\" DOUBLE";
+					campiSQL += "_D\" DOUBLE";
 				} else if ("float".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_f\" FLOAT";
+					campiSQL += "_F\" FLOAT";
 				} else if ("string".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_s\" VARCHAR";
+					campiSQL += "_S\" VARCHAR";
 				} else if ("boolean".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
 					//campiSQL += "_b TINYINT";
-					campiSQL += "_b\" BOOLEAN";
+					campiSQL += "_B\" BOOLEAN";
 				} else if ("datetime".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_dt\" TIMESTAMP";
+					campiSQL += "_DT\" TIMESTAMP";
 				} else if ("date".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_dt\" TIMESTAMP";
+					campiSQL += "_DT\" TIMESTAMP";
 				} else if ("longitude".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_d\" DOUBLE";
+					campiSQL += "_D\" DOUBLE";
 				} else if ("latitude".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_d\" DOUBLE";
+					campiSQL += "_D\" DOUBLE";
 				} else if ("binary".equalsIgnoreCase(tipo)) {
 					campiSQL += ",\"" + nome;
-					campiSQL += "_s\" VARCHAR";
+					campiSQL += "_S\" VARCHAR";
 				}
 
 				valuesSql += ",?";
