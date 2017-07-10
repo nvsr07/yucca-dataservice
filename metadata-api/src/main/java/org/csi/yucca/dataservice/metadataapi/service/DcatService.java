@@ -109,18 +109,23 @@ public class DcatService extends AbstractService {
 					if (metadataST.getDcat() != null) {
 						DCatAgent creator = new DCatAgent();
 						if (metadataST.getDcat().getDcatCreatorName() != null) {
-							creator.setName(metadataST.getDcat().getDcatCreatorName());
-							if (metadataST.getDcat().getDcatCreatorType() != null) {
-								creator.addType(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatCreatorType()));
-							} else {
-								creator.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
-							}
-							if (metadataST.getDcat().getDcatCreatorId() != null) {
-								creator.setId(metadataST.getDcat().getDcatCreatorId());
-								creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorId());
-							} else {
-								creator.setId(metadataST.getDcat().getDcatCreatorName());
-								creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorName());
+							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatCreatorName()))
+								creator = DCatSdpHelper.getCSIAgentDcat();
+							else {
+
+								creator.setName(metadataST.getDcat().getDcatCreatorName());
+								if (metadataST.getDcat().getDcatCreatorType() != null) {
+									creator.addDcterms_type(new IdString(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatCreatorType())));
+								} else {
+									creator.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
+								}
+								if (metadataST.getDcat().getDcatCreatorId() != null) {
+									creator.setId(metadataST.getDcat().getDcatCreatorId());
+									creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorId());
+								} else {
+									creator.setId(metadataST.getDcat().getDcatCreatorName());
+									creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorName());
+								}
 							}
 						} else {
 							creator = DCatSdpHelper.getCSIAgentDcat();
@@ -130,21 +135,25 @@ public class DcatService extends AbstractService {
 
 						DCatAgent rightsHolder = new DCatAgent();
 						if (metadataST.getDcat().getDcatRightsHolderName() != null) {
-							rightsHolder.setName(metadataST.getDcat().getDcatRightsHolderName());
-							if (metadataST.getDcat().getDcatRightsHolderType() != null) {
-								rightsHolder.addType(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatRightsHolderType()));
-							} else {
-								rightsHolder.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
-							}
+							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatRightsHolderName()))
+								rightsHolder = DCatSdpHelper.getCSIAgentDcat();
+							else {
 
-							if (metadataST.getDcat().getDcatRightsHolderId() != null) {
-								rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderId());
-								rightsHolder.setDcterms_identifier(metadataST.getDcat().getDcatRightsHolderId());
-							} else {
-								rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderName());
-								rightsHolder.setDcterms_identifier(metadataST.getDcat().getDcatRightsHolderName());
-							}
+								rightsHolder.setName(metadataST.getDcat().getDcatRightsHolderName());
+								if (metadataST.getDcat().getDcatRightsHolderType() != null) {
+									rightsHolder.addDcterms_type(new IdString(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatRightsHolderType())));
+								} else {
+									rightsHolder.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
+								}
 
+								if (metadataST.getDcat().getDcatRightsHolderId() != null) {
+									rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderId());
+									rightsHolder.setDcterms_identifier(metadataST.getDcat().getDcatRightsHolderId());
+								} else {
+									rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderName());
+									rightsHolder.setDcterms_identifier(metadataST.getDcat().getDcatRightsHolderName());
+								}
+							}
 						} else {
 							rightsHolder = DCatSdpHelper.getCSIAgentDcat();
 						}
@@ -158,11 +167,15 @@ public class DcatService extends AbstractService {
 
 						DCatAgent publisher = new DCatAgent();
 						if (metadataST.getDcat().getDcatNomeOrg() != null) {
-							publisher.setName(metadataST.getDcat().getDcatNomeOrg());
-							publisher.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
-							publisher.setId(metadataST.getDcat().getDcatNomeOrg());
-							publisher.setDcterms_identifier(metadataST.getDcat().getDcatNomeOrg());
+							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatNomeOrg()))
+								publisher = DCatSdpHelper.getCSIAgentDcat();
+							else {
 
+								publisher.setName(metadataST.getDcat().getDcatNomeOrg());
+								publisher.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
+								publisher.setId(metadataST.getDcat().getDcatNomeOrg());
+								publisher.setDcterms_identifier(metadataST.getDcat().getDcatNomeOrg());
+							}
 						} else {
 							publisher = DCatSdpHelper.getCSIAgentDcat();
 						}
@@ -192,11 +205,12 @@ public class DcatService extends AbstractService {
 
 					dsDCAT.setVersionInfo(metadataST.getVersion());
 
-					// dsDCAT.addSubTheme(new
-					// IdString(metadataST.getSubdomainCode()));
+					String dcatSubject = DCatSdpHelper.getDcatSubject(metadataST.getSubdomainCode());
+					if (dcatSubject != null)
+						dsDCAT.addSubTheme(new IdString(dcatSubject));
 
 					DCatDistribution distribution = new DCatDistribution();
-					distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadataST.getTenantCode() + "/"
+					distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
 							+ metadataST.getDataset().getCode()));
 					distribution.setDownloadURL(new IdString(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/"
 							+ metadataST.getDataset().getDatasetId() + "/all"));
@@ -206,18 +220,14 @@ public class DcatService extends AbstractService {
 					DCatLicenseType licenseDistribution = new DCatLicenseType();
 					if (metadataST.getLicense() != null) {
 
-						if (metadataST.getLicense().startsWith("CC BY")) {
+						if (metadataST.getLicense().startsWith("CC BY") || metadataST.getLicense().startsWith("CC-BY")) {
 							licenseDistribution.setName("CC BY");
-							String version = metadataST.getLicense().substring(metadataST.getLicense().lastIndexOf(" ") + 1);
-							// licenseDistribution.addType("https://creativecommons.org/licenses/by/"
-							// + version + "/");
+							String version = metadataST.getLicense().substring(5).trim();
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/Attribution"));
 							licenseDistribution.setVersion(version);
 						} else if (metadataST.getLicense().startsWith("CC 0")) {
 							licenseDistribution.setName("CC 0");
-							String version = metadataST.getLicense().substring(metadataST.getLicense().lastIndexOf(" ") + 1);
-							// licenseDistribution.addType("https://creativecommons.org/publicdomain/zero/"
-							// + version + "/");
+							String version = metadataST.getLicense().substring(4).trim();
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/PublicDomain"));
 							licenseDistribution.setVersion(version);
 						} else {
