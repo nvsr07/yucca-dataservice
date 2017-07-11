@@ -603,7 +603,8 @@ public class SDPInsertApiMongoDataAccess {
 
 
 		} catch (Exception e) {
-			//TODO
+			log.log(Level.SEVERE, "[SDPInsertApiMongoDataAccess::getInfoDataset]  --> " + e );
+			e.printStackTrace();
 		} finally {
 			try {
 				cursor.close();
