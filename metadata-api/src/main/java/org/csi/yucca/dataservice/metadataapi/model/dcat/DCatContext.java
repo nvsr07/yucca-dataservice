@@ -19,7 +19,7 @@ public class DCatContext {
 		super();
 		adms = "http://www.w3.org/ns/adms#";
 		dcat = "http://www.w3.org/ns/dcat#";
-		dcatapit= "http://dati.gov.it/onto/dcatapit#\"";
+		dcatapit= "http://dati.gov.it/onto/dcatapit#";
 		dcterms = "http://purl.org/dc/terms/";
 		setDct("http://purl.org/dc/terms/");
 		foaf = "http://xmlns.com/foaf/0.1/";
