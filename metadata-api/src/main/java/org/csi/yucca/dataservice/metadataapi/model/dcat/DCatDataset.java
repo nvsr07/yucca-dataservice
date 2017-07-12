@@ -81,6 +81,8 @@ public class DCatDataset extends DCatObject {
 	public DCatDataset() {
 		super();
 		addType("dcat:Dataset");
+		addType("dcatapit:Dataset");
+
 		creator = DCatSdpHelper.getCSIAgentDcat();
 	}
 	

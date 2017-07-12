@@ -48,6 +48,7 @@ public class DCatDistribution extends DCatObject{
 		format = new IdString("http://publications.europa.eu/resource/authority/file-type/CSV");
 		types = new LinkedList<String>();
 		addType("dcat:Distribution");
+		addType("dcatapit:Distribution");
 	}
 
 	public void setId(String id) {

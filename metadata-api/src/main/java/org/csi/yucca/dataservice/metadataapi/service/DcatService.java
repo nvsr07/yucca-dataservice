@@ -45,12 +45,12 @@ public class DcatService extends AbstractService {
 	@GET
 	@Path("/dataset_list")
 	@Produces("application/ld+json; charset=UTF-8")
-	public Response searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("page") Integer page, @QueryParam("tenant") String tenant,
-			@QueryParam("organization") String organization, @QueryParam("domain") String domain, @QueryParam("subdomain") String subdomain,
-			@QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized, @QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon,
-			@QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon, @QueryParam("lang") String lang, @QueryParam("tags") String tags,
-			@QueryParam("visibility") String visibility, @QueryParam("isSearchExact") Boolean isSearchExact, @QueryParam("includeSandbox") Boolean includeSandbox,
-			@QueryParam("externalReference") String externalReference) throws NumberFormatException, UnknownHostException {
+	public Response searchDCAT(@Context HttpServletRequest request, @QueryParam("q") String q, @QueryParam("page") Integer page, @QueryParam("start") Integer start,
+			@QueryParam("rows") Integer rows, @QueryParam("tenant") String tenant, @QueryParam("organization") String organization, @QueryParam("domain") String domain,
+			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
+			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
+			@QueryParam("lang") String lang, @QueryParam("tags") String tags, @QueryParam("visibility") String visibility, @QueryParam("isSearchExact") Boolean isSearchExact,
+			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("externalReference") String externalReference) throws NumberFormatException, UnknownHostException {
 
 		// SimpleDateFormat catalogDateFormat = new
 		// SimpleDateFormat("yyyy-MM-dd");// dd/MM/yyyy
@@ -58,8 +58,9 @@ public class DcatService extends AbstractService {
 		DCatCatalog catalog = new DCatCatalog();
 		catalog.setDescription_it(new I18NString("it", "Catalogo Smart Data Piemonte"));
 		catalog.setTitle_it(new I18NString("it", "CATALOGO SMART DATA"));
-		//catalog.setDescription_en(new I18NString("en", "Smart Data Piemonte Catalog"));
-		//catalog.setTitle_en(new I18NString("en", "SMART DATA CATALOG"));
+		// catalog.setDescription_en(new I18NString("en",
+		// "Smart Data Piemonte Catalog"));
+		// catalog.setTitle_en(new I18NString("en", "SMART DATA CATALOG"));
 
 		catalog.setModified(new DCatDate(new Date()));
 		catalog.setHomepage(new IdString("http://userportal.smartdatanet.it"));
@@ -70,18 +71,21 @@ public class DcatService extends AbstractService {
 
 		if (page == null)
 			page = 1;
+		if (rows == null)
+			rows = 10;
 
-		Integer numElementForPage = 10;
-		Integer end = page * numElementForPage;
-		Integer start = (end - numElementForPage) + 1;
+		// Integer end = page * rows;
 
-		log.info("[DcatService::searchDCAT] numElementForPage: " + numElementForPage + ", end: " + end + ", start: " + start);
+		if (start == null)
+			start = (page * rows - rows);
+
+		log.info("[DcatService::searchDCAT] start: " + start + ", rows: " + rows);
 		log.info("[DcatService::searchDCAT] query: " + q);
 
 		Result searchResult;
 		try {
-			searchResult = MetadataDelegate.getInstance().search(request, q, start, numElementForPage, null, tenant, organization, domain, subdomain, opendata, geolocalized,
-					minLat, minLon, maxLat, maxLon, lang, true, null, true, null, tags, visibility, isSearchExact, includeSandbox, externalReference);
+			searchResult = MetadataDelegate.getInstance().search(request, q, start, rows, null, tenant, organization, domain, subdomain, opendata, geolocalized, minLat, minLon,
+					maxLat, maxLon, lang, true, null, true, null, tags, visibility, isSearchExact, includeSandbox, externalReference);
 		} catch (UnsupportedEncodingException e) {
 			return Response.ok(new ErrorResponse("", "Invalid param").toJson()).build();
 		} catch (UserWebServiceException e) {
@@ -92,7 +96,7 @@ public class DcatService extends AbstractService {
 		}
 
 		Gson gson = JSonHelper.getInstanceDcat();
-		
+
 		Config cfg = Config.getInstance();
 
 		if (searchResult != null && searchResult.getMetadata() != null) {
@@ -105,57 +109,73 @@ public class DcatService extends AbstractService {
 					if (metadataST.getDcat() != null) {
 						DCatAgent creator = new DCatAgent();
 						if (metadataST.getDcat().getDcatCreatorName() != null) {
-							creator.setName(new I18NString("it", metadataST.getDcat().getDcatCreatorName()));
-							if (metadataST.getDcat().getDcatCreatorType() != null) {
-								creator.addType(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatCreatorType()));
-							} else {
-								creator.addType("http://purl.org/adms/publishertype/Company");
-							}
-							if (metadataST.getDcat().getDcatCreatorId() != null) {
-								creator.setId(metadataST.getDcat().getDcatCreatorId());
-							} else {
-								creator.setId(metadataST.getDcat().getDcatCreatorName());
+							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatCreatorName()))
+								creator = DCatSdpHelper.getCSIAgentDcat();
+							else {
+
+								creator.setName(metadataST.getDcat().getDcatCreatorName());
+								if (metadataST.getDcat().getDcatCreatorType() != null) {
+									creator.addDcterms_type(new IdString(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatCreatorType())));
+								} else {
+									creator.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
+								}
+								if (metadataST.getDcat().getDcatCreatorId() != null) {
+									creator.setId(metadataST.getDcat().getDcatCreatorId());
+									creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorId());
+								} else {
+									creator.setId(metadataST.getDcat().getDcatCreatorName());
+									creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorName());
+								}
 							}
 						} else {
 							creator = DCatSdpHelper.getCSIAgentDcat();
 						}
 
-
 						dsDCAT.setCreator(creator);
 
 						DCatAgent rightsHolder = new DCatAgent();
 						if (metadataST.getDcat().getDcatRightsHolderName() != null) {
-							rightsHolder.setName(new I18NString("it", metadataST.getDcat().getDcatRightsHolderName()));
-							if (metadataST.getDcat().getDcatRightsHolderType() != null) {
-								rightsHolder.addType(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatRightsHolderType()));
-							} else {
-								rightsHolder.addType("http://purl.org/adms/publishertype/Company");
+							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatRightsHolderName()))
+								rightsHolder = DCatSdpHelper.getCSIAgentDcat();
+							else {
+
+								rightsHolder.setName(metadataST.getDcat().getDcatRightsHolderName());
+								if (metadataST.getDcat().getDcatRightsHolderType() != null) {
+									rightsHolder.addDcterms_type(new IdString(DCatSdpHelper.cleanForId(metadataST.getDcat().getDcatRightsHolderType())));
+								} else {
+									rightsHolder.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
+								}
+
+								if (metadataST.getDcat().getDcatRightsHolderId() != null) {
+									rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderId());
+									rightsHolder.setDcterms_identifier(metadataST.getDcat().getDcatRightsHolderId());
+								} else {
+									rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderName());
+									rightsHolder.setDcterms_identifier(metadataST.getDcat().getDcatRightsHolderName());
+								}
 							}
-							
-							if (metadataST.getDcat().getDcatRightsHolderId() != null) {
-								rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderId());
-							} else {
-								rightsHolder.setId(metadataST.getDcat().getDcatRightsHolderName());
-							}
-							
 						} else {
 							rightsHolder = DCatSdpHelper.getCSIAgentDcat();
 						}
 
-						
 						dsDCAT.setRightsHolder(rightsHolder);
 
 						DCatVCard publisherVCard = new DCatVCard();
 						publisherVCard.setHasEmail(new IdString(metadataST.getDcat().getDcatEmailOrg()));
 						publisherVCard.setName(metadataST.getDcat().getDcatNomeOrg());
 						dsDCAT.setContactPoint(publisherVCard);
-						
-						
+
 						DCatAgent publisher = new DCatAgent();
 						if (metadataST.getDcat().getDcatNomeOrg() != null) {
-							publisher.setName(new I18NString("it", metadataST.getDcat().getDcatNomeOrg()));
-							publisher.addType("http://purl.org/adms/publishertype/Company");
-							publisher.setId(metadataST.getDcat().getDcatNomeOrg());
+							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatNomeOrg()))
+								publisher = DCatSdpHelper.getCSIAgentDcat();
+							else {
+
+								publisher.setName(metadataST.getDcat().getDcatNomeOrg());
+								publisher.addDcterms_type(new IdString("http://purl.org/adms/publishertype/Company"));
+								publisher.setId(metadataST.getDcat().getDcatNomeOrg());
+								publisher.setDcterms_identifier(metadataST.getDcat().getDcatNomeOrg());
+							}
 						} else {
 							publisher = DCatSdpHelper.getCSIAgentDcat();
 						}
@@ -182,29 +202,32 @@ public class DcatService extends AbstractService {
 					dsDCAT.setIdentifier(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
 					if (metadataST.getOpendata() != null && metadataST.getOpendata().getDataUpdateDate() != null)
 						dsDCAT.setModified(new DCatDate(metadataST.getOpendata().getDataUpdateDate()));
-					
+
 					dsDCAT.setVersionInfo(metadataST.getVersion());
-					dsDCAT.addSubTheme(new IdString(metadataST.getSubdomainCode()));
+
+					String dcatSubject = DCatSdpHelper.getDcatSubject(metadataST.getSubdomainCode());
+					if (dcatSubject != null)
+						dsDCAT.addSubTheme(new IdString(dcatSubject));
 
 					DCatDistribution distribution = new DCatDistribution();
-					distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/dataset/" + metadataST.getTenantCode() + "/" + metadataST.getDataset().getCode()));
-					distribution.setDownloadURL(new IdString(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/" + metadataST.getDataset().getDatasetId() + "/all"));
+					distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
+							+ metadataST.getDataset().getCode()));
+					distribution.setDownloadURL(new IdString(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/"
+							+ metadataST.getDataset().getDatasetId() + "/all"));
 
 					// https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
 					// distr.getLicense().setName(metadataST.getLicense());
 					DCatLicenseType licenseDistribution = new DCatLicenseType();
 					if (metadataST.getLicense() != null) {
 
-						if (metadataST.getLicense().startsWith("CC BY")) {
+						if (metadataST.getLicense().startsWith("CC BY") || metadataST.getLicense().startsWith("CC-BY")) {
 							licenseDistribution.setName("CC BY");
-							String version = metadataST.getLicense().substring(metadataST.getLicense().lastIndexOf(" ")+1);
-							licenseDistribution.addType("https://creativecommons.org/licenses/by/"+version+"/");
+							String version = metadataST.getLicense().substring(5).trim();
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/Attribution"));
 							licenseDistribution.setVersion(version);
 						} else if (metadataST.getLicense().startsWith("CC 0")) {
 							licenseDistribution.setName("CC 0");
-							String version = metadataST.getLicense().substring(metadataST.getLicense().lastIndexOf(" ")+1);
-							licenseDistribution.addType("https://creativecommons.org/publicdomain/zero/"+version+"/");
+							String version = metadataST.getLicense().substring(4).trim();
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/PublicDomain"));
 							licenseDistribution.setVersion(version);
 						} else {
@@ -214,7 +237,8 @@ public class DcatService extends AbstractService {
 						distribution.setLicense(licenseDistribution);
 					}
 
-					//distr.setIssued(new DcatDate(metadataST.getRegistrationDate()));
+					// distr.setIssued(new
+					// DcatDate(metadataST.getRegistrationDate()));
 					dsDCAT.addDistribution(distribution);
 					catalog.addDataset(dsDCAT);
 					catalog.setPublisher(DCatSdpHelper.getCSIAgentDcat());

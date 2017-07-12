@@ -3,7 +3,6 @@ package org.csi.yucca.dataservice.metadataapi.model.dcat;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.csi.yucca.dataservice.metadataapi.util.DCatSdpHelper;
 import org.csi.yucca.dataservice.metadataapi.util.json.IgnoredJSON;
 
 import com.google.gson.annotations.SerializedName;

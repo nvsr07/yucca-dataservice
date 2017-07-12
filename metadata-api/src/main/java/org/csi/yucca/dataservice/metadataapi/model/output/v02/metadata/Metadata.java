@@ -393,6 +393,13 @@ public class Metadata {
 
 	}
 
+	private void addTenantDelegateCodes(String delegateCode) {
+		if (this.tenantDelegateCodes == null)
+			this.tenantDelegateCodes = new LinkedList<String>();
+		this.tenantDelegateCodes.add(delegateCode);
+
+	}
+
 	public String toCkan() {
 		org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset = new org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset();
 		ckanDataset.setId(getCkanPackageId());
@@ -561,6 +568,12 @@ public class Metadata {
 			// metadata.setTags(I18nDelegate.translateMulti(metadata.getTagCodes(),
 			// lang));
 			metadata.setTags(("en".equals(lang) ? searchEngineItem.getTagLangEN() : searchEngineItem.getTagLangIT()));
+		}
+		
+		if(searchEngineItem.getTenantsCode()!=null){
+			for (String delegateCode : searchEngineItem.getTenantsCode()) {
+				metadata.addTenantDelegateCodes(delegateCode);	
+			}
 		}
 
 		metadata.setType(searchEngineItem.getEntityType());

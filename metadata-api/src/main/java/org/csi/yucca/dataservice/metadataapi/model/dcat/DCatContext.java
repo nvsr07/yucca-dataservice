@@ -5,6 +5,7 @@ public class DCatContext {
 	private String dcat;
 	private String dcatapit;
 	private String dcterms;
+	private String dct;
 	private String foaf;
 	private String owl;
 	private String rdf;
@@ -18,8 +19,9 @@ public class DCatContext {
 		super();
 		adms = "http://www.w3.org/ns/adms#";
 		dcat = "http://www.w3.org/ns/dcat#";
-		dcatapit= "http://dati.gov.it/onto/dcatapit#\"";
+		dcatapit= "http://dati.gov.it/onto/dcatapit#";
 		dcterms = "http://purl.org/dc/terms/";
+		setDct("http://purl.org/dc/terms/");
 		foaf = "http://xmlns.com/foaf/0.1/";
 		owl = "http://www.w3.org/2002/07/owl#";
 		rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
@@ -28,6 +30,7 @@ public class DCatContext {
 		skos = "http://www.w3.org/2004/02/skos/core#";
 		vcard = "http://www.w3.org/2006/vcard/ns#";
 		xsd = "http://www.w3.org/2001/XMLSchema#";
+		
 
 	
 	}
@@ -126,6 +129,14 @@ public class DCatContext {
 
 	public void setSkos(String skos) {
 		this.skos = skos;
+	}
+
+	public String getDct() {
+		return dct;
+	}
+
+	public void setDct(String dct) {
+		this.dct = dct;
 	}
 
 }

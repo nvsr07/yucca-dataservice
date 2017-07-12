@@ -23,7 +23,7 @@ public class DCatTheme {
 		super();
 		this.id = id;
 		this.type = "skos:Concept";
-		this.label_it = new I18NString("it", label_it);
+		//this.label_it = new I18NString("it", label_it);
 		//this.label_en = new I18NString("en", label_en);
 	}
 
