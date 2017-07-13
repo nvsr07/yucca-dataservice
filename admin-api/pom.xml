@@ -15,23 +15,23 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework-version>4.3.0.RELEASE</org.springframework-version>
 		<!-- <org.springframework-version>3.1.1.RELEASE</org.springframework-version> -->
-        
+
 		<jackson.version>2.7.5</jackson.version>
 		<log4j.version>1.2.17</log4j.version>
-        <java-version>1.7</java-version>
+		<java-version>1.7</java-version>
 
 	</properties>
 	<build>
 		<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
-					<configuration>
-						<source>${java-version}</source>
-						<target>${java-version}</target>
-					</configuration>
-				</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
@@ -50,11 +50,11 @@
 					</suiteXmlFiles>
 				</configuration>
 			</plugin>
-		      <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-failsafe-plugin</artifactId>
-		        <version>2.19.1</version>
-		      </plugin>						
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.19.1</version>
+			</plugin>
 		</plugins>
 	</build>
 	<repositories>
@@ -155,15 +155,15 @@
 	<profiles>
 		<profile>
 			<id>int</id>
-	<build>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-scm-plugin</artifactId>
 						<version>1.9.5</version>
-					<configuration>
+						<configuration>
 							<connectionType>connection</connectionType>
-					</configuration>
+						</configuration>
 						<executions>
 							<execution>
 								<id>1</id>
@@ -173,8 +173,8 @@
 								</goals>
 							</execution>
 						</executions>
-				</plugin>
-			</plugins>
+					</plugin>
+				</plugins>
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/adminapi/resources/int</directory>
@@ -184,14 +184,32 @@
 						<targetPath>.</targetPath>
 					</resource>
 				</resources>
-					<testResources>
-						<testResource>
-							<directory>${project.build.directory}/checkout/adminapi/test/int</directory>
-						</testResource>
-					</testResources>
-	</build>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/int</directory>
+					</testResource>
+				</testResources>
+			</build>
 			<properties>
 				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/int/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
+			<id>local</id>
+			<build>
+				<resources>
+					<resource>
+						<directory>src/main/resources</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+
+			</build>
+			<properties>
+				<webXmlPath>src/main/webapp/WEB-INF</webXmlPath>
 			</properties>
 		</profile>
 	</profiles>
