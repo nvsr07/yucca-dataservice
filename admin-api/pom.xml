@@ -1,19 +1,75 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>or.csi.yucca.dataservice.adminapi</groupId>
+	<groupId>org.csi.yucca.adminapi</groupId>
 	<artifactId>adminapi</artifactId>
 	<version>1.0.0-001</version>
 	<packaging>war</packaging>
 	<name>adminapi</name>
+	<scm>
+		<connection>scm:svn:svn://sdnet-build.sdp.csi.it/SdpPropFiles/trunk</connection>
+	</scm>
 
 	<properties>
-		<java-version>1.7</java-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<org.springframework-version>4.3.0.RELEASE</org.springframework-version>
+		<!-- <org.springframework-version>3.1.1.RELEASE</org.springframework-version> -->
+        
 		<jackson.version>2.7.5</jackson.version>
 		<log4j.version>1.2.17</log4j.version>
-	</properties>
+        <java-version>1.7</java-version>
 
+	</properties>
+	<build>
+		<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>${java-version}</source>
+						<target>${java-version}</target>
+					</configuration>
+				</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<webXml>${webXmlPath}/web.xml</webXml>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>2.19.1</version>
+				<configuration>
+					<suiteXmlFiles>
+						<suiteXmlFile>testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
+				</configuration>
+			</plugin>
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-failsafe-plugin</artifactId>
+		        <version>2.19.1</version>
+		      </plugin>						
+		</plugins>
+	</build>
+	<repositories>
+		<repository>
+			<id>apache-maven2-repo</id>
+			<name>Apache Maven2 Repository</name>
+			<url>http://repo1.maven.org/maven2/</url>
+		</repository>
+		<repository>
+			<id>HDPReleases</id>
+			<name>HDP Releases</name>
+			<url>http://repo.hortonworks.com/content/repositories/releases/</url>
+			<layout>default</layout>
+		</repository>
+	</repositories>
 	<dependencies>
 		<!-- PER MYBATIS BEGIN -->
 		<dependency>
@@ -74,10 +130,8 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>${log4j.version}</version>
+			<scope>provided</scope>
 		</dependency>
-
-<!-- TEST DEPENDENCY BEGIN-->
-
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -97,35 +151,48 @@
 			<scope>test</scope>
 		</dependency>
 
-
 	</dependencies>
-
+	<profiles>
+		<profile>
+			<id>int</id>
 	<build>
-		<finalName>HelloWorld</finalName>
-
-		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>2.3.2</version>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
 					<configuration>
-						<source>${java-version}</source>
-						<target>${java-version}</target>
+							<connectionType>connection</connectionType>
 					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>2.4</version>
-					<configuration>
-						<warSourceDirectory>src/main/webapp</warSourceDirectory>
-						<warName>helloworld</warName>
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-					</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
 				</plugin>
 			</plugins>
-		</pluginManagement>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/int</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+					<testResources>
+						<testResource>
+							<directory>${project.build.directory}/checkout/adminapi/test/int</directory>
+						</testResource>
+					</testResources>
 	</build>
-
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/int/</webXmlPath>
+			</properties>
+		</profile>
+	</profiles>
 </project>

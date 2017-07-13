@@ -59,7 +59,7 @@ public class HelloController {
 //		DELETE		
 //		testService.deleteDataType(dataType.getId());
 //		dataType = testService.selectById(dataType.getId());
-//		String confirmDeleted = "il record non è stato cancellato";
+//		String confirmDeleted = "il record non e' stato cancellato";
 //		if (dataType == null) {
 //			confirmDeleted = "RECORD CANCELLATO CON SUCCESSO!!";
 //		}
