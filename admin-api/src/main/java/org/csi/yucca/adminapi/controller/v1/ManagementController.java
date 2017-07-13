@@ -1,4 +1,4 @@
-package org.csi.yucca.adminapi.controller;
+package org.csi.yucca.adminapi.controller.v1;
 
 import org.csi.yucca.adminapi.model.DataType;
 import org.springframework.http.HttpStatus;

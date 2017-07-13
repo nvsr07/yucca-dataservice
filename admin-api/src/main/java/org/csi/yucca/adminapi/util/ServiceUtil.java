@@ -1,16 +1,31 @@
 package org.csi.yucca.adminapi.util;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.response.Response;
+import org.springframework.beans.BeanUtils;
 
 public class ServiceUtil {
 
 	private static final String SORT_PROPERTIES_SEPARATOR = ",";
 	private static final String DESC_CHAR = "-";
+	
+	public static <T> List<Response> getResponseList(List<T> modelList, Class<?> responseClass)throws Exception{
+		List<Response> responsesList = new ArrayList<Response>();
+			
+		for (T model : modelList) {
+			Response response = (Response)responseClass.newInstance();
+			BeanUtils.copyProperties(model, response);
+			responsesList.add(response);
+		}
+		
+		return responsesList;
+	}
 	
 	public static  void checkMandatoryParameter(Object parameterObj, String parameterName)throws BadRequestException{
 		if(parameterObj == null){

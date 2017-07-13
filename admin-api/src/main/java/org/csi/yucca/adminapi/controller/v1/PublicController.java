@@ -1,6 +1,7 @@
-package org.csi.yucca.adminapi.controller;
+package org.csi.yucca.adminapi.controller.v1;
 
 import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.service.PublicClassificationService;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(Constants.ADMIN_API_VERSION + "/public")
+@RequestMapping("1/public")
 public class PublicController extends YuccaController{
 	
 //	https://www.petrikainulainen.net/programming/spring-framework/unit-testing-of-spring-mvc-controllers-configuration/
@@ -34,6 +35,61 @@ public class PublicController extends YuccaController{
 	
 	@Autowired
 	private PublicTechnicalService technicalService;     
+
+	@GetMapping("/licenses")
+	public ResponseEntity<Object> loadLicenses( @RequestParam(required=false) String sort  ) {
+
+		logger.info("loadLicenses");
+		
+		Object list = null;
+		
+		try {
+			list = classificationService.selectLicense(sort);
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}	
+
+	
+	@GetMapping("/ecosystems")
+	public ResponseEntity<Object> loadEcosystems(@RequestParam(required=false) Integer organizationCode, 
+			@RequestParam(required=false) String sort  ) {
+
+		logger.info("loadEcosystems");
+		
+		Object list = null;
+		
+		try {
+			list = classificationService.selectEcosystem(organizationCode, sort);
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}	
+	
 	
 	@GetMapping("/domains")
 	public ResponseEntity<Object> loadDomains(@RequestParam(required=false) Integer ecosystemCode, 

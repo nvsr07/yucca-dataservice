@@ -7,28 +7,23 @@ import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.csi.yucca.adminapi.model.Domain;
+import org.csi.yucca.adminapi.util.Constants;
 
 /**
- * link utili:
- * 
- * http://sivalabs.in/2012/10/mybatis-tutorial-part-2-crud-operations-using-annotations/
- * 
- * 
  * 
  * @author gianfranco.stolfa
  *
  */
-
 public interface DomainMapper {
 	
-	String DOMAIN_TABLE = "int_yucca.yucca_d_domain";
-	String R_ECOSYSTEM_DOMAIN_TABLE = "int_yucca.yucca_r_ecosystem_domain";
-	String ECOSYSTEM_TABLE = "int_yucca.yucca_ecosystem";
-
+	String DOMAIN_TABLE = Constants.SCHEMA_DB + ".yucca_d_domain";
+	String R_ECOSYSTEM_DOMAIN_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_domain";
+	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + ".yucca_ecosystem";
+	
 	public static final String SELECT_DOMAIN = "FROM " + DOMAIN_TABLE + " " +
 			"JOIN "+ R_ECOSYSTEM_DOMAIN_TABLE + " ON " + DOMAIN_TABLE + ".id_domain = " + R_ECOSYSTEM_DOMAIN_TABLE + ".id_domain " +
 			"JOIN " + ECOSYSTEM_TABLE + " ON " + R_ECOSYSTEM_DOMAIN_TABLE + ".id_ecosystem = " + ECOSYSTEM_TABLE + ".id_ecosystem " +
-			"WHERE " + ECOSYSTEM_TABLE + ".id_ecosystem = #{id} " +
+			"WHERE " + ECOSYSTEM_TABLE + ".id_ecosystem = #{id} " + 
 
 			"<if test=\"sortList != null\">" +
 		      " ORDER BY " +

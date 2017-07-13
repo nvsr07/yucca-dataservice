@@ -1,19 +1,23 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.DomainMapper;
+import org.csi.yucca.adminapi.mapper.EcosystemMapper;
+import org.csi.yucca.adminapi.mapper.LicenseMapper;
 import org.csi.yucca.adminapi.model.Domain;
+import org.csi.yucca.adminapi.model.Ecosystem;
+import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.EcosystemResponse;
+import org.csi.yucca.adminapi.response.LicenseResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.service.PublicClassificationService;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.Languages;
 import org.csi.yucca.adminapi.util.ServiceUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,6 +30,47 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 	@Autowired
 	private DomainMapper domainMapper;
 	
+	@Autowired
+	private EcosystemMapper ecosystemMapper;
+
+	@Autowired
+	private LicenseMapper licenseMapper;
+	
+	/**
+	 * 
+	 */
+	public List<Response> selectLicense(String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, License.class);
+		
+		List<License> licenseList = licenseMapper.selectLicense(sortList);
+		
+		ServiceUtil.checkList(licenseList);
+		
+		return ServiceUtil.getResponseList(licenseList, LicenseResponse.class);
+		
+	}	
+	
+	/**
+	 * 
+	 */
+	public List<Response> selectEcosystem(Integer organizationCode, String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, Ecosystem.class);
+		
+		List<Ecosystem> ecosystemList = ecosystemMapper.selectEcosystem(organizationCode, sortList);
+		
+		ServiceUtil.checkList(ecosystemList);
+		
+		return ServiceUtil.getResponseList(ecosystemList, EcosystemResponse.class);
+		
+	}	
+	
+	/**
+	 * 
+	 */
 	public List<Response> selectDomain(Integer ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
@@ -48,27 +93,8 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		}
 
 		ServiceUtil.checkList(domainList);
-		return getResponseList(domainList);
+		return ServiceUtil.getResponseList(domainList, DomainResponse.class);
 		
-	}
-	
-	
-	/******************************************************************************
-	 * 
-	 *				private methods
-	 * 
-	 *******************************************************************************/
-	
-	private List<Response> getResponseList(List<Domain> domainList)throws Exception{
-		List<Response> domainResponsesList = new ArrayList<Response>();
-			
-		for (Domain domain : domainList) {
-			Response obj = new DomainResponse();
-			BeanUtils.copyProperties(domain, obj);
-			domainResponsesList.add(obj);
-		}
-		
-		return domainResponsesList;
 	}
 	
 }
