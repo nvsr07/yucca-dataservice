@@ -1,6 +1,6 @@
 package org.csi.yucca.config;
 
-import org.csi.yucca.adminapi.controller.PublicController;
+import org.csi.yucca.adminapi.controller.v1.PublicController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
