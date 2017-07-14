@@ -33,14 +33,14 @@ public class DCatDataset extends DCatObject {
 	private IdString accrualPeriodicity;
 
 	@SerializedName("dcat:distribution")
-	private List<DCatDistribution> distributions = new ArrayList<DCatDistribution>();
+	private List<DCatDistribution> distributions;
 
 	// reccomended
 	@SerializedName("dcterms:subject")
 	private List<IdString> subThemes;
 
 	@SerializedName("dcat:contactPoint")
-	private DCatVCard contactPoint = new DCatVCard();
+	private DCatVCard contactPoint;
 
 	@SerializedName("dcterms:publisher")
 	private DCatAgent publisher;
@@ -84,12 +84,13 @@ public class DCatDataset extends DCatObject {
 		addType("dcatapit:Dataset");
 
 		creator = DCatSdpHelper.getCSIAgentDcat();
+		distributions = new ArrayList<DCatDistribution>();
+		contactPoint = new DCatVCard();
 	}
-	
+
 	public void setId(String id) {
 		this.id = BASE_ID + "dataset/" + DCatSdpHelper.cleanForId(id);
 	}
-
 
 	public String getIdentifier() {
 		return identifier;

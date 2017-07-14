@@ -25,6 +25,12 @@ public abstract class DCatObject {
 	}
 
 	public abstract void setId(String id);
+	
+	public void cloneId(String id, boolean emptyTypes) {
+		this.id = id;
+		if(emptyTypes)
+			setTypes(null);
+	}
 
 	public List<String> getTypes() {
 		return types;
