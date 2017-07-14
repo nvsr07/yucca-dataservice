@@ -38,6 +38,9 @@ import com.google.gson.Gson;
 @Path("/dcat")
 public class DcatService extends AbstractService {
 
+	// documantazione:
+	// http://linee-guida-cataloghi-dati-profilo-dcat-ap-it.readthedocs.io/it/latest/index.html
+	
 	@Context
 	ServletContext context;
 	static Logger log = Logger.getLogger(DcatService.class);
