@@ -3,6 +3,8 @@ package org.csi.yucca.dataservice.metadataapi.service;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +23,7 @@ import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatCatalog;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDataset;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDate;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDistribution;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatObject;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatResult;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.I18NString;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.IdString;
@@ -53,11 +56,14 @@ public class DcatService extends AbstractService {
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang, @QueryParam("tags") String tags, @QueryParam("visibility") String visibility, @QueryParam("isSearchExact") Boolean isSearchExact,
-			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("externalReference") String externalReference) throws NumberFormatException, UnknownHostException {
+			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("externalReference") String externalReference, @QueryParam("linkedData") Boolean linkedData)
+			throws NumberFormatException, UnknownHostException {
 
 		// SimpleDateFormat catalogDateFormat = new
 		// SimpleDateFormat("yyyy-MM-dd");// dd/MM/yyyy
 
+		if (linkedData == null)
+			linkedData = false;
 		DCatCatalog catalog = new DCatCatalog();
 		catalog.setDescription_it(new I18NString("it", "Catalogo Smart Data Piemonte"));
 		catalog.setTitle_it(new I18NString("it", "CATALOGO SMART DATA"));
@@ -71,6 +77,8 @@ public class DcatService extends AbstractService {
 		// LicenceTypeDCAT licenseType = new LicenceTypeDCAT();
 		// licenseType.setType("http://purl.org/adms/licencetype/PublicDomain");
 		// catalog.setLicense(licenseType);
+
+		Map<String, DCatObject> objectsMap = new HashMap<String, DCatObject>();
 
 		if (page == null)
 			page = 1;
@@ -108,6 +116,7 @@ public class DcatService extends AbstractService {
 				if (metadataST.getDataset() != null && metadataST.getDataset().getDatasetId() != null) {
 
 					DCatDataset dsDCAT = new DCatDataset();
+					dsDCAT.setId(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
 
 					if (metadataST.getDcat() != null) {
 						DCatAgent creator = new DCatAgent();
@@ -133,8 +142,14 @@ public class DcatService extends AbstractService {
 						} else {
 							creator = DCatSdpHelper.getCSIAgentDcat();
 						}
-
-						dsDCAT.setCreator(creator);
+						if (linkedData) {
+							if (!objectsMap.containsKey(creator.getId()))
+								objectsMap.put(creator.getId(), creator);
+							DCatAgent empty = new DCatAgent();
+							empty.cloneId(creator.getId(), true);
+							dsDCAT.setCreator(empty);
+						} else
+							dsDCAT.setCreator(creator);
 
 						DCatAgent rightsHolder = new DCatAgent();
 						if (metadataST.getDcat().getDcatRightsHolderName() != null) {
@@ -161,12 +176,27 @@ public class DcatService extends AbstractService {
 							rightsHolder = DCatSdpHelper.getCSIAgentDcat();
 						}
 
-						dsDCAT.setRightsHolder(rightsHolder);
+						if (linkedData) {
+							if (!objectsMap.containsKey(rightsHolder.getId()))
+								objectsMap.put(rightsHolder.getId(), rightsHolder);
+							DCatAgent empty = new DCatAgent();
+							empty.cloneId(rightsHolder.getId(), true);
+							dsDCAT.setRightsHolder(empty);
+						} else
+							dsDCAT.setRightsHolder(rightsHolder);
 
 						DCatVCard publisherVCard = new DCatVCard();
-						publisherVCard.setHasEmail(new IdString(metadataST.getDcat().getDcatEmailOrg()));
+						publisherVCard.setHasEmail(new IdString("mailto:"+metadataST.getDcat().getDcatEmailOrg()));
 						publisherVCard.setName(metadataST.getDcat().getDcatNomeOrg());
-						dsDCAT.setContactPoint(publisherVCard);
+						
+						if (linkedData) {
+							if (!objectsMap.containsKey(publisherVCard.getId()))
+								objectsMap.put(publisherVCard.getId(), publisherVCard);
+							DCatVCard empty = new DCatVCard();
+							empty.cloneId(publisherVCard.getId(), true);
+							dsDCAT.setContactPoint(empty);
+						} else
+							dsDCAT.setContactPoint(publisherVCard);
 
 						DCatAgent publisher = new DCatAgent();
 						if (metadataST.getDcat().getDcatNomeOrg() != null) {
@@ -182,10 +212,16 @@ public class DcatService extends AbstractService {
 						} else {
 							publisher = DCatSdpHelper.getCSIAgentDcat();
 						}
-
-						dsDCAT.setPublisher(publisher);
-
+						if (linkedData) {
+							if (!objectsMap.containsKey(publisher.getId()))
+								objectsMap.put(publisher.getId(), publisher);
+							DCatAgent empty = new DCatAgent();
+							empty.cloneId(publisher.getId(), true);
+							dsDCAT.setPublisher(empty);
+						} else
+							dsDCAT.setPublisher(publisher);
 					}
+					
 					dsDCAT.setDescription(new I18NString("it", metadataST.getDescription()));
 					dsDCAT.setTitle(new I18NString("it", metadataST.getName()));
 					// V01 - fixed value
@@ -237,20 +273,60 @@ public class DcatService extends AbstractService {
 							licenseDistribution.setName(metadataST.getLicense());
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/UnknownIPR"));
 						}
-						distribution.setLicense(licenseDistribution);
+						if (linkedData) {
+							if (!objectsMap.containsKey(licenseDistribution.getId()))
+								objectsMap.put(licenseDistribution.getId(), licenseDistribution);
+							DCatLicenseType empty = new DCatLicenseType();
+							empty.cloneId(licenseDistribution.getId(), true);
+							distribution.setLicense(empty);
+						} else
+							distribution.setLicense(licenseDistribution);
 					}
 
 					// distr.setIssued(new
 					// DcatDate(metadataST.getRegistrationDate()));
-					dsDCAT.addDistribution(distribution);
-					catalog.addDataset(dsDCAT);
-					catalog.setPublisher(DCatSdpHelper.getCSIAgentDcat());
+					if (linkedData) {
+						if (!objectsMap.containsKey(distribution.getId()))
+							objectsMap.put(distribution.getId(), distribution);
+						DCatDistribution empty = new DCatDistribution();
+						empty.setFormat(null);
+						empty.cloneId(distribution.getId(), true);
+						dsDCAT.addDistribution(empty);
+					} else
+						dsDCAT.addDistribution(distribution);
+
+					if (linkedData) {
+						if (!objectsMap.containsKey(dsDCAT.getId()))
+							objectsMap.put(dsDCAT.getId(), dsDCAT);
+						DCatDataset empty = new DCatDataset();
+						empty.cloneId(dsDCAT.getId(), true);
+						dsDCAT.setCreator(null);
+						dsDCAT.setDistributions(null);
+						dsDCAT.setContactPoint(null);
+						catalog.addDataset(empty);
+					} else
+						catalog.addDataset(dsDCAT);
+
+					if (linkedData) {
+						if (!objectsMap.containsKey(DCatSdpHelper.getCSIAgentDcat().getId()))
+							objectsMap.put(DCatSdpHelper.getCSIAgentDcat().getId(), DCatSdpHelper.getCSIAgentDcat());
+						DCatAgent empty = new DCatAgent();
+						empty.cloneId(DCatSdpHelper.getCSIAgentDcat().getId(), true);
+						dsDCAT.setPublisher(empty);
+					} else
+						catalog.setPublisher(DCatSdpHelper.getCSIAgentDcat());
 
 				}
 			}
 		}
 		DCatResult result = new DCatResult();
 		result.addItem(catalog);
+		if (linkedData) {
+			for (String objectKey : objectsMap.keySet()) {
+				result.addItem(objectsMap.get(objectKey));
+			}
+
+		}
 		String json = gson.toJson(result);
 		return Response.ok(json).build();
 	}

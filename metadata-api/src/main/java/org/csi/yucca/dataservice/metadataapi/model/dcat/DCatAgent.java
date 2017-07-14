@@ -36,7 +36,6 @@ public class DCatAgent extends DCatObject {
 		this.id = BASE_ID + "agent/" + DCatSdpHelper.cleanForId(id);
 	}
 
-
 	public String getDcterms_identifier() {
 		return dcterms_identifier;
 	}
