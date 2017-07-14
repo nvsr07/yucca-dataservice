@@ -9,5 +9,6 @@ import org.csi.yucca.adminapi.response.Response;
 public interface PublicComponentService {
 	
 	List<Response> selectDataType(String sort) throws BadRequestException, NotFoundException, Exception;
-	
+
+	List<Response> selectMeasureUnit(String sort) throws BadRequestException, NotFoundException, Exception;
 }

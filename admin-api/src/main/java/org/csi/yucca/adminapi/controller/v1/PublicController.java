@@ -36,6 +36,31 @@ public class PublicController extends YuccaController{
 	private PublicTechnicalService technicalService;     
 
 	
+	@GetMapping("/measure_units")
+	public ResponseEntity<Object> loadMeasureUnit(@RequestParam(required=false) String sort  ) {
+
+		logger.info("loadMeasureUnit");
+		
+		Object list = null;
+		
+		try {
+			list = componentService.selectMeasureUnit(sort);		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}			
+	
 	@GetMapping("/data_types")
 	public ResponseEntity<Object> loadDataTypes(@RequestParam(required=false) String sort  ) {
 
