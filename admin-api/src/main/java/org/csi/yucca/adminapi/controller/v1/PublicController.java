@@ -36,6 +36,88 @@ public class PublicController extends YuccaController{
 	@Autowired
 	private PublicTechnicalService technicalService;     
 
+	@GetMapping("/tags")
+	public ResponseEntity<Object> loadTags( @RequestParam(required=false) String sort, 
+			@RequestParam(required=false) String lang  ) {
+
+		logger.info("loadTags");
+		
+		Object list = null;
+		
+		try {
+			list = classificationService.selectTag(lang, sort);
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}		
+	
+	
+	@GetMapping("/subdomains")
+	public ResponseEntity<Object> loadSubdomains(@RequestParam(required=false) Integer domainCode, 
+			@RequestParam(required=false) String sort, @RequestParam(required=false) String lang  ) {
+
+		logger.info("loadSubdomains");
+		
+		Object list = null;
+		
+		try {
+			list = classificationService.selectSubdomain(domainCode, lang, sort);
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}		
+	
+	
+	@GetMapping("/organizations")
+	public ResponseEntity<Object> loadOrganizations( @RequestParam(required=false) Integer ecosystemCode, @RequestParam(required=false) String sort  ) {
+
+		logger.info("loadOrganizations");
+		
+		Object list = null;
+		
+		try {
+			list = classificationService.selectOrganization(ecosystemCode, sort);
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}		
+	
 	@GetMapping("/licenses")
 	public ResponseEntity<Object> loadLicenses( @RequestParam(required=false) String sort  ) {
 
@@ -89,8 +171,7 @@ public class PublicController extends YuccaController{
 		return buildResponse(list);
 		
 	}	
-	
-	
+
 	@GetMapping("/domains")
 	public ResponseEntity<Object> loadDomains(@RequestParam(required=false) Integer ecosystemCode, 
 			@RequestParam(required=false) String lang, @RequestParam(required=false) String sort  ) {

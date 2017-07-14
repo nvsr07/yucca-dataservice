@@ -7,13 +7,22 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.DomainMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
 import org.csi.yucca.adminapi.mapper.LicenseMapper;
+import org.csi.yucca.adminapi.mapper.OrganizationMapper;
+import org.csi.yucca.adminapi.mapper.SubdomainMapper;
+import org.csi.yucca.adminapi.mapper.TagMapper;
 import org.csi.yucca.adminapi.model.Domain;
 import org.csi.yucca.adminapi.model.Ecosystem;
 import org.csi.yucca.adminapi.model.License;
+import org.csi.yucca.adminapi.model.Organization;
+import org.csi.yucca.adminapi.model.Subdomain;
+import org.csi.yucca.adminapi.model.Tag;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
+import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.Response;
+import org.csi.yucca.adminapi.response.SubdomainResponse;
+import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.PublicClassificationService;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.Languages;
@@ -35,6 +44,102 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 
 	@Autowired
 	private LicenseMapper licenseMapper;
+
+	@Autowired
+	private OrganizationMapper organizationMapper;
+	
+	@Autowired
+	private SubdomainMapper subdomainMapper;
+
+	@Autowired
+	private TagMapper tagMapper;
+
+	/**
+	 * 
+	 * @param lang
+	 * @param sort
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public List<Response> selectTag(String lang, String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		List<Tag> modelList = null;
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, Tag.class);
+		
+		if(lang==null || lang.isEmpty()){
+			modelList =  tagMapper.selectTagAllLanguage(sortList);
+		}
+		else if(Languages.IT.value().equals(lang)){
+			modelList =  tagMapper.selectTagITLanguage(sortList);
+		}
+		else if(Languages.EN.value().equals(lang)){
+			modelList =  tagMapper.selectTagENLanguage(sortList);
+		}
+		else{
+			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED.arg(lang));
+		}
+
+		ServiceUtil.checkList(modelList);
+		return ServiceUtil.getResponseList(modelList, TagResponse.class);
+		
+	}	
+	
+    /**
+     * 	
+     */
+	public List<Response> selectSubdomain(Integer domainCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(domainCode, "domainCode");
+		
+		List<Subdomain> subdomainList = null;
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, Subdomain.class);
+		
+		if(lang==null || lang.isEmpty()){
+			subdomainList =  subdomainMapper.selectSubdomainAllLanguage(domainCode, sortList);
+		}
+		else if(Languages.IT.value().equals(lang)){
+			subdomainList =  subdomainMapper.selectSubdomainITLanguage(domainCode, sortList);
+		}
+		else if(Languages.EN.value().equals(lang)){
+			subdomainList =  subdomainMapper.selectSubdomainENLanguage(domainCode, sortList);
+		}
+		else{
+			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED.arg(lang));
+		}
+
+		ServiceUtil.checkList(subdomainList);
+		return ServiceUtil.getResponseList(subdomainList, SubdomainResponse.class);
+		
+	}
+	
+	
+	/**
+	 * 
+	 * @param ecosystemCode
+	 * @param sort
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public List<Response> selectOrganization(Integer ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, Organization.class);
+		
+		List<Organization> organizationList = organizationMapper.selectOrganization(ecosystemCode, sortList);
+		
+		ServiceUtil.checkList(organizationList);
+		
+		return ServiceUtil.getResponseList(organizationList, OrganizationResponse.class);
+		
+	}		
+
 	
 	/**
 	 * 
