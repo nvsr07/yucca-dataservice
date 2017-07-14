@@ -8,7 +8,6 @@ import org.csi.yucca.adminapi.service.PublicClassificationService;
 import org.csi.yucca.adminapi.service.PublicComponentService;
 import org.csi.yucca.adminapi.service.PublicSmartObjectService;
 import org.csi.yucca.adminapi.service.PublicTechnicalService;
-import org.csi.yucca.adminapi.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +35,33 @@ public class PublicController extends YuccaController{
 	@Autowired
 	private PublicTechnicalService technicalService;     
 
+	
+	@GetMapping("/data_types")
+	public ResponseEntity<Object> loadDataTypes(@RequestParam(required=false) String sort  ) {
+
+		logger.info("loadDataTypes");
+		
+		Object list = null;
+		
+		try {
+			list = componentService.selectDataType(sort);
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		return buildResponse(list);
+		
+	}		
+	
 	@GetMapping("/tags")
 	public ResponseEntity<Object> loadTags( @RequestParam(required=false) String sort, 
 			@RequestParam(required=false) String lang  ) {

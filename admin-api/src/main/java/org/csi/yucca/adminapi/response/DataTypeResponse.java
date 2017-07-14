@@ -1,6 +1,9 @@
-package org.csi.yucca.adminapi.model;
+package org.csi.yucca.adminapi.response;
 
-public class DataType {
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class DataTypeResponse implements Response{
 	
 	private Integer idDataType;
 	private String datatypecode;
@@ -24,5 +27,4 @@ public class DataType {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
 }
