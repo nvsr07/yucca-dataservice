@@ -10,5 +10,7 @@ public interface PublicSmartObjectService {
 	
 	List<Response> selectExposureType(String sort) throws BadRequestException, NotFoundException, Exception;
 	
+	List<Response> selectSoCategory(String sort) throws BadRequestException, NotFoundException, Exception;
+	
 	List<Response> selectLocationType(String sort) throws BadRequestException, NotFoundException, Exception;
 }
