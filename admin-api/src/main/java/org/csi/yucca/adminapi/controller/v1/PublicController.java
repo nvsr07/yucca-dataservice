@@ -36,6 +36,20 @@ public class PublicController extends YuccaController{
 	@Autowired
 	private PublicTechnicalService technicalService;
 
+	@GetMapping("/dataset_subtypes")
+	public ResponseEntity<Object> loadDatasetSubtypes( @RequestParam(required=false) final Integer datasetTypeCode, 
+			@RequestParam(required=false) final String sort  ) {
+
+		logger.info("loadOrganizations");
+
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return technicalService.selectDatasetSubtype(datasetTypeCode, sort);
+			}
+		}, logger);
+		
+	}		
+	
 	@GetMapping("/supply_types")
 	public ResponseEntity<Object> loadSupplyTypes(@RequestParam(required=false) final String sort  ) {
 		logger.info("loadSupplyTypes");
