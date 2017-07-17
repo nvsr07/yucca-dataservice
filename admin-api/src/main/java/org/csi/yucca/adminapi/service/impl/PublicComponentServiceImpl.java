@@ -6,10 +6,13 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.DataTypeMapper;
 import org.csi.yucca.adminapi.mapper.MeasureUnitMapper;
+import org.csi.yucca.adminapi.mapper.PhenomenonMapper;
 import org.csi.yucca.adminapi.model.DataType;
 import org.csi.yucca.adminapi.model.MeasureUnit;
+import org.csi.yucca.adminapi.model.Phenomenon;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
+import org.csi.yucca.adminapi.response.PhenomenonResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.service.PublicComponentService;
 import org.csi.yucca.adminapi.util.ServiceUtil;
@@ -27,6 +30,31 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 
 	@Autowired
 	private MeasureUnitMapper measureUnitMapper;
+
+	@Autowired
+	private PhenomenonMapper phenomenonMapper;
+	
+	
+	/**
+	 * 
+	 * @param sort
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public List<Response> selectPhenomenon(String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, Phenomenon.class);
+		
+		List<Phenomenon> modelList = phenomenonMapper.selectPhenomenon(sortList);
+		
+		ServiceUtil.checkList(modelList);
+		
+		return ServiceUtil.getResponseList(modelList, PhenomenonResponse.class);
+		
+	}		
+	
 	
 	/**
 	 * 

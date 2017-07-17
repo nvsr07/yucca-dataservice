@@ -11,4 +11,6 @@ public interface PublicComponentService {
 	List<Response> selectDataType(String sort) throws BadRequestException, NotFoundException, Exception;
 
 	List<Response> selectMeasureUnit(String sort) throws BadRequestException, NotFoundException, Exception;
+	
+	List<Response> selectPhenomenon(String sort) throws BadRequestException, NotFoundException, Exception;
 }

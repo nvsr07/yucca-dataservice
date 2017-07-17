@@ -1,7 +1,11 @@
 package org.csi.yucca.adminapi.controller;
 
+import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.exception.BadRequestException;
+import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.YuccaException;
 import org.csi.yucca.adminapi.response.ErrorResponse;
+import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.Errors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,37 @@ public class YuccaController {
 				HttpStatus.BAD_REQUEST);
 	}
 	
+	/**
+	 * 
+	 * @param apiCallable
+	 * @param logger
+	 * @return
+	 */
+	public ResponseEntity<Object> run(ApiCallable apiCallable, Logger logger){
+		
+		Object obj = null;
+		
+		try {
+			
+			obj = apiCallable.call();
+			
+		} 
+		catch (BadRequestException badRequestException) {
+			logger.error("BadRequestException: " + badRequestException);
+			return buildErrorResponse(badRequestException);
+		}
+		catch (NotFoundException notFoundException) {
+			logger.error("NotFoundException: " + notFoundException);			
+			return buildErrorResponse(notFoundException);
+		}
+		catch (Exception e) {
+			return internalServerError(e);
+		}
+		
+		
+		return buildResponse(obj);
+		
+	}	
 	
 	
 }

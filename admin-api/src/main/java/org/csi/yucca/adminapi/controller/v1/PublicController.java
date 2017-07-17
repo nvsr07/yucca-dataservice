@@ -8,6 +8,7 @@ import org.csi.yucca.adminapi.service.PublicClassificationService;
 import org.csi.yucca.adminapi.service.PublicComponentService;
 import org.csi.yucca.adminapi.service.PublicSmartObjectService;
 import org.csi.yucca.adminapi.service.PublicTechnicalService;
+import org.csi.yucca.adminapi.util.ApiCallable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,219 +36,125 @@ public class PublicController extends YuccaController{
 	@Autowired
 	private PublicTechnicalService technicalService;     
 
+	@GetMapping("/phenomenons")
+	public ResponseEntity<Object> loadPhenomenons(@RequestParam(required=false) final String sort  ) {
+		logger.info("loadPhenomenons");
+				
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.selectPhenomenon(sort);
+			}
+		}, logger);
+	}			
 	
 	@GetMapping("/measure_units")
-	public ResponseEntity<Object> loadMeasureUnit(@RequestParam(required=false) String sort  ) {
+	public ResponseEntity<Object> loadMeasureUnit(@RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadMeasureUnit");
-		
-		Object list = null;
-		
-		try {
-			list = componentService.selectMeasureUnit(sort);		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
+
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.selectMeasureUnit(sort);
+			}
+		}, logger);
 		
 	}			
 	
 	@GetMapping("/data_types")
-	public ResponseEntity<Object> loadDataTypes(@RequestParam(required=false) String sort  ) {
+	public ResponseEntity<Object> loadDataTypes(@RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadDataTypes");
-		
-		Object list = null;
-		
-		try {
-			list = componentService.selectDataType(sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
-		
+
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.selectDataType(sort);
+			}
+		}, logger);
 	}		
 	
 	@GetMapping("/tags")
-	public ResponseEntity<Object> loadTags( @RequestParam(required=false) String sort, 
-			@RequestParam(required=false) String lang  ) {
+	public ResponseEntity<Object> loadTags( @RequestParam(required=false) final String sort, 
+			@RequestParam(required=false) final String lang  ) {
 
 		logger.info("loadTags");
-		
-		Object list = null;
-		
-		try {
-			list = classificationService.selectTag(lang, sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
-		
+
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectTag(lang, sort);
+			}
+		}, logger);
 	}		
-	
 	
 	@GetMapping("/subdomains")
-	public ResponseEntity<Object> loadSubdomains(@RequestParam(required=false) Integer domainCode, 
-			@RequestParam(required=false) String sort, @RequestParam(required=false) String lang  ) {
+	public ResponseEntity<Object> loadSubdomains(@RequestParam(required=false) final Integer domainCode, 
+			@RequestParam(required=false) final String sort, @RequestParam(required=false) final String lang  ) {
 
 		logger.info("loadSubdomains");
-		
-		Object list = null;
-		
-		try {
-			list = classificationService.selectSubdomain(domainCode, lang, sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
+
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectSubdomain(domainCode, lang, sort);
+			}
+		}, logger);
 		
 	}		
 	
-	
 	@GetMapping("/organizations")
-	public ResponseEntity<Object> loadOrganizations( @RequestParam(required=false) Integer ecosystemCode, @RequestParam(required=false) String sort  ) {
+	public ResponseEntity<Object> loadOrganizations( @RequestParam(required=false) final Integer ecosystemCode, 
+			@RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadOrganizations");
-		
-		Object list = null;
-		
-		try {
-			list = classificationService.selectOrganization(ecosystemCode, sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
+
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectOrganization(ecosystemCode, sort);
+			}
+		}, logger);
 		
 	}		
 	
 	@GetMapping("/licenses")
-	public ResponseEntity<Object> loadLicenses( @RequestParam(required=false) String sort  ) {
+	public ResponseEntity<Object> loadLicenses( @RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadLicenses");
 		
-		Object list = null;
-		
-		try {
-			list = classificationService.selectLicense(sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectLicense(sort);
+			}
+		}, logger);		
 		
 	}	
-
 	
 	@GetMapping("/ecosystems")
-	public ResponseEntity<Object> loadEcosystems(@RequestParam(required=false) Integer organizationCode, 
-			@RequestParam(required=false) String sort  ) {
+	public ResponseEntity<Object> loadEcosystems(@RequestParam(required=false) final Integer organizationCode, 
+			@RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadEcosystems");
 		
-		Object list = null;
-		
-		try {
-			list = classificationService.selectEcosystem(organizationCode, sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(list);
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectEcosystem(organizationCode, sort);
+			}
+		}, logger);		
 		
 	}	
 
 	@GetMapping("/domains")
-	public ResponseEntity<Object> loadDomains(@RequestParam(required=false) Integer ecosystemCode, 
-			@RequestParam(required=false) String lang, @RequestParam(required=false) String sort  ) {
+	public ResponseEntity<Object> loadDomains(@RequestParam(required=false)final Integer ecosystemCode, 
+			@RequestParam(required=false) final String lang, @RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadDomains");
 		
-		Object listDomain = null;
-		
-		try {
-			listDomain = classificationService.selectDomain(ecosystemCode, lang, sort);
-		} 
-		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
-			return buildErrorResponse(badRequestException);
-		}
-		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
-			return buildErrorResponse(notFoundException);
-		}
-		catch (Exception e) {
-			return internalServerError(e);
-		}
-		
-		return buildResponse(listDomain);
-		
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectDomain(ecosystemCode, lang, sort);
+			}
+		}, logger);		
 	}
 	
 }
+
+
+
+

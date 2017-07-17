@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("management")
 public class ManagementController {
 	
-	@GetMapping("/data_types")
-	public ResponseEntity<DataType> loadDataTypes( @RequestParam String sort  ) {
-
-		DataType dataType = new DataType();
-		dataType.setDataTypeCode("prova");
-		dataType.setDescription("prova");
-		dataType.setIdDataType(100);
-		
-		return new ResponseEntity<DataType>(dataType, HttpStatus.OK);
-	}
+//	@GetMapping("/data_types")
+//	public ResponseEntity<DataType> loadDataTypes( @RequestParam String sort  ) {
+//
+//		DataType dataType = new DataType();
+//		dataType.setDataTypeCode("prova");
+//		dataType.setDescription("prova");
+//		dataType.setIdDataType(100);
+//		
+//		return new ResponseEntity<DataType>(dataType, HttpStatus.OK);
+//	}
 	
 	
 	
