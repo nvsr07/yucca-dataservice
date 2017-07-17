@@ -36,6 +36,17 @@ public class PublicController extends YuccaController{
 	@Autowired
 	private PublicTechnicalService technicalService;     
 
+	@GetMapping("/exposure_types")
+	public ResponseEntity<Object> loadExposureType(@RequestParam(required=false) final String sort  ) {
+		logger.info("loadExposureType");
+				
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return smartObjectService.selectExposureType(sort);
+			}
+		}, logger);
+	}			
+	
 	@GetMapping("/phenomenons")
 	public ResponseEntity<Object> loadPhenomenons(@RequestParam(required=false) final String sort  ) {
 		logger.info("loadPhenomenons");
