@@ -7,13 +7,16 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.ExposureTypeMapper;
 import org.csi.yucca.adminapi.mapper.LocationTypeMapper;
 import org.csi.yucca.adminapi.mapper.SoCategoryMapper;
+import org.csi.yucca.adminapi.mapper.SoTypeMapper;
 import org.csi.yucca.adminapi.model.ExposureType;
 import org.csi.yucca.adminapi.model.LocationType;
 import org.csi.yucca.adminapi.model.SoCategory;
+import org.csi.yucca.adminapi.model.SoType;
 import org.csi.yucca.adminapi.response.ExposureTypeResponse;
 import org.csi.yucca.adminapi.response.LocationTypeResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.response.SoCategoryResponse;
+import org.csi.yucca.adminapi.response.SoTypeResponse;
 import org.csi.yucca.adminapi.service.PublicSmartObjectService;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +36,20 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 	
 	@Autowired
 	private SoCategoryMapper soCategoryMapper;
+
+	@Autowired
+	private SoTypeMapper soTypeMapper;
+
+	public List<Response> selectSoType(String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, SoType.class);
+		
+		List<SoType> modelList = soTypeMapper.selectSoType(sortList);
+		
+		ServiceUtil.checkList(modelList);
+		
+		return ServiceUtil.getResponseList(modelList, SoTypeResponse.class);
+	}			
 
 	public List<Response> selectSoCategory(String sort) throws BadRequestException, NotFoundException, Exception{
 		

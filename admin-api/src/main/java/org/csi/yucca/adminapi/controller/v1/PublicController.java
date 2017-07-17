@@ -36,6 +36,17 @@ public class PublicController extends YuccaController{
 	@Autowired
 	private PublicTechnicalService technicalService;
 
+	@GetMapping("/so_types")
+	public ResponseEntity<Object> loadSoType(@RequestParam(required=false) final String sort  ) {
+		logger.info("loadSoType");
+				
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return smartObjectService.selectSoType(sort);
+			}
+		}, logger);
+	}			
+	
 	@GetMapping("/so_categories")
 	public ResponseEntity<Object> loadSoCategory(@RequestParam(required=false) final String sort  ) {
 		logger.info("loadSoCategory");
