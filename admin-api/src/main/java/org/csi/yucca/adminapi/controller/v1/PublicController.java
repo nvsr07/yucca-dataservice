@@ -34,8 +34,19 @@ public class PublicController extends YuccaController{
 	private PublicSmartObjectService smartObjectService;    
 	
 	@Autowired
-	private PublicTechnicalService technicalService;     
+	private PublicTechnicalService technicalService;
 
+	@GetMapping("/location_types")
+	public ResponseEntity<Object> loadLocationType(@RequestParam(required=false) final String sort  ) {
+		logger.info("loadLocationType");
+				
+		return run(new ApiCallable() {
+			public Object call() throws BadRequestException, NotFoundException, Exception {
+				return smartObjectService.selectLocationType(sort);
+			}
+		}, logger);
+	}			
+	
 	@GetMapping("/exposure_types")
 	public ResponseEntity<Object> loadExposureType(@RequestParam(required=false) final String sort  ) {
 		logger.info("loadExposureType");
