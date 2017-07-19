@@ -64,6 +64,7 @@ public class DcatService extends AbstractService {
 
 		if (linkedData == null)
 			linkedData = false;
+		
 		DCatCatalog catalog = new DCatCatalog();
 		catalog.setDescription_it(new I18NString("it", "Catalogo Smart Data Piemonte"));
 		catalog.setTitle_it(new I18NString("it", "CATALOGO SMART DATA"));
@@ -110,15 +111,26 @@ public class DcatService extends AbstractService {
 
 		Config cfg = Config.getInstance();
 
+		
+// ----------------------------------------------------------------------		
+// ITERAZIONE SU RESULT
+// ----------------------------------------------------------------------		
 		if (searchResult != null && searchResult.getMetadata() != null) {
 
 			for (Metadata metadataST : searchResult.getMetadata()) {
+				
 				if (metadataST.getDataset() != null && metadataST.getDataset().getDatasetId() != null) {
 
 					DCatDataset dsDCAT = new DCatDataset();
 					dsDCAT.setId(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
 
+					
+					// CREATOR è UN OGGETTO DI TIPO AGENTE
 					if (metadataST.getDcat() != null) {
+						
+						// ------------------------------------------------
+						// CREATOR BEGIN 
+						// ------------------------------------------------
 						DCatAgent creator = new DCatAgent();
 						if (metadataST.getDcat().getDcatCreatorName() != null) {
 							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatCreatorName()))
@@ -139,9 +151,12 @@ public class DcatService extends AbstractService {
 									creator.setDcterms_identifier(metadataST.getDcat().getDcatCreatorName());
 								}
 							}
-						} else {
+						} 
+						else {
 							creator = DCatSdpHelper.getCSIAgentDcat();
 						}
+						
+						
 						if (linkedData) {
 							if (!objectsMap.containsKey(creator.getId()))
 								objectsMap.put(creator.getId(), creator);
@@ -150,7 +165,15 @@ public class DcatService extends AbstractService {
 							dsDCAT.setCreator(empty);
 						} else
 							dsDCAT.setCreator(creator);
-
+						// ------------------------------------------------
+						// CREATOR END 
+						// ------------------------------------------------
+						
+						
+						
+						// ------------------------------------------------
+						// RIGHT_HOLDER BEGIN 
+						// ------------------------------------------------
 						DCatAgent rightsHolder = new DCatAgent();
 						if (metadataST.getDcat().getDcatRightsHolderName() != null) {
 							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatRightsHolderName()))
@@ -184,10 +207,18 @@ public class DcatService extends AbstractService {
 							dsDCAT.setRightsHolder(empty);
 						} else
 							dsDCAT.setRightsHolder(rightsHolder);
-
+						// ------------------------------------------------
+						// RIGHT_HOLDER END 
+						// ------------------------------------------------
+						
+						
+						// ------------------------------------------------
+						// CONTACT_POINT BEGIN 
+						// ------------------------------------------------
 						DCatVCard publisherVCard = new DCatVCard();
 						publisherVCard.setHasEmail(new IdString("mailto:"+metadataST.getDcat().getDcatEmailOrg()));
 						publisherVCard.setName(metadataST.getDcat().getDcatNomeOrg());
+						publisherVCard.setId(metadataST.getDcat().getDcatNomeOrg());
 						
 						if (linkedData) {
 							if (!objectsMap.containsKey(publisherVCard.getId()))
@@ -197,7 +228,13 @@ public class DcatService extends AbstractService {
 							dsDCAT.setContactPoint(empty);
 						} else
 							dsDCAT.setContactPoint(publisherVCard);
-
+						// ------------------------------------------------
+						// CONTACT_POINT END 
+						// ------------------------------------------------
+						
+						// ------------------------------------------------
+						// PUBLISHER BEGIN 
+						// ------------------------------------------------
 						DCatAgent publisher = new DCatAgent();
 						if (metadataST.getDcat().getDcatNomeOrg() != null) {
 							if (DCatSdpHelper.isCSIAgent(metadataST.getDcat().getDcatNomeOrg()))
@@ -220,6 +257,10 @@ public class DcatService extends AbstractService {
 							dsDCAT.setPublisher(empty);
 						} else
 							dsDCAT.setPublisher(publisher);
+						// ------------------------------------------------
+						// PUBLISHER END 
+						// ------------------------------------------------
+						
 					}
 					
 					dsDCAT.setDescription(new I18NString("it", metadataST.getDescription()));
@@ -248,17 +289,24 @@ public class DcatService extends AbstractService {
 					if (dcatSubject != null)
 						dsDCAT.addSubTheme(new IdString(dcatSubject));
 
+					
+					
+					// ------------------------------------------------
+					// DISTRIBUTION BEGIN
+					// ------------------------------------------------
 					DCatDistribution distribution = new DCatDistribution();
 					distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
 							+ metadataST.getDataset().getCode()));
 					distribution.setDownloadURL(new IdString(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/"
 							+ metadataST.getDataset().getDatasetId() + "/all"));
-
+					distribution.setId(metadataST.getDataset().getDatasetId()+"");
+					
 					// https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
 					// distr.getLicense().setName(metadataST.getLicense());
 					DCatLicenseType licenseDistribution = new DCatLicenseType();
 					if (metadataST.getLicense() != null) {
 
+						
 						if (metadataST.getLicense().startsWith("CC BY") || metadataST.getLicense().startsWith("CC-BY")) {
 							licenseDistribution.setName("CC BY");
 							String version = metadataST.getLicense().substring(5).trim();
@@ -273,6 +321,8 @@ public class DcatService extends AbstractService {
 							licenseDistribution.setName(metadataST.getLicense());
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/UnknownIPR"));
 						}
+						licenseDistribution.setId(licenseDistribution.getName());
+						
 						if (linkedData) {
 							if (!objectsMap.containsKey(licenseDistribution.getId()))
 								objectsMap.put(licenseDistribution.getId(), licenseDistribution);
@@ -295,14 +345,17 @@ public class DcatService extends AbstractService {
 					} else
 						dsDCAT.addDistribution(distribution);
 
+//###########################################################àà					
+// AGGIUNGO IL DATA SET AL CATALOGO
+//###########################################################àà					
 					if (linkedData) {
 						if (!objectsMap.containsKey(dsDCAT.getId()))
 							objectsMap.put(dsDCAT.getId(), dsDCAT);
 						DCatDataset empty = new DCatDataset();
 						empty.cloneId(dsDCAT.getId(), true);
-						dsDCAT.setCreator(null);
-						dsDCAT.setDistributions(null);
-						dsDCAT.setContactPoint(null);
+						empty.setCreator(null);
+						empty.setDistributions(null);
+						empty.setContactPoint(null);
 						catalog.addDataset(empty);
 					} else
 						catalog.addDataset(dsDCAT);
