@@ -280,9 +280,14 @@ public class DcatService extends AbstractService {
 					dsDCAT.setTheme(DCatSdpHelper.getDcatTheme(metadataST.getDomainCode()));
 					// dsDCAT.setAccessRights(metadataST.getVisibility());
 					dsDCAT.setIdentifier(metadataST.getDataset().getCode() + "_" + metadataST.getVersion());
-					if (metadataST.getOpendata() != null && metadataST.getOpendata().getDataUpdateDate() != null)
+					
+					if (metadataST.getOpendata() != null && metadataST.getOpendata().getDataUpdateDate() != null){
 						dsDCAT.setModified(new DCatDate(metadataST.getOpendata().getDataUpdateDate()));
-
+					}
+					else{
+						dsDCAT.setModified(new DCatDate(metadataST.getRegistrationDate()));
+					}
+					
 					dsDCAT.setVersionInfo(metadataST.getVersion());
 
 					String dcatSubject = DCatSdpHelper.getDcatSubject(metadataST.getSubdomainCode());
