@@ -20,6 +20,9 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
+import org.apache.jena.util.FileManager;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
@@ -417,5 +420,27 @@ public class DcatService extends AbstractService {
 		
 		
 		return Response.ok(json).build();
+	}
+
+	public static void main(String[] args) {
+		Model model = ModelFactory.createDefaultModel();
+
+		 // use the FileManager to find the input file
+		 InputStream in = FileManager.get().open( "D:\\catalogo.jsonld" );
+//		 InputStream in = new ByteArrayInputStream( json.getBytes(  ) );
+		if (in == null) {
+		    throw new IllegalArgumentException("not found");
+		}
+
+		RDFDataMgr.read(model, in, null, Lang.JSONLD);
+		// read the RDF/XML file
+		//model.read(in,"json-ld");
+
+		// write it to standard out
+		ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+		
+		RDFDataMgr.write(arrayOutputStream, model, Lang.TURTLE);
+		System.out.println(arrayOutputStream.toString());
+		
 	}
 }
