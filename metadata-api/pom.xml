@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.storage.metadataapi</groupId>
 	<artifactId>metadataapi</artifactId>
-	<version>1.10.0-004</version>
+	<version>1.10.0-005</version>
 	<packaging>war</packaging>
 	<name>metadataapi</name>
 	<scm>
@@ -117,21 +117,26 @@
 
 	</repositories>
 	<dependencies>
-	
+<!--  	
 		<dependency>
 		    <groupId>org.apache.jena</groupId>
 		    <artifactId>jena-core</artifactId>
-		    <!--  <version>3.3.0</version> -->
 		    <version>2.13.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>org.apache.jena</groupId>
 		    <artifactId>jena-arq</artifactId>
-		    <!--  <version>3.3.0</version> -->
 		    <version>2.13.0</version>
 		    
 		</dependency>
+		-->
+  <dependency>
+    <groupId>org.apache.jena</groupId>
+    <artifactId>apache-jena-libs</artifactId>
+    <type>pom</type>
+		    <version>2.13.0</version>
 
+  </dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -229,30 +234,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java -->
-		<dependency>
-			<groupId>com.github.jsonld-java</groupId>
-			<artifactId>jsonld-java</artifactId>
-			<version>0.8.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java-tools -->
-		<dependency>
-			<groupId>com.github.jsonld-java</groupId>
-			<artifactId>jsonld-java-tools</artifactId>
-			<version>0.8.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.hp.hpl.jena/jena -->
-		<dependency>
-			<groupId>com.hp.hpl.jena</groupId>
-			<artifactId>jena</artifactId>
-			<version>2.6.4</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.github.jsonld-java/jsonld-java-jena -->
-		<dependency>
-			<groupId>com.github.jsonld-java</groupId>
-			<artifactId>jsonld-java-jena</artifactId>
-			<version>0.4.1</version>
-		</dependency>
+
+
+
+
+
 		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
@@ -288,6 +274,12 @@
 			<groupId>io.swagger</groupId>
 			<artifactId>swagger-codegen-maven-plugin</artifactId>
 			<version>2.2.2</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-databind</artifactId>
+					<groupId>com.fasterxml.jackson.core</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.google.code.maven-replacer-plugin</groupId>

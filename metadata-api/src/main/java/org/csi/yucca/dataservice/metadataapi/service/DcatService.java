@@ -436,7 +436,7 @@ public class DcatService extends AbstractService {
 		
 		return arrayOutputStream.toString();
 	}
-	
+	/*
 	public static void main(String[] args) {
 		com.hp.hpl.jena.rdf.model.Model model = com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel();
 
@@ -458,7 +458,6 @@ public class DcatService extends AbstractService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		/*
 		RDFDataMgr.read(model, in, null, Lang.JSONLD);
 		// read the RDF/XML file
 		//model.read(in,"json-ld");
@@ -469,7 +468,7 @@ public class DcatService extends AbstractService {
 		RDFDataMgr.write(arrayOutputStream, model, Lang.TURTLE);
 		System.out.println(arrayOutputStream.toString());
 		
-		*/
 		
 	}
+		*/
 }
