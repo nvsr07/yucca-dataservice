@@ -426,7 +426,6 @@ public class DcatService extends AbstractService {
 
 	
 	private String convertToTurtle(String json) {
-		try {
 		com.hp.hpl.jena.rdf.model.Model model = com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel();
 		InputStream in = new ByteArrayInputStream(json.getBytes());
 		RDFDataMgr.read(model, in, null, Lang.JSONLD);
@@ -436,10 +435,6 @@ public class DcatService extends AbstractService {
 		
 		
 		return arrayOutputStream.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 	
 	public static void main(String[] args) {
