@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class DatasetSubtypeResponse implements Response{
+public class DatasetSubtypeResponse extends Response{
 
 	private Integer idDatasetSubtype;
 	private String datasetSubtype;

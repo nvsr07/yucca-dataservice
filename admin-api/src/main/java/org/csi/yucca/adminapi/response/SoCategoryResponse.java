@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class SoCategoryResponse implements Response{
+public class SoCategoryResponse extends Response{
 	
 	private Integer idSoCategory;
 	private String socategorycode;

@@ -18,7 +18,7 @@ public interface TagMapper {
 	String TAG_TABLE = Constants.SCHEMA_DB + ".yucca_d_tag";
 	
 	public static final String SELECT =
-			" FROM " + TAG_TABLE + " " + 
+			" FROM " + TAG_TABLE + " where id_ecosystem= #{ecosystemCode} " + 
 	
 			"<if test=\"sortList != null\">" +
 				" ORDER BY " +
@@ -80,7 +80,7 @@ public interface TagMapper {
 				" SELECT id_tag, tagcode, langit, langen, id_ecosystem ",
 				SELECT,
              "</script>"}) 
-	List<Tag> selectTagAllLanguage(@Param("sortList") List<String> sortList);
+	List<Tag> selectTagAllLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") Integer ecosystemCode);
 	
 	
 	@Results({
@@ -93,7 +93,7 @@ public interface TagMapper {
 				" SELECT id_tag, tagcode, langit, id_ecosystem ",
 				SELECT,
              "</script>"}) 
-	List<Tag> selectTagITLanguage(@Param("sortList") List<String> sortList);
+	List<Tag> selectTagITLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") Integer ecosystemCode);
 	
 
 	@Results({
@@ -106,7 +106,7 @@ public interface TagMapper {
 				" SELECT id_tag, tagcode, langen, id_ecosystem ",
 				SELECT,
              "</script>"}) 
-	List<Tag> selectTagENLanguage(@Param("sortList") List<String> sortList);
+	List<Tag> selectTagENLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") Integer ecosystemCode);
 	
 
 	

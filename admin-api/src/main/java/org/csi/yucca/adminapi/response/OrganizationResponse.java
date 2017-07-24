@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class OrganizationResponse implements Response{
+public class OrganizationResponse extends Response{
 	
 	private Integer idOrganization;
 	private String organizationcode;

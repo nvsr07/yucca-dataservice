@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class EcosystemResponse implements Response{
+public class EcosystemResponse extends Response{
 	private Integer idEcosystem;
 	private String ecosystemcode;
 	private String description;

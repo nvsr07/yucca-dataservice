@@ -1,0 +1,20 @@
+{
+"data" : [
+    {
+    	"test-name": "PublicController_loadEcosystem_dataIns: deve restituire http status 200!",
+    	"adminapi.entityset": "ecosystems",
+    	"adminapi.sort": "idEcosystem-",
+    	"adminapi.organizationCode": 1,
+		"expected.httpStatus.response":200
+		
+     },
+    {
+    	"test-name": "PublicController_loadEcosystem_dataIns: viene passata come sort una property inesitente",
+    	"adminapi.entityset": "ecosystems",
+    	"adminapi.sort": "idEcosyste",
+    	"adminapi.organizationCode": 1,
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Property not found: idEcosyste"
+     }
+	]
+}

@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-public class LocationTypeResponse implements Response{
+public class LocationTypeResponse extends Response{
 
 	private Integer idLocationType;
 	private String locationtype;

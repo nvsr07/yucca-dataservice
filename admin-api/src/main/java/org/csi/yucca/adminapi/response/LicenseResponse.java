@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class LicenseResponse implements Response{
+public class LicenseResponse extends Response{
 
 	private String licensecode;
 	private String description;

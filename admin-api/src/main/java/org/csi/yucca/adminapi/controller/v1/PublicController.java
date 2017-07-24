@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("1/public")
 public class PublicController extends YuccaController{
 	
-//	https://www.petrikainulainen.net/programming/spring-framework/unit-testing-of-spring-mvc-controllers-configuration/
-	
 	private static final Logger logger = Logger.getLogger(PublicController.class);
 
 	@Autowired
@@ -156,13 +154,14 @@ public class PublicController extends YuccaController{
 	
 	@GetMapping("/tags")
 	public ResponseEntity<Object> loadTags( @RequestParam(required=false) final String sort, 
-			@RequestParam(required=false) final String lang  ) {
+			@RequestParam(required=false) final String lang,
+			@RequestParam(required=false) final Integer ecosystemCode ) {
 
 		logger.info("loadTags");
 
 		return run(new ApiCallable() {
 			public Object call() throws BadRequestException, NotFoundException, Exception {
-				return classificationService.selectTag(lang, sort);
+				return classificationService.selectTag(lang, sort, ecosystemCode);
 			}
 		}, logger);
 	}		

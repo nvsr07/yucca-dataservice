@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class PhenomenonResponse implements Response{
+public class PhenomenonResponse extends Response{
 	
 	private Integer idPhenomenon;
 	private String phenomenonname;

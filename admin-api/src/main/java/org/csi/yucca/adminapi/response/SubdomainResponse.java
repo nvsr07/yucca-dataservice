@@ -2,12 +2,15 @@ package org.csi.yucca.adminapi.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class SubdomainResponse implements Response{
+public class SubdomainResponse extends Response{
 
 	private Integer idSubdomain;
 	private String subdomaincode;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langIt;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langEn;
 	private String deprecated;
 	private Integer idDomain;

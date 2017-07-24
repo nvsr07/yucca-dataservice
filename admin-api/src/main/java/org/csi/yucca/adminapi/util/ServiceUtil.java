@@ -27,6 +27,12 @@ public class ServiceUtil {
 		return responsesList;
 	}
 	
+	public static  void checkMandatoryParameter(boolean isEmpty , String parameterName)throws BadRequestException{
+		if(isEmpty){
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));
+		}
+	}	
+
 	public static  void checkMandatoryParameter(Object parameterObj, String parameterName)throws BadRequestException{
 		if(parameterObj == null){
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));

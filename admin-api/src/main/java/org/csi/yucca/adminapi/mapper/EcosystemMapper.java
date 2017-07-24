@@ -18,11 +18,17 @@ public interface EcosystemMapper {
 	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + ".yucca_ecosystem";
 	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
 	
-	public static final String SELECT = 
+	public static final String SELECT_BY_ORGANIZATION_CODE = 
 			"SELECT ECOSYSTEM.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description "
 			+ "FROM " + ECOSYSTEM_TABLE + " ECOSYSTEM, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " ECOS_ORG "
 			+ "WHERE ECOS_ORG.id_organization = #{organizationCode} AND "
-			+ "ECOS_ORG.id_ecosystem = ECOSYSTEM.id_ecosystem " + 
+			+ "ECOS_ORG.id_ecosystem = ECOSYSTEM.id_ecosystem "; 
+
+	public static final String SELECT_ALL = 
+			"SELECT id_ecosystem, ecosystemcode, description "
+			+ "FROM " + ECOSYSTEM_TABLE + " "; 
+	
+	public static final String ORDER_BY =  
 			"<if test=\"sortList != null\">" +
 				" ORDER BY " +
 			
@@ -63,8 +69,23 @@ public interface EcosystemMapper {
         @Result(property = "description", column = "description")
       })
 	@Select({"<script>",
-				SELECT,
+		"SELECT ECOSYSTEM.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description "
+		+ "FROM " + ECOSYSTEM_TABLE + " ECOSYSTEM, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " ECOS_ORG "
+		+ "WHERE ECOS_ORG.id_organization = #{organizationCode} AND "
+		+ "ECOS_ORG.id_ecosystem = ECOSYSTEM.id_ecosystem ",
+				ORDER_BY,
              "</script>"}) 
 	List<Ecosystem> selectEcosystem(@Param("organizationCode") int id, @Param("sortList") List<String> sortList);
+	
+	@Results({
+        @Result(property = "idEcosystem", column = "id_ecosystem"),
+        @Result(property = "ecosystemcode", column = "ecosystemcode"),
+        @Result(property = "description", column = "description")
+      })
+	@Select({"<script>",
+				SELECT_ALL,
+				ORDER_BY,
+             "</script>"}) 
+	List<Ecosystem> selectAllEcosystem(@Param("organizationCode") int id, @Param("sortList") List<String> sortList);
 	
 }

@@ -1,0 +1,55 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_loadSubDomains_dataIn: deve restituire http status 200!",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "idSubdomain",
+    	"adminapi.domainCode": 1,
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":200
+     },
+    {
+		"test-name": "PublicController_loadSubDomains_dataIn: non viene passato parametro mandatario [domainCode]",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "idSubdomain",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Mandatory parameter: domainCode"
+     },
+     { 
+     	"test-name": "PublicController_loadSubDomains_dataIn: record not found, domainCode non presente in sistema!",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "idSubdomain",
+    	"adminapi.domainCode": 9999,
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":404,
+		"expected.errorName": "Record not found"    
+     },
+     {
+		"test-name": "PublicController_loadSubDomains_dataIn: viene passata come sort una property inesitente!",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "nome_campo_inesistente",
+    	"adminapi.domainCode": 1,
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Property not found: nome_campo_inesistente"
+     },
+    {
+		"test-name": "PublicController_loadSubDomains_dataIn: viene passaata come lang una lingua non supportata!",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "idSubdomain",
+    	"adminapi.domainCode": 1,
+    	"adminapi.lang": "lingua_non_supportata",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Language not supported: lingua_non_supportata"
+     },
+    {
+		"test-name": "PublicController_loadSubDomains_dataIn: bad request -> viene passata una stringa dove si aspetta in int [domainCode]",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "idSubdomain",
+    	"adminapi.domainCode": "e",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":400
+     }          
+	]
+}

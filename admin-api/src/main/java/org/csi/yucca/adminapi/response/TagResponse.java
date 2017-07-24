@@ -2,11 +2,14 @@ package org.csi.yucca.adminapi.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class TagResponse implements Response{
+public class TagResponse extends Response{
 	private Integer idTag;
 	private String tagcode;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langit;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langen;
 	private Integer idEcosystem;
 	

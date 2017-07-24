@@ -7,7 +7,11 @@ public enum Errors {
 	PROPERTY_NOT_FOUND    ("E03", "Property not found"),
     INTERNAL_SERVER_ERROR ("E04", "Internal Server Error"),
     LANGUAGE_NOT_SUPPORTED("E05", "Language not supported"),
-    PARAMETER_TYPE_ERROR  ("E06", "Parameter type error");
+    PARAMETER_TYPE_ERROR  ("E06", "Parameter type error"),
+    INTEGRITY_VIOLATION   ("E07", "Integrity violation"),
+    DUPLICATE_KEY         ("E08", "Duplicate key")
+    
+    ;
 	
 	private String errorName;
 	private String errorCode;
