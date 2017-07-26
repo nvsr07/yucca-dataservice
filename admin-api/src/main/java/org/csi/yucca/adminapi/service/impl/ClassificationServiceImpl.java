@@ -18,6 +18,7 @@ import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.Tag;
 import org.csi.yucca.adminapi.request.DomainRequest;
+import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
@@ -59,6 +60,73 @@ public class ClassificationServiceImpl implements ClassificationService{
 	@Autowired
 	private TagMapper tagMapper;
 
+	/**
+	 * DELETE ECOSYSTEM
+	 */
+	public ServiceResponse deleteEcosystem(Integer idEcosystem) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idEcosystem, "idEcosystem");
+	
+		int count = 0;
+		try {
+			count = ecosystemMapper.deleteEcosystem(idEcosystem);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/**
+	 * 
+	 * @param ecosystemRequest
+	 * @param idEcosystem
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse updateEcosystem(EcosystemRequest ecosystemRequest, Integer idEcosystem) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(ecosystemRequest, "ecosystemRequest");
+		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getDescription(), "description");
+		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getEcosystemcode(), "ecosystemcode");
+		ServiceUtil.checkMandatoryParameter(idEcosystem, "idEcosystem");
+
+		Ecosystem ecosystem  = new Ecosystem(idEcosystem,ecosystemRequest.getEcosystemcode(), ecosystemRequest.getDescription() );
+		ecosystemMapper.updateEcosystem(ecosystem);
+		
+		return ServiceResponse.build().object(new EcosystemResponse(ecosystem));
+	}
+	
+	/**
+	 * 
+	 * @param ecosystemRequest
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse insertEcosystem(EcosystemRequest ecosystemRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(ecosystemRequest, "ecosystemRequest");
+		
+		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getDescription(), "description"); 
+		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getEcosystemcode(), "ecosystemcode"); 
+		
+		Ecosystem  ecosystem = new Ecosystem();
+		BeanUtils.copyProperties(ecosystemRequest, ecosystem);
+		
+		insertEcosystem(ecosystem);
+		
+		return ServiceResponse.build().object(new EcosystemResponse(ecosystem));
+	}
+	
 	/**
 	 * SELECT TAG
 	 * 
@@ -121,7 +189,6 @@ public class ClassificationServiceImpl implements ClassificationService{
 		}
 
 		ServiceUtil.checkList(subdomainList);
-//		return ServiceUtil.getResponseList(subdomainList, SubdomainResponse.class);
 		return ServiceResponse.build().object(ServiceUtil.getResponseList(subdomainList, SubdomainResponse.class));
 		
 	}
@@ -294,7 +361,18 @@ public class ClassificationServiceImpl implements ClassificationService{
 	 * 
 	 ***************************************************************/
 	
-	
+	private void insertEcosystem(Ecosystem ecosystem)throws BadRequestException{
+		
+		try {
+			ecosystemMapper.insertEcosystem(ecosystem);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			// se passo un ecosystemcode gia inserito
+			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("ecosystemcode"));
+		}
+		
+	}
+
 	private List<Ecosystem> selectAllEcosystem(List<String> sortList){
 		return ecosystemMapper.selectAllEcosystem(0,sortList);
 	}

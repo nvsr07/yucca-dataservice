@@ -2,6 +2,9 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
@@ -57,7 +60,38 @@ public interface EcosystemMapper {
 	            "</foreach>" +
             "</if>";
 	
-
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE ECOSYSTEM
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_ECOSYSTEM = "DELETE FROM " + ECOSYSTEM_TABLE + " WHERE id_ecosystem=#{idEcosystem}";
+	@Delete(DELETE_ECOSYSTEM)
+	int deleteEcosystem(int idEcosystem);	
+	
+	/*************************************************************************
+	 * 
+	 * 					INSERT ECOSYSTEM
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_ECOSYSTEM = "INSERT INTO " + ECOSYSTEM_TABLE
+			+ "(ecosystemcode, description) VALUES (#{ecosystemcode}, #{description})";
+	@Insert(INSERT_ECOSYSTEM)
+	@Options(useGeneratedKeys=true, keyProperty="idEcosystem")
+	int insertEcosystem(Ecosystem ecosystem);
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE ECOSYSTEM
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_ECOSYSTEM = 
+			"UPDATE " + ECOSYSTEM_TABLE + 
+			" SET ecosystemcode=#{ecosystemcode}, description=#{description} WHERE id_ecosystem=#{idEcosystem}";
+	@Delete(UPDATE_ECOSYSTEM)
+	int updateEcosystem(Ecosystem ecosystem);	
+	
 	/*************************************************************************
 	 * 
 	 * 					selectDomainAllLanguage

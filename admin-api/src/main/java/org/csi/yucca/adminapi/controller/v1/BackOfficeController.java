@@ -5,6 +5,7 @@ import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DomainRequest;
+import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -27,6 +28,41 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ClassificationService classificationService;
 
+	@DeleteMapping("/ecosystems/{idEcosystem}")
+	public ResponseEntity<Object> deleteEcosystem(@PathVariable final Integer idEcosystem){
+		logger.info("deleteEcosystem");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.deleteEcosystem(idEcosystem);
+			}
+		}, logger);		
+	}
+	
+	@PostMapping("/ecosystems")
+	public ResponseEntity<Object> createEcosystem(@RequestBody final EcosystemRequest ecosystemRequest ){
+		logger.info("createEcosystem");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.insertEcosystem(ecosystemRequest);
+			}
+		}, logger);		
+	}
+	
+	
+	@PutMapping("/ecosystems/{idEcosystem}")
+	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest, @PathVariable final Integer idEcosystem ){
+		logger.info("updateEcosystem");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.updateEcosystem(ecosystemRequest, idEcosystem);
+			}
+		}, logger);		
+	}	
+	
+	
 	@DeleteMapping("/domains/{idDomain}")
 	public ResponseEntity<Object> deleteDomain(@PathVariable final Integer idDomain){
 		logger.info("deleteDomain");
@@ -37,7 +73,6 @@ public class BackOfficeController extends YuccaController{
 			}
 		}, logger);		
 	}
-	
 	
 	/**
 	 * CREATE SEQUENCE foo_a_seq;

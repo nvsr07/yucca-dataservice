@@ -55,6 +55,12 @@ public class ServiceUtil {
 		}
 	}
 
+	public static void checkMandatoryParameter(String parameterObj, String parameterName) throws BadRequestException {
+		if (parameterObj == null || parameterObj.isEmpty()) {
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));
+		}
+	}
+	
 	public static void checkList(List<?> list) throws NotFoundException {
 		if (list == null || list.isEmpty()) {
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
