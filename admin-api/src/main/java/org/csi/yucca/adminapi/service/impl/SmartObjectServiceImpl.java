@@ -16,11 +16,11 @@ import org.csi.yucca.adminapi.model.SoType;
 import org.csi.yucca.adminapi.model.SupplyType;
 import org.csi.yucca.adminapi.response.ExposureTypeResponse;
 import org.csi.yucca.adminapi.response.LocationTypeResponse;
-import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.response.SoCategoryResponse;
 import org.csi.yucca.adminapi.response.SoTypeResponse;
 import org.csi.yucca.adminapi.response.SupplyTypeResponse;
-import org.csi.yucca.adminapi.service.PublicSmartObjectService;
+import org.csi.yucca.adminapi.service.SmartObjectService;
+import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
+public class SmartObjectServiceImpl implements SmartObjectService{
 
 	@Autowired
 	private ExposureTypeMapper exposureTypeMapper;
@@ -46,7 +46,7 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 	@Autowired
 	private SupplyTypeMapper supplyTypeMapper;
 
-	public List<Response> selectSupplyType(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectSupplyType(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, SupplyType.class);
 		
@@ -54,10 +54,13 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, SupplyTypeResponse.class);
+//		return ServiceUtil.getResponseList(modelList, SupplyTypeResponse.class);
+		
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, SupplyTypeResponse.class));
+		
 	}			
 	
-	public List<Response> selectSoType(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectSoType(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, SoType.class);
 		
@@ -65,10 +68,11 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, SoTypeResponse.class);
+//		return ServiceUtil.getResponseList(modelList, SoTypeResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, SoTypeResponse.class));
 	}			
 
-	public List<Response> selectSoCategory(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectSoCategory(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, SoCategory.class);
 		
@@ -76,10 +80,11 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, SoCategoryResponse.class);
+//		return ServiceUtil.getResponseList(modelList, SoCategoryResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, SoCategoryResponse.class));
 	}			
 	
-	public List<Response> selectExposureType(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectExposureType(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, ExposureType.class);
 		
@@ -87,11 +92,12 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, ExposureTypeResponse.class);
+//		return ServiceUtil.getResponseList(modelList, ExposureTypeResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, ExposureTypeResponse.class));
 		
 	}		
 	
-	public List<Response> selectLocationType(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectLocationType(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, LocationType.class);
 		
@@ -99,7 +105,8 @@ public class PublicSmartObjectServiceImpl implements PublicSmartObjectService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, LocationTypeResponse.class);
+//		return ServiceUtil.getResponseList(modelList, LocationTypeResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, LocationTypeResponse.class));
 		
 	}			
 	

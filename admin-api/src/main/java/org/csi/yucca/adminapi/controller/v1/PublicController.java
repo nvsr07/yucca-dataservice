@@ -4,11 +4,12 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
-import org.csi.yucca.adminapi.service.PublicClassificationService;
-import org.csi.yucca.adminapi.service.PublicComponentService;
-import org.csi.yucca.adminapi.service.PublicSmartObjectService;
-import org.csi.yucca.adminapi.service.PublicTechnicalService;
+import org.csi.yucca.adminapi.service.ClassificationService;
+import org.csi.yucca.adminapi.service.ComponentService;
+import org.csi.yucca.adminapi.service.SmartObjectService;
+import org.csi.yucca.adminapi.service.TechnicalService;
 import org.csi.yucca.adminapi.util.ApiCallable;
+import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,16 +24,16 @@ public class PublicController extends YuccaController{
 	private static final Logger logger = Logger.getLogger(PublicController.class);
 
 	@Autowired
-	private PublicClassificationService classificationService;
+	private ClassificationService classificationService;
 	
 	@Autowired
-	private PublicComponentService componentService;  
+	private ComponentService componentService;  
 
 	@Autowired
-	private PublicSmartObjectService smartObjectService;    
+	private SmartObjectService smartObjectService;    
 	
 	@Autowired
-	private PublicTechnicalService technicalService;
+	private TechnicalService technicalService;
 
 	@GetMapping("/dataset_types")
 	public ResponseEntity<Object> loadDatasetTypes( @RequestParam(required=false) final String sort  ) {
@@ -40,7 +41,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadDatasetTypes");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return technicalService.selectDatasetType(sort);
 			}
 		}, logger);
@@ -54,7 +55,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadDatasetSubtypes");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return technicalService.selectDatasetSubtype(datasetTypeCode, sort);
 			}
 		}, logger);
@@ -66,7 +67,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadSupplyTypes");
 				
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectSupplyType(sort);
 			}
 		}, logger);
@@ -77,7 +78,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadSoType");
 				
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectSoType(sort);
 			}
 		}, logger);
@@ -88,7 +89,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadSoCategory");
 				
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectSoCategory(sort);
 			}
 		}, logger);
@@ -99,7 +100,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadLocationType");
 				
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectLocationType(sort);
 			}
 		}, logger);
@@ -110,7 +111,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadExposureType");
 				
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectExposureType(sort);
 			}
 		}, logger);
@@ -121,7 +122,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadPhenomenons");
 				
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return componentService.selectPhenomenon(sort);
 			}
 		}, logger);
@@ -133,7 +134,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadMeasureUnit");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return componentService.selectMeasureUnit(sort);
 			}
 		}, logger);
@@ -146,7 +147,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadDataTypes");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return componentService.selectDataType(sort);
 			}
 		}, logger);
@@ -160,7 +161,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadTags");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectTag(lang, sort, ecosystemCode);
 			}
 		}, logger);
@@ -173,7 +174,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadSubdomains");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectSubdomain(domainCode, lang, sort);
 			}
 		}, logger);
@@ -187,7 +188,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadOrganizations");
 
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectOrganization(ecosystemCode, sort);
 			}
 		}, logger);
@@ -200,7 +201,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadLicenses");
 		
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectLicense(sort);
 			}
 		}, logger);		
@@ -214,7 +215,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadEcosystems");
 		
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectEcosystem(organizationCode, sort);
 			}
 		}, logger);		
@@ -228,7 +229,7 @@ public class PublicController extends YuccaController{
 		logger.info("loadDomains");
 		
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectDomain(ecosystemCode, lang, sort);
 			}
 		}, logger);		

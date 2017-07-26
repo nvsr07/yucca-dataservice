@@ -8,7 +8,7 @@ public class DomainRequest {
 	private String langen;
 	private Integer idDomain;
 	private String domaincode;
-	private Integer deprecated;
+	public Integer deprecated;
 	private List<Integer> ecosystemCodeList;
 	
 	public String getLangit() {

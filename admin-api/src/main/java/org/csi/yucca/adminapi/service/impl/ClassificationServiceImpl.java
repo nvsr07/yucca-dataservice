@@ -3,6 +3,7 @@ package org.csi.yucca.adminapi.service.impl;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
+import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.DomainMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
@@ -21,12 +22,12 @@ import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
 import org.csi.yucca.adminapi.response.OrganizationResponse;
-import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
-import org.csi.yucca.adminapi.service.PublicClassificationService;
+import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.Languages;
+import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class PublicClassificationServiceImpl implements PublicClassificationService{
+public class ClassificationServiceImpl implements ClassificationService{
 	
 	@Autowired
 	private DomainMapper domainMapper;
@@ -59,6 +60,7 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 	private TagMapper tagMapper;
 
 	/**
+	 * SELECT TAG
 	 * 
 	 * @param lang
 	 * @param sort
@@ -67,7 +69,7 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public List<Response> selectTag(String lang, String sort, Integer ecosystemCode) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectTag(String lang, String sort, Integer ecosystemCode) throws BadRequestException, NotFoundException, Exception{
 
 		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
 		
@@ -89,14 +91,15 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		}
 
 		ServiceUtil.checkList(modelList);
-		return ServiceUtil.getResponseList(modelList, TagResponse.class);
+		
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, TagResponse.class));
 		
 	}	
 	
     /**
-     * 	
+     * 	SELECT SUBDOMAIN
      */
-	public List<Response> selectSubdomain(Integer domainCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectSubdomain(Integer domainCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(domainCode, "domainCode");
 		
@@ -118,12 +121,14 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		}
 
 		ServiceUtil.checkList(subdomainList);
-		return ServiceUtil.getResponseList(subdomainList, SubdomainResponse.class);
+//		return ServiceUtil.getResponseList(subdomainList, SubdomainResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(subdomainList, SubdomainResponse.class));
 		
 	}
 	
 	
 	/**
+	 * SELECT ORGANIZATIONS
 	 * 
 	 * @param ecosystemCode
 	 * @param sort
@@ -132,7 +137,7 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public List<Response> selectOrganization(Integer ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectOrganization(Integer ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
 		
@@ -142,15 +147,15 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		
 		ServiceUtil.checkList(organizationList);
 		
-		return ServiceUtil.getResponseList(organizationList, OrganizationResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(organizationList, OrganizationResponse.class));
 		
 	}		
 
 	
 	/**
-	 * 
+	 * SELECT LICENSE
 	 */
-	public List<Response> selectLicense(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectLicense(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, License.class);
 		
@@ -158,16 +163,13 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		
 		ServiceUtil.checkList(licenseList);
 		
-		return ServiceUtil.getResponseList(licenseList, LicenseResponse.class);
-		
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(licenseList, LicenseResponse.class));
 	}	
 	
 	/**
-	 * 
+	 * SELECT ECOSYSTEM
 	 */
-	public List<Response> selectEcosystem(Integer organizationCode, String sort) throws BadRequestException, NotFoundException, Exception{
-		
-//		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");
+	public ServiceResponse selectEcosystem(Integer organizationCode, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, Ecosystem.class);
 		
@@ -182,14 +184,61 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		
 		ServiceUtil.checkList(ecosystemList);
 		
-		return ServiceUtil.getResponseList(ecosystemList, EcosystemResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(ecosystemList, EcosystemResponse.class));
 		
 	}	
 	
 	/**
+	 * UPDATE DOMAIN
+	 */
+	public ServiceResponse updateDomain(DomainRequest domainRequest, Integer idDomain) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(domainRequest, "domainRequest");
+		ServiceUtil.checkMandatoryParameter(domainRequest.getDomaincode(), "domaincode");
+		ServiceUtil.checkMandatoryParameter(domainRequest.getEcosystemCodeList(), "ecosystemCodeList");
+		ServiceUtil.checkMandatoryParameter(idDomain, "idDomain");
+		ServiceUtil.checkMandatoryParameter(domainRequest.getLangen(), "langen");
+		ServiceUtil.checkMandatoryParameter(domainRequest.getLangit(), "langit");
+		ServiceUtil.checkNullInteger(domainRequest, "deprecated");
+		
+		domainMapper.deleteEcosystemDomain(idDomain);
+		
+		insertEcosystemDomain(domainRequest.getEcosystemCodeList(), idDomain);
+
+		domainMapper.updateDomain(idDomain, domainRequest.getDomaincode(), domainRequest.getLangit(), 
+				domainRequest.getLangen(), domainRequest.getDeprecated());
+		
+		return ServiceResponse.build().object(domainRequest);
+	}
+	
+	/**
+	 * DELETE DOMAIN
+	 */
+	public ServiceResponse deleteDomain(Integer idDomain) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idDomain, "idDomain");
+		
+		domainMapper.deleteEcosystemDomain(idDomain);
+	
+		int count = 0;
+		try {
+			count = domainMapper.deleteDomain(idDomain);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/**
 	 * 
 	 */
-	public Response insertDomain(DomainRequest domainRequest) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse insertDomain(DomainRequest domainRequest) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(domainRequest, "domainRequest");
 		
@@ -206,13 +255,13 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		insertDomain(domain);
 		insertEcosystemDomain(domainRequest.getEcosystemCodeList(), domain.getIdDomain());
 		
-		return new DomainResponse(domain);
+		return ServiceResponse.build().object(new DomainResponse(domain));
 	}
 	
 	/**
 	 * 
 	 */
-	public List<Response> selectDomain(Integer ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectDomain(Integer ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
 		
@@ -234,7 +283,7 @@ public class PublicClassificationServiceImpl implements PublicClassificationServ
 		}
 
 		ServiceUtil.checkList(domainList);
-		return ServiceUtil.getResponseList(domainList, DomainResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(domainList, DomainResponse.class));
 		
 	}
 	

@@ -3,8 +3,8 @@ package org.csi.yucca.adminapi.util;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 
-public interface ApiCallable {
+public interface ApiExecutable {
 	
-	ServiceResponse call() throws BadRequestException, NotFoundException, Exception;
+	void call() throws BadRequestException, NotFoundException, Exception;
 	
 }

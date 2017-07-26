@@ -104,8 +104,25 @@ public interface DomainMapper {
 	 * ***********************************************************************/
 	public static final String DELETE_DOMAIN = "DELETE FROM " + DOMAIN_TABLE + " WHERE id_domain=#{idDomain}";
 	@Delete(DELETE_DOMAIN)
-	void deleteDomain(int idDomain);	
+	int deleteDomain(int idDomain);	
 
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE DOMAIN
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_DOMAIN = 
+			"UPDATE " + DOMAIN_TABLE + 
+			" SET domaincode=#{domaincode}, langit=#{langit}, langen=#{langen}, deprecated=#{deprecated} WHERE id_domain=#{idDomain}";
+	@Delete(UPDATE_DOMAIN)
+	int updateDomain(@Param("idDomain") int idDomain,
+					 @Param("domaincode") String domaincode,
+					 @Param("langit") String langit,
+					 @Param("langen") String langen,
+					 @Param("deprecated") int deprecated);	
+	
 
 	/*************************************************************************
 	 * 
@@ -116,18 +133,6 @@ public interface DomainMapper {
 	@Delete(DELETE_ECOSYSTEM_DOMAIN)
 	void deleteEcosystemDomain(int idDomain);	
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	/*************************************************************************
 	 * 

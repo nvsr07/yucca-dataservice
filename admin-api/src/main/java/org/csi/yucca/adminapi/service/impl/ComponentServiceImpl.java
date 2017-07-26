@@ -13,8 +13,8 @@ import org.csi.yucca.adminapi.model.Phenomenon;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
-import org.csi.yucca.adminapi.response.Response;
-import org.csi.yucca.adminapi.service.PublicComponentService;
+import org.csi.yucca.adminapi.service.ComponentService;
+import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class PublicComponentServiceImpl implements PublicComponentService{
+public class ComponentServiceImpl implements ComponentService{
 
 	@Autowired
 	private DataTypeMapper dataTypeMapper;
@@ -43,7 +43,7 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public List<Response> selectPhenomenon(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectPhenomenon(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, Phenomenon.class);
 		
@@ -51,7 +51,8 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, PhenomenonResponse.class);
+//		return ServiceUtil.getResponseList(modelList, PhenomenonResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, PhenomenonResponse.class));
 		
 	}		
 	
@@ -64,7 +65,7 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public List<Response> selectMeasureUnit(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectMeasureUnit(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, MeasureUnit.class);
 		
@@ -72,8 +73,8 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, MeasureUnitResponse.class);
-		
+//		return ServiceUtil.getResponseList(modelList, MeasureUnitResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, MeasureUnitResponse.class));
 	}		
 	
 	/**
@@ -84,7 +85,7 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public List<Response> selectDataType(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectDataType(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, DataType.class);
 		
@@ -92,8 +93,8 @@ public class PublicComponentServiceImpl implements PublicComponentService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, DataTypeResponse.class);
-		
+//		return ServiceUtil.getResponseList(modelList, DataTypeResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, DataTypeResponse.class));
 	}		
 
 }

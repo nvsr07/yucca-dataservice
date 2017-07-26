@@ -5,16 +5,18 @@ import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DomainRequest;
-import org.csi.yucca.adminapi.service.PublicClassificationService;
+import org.csi.yucca.adminapi.service.ClassificationService;
+import org.csi.yucca.adminapi.util.ApiCallable;
+import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.csi.yucca.adminapi.util.ApiCallable;
 
 @RestController
 @RequestMapping("1/backoffice")
@@ -23,21 +25,19 @@ public class BackOfficeController extends YuccaController{
 	private static final Logger logger = Logger.getLogger(BackOfficeController.class);
 
 	@Autowired
-	private PublicClassificationService classificationService;
-	
+	private ClassificationService classificationService;
 
 	@DeleteMapping("/domains/{idDomain}")
-	public ResponseEntity<Object> deleteDomain(@PathVariable int idDomain){
+	public ResponseEntity<Object> deleteDomain(@PathVariable final Integer idDomain){
 		logger.info("deleteDomain");
 		
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
-//				return classificationService.insertDomain(domainRequest);
-				return null;
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.deleteDomain(idDomain);
 			}
 		}, logger);		
 	}
-
+	
 	
 	/**
 	 * CREATE SEQUENCE foo_a_seq;
@@ -55,13 +55,22 @@ public class BackOfficeController extends YuccaController{
 		logger.info("createDomain");
 		
 		return run(new ApiCallable() {
-			public Object call() throws BadRequestException, NotFoundException, Exception {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.insertDomain(domainRequest);
 			}
 		}, logger);		
 	}
-	
-	
+
+	@PutMapping("/domains/{idDomain}")
+	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest, @PathVariable final Integer idDomain ){
+		logger.info("updateDomain");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.updateDomain(domainRequest, idDomain);
+			}
+		}, logger);		
+	}	
 	
 }
 
