@@ -4,9 +4,12 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
+import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
+	
+	ServiceResponse insertOrganization(OrganizationRequest organizationRequest) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deleteEcosystem(Integer idEcosystem) throws BadRequestException, NotFoundException, Exception;
 	

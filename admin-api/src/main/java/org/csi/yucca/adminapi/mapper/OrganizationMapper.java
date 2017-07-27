@@ -2,6 +2,8 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
@@ -55,7 +57,32 @@ public interface OrganizationMapper {
 	            "</foreach>" +
             "</if>";
 	
-
+	/*************************************************************************
+	 * 
+	 * 					INSERT ECOSYSTEM ORGANIZATION
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_ECOSYSTEM_ORGANIZATION = 
+			"INSERT INTO " + R_ECOSYSTEM_ORGANIZATION_TABLE + "(id_ecosystem, id_organization)VALUES (#{idEcosystem}, #{idOrganization})";
+	
+	@Insert(INSERT_ECOSYSTEM_ORGANIZATION)
+	int insertEcosystemOrganization(@Param("idEcosystem") int idEcosystem, @Param("idOrganization") int idOrganization);
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					INSERT ORGANIZATION
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_ORGANIZATION 
+	= "INSERT INTO " + ORGANIZATION_TABLE + "( organizationcode, description) VALUES (#{organizationcode}, #{description})";
+	
+	@Insert(INSERT_ORGANIZATION)
+	@Options(useGeneratedKeys=true, keyProperty="idOrganization")
+	int insertOrganization(Organization organization);
+	
+	
+	
 	/*************************************************************************
 	 * 
 	 * 					select ORGANIZATIONS

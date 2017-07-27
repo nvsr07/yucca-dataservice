@@ -19,6 +19,7 @@ import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.Tag;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
+import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
@@ -303,7 +304,29 @@ public class ClassificationServiceImpl implements ClassificationService{
 	}
 	
 	/**
-	 * 
+	 *	INSERT ORGANIZATION 
+	 */
+	public ServiceResponse insertOrganization(OrganizationRequest organizationRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
+		
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "description"); 
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "organizationcode"); 
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList(), "ecosystemCodeList"); 
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList"); 
+		
+		Organization organization = new Organization();
+		BeanUtils.copyProperties(organizationRequest, organization);
+		
+		insertOrganization(organization);
+		insertEcosystemOrganization(organizationRequest.getEcosystemCodeList(), organization.getIdOrganization());
+		
+		return ServiceResponse.build().object(new OrganizationResponse(organization));
+	}
+	
+	
+	/**
+	 *	INSERT DOMAIN 
 	 */
 	public ServiceResponse insertDomain(DomainRequest domainRequest) throws BadRequestException, NotFoundException, Exception{
 		
@@ -396,6 +419,22 @@ public class ClassificationServiceImpl implements ClassificationService{
 		}
 		
 	}
+
+	private void insertOrganization(Organization organization)throws BadRequestException{
+		
+		try {
+			organizationMapper.insertOrganization(organization);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			// se passo un domaincode gia inserito
+			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("organizationcode"));
+		}
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			// se passo un ecosystem inesistente
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+		}
+		
+	}
 	
 	private void insertEcosystemDomain(List<Integer> ecosystemCodeList, Integer idDomain)throws BadRequestException{
 		
@@ -409,6 +448,20 @@ public class ClassificationServiceImpl implements ClassificationService{
 			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
 		}
 		
+	}
+	
+	
+	private void insertEcosystemOrganization(List<Integer> ecosystemCodeList, Integer idOrganization)throws BadRequestException{
+		
+		try {
+			for (Integer idEcosystem : ecosystemCodeList) {
+				organizationMapper.insertEcosystemOrganization(idEcosystem, idOrganization);
+			}
+		} 
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			// se passo un ecosystem inesistente
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+		}
 		
 	}
 	

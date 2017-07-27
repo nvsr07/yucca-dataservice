@@ -6,6 +6,7 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
+import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -27,7 +28,19 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private ClassificationService classificationService;
-
+	
+	
+	@PostMapping("/organizations")
+	public ResponseEntity<Object> createOrganization(@RequestBody final OrganizationRequest organizationRequest ){
+		logger.info("createOrganization");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.insertOrganization(organizationRequest);
+			}
+		}, logger);		
+	}
+	
 	@DeleteMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> deleteEcosystem(@PathVariable final Integer idEcosystem){
 		logger.info("deleteEcosystem");
