@@ -6,6 +6,17 @@ public class Organization {
 	private String organizationcode;
 	private String description;
 	
+	public Organization(Integer idOrganization, String organizationcode, String description) {
+		super();
+		this.idOrganization = idOrganization;
+		this.organizationcode = organizationcode;
+		this.description = description;
+	}
+	
+	public Organization() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getIdOrganization() {
 		return idOrganization;
 	}

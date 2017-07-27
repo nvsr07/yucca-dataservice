@@ -9,6 +9,10 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
 	
+	ServiceResponse updateOrganization(OrganizationRequest organizationRequest, Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse deleteOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse insertOrganization(OrganizationRequest organizationRequest) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deleteEcosystem(Integer idEcosystem) throws BadRequestException, NotFoundException, Exception;

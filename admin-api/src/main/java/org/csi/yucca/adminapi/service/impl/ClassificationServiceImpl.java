@@ -61,6 +61,52 @@ public class ClassificationServiceImpl implements ClassificationService{
 	@Autowired
 	private TagMapper tagMapper;
 
+	
+	/**
+	 * UPDATE ORGANIZATION
+	 */
+	public ServiceResponse updateOrganization(OrganizationRequest organizationRequest, Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "domaincode");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "domaincode");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList(), "ecosystemCodeList");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList");
+		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
+
+		organizationMapper.deleteEcosystemOrganization(idOrganization);
+		
+		insertEcosystemOrganization(organizationRequest.getEcosystemCodeList(), idOrganization);
+		
+		Organization organization = new Organization(idOrganization, organizationRequest.getOrganizationcode(), organizationRequest.getDescription());
+		organizationMapper.updateOrganization(organization);
+		
+		return ServiceResponse.build().object(new OrganizationResponse(organization));
+	}	
+	
+	/**
+	 * DELETE ORGANOZATION
+	 */
+	public ServiceResponse deleteOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
+		
+		organizationMapper.deleteEcosystemOrganization(idOrganization);
+
+		int count = 0;
+		try {
+			count = organizationMapper.deleteOrganization(idOrganization);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+	
 	/**
 	 * DELETE ECOSYSTEM
 	 */
@@ -272,12 +318,16 @@ public class ClassificationServiceImpl implements ClassificationService{
 		domainMapper.deleteEcosystemDomain(idDomain);
 		
 		insertEcosystemDomain(domainRequest.getEcosystemCodeList(), idDomain);
-
+		
 		domainMapper.updateDomain(idDomain, domainRequest.getDomaincode(), domainRequest.getLangit(), 
 				domainRequest.getLangen(), domainRequest.getDeprecated());
 		
 		return ServiceResponse.build().object(domainRequest);
 	}
+
+	
+	
+	
 	
 	/**
 	 * DELETE DOMAIN
@@ -444,8 +494,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 			}
 		} 
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			// se passo un ecosystem inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+			// se passo un ecosystem on un idDomain inesistente
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg(dataIntegrityViolationException.getRootCause().getMessage()));
 		}
 		
 	}
@@ -460,7 +510,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg(dataIntegrityViolationException.getRootCause().getMessage()));
 		}
 		
 	}

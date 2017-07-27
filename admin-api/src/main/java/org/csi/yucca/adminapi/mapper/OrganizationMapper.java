@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -57,6 +58,27 @@ public interface OrganizationMapper {
 	            "</foreach>" +
             "</if>";
 	
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE ECOSYSTEM-ORGANIZATION
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_ECOSYSTEM_ORGANIZATION = "DELETE FROM " + R_ECOSYSTEM_ORGANIZATION_TABLE + " WHERE id_organization=#{idOrganization}";
+	@Delete(DELETE_ECOSYSTEM_ORGANIZATION)
+	void deleteEcosystemOrganization(int idOrganization);	
+
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE ORGANIZATION
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_ORGANIZATION = "DELETE FROM " + ORGANIZATION_TABLE + " WHERE id_organization=#{idOrganization}";
+	@Delete(DELETE_ORGANIZATION)
+	int deleteOrganization(int idOrganization);	
+
+	
 	/*************************************************************************
 	 * 
 	 * 					INSERT ECOSYSTEM ORGANIZATION
@@ -81,6 +103,17 @@ public interface OrganizationMapper {
 	@Options(useGeneratedKeys=true, keyProperty="idOrganization")
 	int insertOrganization(Organization organization);
 	
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE ORGANIZATION
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_ORGANIZATION = 
+			"UPDATE " + ORGANIZATION_TABLE + 
+			" SET organizationcode=#{organizationcode}, description=#{description} WHERE id_organization=#{idOrganization}";
+	@Delete(UPDATE_ORGANIZATION)
+	int updateOrganization(Organization organization);	
 	
 	
 	/*************************************************************************

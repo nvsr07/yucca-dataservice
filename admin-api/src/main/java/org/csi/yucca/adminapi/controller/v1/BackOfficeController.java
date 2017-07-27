@@ -30,6 +30,29 @@ public class BackOfficeController extends YuccaController{
 	private ClassificationService classificationService;
 	
 	
+	
+	@PutMapping("/organizations/{idOrganization}")
+	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest, @PathVariable final Integer idOrganization ){
+		logger.info("updateOrganization");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.updateOrganization(organizationRequest, idOrganization);
+			}
+		}, logger);		
+	}	
+	
+	@DeleteMapping("/organizations/{idOrganization}")
+	public ResponseEntity<Object> deleteOrganization(@PathVariable final Integer idOrganization){
+		logger.info("deleteOrganization");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.deleteOrganization(idOrganization);
+			}
+		}, logger);		
+	}
+	
 	@PostMapping("/organizations")
 	public ResponseEntity<Object> createOrganization(@RequestBody final OrganizationRequest organizationRequest ){
 		logger.info("createOrganization");
