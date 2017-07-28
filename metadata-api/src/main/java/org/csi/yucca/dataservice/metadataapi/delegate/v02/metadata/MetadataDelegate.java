@@ -73,7 +73,7 @@ public class MetadataDelegate {
 		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
 		{
 			TEHttpSolrClient solrServer = KnoxSolrSingleton.getServer();
-			solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
+			//solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
 			return solrServer;
 		}
 		else {
