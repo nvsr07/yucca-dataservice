@@ -224,6 +224,10 @@
 					<artifactId>commons-codec</artifactId>
 					<groupId>commons-codec.wso2</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>commons-httpclient</artifactId>
+					<groupId>commons-httpclient.wso2</groupId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
