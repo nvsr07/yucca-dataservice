@@ -14,7 +14,21 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrRequest.METHOD;
+import org.apache.solr.client.solrj.impl.CloudSolrClient;
+import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.solr.client.solrj.impl.NoOpResponseParser;
+import org.apache.solr.client.solrj.request.GenericSolrRequest;
+import org.apache.solr.client.solrj.request.QueryRequest;
+import org.apache.solr.common.params.ModifiableSolrParams;
+import org.apache.solr.common.util.NamedList;
 import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
@@ -24,6 +38,10 @@ import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineMetadata;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineResult;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
+import org.csi.yucca.dataservice.metadataapi.singleton.CloudSolrSingleton;
+import org.csi.yucca.dataservice.metadataapi.singleton.KnoxSolrSingleton;
+import org.csi.yucca.dataservice.metadataapi.singleton.KnoxSolrSingleton.TEHttpSolrClient;
+import org.csi.yucca.dataservice.metadataapi.singleton.SolrRequestParsers;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.FacetParams;
 import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
@@ -50,6 +68,21 @@ public class MetadataDelegate {
 		return instance;
 	}
 
+	
+	private SolrClient getSolrServer() {
+		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
+		{
+			TEHttpSolrClient solrServer = KnoxSolrSingleton.getServer();
+			solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
+			return solrServer;
+		}
+		else {
+			CloudSolrClient solrServer = CloudSolrSingleton.getServer();
+			solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
+			return solrServer;
+		}
+	}
+	
 	public Result search(HttpServletRequest request, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
 			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
 			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream, 
@@ -60,10 +93,14 @@ public class MetadataDelegate {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 		
+		SolrClient solrServer= getSolrServer();
+
+		
 		
 		Map<String, String> params = new HashMap<String, String>();
-		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json");
+//		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json");
 
+		StringBuffer searchUrl = new StringBuffer();
 		// http://sdnet-master4.sdp.csi.it:8983/solr/sdp_int_metasearch_shard3_replica2/select?q=search_lemma:parametroQfq=domainCode:%22AGRICOLTURE%22&fq=sudomain:"sss"
 
 		if (q == null || q.equals(""))
@@ -232,7 +269,23 @@ public class MetadataDelegate {
 
 		log.info("[MetadataDelegate::search] searchUrl: " + searchUrl);
 
-		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
+// 		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
+		
+		GenericSolrRequest req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+		req.setResponseParser(new NoOpResponseParser("json"));
+		String resultString = "";
+		NamedList<Object> resp = null;
+		try {
+			resp = solrServer.request(req);
+		} catch (Exception e1) {
+			log.error("Errore durante la chiamata SOLR:"+e1.getMessage(),e1);
+			ErrorResponse error = new ErrorResponse();
+			error.setErrorCode("503");
+			error.setMessage(e1.getMessage());
+			resultString = error.toJson();
+		}
+		if (resp!=null)
+			resultString = (String)resp.get("response");
 
 		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
 
@@ -295,7 +348,10 @@ public class MetadataDelegate {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
-		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json&");
+		SolrClient solrServer= getSolrServer();
+
+		
+		StringBuffer searchUrl = new StringBuffer();
 
 		searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query,"UTF-8") + "&start=0&end=1");
 
@@ -322,7 +378,22 @@ public class MetadataDelegate {
 		
 		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
 
-		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
+//		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
+		GenericSolrRequest req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+		req.setResponseParser(new NoOpResponseParser("json"));
+		String resultString = "";
+		NamedList<Object> resp = null;
+		try {
+			resp = solrServer.request(req);
+		} catch (Exception e1) {
+			log.error("Errore durante la chiamata SOLR:"+e1.getMessage(),e1);
+			ErrorResponse error = new ErrorResponse();
+			error.setErrorCode("503");
+			error.setMessage(e1.getMessage());
+			resultString = error.toJson();
+		}
+		if (resp!=null)
+			resultString = (String)resp.get("response");
 
 		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
 
@@ -355,4 +426,6 @@ public class MetadataDelegate {
 	
 	
 
+	
+	
 }
