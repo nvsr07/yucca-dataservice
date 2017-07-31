@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -65,6 +66,24 @@ public interface TagMapper {
 	            "</foreach>" +
             "</if>";
 
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE TAG
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_TAG = 
+			"<script>" +
+			"UPDATE " + TAG_TABLE + 
+			" SET tagcode=#{tagcode}, langit=#{langit}, langen=#{langen} " +
+			"<if test=\"idEcosystem != null \">" +
+				", id_ecosystem=#{idEcosystem}" +
+	        "</if>" + " WHERE id_tag=#{idTag}" +
+	        "</script>" ;
+	@Delete(UPDATE_TAG)
+	int updateTag(Tag tag);	
+
+	
 	/*************************************************************************
 	 * 
 	 * 					INSERT TAG
@@ -75,6 +94,22 @@ public interface TagMapper {
 	@Insert(INSERT_TAG)
 	@Options(useGeneratedKeys=true, keyProperty="idTag")
 	int insertTag(Tag tag);
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					select tag by id
+	 * 
+	 * ***********************************************************************/
+	@Results({
+        @Result(property = "idTag", column = "id_tag"),
+        @Result(property = "tagcode", column = "tagcode"),
+        @Result(property = "langit", column = "langit"),
+        @Result(property = "langen", column = "langen"),
+        @Result(property = "idEcosystem", column = "id_ecosystem")
+	})
+	@Select({" SELECT id_tag, tagcode, langit, langen, id_ecosystem FROM " + TAG_TABLE + " WHERE id_tag=#{idTag}"}) 
+	Tag selectTagById(@Param("idTag") Integer idTag);
 	
 	
 	/*************************************************************************

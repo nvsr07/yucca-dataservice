@@ -63,7 +63,35 @@ public class ClassificationServiceImpl implements ClassificationService{
 	@Autowired
 	private TagMapper tagMapper;
 
+	/**
+	 * UPDATE TAG
+	 * 
+	 * @param tagRequest
+	 * @param idTag
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse updateTag(TagRequest tagRequest, Integer idTag) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(tagRequest, 			 "tagRequest");
+		ServiceUtil.checkMandatoryParameter(tagRequest.getTagcode(), "tagcode");
+		ServiceUtil.checkMandatoryParameter(tagRequest.getLangen(),  "langen");
+		ServiceUtil.checkMandatoryParameter(tagRequest.getLangit(),  "langit");
+		ServiceUtil.checkMandatoryParameter(idTag,                   "idTag");
+		
+		Tag tag = new Tag(idTag, tagRequest.getTagcode(), tagRequest.getLangit(), tagRequest.getLangen(), tagRequest.getIdEcosystem() );
+		tagMapper.updateTag(tag);
+		
+		if(tagRequest.getIdEcosystem() == null){
+			tag = tagMapper.selectTagById(idTag);
+		}
+		
+		return ServiceResponse.build().object(new TagResponse(tag));
+	}
 
+	
 	/**
 	 * INSERT TAG
 	 */

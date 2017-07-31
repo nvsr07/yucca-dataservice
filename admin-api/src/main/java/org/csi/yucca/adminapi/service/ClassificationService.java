@@ -11,6 +11,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
 	
+	ServiceResponse updateTag(TagRequest tagRequest, Integer idTag) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse insertTag(TagRequest tagRequest) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deleteLicense(Integer idLicense) throws BadRequestException, NotFoundException, Exception;

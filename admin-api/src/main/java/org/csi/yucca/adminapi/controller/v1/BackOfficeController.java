@@ -30,7 +30,18 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private ClassificationService classificationService;
-
+	
+	@PutMapping("/tags/{idTag}")
+	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest, @PathVariable final Integer idTag){
+		logger.info("updateTag");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.updateTag(tagRequest, idTag);
+			}
+		}, logger);		
+	}	
+	
 	
 	@PostMapping("/tags")
 	public ResponseEntity<Object> createTag(@RequestBody final TagRequest tagRequest ){
