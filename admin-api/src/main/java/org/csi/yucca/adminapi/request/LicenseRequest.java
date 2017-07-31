@@ -1,22 +1,10 @@
-package org.csi.yucca.adminapi.model;
+package org.csi.yucca.adminapi.request;
 
-public class License {
+public class LicenseRequest {
 
 	private Integer idLicense;
 	private String licensecode;
 	private String description;
-
-	public License(Integer idLicense, String licensecode, String description) {
-		super();
-		this.idLicense = idLicense;
-		this.licensecode = licensecode;
-		this.description = description;
-	}
-
-	public License() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	public Integer getIdLicense() {
 		return idLicense;

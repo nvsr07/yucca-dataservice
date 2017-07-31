@@ -7,7 +7,7 @@
 		"adminapi.entityset": "domains",
 		"adminapi.id-generated": "idDomain",
         "adminapi.message" : "{\"langen\": \"new-domain_en\", \"langit\": \"new-domain_it\", \"domaincode\": \"new-domain-7979\", \"deprecated\": 1, \"ecosystemCodeList\":[1]} ",
-        "adminapi.message.update" : "{\"langen\": \"updated-domain_en\", \"langit\": \"updated-domain_it\", \"domaincode\": \"new-domain-7979\", \"deprecated\": 1, \"ecosystemCodeList\":[1]} ",
+        "adminapi.message.update" :"{\"langen\": \"updated-domain_en\", \"langit\": \"updated-domain_it\", \"domaincode\": \"new-domain-7979\", \"deprecated\": 1, \"ecosystemCodeList\":[1]} ",
         "adminapi.username" : "",
         "adminapi.password" : "",
         "expected.httpStatus.response" : 200,
@@ -26,7 +26,7 @@
         "expected.httpStatus.response" : 200,
         "expected.httpStatus.update-response" : 400,
         "expected.httpStatus.delete-response" : 204,
-        "expected.update-errorName" : "Mandatory parameter: langen"
+        "expected.update-errorName" : "Mandatory parameter"
      },
 	 {
     	"test-name": "BackOfficeController_domain_dataIns: campo mandatario non presente",
@@ -37,7 +37,7 @@
         "adminapi.username" : "",
         "adminapi.password" : "",
         "expected.httpStatus.response" : 400,
-        "expected.errorName": "Mandatory parameter: langen"
+        "expected.errorName": "Mandatory parameter"
      },
      {
     	"test-name": "BackOfficeController_domain_dataIns: ecosystem non presente",
@@ -48,7 +48,7 @@
         "adminapi.username" : "",
         "adminapi.password" : "",
         "expected.httpStatus.response" : 400,
-        "expected.errorName": "Integrity violation: idEcosystem not present."
+        "expected.errorName": "Integrity violation"
      }
      
 ]

@@ -35,7 +35,9 @@ public class BackOfficeControllerTest extends TestBase{
 	public Iterator<Object[]> getFromJson(){  
 		return super.getFromJson(
 			     "/BackOfficeController_domain_dataIn.json",
-			     "/BackOfficeController_ecosystem_dataIn.json");
+			     "/BackOfficeController_ecosystem_dataIn.json",
+			     "/BackOfficeController_organization_dataIn.json",
+			     "/BackOfficeController_licenses_dataIn.json");
 	}	
 	
 	/**
@@ -73,7 +75,7 @@ public class BackOfficeControllerTest extends TestBase{
 		Integer idDomain =  validatableResponse.extract().path(dato.getString("adminapi.id-generated"));
 		// check dell'eventuale messaggio di errore:
 		if(!dato.optString("expected.errorName").isEmpty()){
-			validatableResponse.assertThat().body("errorName", Matchers.equalTo(dato.get("expected.errorName")));
+			validatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString("expected.errorName")));
 		}
 		return idDomain;
 
@@ -89,7 +91,8 @@ public class BackOfficeControllerTest extends TestBase{
 		ValidatableResponse updateValidatableResponse  = updateResponse.then().statusCode(dato.getInt("expected.httpStatus.update-response"));
 		// check dell'eventuale messaggio di errore:
 		if(!dato.optString("expected.update-errorName").isEmpty()){
-			updateValidatableResponse.assertThat().body("errorName", Matchers.equalTo(dato.get("expected.update-errorName")));
+//			updateValidatableResponse.assertThat().body("errorName", Matchers.contains(dato.get("expected.update-errorName")));
+			updateValidatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString("expected.update-errorName")));
 		}
 		
 	}

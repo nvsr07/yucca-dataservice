@@ -2,6 +2,8 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
@@ -63,6 +65,17 @@ public interface TagMapper {
 	            "</foreach>" +
             "</if>";
 
+	/*************************************************************************
+	 * 
+	 * 					INSERT TAG
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_TAG = "INSERT INTO " + TAG_TABLE
+			+ "(tagcode, langit, langen, id_ecosystem) VALUES (#{tagcode}, #{langit}, #{langen}, #{idEcosystem})";
+	@Insert(INSERT_TAG)
+	@Options(useGeneratedKeys=true, keyProperty="idTag")
+	int insertTag(Tag tag);
+	
 	
 	/*************************************************************************
 	 * 

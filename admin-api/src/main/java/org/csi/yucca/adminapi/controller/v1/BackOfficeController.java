@@ -6,7 +6,9 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
+import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -28,8 +30,64 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private ClassificationService classificationService;
+
 	
+	@PostMapping("/tags")
+	public ResponseEntity<Object> createTag(@RequestBody final TagRequest tagRequest ){
+		logger.info("createTag");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.insertTag(tagRequest);
+			}
+		}, logger);		
+	}
+
 	
+	@DeleteMapping("/licenses/{idLicense}")
+	public ResponseEntity<Object> deleteLicense(@PathVariable final Integer idLicense){
+		logger.info("deleteLicense");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.deleteLicense(idLicense);
+			}
+		}, logger);		
+	}
+
+	
+	@PutMapping("/licenses/{idLicense}")
+	public ResponseEntity<Object> updateLicense(@RequestBody final LicenseRequest licenseRequest, @PathVariable final Integer idLicense ){
+		logger.info("updateLicense");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.updateLicense(licenseRequest, idLicense);
+			}
+		}, logger);		
+	}	
+	
+	/**
+	 * CREATE SEQUENCE int_yucca.license_id_license_seq;
+       ALTER TABLE int_yucca.yucca_d_license ALTER COLUMN id_license SET DEFAULT nextval('int_yucca.license_id_license_seq');
+       ALTER TABLE int_yucca.yucca_d_license ALTER COLUMN id_license SET NOT NULL;
+       ALTER SEQUENCE int_yucca.license_id_license_seq OWNED BY int_yucca.yucca_d_license.id_license;    -- 8.2 or later
+       
+       ALTER SEQUENCE int_yucca.license_id_license_seq RESTART WITH 200;
+	 * @param licenseRequest
+	 * @return
+	 */
+	@PostMapping("/licenses")
+	public ResponseEntity<Object> createLicense(@RequestBody final LicenseRequest licenseRequest ){
+		logger.info("createLicense");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.insertLicense(licenseRequest);
+			}
+		}, logger);		
+	}
+
 	
 	@PutMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest, @PathVariable final Integer idOrganization ){

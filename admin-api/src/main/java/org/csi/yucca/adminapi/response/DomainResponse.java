@@ -31,7 +31,6 @@ public class DomainResponse extends Response{
 	
 	public DomainResponse(Errors errors) {
 		super(errors);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public Integer getIdDomain() {

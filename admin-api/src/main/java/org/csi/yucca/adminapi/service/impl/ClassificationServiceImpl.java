@@ -19,7 +19,9 @@ import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.Tag;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
+import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
@@ -61,6 +63,91 @@ public class ClassificationServiceImpl implements ClassificationService{
 	@Autowired
 	private TagMapper tagMapper;
 
+
+	/**
+	 * INSERT TAG
+	 */
+	public ServiceResponse insertTag(TagRequest tagRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(tagRequest, "tagRequest");
+		
+		ServiceUtil.checkMandatoryParameter(tagRequest.getLangen(), "langen"); 
+		ServiceUtil.checkMandatoryParameter(tagRequest.getLangit(), "langit"); 
+		ServiceUtil.checkMandatoryParameter(tagRequest.getTagcode(), "tagcode"); 
+		
+		Tag tag = new Tag();
+		BeanUtils.copyProperties(tagRequest, tag);
+
+		insertTag(tag);
+		
+		return ServiceResponse.build().object(new TagResponse(tag));
+	}
+
+	
+	
+	/**
+	 * DELETE ECOSYSTEM
+	 */
+	public ServiceResponse deleteLicense(Integer idLicense) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idLicense, "idLicense");
+	
+		int count = 0;
+		try {
+			count = licenseMapper.deleteLicense(idLicense);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/**
+	 * UPDATE LICENSE
+	 * 
+	 * @param licenseRequest
+	 * @param idLicense
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse updateLicense(LicenseRequest licenseRequest, Integer idLicense) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(licenseRequest, "licenseRequest");
+		ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "description");
+		ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode");
+		ServiceUtil.checkMandatoryParameter(idLicense, "idLicense");
+
+		License license = new License(idLicense, licenseRequest.getLicensecode(), licenseRequest.getDescription());
+		licenseMapper.updateLicense(license);
+		
+		return ServiceResponse.build().object(new LicenseResponse(license));
+	}
+
+	
+	/**
+	 * INSERT LICENSE
+	 */
+	public ServiceResponse insertLicense(LicenseRequest licenseRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(licenseRequest, "licenseRequest");
+		
+		ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "description"); 
+		ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode"); 
+		
+		License license = new License();
+		BeanUtils.copyProperties(licenseRequest, license);
+
+		insertLicense(license);
+		
+		return ServiceResponse.build().object(new LicenseResponse(license));
+	}
 	
 	/**
 	 * UPDATE ORGANIZATION
@@ -443,9 +530,35 @@ public class ClassificationServiceImpl implements ClassificationService{
 			// se passo un ecosystemcode gia inserito
 			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("ecosystemcode"));
 		}
-		
 	}
 
+	private void insertLicense(License license)throws BadRequestException{
+		
+		try {
+			licenseMapper.insertLicense(license);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			// se passo un licensecode gia inserito
+			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("licensecode"));
+		}
+	}
+	
+	private void insertTag(Tag tag)throws BadRequestException{
+		
+		try {
+			tagMapper.insertTag(tag);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			// se passo un licensecode gia inserito
+			throw new BadRequestException(Errors.DUPLICATE_KEY);
+		}
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			// se passo un ecosystem inesistente
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+		}
+	}
+	
+	
 	private List<Ecosystem> selectAllEcosystem(List<String> sortList){
 		return ecosystemMapper.selectAllEcosystem(0,sortList);
 	}

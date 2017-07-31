@@ -4,10 +4,20 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
+import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
+	
+	ServiceResponse insertTag(TagRequest tagRequest) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse deleteLicense(Integer idLicense) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse updateLicense(LicenseRequest licenseRequest, Integer idLicense) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse insertLicense(LicenseRequest licenseRequest) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse updateOrganization(OrganizationRequest organizationRequest, Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
 	
