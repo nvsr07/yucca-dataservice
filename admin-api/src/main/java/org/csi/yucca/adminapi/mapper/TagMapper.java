@@ -66,6 +66,14 @@ public interface TagMapper {
 	            "</foreach>" +
             "</if>";
 
+	/*************************************************************************
+	 * 
+	 * 					DELETE TAG
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_TAG = "DELETE FROM " + TAG_TABLE + " WHERE id_tag=#{idTag}";
+	@Delete(DELETE_TAG)
+	int deleteTag(int idTag);	
 	
 	/*************************************************************************
 	 * 

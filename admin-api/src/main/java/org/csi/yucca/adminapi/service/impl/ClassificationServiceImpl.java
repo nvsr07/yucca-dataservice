@@ -62,7 +62,29 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private TagMapper tagMapper;
-
+	
+	/**
+	 * DELETE TAG
+	 */
+	public ServiceResponse deleteTag(Integer idTag) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idTag, "idTag");
+	
+		int count = 0;
+		try {
+			count = tagMapper.deleteTag(idTag);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
 	/**
 	 * UPDATE TAG
 	 * 

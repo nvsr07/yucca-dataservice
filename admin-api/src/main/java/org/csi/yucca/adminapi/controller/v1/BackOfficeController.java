@@ -31,6 +31,17 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ClassificationService classificationService;
 	
+	@DeleteMapping("/tags/{idTag}")
+	public ResponseEntity<Object> deleteTag(@PathVariable final Integer idTag){
+		logger.info("deleteTag");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.deleteTag(idTag);
+			}
+		}, logger);		
+	}
+	
 	@PutMapping("/tags/{idTag}")
 	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest, @PathVariable final Integer idTag){
 		logger.info("updateTag");
