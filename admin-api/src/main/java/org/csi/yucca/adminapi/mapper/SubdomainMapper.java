@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -66,6 +67,20 @@ public interface SubdomainMapper {
 	            "</foreach>" +
             "</if>";
 
+	/*************************************************************************
+	 * 
+	 * 					UPDATE SUBDOMAIN
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_SUBDOMAIN = 
+			"UPDATE " + SUBDOMAIN_TABLE + " " +
+			   "SET subdomaincode=#{subdomaincode}, lang_it=#{langIt}, lang_en=#{langEn}, deprecated=#{deprecated}, " + 
+			       "id_domain=#{idDomain} " +
+			 "WHERE id_subdomain=#{idSubdomain} " ;
+			
+	@Delete(UPDATE_SUBDOMAIN)
+	int updateSubdomain(Subdomain subdomain);	
+	
 	
 	/*************************************************************************
 	 * 

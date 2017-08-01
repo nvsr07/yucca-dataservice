@@ -63,7 +63,30 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private TagMapper tagMapper;
+	
+	/**
+	 * UPDATE SUBDOMAIN
+	 */
+	public ServiceResponse updateSubdomain(SubdomainRequest subdomainRequest, Integer idSubdomain) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idSubdomain, "idSubdomain");
+		ServiceUtil.checkMandatoryParameter(subdomainRequest,                    "subdomainRequest");
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangEn(),        "langEn");
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangIt(),        "langIt");
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getSubdomaincode(), "subdomaincode");
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getIdDomain(),      "idDomain");
+		
+		Subdomain subdomain = new Subdomain();
+		BeanUtils.copyProperties(subdomainRequest, subdomain);
+		subdomain.setIdSubdomain(idSubdomain);
+		
+		int count = subdomainMapper.updateSubdomain(subdomain);
+		checkCount(count);
+		
+		return ServiceResponse.build().object(new SubdomainResponse(subdomain));
+	}
 
+	
 	/**
 	 * INSERT SUBDOMAIN
 	 * 
@@ -132,7 +155,9 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(idTag,                   "idTag");
 		
 		Tag tag = new Tag(idTag, tagRequest.getTagcode(), tagRequest.getLangit(), tagRequest.getLangen(), tagRequest.getIdEcosystem() );
-		tagMapper.updateTag(tag);
+		int count = tagMapper.updateTag(tag);
+		
+		checkCount(count);
 		
 		if(tagRequest.getIdEcosystem() == null){
 			tag = tagMapper.selectTagById(idTag);
@@ -203,11 +228,12 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(idLicense, "idLicense");
 
 		License license = new License(idLicense, licenseRequest.getLicensecode(), licenseRequest.getDescription());
-		licenseMapper.updateLicense(license);
+		int count = licenseMapper.updateLicense(license);
+		
+		checkCount(count);
 		
 		return ServiceResponse.build().object(new LicenseResponse(license));
 	}
-
 	
 	/**
 	 * INSERT LICENSE
@@ -311,7 +337,9 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(idEcosystem, "idEcosystem");
 
 		Ecosystem ecosystem  = new Ecosystem(idEcosystem,ecosystemRequest.getEcosystemcode(), ecosystemRequest.getDescription() );
-		ecosystemMapper.updateEcosystem(ecosystem);
+		int count = ecosystemMapper.updateEcosystem(ecosystem);
+		
+		checkCount(count);
 		
 		return ServiceResponse.build().object(new EcosystemResponse(ecosystem));
 	}
@@ -713,5 +741,12 @@ public class ClassificationServiceImpl implements ClassificationService{
 		}
 		
 	}
+	
+	private void checkCount(int count)throws NotFoundException{
+		if (count == 0 ) {
+			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
+		}
+	}
+
 	
 }

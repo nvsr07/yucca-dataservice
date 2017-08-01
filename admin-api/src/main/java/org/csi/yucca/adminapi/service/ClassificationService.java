@@ -12,6 +12,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
 	
+	ServiceResponse updateSubdomain(SubdomainRequest subdomainRequest, Integer idSubdomain) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse insertSubdomain(SubdomainRequest subdomainRequest) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deleteTag(Integer idTag) throws BadRequestException, NotFoundException, Exception;

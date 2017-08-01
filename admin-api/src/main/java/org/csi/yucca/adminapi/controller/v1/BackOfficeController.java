@@ -33,6 +33,18 @@ public class BackOfficeController extends YuccaController{
 	private ClassificationService classificationService;
 
 	
+	@PutMapping("/subdomains/{idSubdomain}")
+	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest, @PathVariable final Integer idSubdomain ){
+		logger.info("updateSubdomain");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.updateSubdomain(subdomainRequest, idSubdomain);
+			}
+		}, logger);		
+	}	
+
+	
 	/**
 	 * CREATE SUBDOMAIN
 	 * 
