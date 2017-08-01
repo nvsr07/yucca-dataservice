@@ -69,7 +69,7 @@ public class MetadataDelegate {
 		}
 		else {
 			CloudSolrClient solrServer = CloudSolrSingleton.getServer();
-			solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
+			//solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
 			return solrServer;
 		}
 	}
