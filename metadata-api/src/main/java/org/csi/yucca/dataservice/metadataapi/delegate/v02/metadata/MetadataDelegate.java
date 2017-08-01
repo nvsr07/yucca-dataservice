@@ -14,20 +14,12 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest.METHOD;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
-import org.apache.solr.client.solrj.impl.HttpSolrClient;
 import org.apache.solr.client.solrj.impl.NoOpResponseParser;
 import org.apache.solr.client.solrj.request.GenericSolrRequest;
-import org.apache.solr.client.solrj.request.QueryRequest;
-import org.apache.solr.common.params.ModifiableSolrParams;
 import org.apache.solr.common.util.NamedList;
 import org.csi.yucca.dataservice.metadataapi.delegate.security.SecurityDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
@@ -44,7 +36,6 @@ import org.csi.yucca.dataservice.metadataapi.singleton.KnoxSolrSingleton.TEHttpS
 import org.csi.yucca.dataservice.metadataapi.singleton.SolrRequestParsers;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.FacetParams;
-import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;

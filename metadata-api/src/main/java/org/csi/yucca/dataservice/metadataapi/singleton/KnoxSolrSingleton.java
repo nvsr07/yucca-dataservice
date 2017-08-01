@@ -1,37 +1,22 @@
 package org.csi.yucca.dataservice.metadataapi.singleton;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.ConnectException;
-import java.net.SocketTimeoutException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
 import org.apache.solr.client.solrj.ResponseParser;
-import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
-import org.apache.solr.client.solrj.impl.InputStreamResponseParser;
-import org.apache.solr.client.solrj.impl.HttpSolrClient.RemoteSolrException;
 import org.apache.solr.common.util.Base64;
 import org.apache.solr.common.util.NamedList;
-import org.apache.solr.common.util.Utils;
-import org.apache.commons.httpclient.HttpClient;
+//import org.apache.commons.httpclient.HttpClient;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 public class KnoxSolrSingleton {
 	private TEHttpSolrClient server;

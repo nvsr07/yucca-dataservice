@@ -2,10 +2,8 @@ package org.csi.yucca.dataservice.metadataapi.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +17,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;

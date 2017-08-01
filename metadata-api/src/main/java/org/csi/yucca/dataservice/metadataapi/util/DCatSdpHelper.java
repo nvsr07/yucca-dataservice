@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatAgent;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatObject;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatTheme;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.IdString;
 

@@ -1,11 +1,18 @@
 package org.csi.yucca.dataservice.metadataapi.delegate.resources;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.HttpClientBuilder;
+//import org.apache.commons.httpclient.HttpClient;
+//import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.util.Config;
 import org.csi.yucca.dataservice.metadataapi.util.HttpUtil;
@@ -43,8 +50,6 @@ public class ResourcesDelegate {
 
 	}
 
-	
-
 	public byte[] loadDatasetIcon(String tenant, String datasetCode) throws IOException {
 		log.debug("[ResourcesDelegate::loadDatasetIcon] START - tenant: " + tenant + " | dataset: " + datasetCode);
 		String apiBaseUrl = Config.getInstance().getManagementBaseUrl();
@@ -52,13 +57,26 @@ public class ResourcesDelegate {
 		// http://localhost:8080/datamanagementapi/api/dataset/icon/smartlab/Provalimiti0_401
 		String completeUrl = apiBaseUrl + "dataset/icon/" + tenant + "/" + datasetCode + "/";
 
-		GetMethod getMethod = new GetMethod(completeUrl);
-		HttpClient httpclient = new HttpClient();
-		int result = httpclient.executeMethod(getMethod);
-		log.debug("[ResourcesDelegate::loadDatasetIcon] result: " + result);
+		// GetMethod getMethod = new GetMethod(completeUrl);
+		// HttpClient httpclient = new HttpClient();
+		// int result = httpClient.execute(getMethod);
 
-		return getMethod.getResponseBody();
+		HttpGet getMethod = new HttpGet(completeUrl);
+		HttpClient httpClient = HttpClientBuilder.create().build();
+		HttpResponse response = httpClient.execute(getMethod);
+		HttpEntity entity = response.getEntity();
 
+		// log.debug("[ResourcesDelegate::loadDatasetIcon] result: " + result);
+
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		InputStream inputStream = entity.getContent();
+		byte[] tmp = new byte[1024];
+		int chunk;
+		while ((chunk = inputStream.read(tmp)) != -1) {
+			buffer.write(tmp, 0, chunk);
+		}
+		// return getMethod.getResponseBody();
+		return buffer.toByteArray();
 	}
 
 }

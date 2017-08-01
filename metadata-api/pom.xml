@@ -14,7 +14,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
-    	<maven.compiler.target>1.7</maven.compiler.target>		
+		<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
 	<build>
 		<plugins>
@@ -92,9 +92,11 @@
 						<replacement>
 							<token>&lt;/head&gt;</token>
 							<value>&lt;link
-								rel="shortcut icon" href="/metadataapi/favicon.png"&gt;&lt;link
+								rel="shortcut icon"
+								href="/metadataapi/favicon.png"&gt;&lt;link
 								rel="stylesheet"
-								type="text/css" href="/metadataapi/style/swagger.css"&gt;&lt;/head&gt;</value>
+								type="text/css"
+								href="/metadataapi/style/swagger.css"&gt;&lt;/head&gt;</value>
 						</replacement>
 					</replacements>
 				</configuration>
@@ -119,26 +121,16 @@
 
 	</repositories>
 	<dependencies>
-<!--  	
+		<!-- <dependency> <groupId>org.apache.jena</groupId> <artifactId>jena-core</artifactId> 
+			<version>2.13.0</version> </dependency> <dependency> <groupId>org.apache.jena</groupId> 
+			<artifactId>jena-arq</artifactId> <version>2.13.0</version> </dependency> -->
 		<dependency>
-		    <groupId>org.apache.jena</groupId>
-		    <artifactId>jena-core</artifactId>
-		    <version>2.13.0</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.apache.jena</groupId>
-		    <artifactId>jena-arq</artifactId>
-		    <version>2.13.0</version>
-		    
-		</dependency>
-		-->
-  <dependency>
-    <groupId>org.apache.jena</groupId>
-    <artifactId>apache-jena-libs</artifactId>
-    <type>pom</type>
-		    <version>2.13.0</version>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>apache-jena-libs</artifactId>
+			<type>pom</type>
+			<version>2.13.0</version>
 
-  </dependency>
+		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -208,6 +200,7 @@
 			<artifactId>httpmime</artifactId>
 			<version>4.4.1</version>
 		</dependency>
+
 		<!-- <dependency> <groupId>org.twitter4j</groupId> <artifactId>twitter4j-core</artifactId> 
 			<version>[4.0,)</version> </dependency> -->
 
@@ -371,7 +364,7 @@
 			<properties>
 				<webXmlPath>${project.build.directory}/checkout/matadataapi/resources/pochdp/</webXmlPath>
 			</properties>
-		</profile>		
+		</profile>
 		<profile>
 			<id>prod</id>
 			<build>
