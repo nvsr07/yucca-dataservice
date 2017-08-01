@@ -69,7 +69,7 @@ public class MetadataDelegate {
 		}
 		else {
 			CloudSolrClient solrServer = CloudSolrSingleton.getServer();
-			//solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
+			solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
 			return solrServer;
 		}
 	}
@@ -262,7 +262,8 @@ public class MetadataDelegate {
 
 // 		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
 		
-		GenericSolrRequest req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+		//GenericSolrRequest req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+		GenericSolrRequest req = new GenericSolrRequest(METHOD.GET,"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
 		req.setResponseParser(new NoOpResponseParser("json"));
 		String resultString = "";
 		NamedList<Object> resp = null;
