@@ -32,7 +32,32 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ClassificationService classificationService;
 
+	/**
+	 * 
+	 * DELETE SUBDOMAIN
+	 * 
+	 * @param idSubdomain
+	 * @return
+	 */
+	@DeleteMapping("/subdomains/{idSubdomain}")
+	public ResponseEntity<Object> deleteSubdomain(@PathVariable final Integer idSubdomain){
+		logger.info("deleteSubdomain");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.deleteSubdomain(idSubdomain);
+			}
+		}, logger);		
+	}
 	
+	/**
+	 * 
+	 * UPDATE SUBDOMAIN
+	 * 
+	 * @param subdomainRequest
+	 * @param idSubdomain
+	 * @return
+	 */
 	@PutMapping("/subdomains/{idSubdomain}")
 	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest, @PathVariable final Integer idSubdomain ){
 		logger.info("updateSubdomain");

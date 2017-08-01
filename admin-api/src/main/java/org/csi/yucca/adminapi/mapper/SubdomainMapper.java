@@ -67,6 +67,17 @@ public interface SubdomainMapper {
 	            "</foreach>" +
             "</if>";
 
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE SUBDOMAIN
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_SUBDOMAIN = "DELETE FROM " + SUBDOMAIN_TABLE + " WHERE id_subdomain=#{idSubdomain}";
+	@Delete(DELETE_SUBDOMAIN)
+	int deleteSubdomain(int idSubdomain);	
+	
+	
 	/*************************************************************************
 	 * 
 	 * 					UPDATE SUBDOMAIN

@@ -65,6 +65,28 @@ public class ClassificationServiceImpl implements ClassificationService{
 	private TagMapper tagMapper;
 	
 	/**
+	 * DELETE SUBDOMAIN
+	 */
+	public ServiceResponse deleteSubdomain(Integer idSubdomain) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idSubdomain, "idSubdomain");
+	
+		int count = 0;
+		try {
+			count = subdomainMapper.deleteSubdomain(idSubdomain);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/**
 	 * UPDATE SUBDOMAIN
 	 */
 	public ServiceResponse updateSubdomain(SubdomainRequest subdomainRequest, Integer idSubdomain) throws BadRequestException, NotFoundException, Exception{
