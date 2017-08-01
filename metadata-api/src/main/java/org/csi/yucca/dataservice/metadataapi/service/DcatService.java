@@ -279,7 +279,7 @@ public class DcatService extends AbstractService {
 					// String keyWords = "";
 					if (metadataST.getTags() != null) {
 						for (String tag : metadataST.getTags()) {
-							dsDCAT.addKeyword(tag);
+							dsDCAT.addKeyword(tag.replaceAll("[&]", "and"));
 						}
 					}
 					dsDCAT.setTheme(DCatSdpHelper.getDcatTheme(metadataST.getDomainCode()));
