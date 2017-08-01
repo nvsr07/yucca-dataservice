@@ -8,6 +8,7 @@ import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.util.ApiCallable;
@@ -30,6 +31,33 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private ClassificationService classificationService;
+
+	
+	/**
+	 * CREATE SUBDOMAIN
+	 * 
+	 * CREATE SEQUENCE int_yucca.subdomain_id_subdomain_seq;
+     * ALTER TABLE int_yucca.yucca_d_subdomain ALTER COLUMN id_subdomain SET DEFAULT nextval('int_yucca.subdomain_id_subdomain_seq');
+     * ALTER TABLE int_yucca.yucca_d_subdomain ALTER COLUMN id_subdomain SET NOT NULL;
+     * ALTER SEQUENCE int_yucca.subdomain_id_subdomain_seq OWNED BY int_yucca.yucca_d_subdomain.id_subdomain;    -- 8.2 or later
+     * 
+     * ALTER SEQUENCE int_yucca.subdomain_id_subdomain_seq RESTART WITH 200;
+     * 
+     * AGGIUNGERE CHIAVE UNIVOCA PER subdomaincode NELLA TABELLA SUBDOMAIN.
+	 * 
+	 * @param subdomainRequest
+	 * @return
+	 */
+	@PostMapping("/subdomains")
+	public ResponseEntity<Object> createSubdomain(@RequestBody final SubdomainRequest subdomainRequest ){
+		logger.info("createSubdomain");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.insertSubdomain(subdomainRequest);
+			}
+		}, logger);		
+	}
 	
 	@DeleteMapping("/tags/{idTag}")
 	public ResponseEntity<Object> deleteTag(@PathVariable final Integer idTag){

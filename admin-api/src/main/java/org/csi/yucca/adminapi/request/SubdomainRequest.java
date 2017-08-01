@@ -1,6 +1,6 @@
-package org.csi.yucca.adminapi.model;
+package org.csi.yucca.adminapi.request;
 
-public class Subdomain {
+public class SubdomainRequest {
 
 	private Integer idSubdomain;
 	private String subdomaincode;
@@ -41,20 +41,20 @@ public class Subdomain {
 		this.langEn = langEn;
 	}
 
-	public Integer getIdDomain() {
-		return idDomain;
-	}
-
-	public void setIdDomain(Integer idDomain) {
-		this.idDomain = idDomain;
-	}
-
 	public int getDeprecated() {
 		return deprecated;
 	}
 
 	public void setDeprecated(int deprecated) {
 		this.deprecated = deprecated;
+	}
+
+	public Integer getIdDomain() {
+		return idDomain;
+	}
+
+	public void setIdDomain(Integer idDomain) {
+		this.idDomain = idDomain;
 	}
 
 }

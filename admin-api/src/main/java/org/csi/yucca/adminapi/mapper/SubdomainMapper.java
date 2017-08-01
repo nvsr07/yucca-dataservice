@@ -2,11 +2,12 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
-import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.util.Constants;
 
@@ -65,6 +66,18 @@ public interface SubdomainMapper {
 	            "</foreach>" +
             "</if>";
 
+	
+	/*************************************************************************
+	 * 
+	 * 					INSERT SUBDOMAIN
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_SUBDOMAIN = "INSERT INTO " + SUBDOMAIN_TABLE + "( subdomaincode, lang_it, lang_en, deprecated, id_domain) VALUES "
+			+ "(#{subdomaincode}, #{langIt}, #{langEn}, #{deprecated}, #{idDomain})";
+
+	@Insert(INSERT_SUBDOMAIN)
+	@Options(useGeneratedKeys=true, keyProperty="idSubdomain")
+	int insertSubdomain(Subdomain subdomain);
 	
 	/*************************************************************************
 	 * 

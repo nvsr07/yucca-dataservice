@@ -6,10 +6,13 @@ import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
+	
+	ServiceResponse insertSubdomain(SubdomainRequest subdomainRequest) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deleteTag(Integer idTag) throws BadRequestException, NotFoundException, Exception;
 	

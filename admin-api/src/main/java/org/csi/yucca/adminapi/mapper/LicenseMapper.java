@@ -76,7 +76,7 @@ public interface LicenseMapper {
 	 * ***********************************************************************/
 	public static final String INSERT_LICENSE = "INSERT INTO " + LICENSE_TABLE
 			+ "(licensecode, description) VALUES (#{licensecode}, #{description})";
-	@Insert(INSERT_LICENSE)
+	@Insert(INSERT_LICENSE)                      
 	@Options(useGeneratedKeys=true, keyProperty="idLicense")
 	int insertLicense(License license);
 

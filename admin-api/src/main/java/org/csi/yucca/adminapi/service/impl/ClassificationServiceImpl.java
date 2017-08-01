@@ -21,6 +21,7 @@ import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
@@ -62,6 +63,33 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private TagMapper tagMapper;
+
+	/**
+	 * INSERT SUBDOMAIN
+	 * 
+	 * @param subdomainRequest
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse insertSubdomain(SubdomainRequest subdomainRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(subdomainRequest, "subdomainRequest");
+		
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangEn(), "langEn"); 
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangIt(), "langIt"); 
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getSubdomaincode(), "subdomaincode"); 
+		ServiceUtil.checkMandatoryParameter(subdomainRequest.getIdDomain(), "idDomain"); 
+		
+		Subdomain subdomain = new Subdomain();
+		BeanUtils.copyProperties(subdomainRequest, subdomain);
+
+		insertSubdomain(subdomain);
+		
+		return ServiceResponse.build().object(new SubdomainResponse(subdomain));
+	}
+	
 	
 	/**
 	 * DELETE TAG
@@ -461,9 +489,6 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		return ServiceResponse.build().object(domainRequest);
 	}
-
-	
-	
 	
 	
 	/**
@@ -579,6 +604,17 @@ public class ClassificationServiceImpl implements ClassificationService{
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un ecosystemcode gia inserito
 			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("ecosystemcode"));
+		}
+	}
+
+	private void insertSubdomain(Subdomain subdomain)throws BadRequestException{
+		
+		try {
+			subdomainMapper.insertSubdomain(subdomain);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			// se passo un subdomaincode gia inserito
+			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("subdomaincode"));
 		}
 	}
 

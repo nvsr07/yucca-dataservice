@@ -1,5 +1,8 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.Subdomain;
+import org.csi.yucca.adminapi.util.Errors;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class SubdomainResponse extends Response{
@@ -12,8 +15,28 @@ public class SubdomainResponse extends Response{
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langEn;
-	private String deprecated;
+	private int deprecated;
 	private Integer idDomain;
+	
+	public SubdomainResponse(Subdomain subdomain ) {
+		super();
+		this.idSubdomain = subdomain.getIdSubdomain();
+		this.subdomaincode = subdomain.getSubdomaincode();
+		this.langIt = subdomain.getLangIt();
+		this.langEn = subdomain.getLangEn();
+		this.deprecated = subdomain.getDeprecated();
+		this.idDomain = subdomain.getIdDomain();
+	}
+
+	public SubdomainResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public SubdomainResponse(Errors errors) {
+		super(errors);
+		// TODO Auto-generated constructor stub
+	}
 
 	public Integer getIdSubdomain() {
 		return idSubdomain;
@@ -47,11 +70,11 @@ public class SubdomainResponse extends Response{
 		this.langEn = langEn;
 	}
 
-	public String getDeprecated() {
+	public int getDeprecated() {
 		return deprecated;
 	}
 
-	public void setDeprecated(String deprecated) {
+	public void setDeprecated(int deprecated) {
 		this.deprecated = deprecated;
 	}
 

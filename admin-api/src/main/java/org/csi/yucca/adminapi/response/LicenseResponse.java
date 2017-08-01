@@ -40,5 +40,13 @@ public class LicenseResponse extends Response{
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public Integer getIdLicense() {
+		return idLicense;
+	}
+
+	public void setIdLicense(Integer idLicense) {
+		this.idLicense = idLicense;
+	}
 	
 }
