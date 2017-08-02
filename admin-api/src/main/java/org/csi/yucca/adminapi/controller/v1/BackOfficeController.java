@@ -34,6 +34,25 @@ public class BackOfficeController extends YuccaController{
 	private ClassificationService classificationService;
 	
 	/**
+	 * SELECT ORGANIZATION
+	 * 
+	 * @param idOrganization
+	 * @return
+	 */
+	@GetMapping("/organizations/{idOrganization}")
+	public ResponseEntity<Object> loadOrganization(@PathVariable final Integer idOrganization) {
+		logger.info("loadOrganization");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectOrganization(idOrganization);
+			}
+		}, logger);		
+	}
+	
+	
+	
+	/**
 	 * 
 	 * LOAD LICENSE
 	 * 

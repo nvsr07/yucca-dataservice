@@ -58,6 +58,21 @@ public interface OrganizationMapper {
 	            "</foreach>" +
             "</if>";
 	
+	/*************************************************************************
+	 * 
+	 * 					select ORGANIZATIONS by id
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_ORGANIZATION_BY_ID = 
+			"SELECT id_organization, organizationcode, description FROM " + ORGANIZATION_TABLE + " WHERE id_organization=#{idOrganization}";
+	@Results({
+        @Result(property = "idOrganization", column = "id_organization"),
+        @Result(property = "organizationcode", column = "organizationcode"),
+        @Result(property = "description", column = "description")
+      })
+	@Select(SELECT_ORGANIZATION_BY_ID) 
+	Organization selectOrganizationById(@Param("idOrganization") Integer idOrganization);
+	
 	
 	/*************************************************************************
 	 * 

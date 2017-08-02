@@ -64,6 +64,21 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private TagMapper tagMapper;
+
+	/**
+	 * SELECT ORGANIZATION
+	 */
+	public ServiceResponse selectOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
+
+		Organization organization = organizationMapper.selectOrganizationById(idOrganization);
+		
+		checkIfFoundRecord(organization);
+		
+		return ServiceResponse.build().object(new OrganizationResponse(organization));
+	}
+
 	
 	/**
 	 * SELECT LICENSE
