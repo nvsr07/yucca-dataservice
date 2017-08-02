@@ -16,6 +16,7 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,6 +33,36 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ClassificationService classificationService;
 
+	@GetMapping("/tags/{idTag}")
+	public ResponseEntity<Object> loadtag(@PathVariable final Integer idTag) {
+		logger.info("loadTag");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectTag(idTag);
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * 
+	 * LOAD DOMAIN
+	 * 
+	 * @param idDomain
+	 * @return
+	 */
+	@GetMapping("/domains/{idDomain}")
+	public ResponseEntity<Object> loadDomain(@PathVariable final Integer idDomain) {
+		logger.info("loadDomain");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectDomain(idDomain);
+			}
+		}, logger);		
+	}
+	
+	
 	/**
 	 * 
 	 * DELETE SUBDOMAIN

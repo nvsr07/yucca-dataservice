@@ -104,10 +104,32 @@ public interface SubdomainMapper {
 	@Insert(INSERT_SUBDOMAIN)
 	@Options(useGeneratedKeys=true, keyProperty="idSubdomain")
 	int insertSubdomain(Subdomain subdomain);
+
 	
 	/*************************************************************************
 	 * 
-	 * 					select all licenses
+	 * 					select subdomain by idDomain
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_SUBDOMAIN_BY_ID_DOMAIN = 
+	"SELECT id_subdomain, subdomaincode, lang_it, lang_en, deprecated, id_domain FROM " + SUBDOMAIN_TABLE
+	+ " where id_domain=#{idDomain}";
+
+	@Results({
+        @Result(property = "idSubdomain", column = "id_subdomain"),
+        @Result(property = "subdomaincode", column = "subdomaincode"),
+        @Result(property = "langIt", column = "lang_it"),
+        @Result(property = "langEn", column = "lang_en"),
+        @Result(property = "deprecated", column = "deprecated"),
+        @Result(property = "idDomain", column = "id_domain")
+	})
+	@Select(SELECT_SUBDOMAIN_BY_ID_DOMAIN) 
+	List<Subdomain> selectSubdomain(@Param("idDomain") Integer idDomain);
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					select all subdomains
 	 * 
 	 * ***********************************************************************/
 	@Results({

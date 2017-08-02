@@ -23,6 +23,7 @@ import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
+import org.csi.yucca.adminapi.response.BackofficeLoadDomainResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
@@ -63,6 +64,19 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private TagMapper tagMapper;
+	
+	
+	public ServiceResponse selectTag(Integer idTag) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idTag, "idTag");
+
+		Tag tag = tagMapper.selectTagById(idTag);
+		checkIfFoundRecord(tag);
+		
+		return ServiceResponse.build().object(new TagResponse(tag));
+		
+	}
+
 	
 	/**
 	 * DELETE SUBDOMAIN
@@ -609,6 +623,29 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		return ServiceResponse.build().object(new DomainResponse(domain));
 	}
+
+	/**
+	 * 
+	 * @param idDomain
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse selectDomain(Integer idDomain) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idDomain, "idDomain");
+
+		Domain domain = domainMapper.selectDomain(idDomain);
+		
+		checkIfFoundRecord(domain);
+		
+		List<Subdomain> subdomains = subdomainMapper.selectSubdomain(idDomain);
+		
+		return ServiceResponse.build().object(new BackofficeLoadDomainResponse(domain, subdomains));
+		
+	}
+
 	
 	/**
 	 * 
@@ -769,6 +806,14 @@ public class ClassificationServiceImpl implements ClassificationService{
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
 		}
 	}
+
+	private void checkIfFoundRecord(Object object)throws NotFoundException{
+		if (object == null ) {
+			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
+		}
+	}
+	
+	
 
 	
 }

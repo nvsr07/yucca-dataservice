@@ -155,6 +155,24 @@ public interface DomainMapper {
 	
 	/*************************************************************************
 	 * 
+	 * 					select domain by idDomain
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_DOMAIN_BY_ID 
+		= "SELECT id_domain, domaincode, langit, langen, deprecated FROM " + DOMAIN_TABLE + " WHERE id_domain=#{idDomain}";
+	@Results({
+        @Result(property = "idDomain", column = "id_domain"),
+        @Result(property = "domaincode", column = "domaincode"),
+        @Result(property = "langit", column = "langit"),
+        @Result(property = "langen", column = "langen"),
+        @Result(property = "deprecated", column = "deprecated")
+      })
+	@Select(SELECT_DOMAIN_BY_ID) 
+	Domain selectDomain(@Param("idDomain") int idDomain);
+	
+	
+	/*************************************************************************
+	 * 
 	 * 					selectDomainITLanguage
 	 * 
 	 * ***********************************************************************/	
