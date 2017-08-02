@@ -61,6 +61,11 @@ public interface EcosystemMapper {
             "</if>";
 	
 	
+//	loadLicense
+	
+	
+	
+	
 	/*************************************************************************
 	 * 
 	 * 					select ecosystem by id

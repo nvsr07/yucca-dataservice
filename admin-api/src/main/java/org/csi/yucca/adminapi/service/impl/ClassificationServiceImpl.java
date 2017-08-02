@@ -66,6 +66,20 @@ public class ClassificationServiceImpl implements ClassificationService{
 	private TagMapper tagMapper;
 	
 	/**
+	 * SELECT LICENSE
+	 */
+	public ServiceResponse selectLicense(Integer idLicense) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idLicense, "idLicense");
+
+		License license = licenseMapper.selectLicenseById(idLicense);
+		
+		checkIfFoundRecord(license);
+		
+		return ServiceResponse.build().object(new LicenseResponse(license));
+	}
+	
+	/**
 	 * SELECT ECOSYSTEM
 	 */
 	public ServiceResponse selectEcosystem(Integer idEcosystem) throws BadRequestException, NotFoundException, Exception{

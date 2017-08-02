@@ -33,6 +33,31 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ClassificationService classificationService;
 	
+	/**
+	 * 
+	 * LOAD LICENSE
+	 * 
+	 * @param idLicense
+	 * @return
+	 */
+	@GetMapping("/licenses/{idLicense}")
+	public ResponseEntity<Object> loadLicense(@PathVariable final Integer idLicense) {
+		logger.info("loadLicense");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectLicense(idLicense);
+			}
+		}, logger);		
+	}
+	
+	
+	/**
+	 * LOAD ECOSYSTEM
+	 * 
+	 * @param idEcosystem
+	 * @return
+	 */
 	@GetMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> loadEcosystem(@PathVariable final Integer idEcosystem) {
 		logger.info("loadEcosystem");

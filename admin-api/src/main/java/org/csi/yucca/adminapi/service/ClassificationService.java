@@ -12,6 +12,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
 	
+	ServiceResponse selectLicense(Integer idLicense) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse selectEcosystem(Integer idEcosystem) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectTag(Integer idTag) throws BadRequestException, NotFoundException, Exception;

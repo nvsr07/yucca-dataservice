@@ -49,6 +49,22 @@ public interface LicenseMapper {
 	
 	/*************************************************************************
 	 * 
+	 * 					select licenses by idLicense
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_LICENSE_BY_ID = 
+			"SELECT id_license, licensecode, description FROM " + LICENSE_TABLE + " WHERE id_license=#{idLicense}";
+	@Results({
+        @Result(property = "idLicense", column = "id_license"),
+        @Result(property = "licensecode", column = "licensecode"),
+        @Result(property = "description", column = "description")
+      })
+	@Select(SELECT_LICENSE_BY_ID) 
+	License selectLicenseById(@Param("idLicense") Integer idLicense);
+	
+	
+	/*************************************************************************
+	 * 
 	 * 					DELETE LICENSE
 	 * 
 	 * ***********************************************************************/
