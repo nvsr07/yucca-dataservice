@@ -65,7 +65,23 @@ public class ClassificationServiceImpl implements ClassificationService{
 	@Autowired
 	private TagMapper tagMapper;
 	
+	/**
+	 * SELECT ECOSYSTEM
+	 */
+	public ServiceResponse selectEcosystem(Integer idEcosystem) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idEcosystem, "idEcosystem");
+
+		Ecosystem ecosystem = ecosystemMapper.selectEcosystem(idEcosystem);
+		
+		checkIfFoundRecord(ecosystem);
+		
+		return ServiceResponse.build().object(new EcosystemResponse(ecosystem));
+	}
 	
+	/**
+	 * SELECT TAG
+	 */
 	public ServiceResponse selectTag(Integer idTag) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(idTag, "idTag");

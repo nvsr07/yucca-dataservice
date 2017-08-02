@@ -32,9 +32,26 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private ClassificationService classificationService;
-
+	
+	@GetMapping("/ecosystems/{idEcosystem}")
+	public ResponseEntity<Object> loadEcosystem(@PathVariable final Integer idEcosystem) {
+		logger.info("loadEcosystem");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectEcosystem(idEcosystem);
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * LOAD TAG
+	 * 
+	 * @param idTag
+	 * @return
+	 */
 	@GetMapping("/tags/{idTag}")
-	public ResponseEntity<Object> loadtag(@PathVariable final Integer idTag) {
+	public ResponseEntity<Object> loadTag(@PathVariable final Integer idTag) {
 		logger.info("loadTag");
 		
 		return run(new ApiCallable() {

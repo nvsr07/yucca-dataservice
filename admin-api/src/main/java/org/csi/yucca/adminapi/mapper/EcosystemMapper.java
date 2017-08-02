@@ -63,6 +63,20 @@ public interface EcosystemMapper {
 	
 	/*************************************************************************
 	 * 
+	 * 					select ecosystem by id
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_ECOSYSTEM_BY_ID = "SELECT id_ecosystem, ecosystemcode, description FROM " + ECOSYSTEM_TABLE + " where id_ecosystem=#{idEcosystem}";
+	@Results({
+        @Result(property = "idEcosystem", column = "id_ecosystem"),
+        @Result(property = "ecosystemcode", column = "ecosystemcode"),
+        @Result(property = "description", column = "description")
+      })
+	@Select(SELECT_ECOSYSTEM_BY_ID) 
+	Ecosystem selectEcosystem(@Param("idEcosystem") int idEcosystem);
+	
+	/*************************************************************************
+	 * 
 	 * 					DELETE ECOSYSTEM
 	 * 
 	 * ***********************************************************************/
