@@ -70,6 +70,30 @@ public interface SubdomainMapper {
 	
 	/*************************************************************************
 	 * 
+	 * 					select subdomain by idSubdomain
+	 * 
+	 * ***********************************************************************/
+	
+	
+
+	
+	public static final String SELECT_SUBDOMAIN_BY_ID_SUBDOMAIN = 
+			"SELECT id_subdomain, subdomaincode, lang_it, lang_en, deprecated, id_domain FROM " + SUBDOMAIN_TABLE + " WHERE id_subdomain = #{idSubdomain}";
+
+	@Results({
+        @Result(property = "idSubdomain", column = "id_subdomain"),
+        @Result(property = "subdomaincode", column = "subdomaincode"),
+        @Result(property = "langIt", column = "lang_it"),
+        @Result(property = "langEn", column = "lang_en"),
+        @Result(property = "deprecated", column = "deprecated"),
+        @Result(property = "idDomain", column = "id_domain")
+	})
+	@Select(SELECT_SUBDOMAIN_BY_ID_SUBDOMAIN) 
+	Subdomain selectSubdomainByIdSubdomain(@Param("idSubdomain") Integer idSubdomain);
+	
+	
+	/*************************************************************************
+	 * 
 	 * 					DELETE SUBDOMAIN
 	 * 
 	 * ***********************************************************************/

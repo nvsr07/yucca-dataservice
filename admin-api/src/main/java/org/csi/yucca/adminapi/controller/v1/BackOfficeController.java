@@ -32,6 +32,24 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private ClassificationService classificationService;
+
+	/**
+	 * LOAD SUBDOMAIN
+	 * 
+	 * @param idSubdomain
+	 * @return
+	 */
+	@GetMapping("/subdomains/{idSubdomain}")
+	public ResponseEntity<Object> loadSubdomain(@PathVariable final Integer idSubdomain) {
+		logger.info("loadSubdomain");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectSubdomain(idSubdomain);
+			}
+		}, logger);		
+	}
+
 	
 	/**
 	 * SELECT ORGANIZATION
@@ -49,8 +67,6 @@ public class BackOfficeController extends YuccaController{
 			}
 		}, logger);		
 	}
-	
-	
 	
 	/**
 	 * 

@@ -66,6 +66,20 @@ public class ClassificationServiceImpl implements ClassificationService{
 	private TagMapper tagMapper;
 
 	/**
+	 * SELECT SUBDOMAIN
+	 */
+	public ServiceResponse selectSubdomain(Integer idSubdomain) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idSubdomain, "idSubdomain");
+
+		Subdomain subdomain = subdomainMapper.selectSubdomainByIdSubdomain(idSubdomain);
+		checkIfFoundRecord(subdomain);
+		
+		return ServiceResponse.build().object(new SubdomainResponse(subdomain));
+	}
+
+	
+	/**
 	 * SELECT ORGANIZATION
 	 */
 	public ServiceResponse selectOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
