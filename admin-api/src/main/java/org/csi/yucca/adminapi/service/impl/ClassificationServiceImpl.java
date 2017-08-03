@@ -73,7 +73,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(idSubdomain, "idSubdomain");
 
 		Subdomain subdomain = subdomainMapper.selectSubdomainByIdSubdomain(idSubdomain);
-		checkIfFoundRecord(subdomain);
+		ServiceUtil.checkIfFoundRecord(subdomain);
 		
 		return ServiceResponse.build().object(new SubdomainResponse(subdomain));
 	}
@@ -88,7 +88,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 		Organization organization = organizationMapper.selectOrganizationById(idOrganization);
 		
-		checkIfFoundRecord(organization);
+		ServiceUtil.checkIfFoundRecord(organization);
 		
 		return ServiceResponse.build().object(new OrganizationResponse(organization));
 	}
@@ -103,7 +103,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 		License license = licenseMapper.selectLicenseById(idLicense);
 		
-		checkIfFoundRecord(license);
+		ServiceUtil.checkIfFoundRecord(license);
 		
 		return ServiceResponse.build().object(new LicenseResponse(license));
 	}
@@ -117,7 +117,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 		Ecosystem ecosystem = ecosystemMapper.selectEcosystem(idEcosystem);
 		
-		checkIfFoundRecord(ecosystem);
+		ServiceUtil.checkIfFoundRecord(ecosystem);
 		
 		return ServiceResponse.build().object(new EcosystemResponse(ecosystem));
 	}
@@ -130,7 +130,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(idTag, "idTag");
 
 		Tag tag = tagMapper.selectTagById(idTag);
-		checkIfFoundRecord(tag);
+		ServiceUtil.checkIfFoundRecord(tag);
 		
 		return ServiceResponse.build().object(new TagResponse(tag));
 		
@@ -176,7 +176,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		subdomain.setIdSubdomain(idSubdomain);
 		
 		int count = subdomainMapper.updateSubdomain(subdomain);
-		checkCount(count);
+		ServiceUtil.checkCount(count);
 		
 		return ServiceResponse.build().object(new SubdomainResponse(subdomain));
 	}
@@ -252,7 +252,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		Tag tag = new Tag(idTag, tagRequest.getTagcode(), tagRequest.getLangit(), tagRequest.getLangen(), tagRequest.getIdEcosystem() );
 		int count = tagMapper.updateTag(tag);
 		
-		checkCount(count);
+		ServiceUtil.checkCount(count);
 		
 		if(tagRequest.getIdEcosystem() == null){
 			tag = tagMapper.selectTagById(idTag);
@@ -325,7 +325,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		License license = new License(idLicense, licenseRequest.getLicensecode(), licenseRequest.getDescription());
 		int count = licenseMapper.updateLicense(license);
 		
-		checkCount(count);
+		ServiceUtil.checkCount(count);
 		
 		return ServiceResponse.build().object(new LicenseResponse(license));
 	}
@@ -434,7 +434,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		Ecosystem ecosystem  = new Ecosystem(idEcosystem,ecosystemRequest.getEcosystemcode(), ecosystemRequest.getDescription() );
 		int count = ecosystemMapper.updateEcosystem(ecosystem);
 		
-		checkCount(count);
+		ServiceUtil.checkCount(count);
 		
 		return ServiceResponse.build().object(new EcosystemResponse(ecosystem));
 	}
@@ -697,7 +697,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 		Domain domain = domainMapper.selectDomain(idDomain);
 		
-		checkIfFoundRecord(domain);
+		ServiceUtil.checkIfFoundRecord(domain);
 		
 		List<Subdomain> subdomains = subdomainMapper.selectSubdomain(idDomain);
 		
@@ -859,18 +859,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		}
 		
 	}
-	
-	private void checkCount(int count)throws NotFoundException{
-		if (count == 0 ) {
-			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
-		}
-	}
 
-	private void checkIfFoundRecord(Object object)throws NotFoundException{
-		if (object == null ) {
-			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
-		}
-	}
 	
 	
 

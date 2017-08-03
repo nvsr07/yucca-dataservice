@@ -26,6 +26,8 @@ import io.restassured.specification.RequestSpecification;
  */
 public class BackOfficeControllerTest extends TestBase{
 	
+	public static final String ECOSYSTEM_MESSAGE = "{\"ecosystemcode\":\"test_ecosystem_code-999\",\"description\":\"test_ecosystem_description-999\"}";
+	
 	@BeforeClass
 	public void setUpSecretObject() throws IOException {
 		super.setUpSecretObject("/testSecret.json");
@@ -42,12 +44,22 @@ public class BackOfficeControllerTest extends TestBase{
 			     "/BackOfficeController_subdomain_dataIn.json"
 			     );
 	}	
-
-	private StringBuilder getUrl(String apiCode, String entitySet, JSONObject dato){
-		StringBuilder builder = new StringBuilder();
-		builder.append(getUrl(dato)).append(apiCode).append("/").append(entitySet);
+	
+	
+	private Integer post(JSONObject dato, String apiCode, String entitySet, String message, String idName){
+		StringBuilder builder = getUrl(apiCode, entitySet, dato);
 		
-		return builder;
+		RequestSpecification requestSpecification = given().body(message).contentType(ContentType.JSON);
+		Response response = requestSpecification.when().post(builder.toString());
+//		ValidatableResponse validatableResponse  = response.then().statusCode(200);
+		Integer id =  response.then().extract().path(idName);
+		return id;
+	}
+	
+	
+	private void delete(JSONObject dato, String apiCode, String entitySet, Integer idEcosystem){
+		StringBuilder ecosystemUrlBuilder = getUrl(apiCode, entitySet, dato);
+		delete(ecosystemUrlBuilder, idEcosystem);
 	}
 	
 	
@@ -62,9 +74,9 @@ public class BackOfficeControllerTest extends TestBase{
 	@Test(dataProvider = "json")
 	public void backOfficeTestCrud(JSONObject dato) throws JSONException, InterruptedException {
 		
-		// create ecosuìystem and domain:
+		// create ecosystem and domain:
 		StringBuilder ecosystemUrlBuilder = getUrl("backoffice", "ecosystems", dato);
-		Integer idEcosystem = postEchosystem(ecosystemUrlBuilder.toString()); 
+		Integer idEcosystem = postEchosystem(ecosystemUrlBuilder.toString(), dato); 
 		StringBuilder domainUrlBuilder = getUrl("backoffice", "domains", dato);
 		Integer idDomain = postDomain(domainUrlBuilder.toString(), idEcosystem); 
 		
@@ -82,23 +94,28 @@ public class BackOfficeControllerTest extends TestBase{
 		}
 		
 		// delete domain
-		domainUrlBuilder.append("/").append(idDomain);
-		delete(domainUrlBuilder.toString());
+		delete(dato, "backoffice", "domains", idDomain);
 
 		// delete ecosystem
-		ecosystemUrlBuilder.append("/").append(idEcosystem);
-		delete(ecosystemUrlBuilder.toString());
-
+		delete(dato, "backoffice", "ecosystems", idEcosystem);
+		
 	}
 	
-	private Integer postEchosystem(String url){
-		String message = "{\"ecosystemcode\":\"test_ecosystem_code-999\",\"description\":\"test_ecosystem_description-999\"}";
-		return postMessage(url, message, "idEcosystem");
+	private Integer postEchosystem(String url, JSONObject dato){
+		if(!dato.getString("test-name").contains("ecosystem")){
+			String message = "{\"ecosystemcode\":\"test_ecosystem_code-999\",\"description\":\"test_ecosystem_description-999\"}";
+			return postMessage(url, message, "idEcosystem");			
+		}
+		return null;
 	}
 
-	private Integer postDomain(String url, Integer IdEcosystem){
-		String message = "{\"langen\": \"new-domain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"new-domain-3333\",\"deprecated\": 1,\"ecosystemCodeList\":[" + IdEcosystem + "]}";
-		return postMessage(url, message, "idDomain");
+	private Integer postDomain(String url, Integer idEcosystem){
+		if(idEcosystem != null){
+			String message = "{\"langen\": \"new-domain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"new-domain-3333\",\"deprecated\": 1,\"ecosystemCodeList\":[" + idEcosystem + "]}";
+			return postMessage(url, message, "idDomain");
+		}
+		
+		return null;
 	}
 	
 	private Integer postMessage(String url, String message, String idName){
@@ -108,9 +125,12 @@ public class BackOfficeControllerTest extends TestBase{
 		return id;
 	}
 	
-	private void delete(String url){
+	private void delete(StringBuilder domainUrlBuilder, Integer id){
 		try {
-			given().when().contentType(ContentType.JSON).delete(url);	
+			if (id != null) {
+				domainUrlBuilder.append("/").append(id);
+				given().when().contentType(ContentType.JSON).delete(domainUrlBuilder.toString());
+			}
 		} 
 		catch (Exception e) {
 			System.out.println(e.toString());
@@ -168,6 +188,13 @@ public class BackOfficeControllerTest extends TestBase{
 		.append("/");
 		
 		return urlBuilder.toString();
+	}
+
+	private StringBuilder getUrl(String apiCode, String entitySet, JSONObject dato){
+		StringBuilder builder = new StringBuilder();
+		builder.append(getUrl(dato)).append(apiCode).append("/").append(entitySet);
+		
+		return builder;
 	}
 
 	

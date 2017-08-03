@@ -1,11 +1,29 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.DataType;
+import org.csi.yucca.adminapi.util.Errors;
+
 public class DataTypeResponse extends Response{
 	
 	private Integer idDataType;
 	private String datatypecode;
 	private String description;
 	
+	public DataTypeResponse(DataType dataType) {
+		super();
+		this.idDataType = dataType.getIdDataType();
+		this.datatypecode = dataType.getDatatypecode();
+		this.description = dataType.getDescription();
+	}
+	
+	public DataTypeResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public DataTypeResponse(Errors errors) {
+		super(errors);
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getIdDataType() {
 		return idDataType;
 	}

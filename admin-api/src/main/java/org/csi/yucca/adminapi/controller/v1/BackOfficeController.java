@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.request.DataTypeRequest;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
@@ -11,6 +12,7 @@ import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.service.ClassificationService;
+import org.csi.yucca.adminapi.service.ComponentService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,72 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ClassificationService classificationService;
 
+	@Autowired
+	private ComponentService componentService;
+
+	/**
+	 * 
+	 * DELETE FDATA TYPE
+	 * 
+	 * @param idDataType
+	 * @return
+	 */
+	@DeleteMapping("/data_types/{idDataType}")
+	public ResponseEntity<Object> deleteDataType(@PathVariable final Integer idDataType){
+		logger.info("deleteDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.deleteDataType(idDataType);
+			}
+		}, logger);		
+	}
+
+	
+	/**
+	 * UPDATE DATA TYPE
+	 * 
+	 * @param dataTypeRequest
+	 * @param idDataType
+	 * @return
+	 */
+	@PutMapping("/data_types/{idDataType}")
+	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest, @PathVariable final Integer idDataType){
+		logger.info("updateDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.updateDataType(dataTypeRequest, idDataType);
+			}
+		}, logger);		
+	}	
+	
+	/**
+	 *  
+	 * INSERT DATA TYPE
+	 * 
+	 * CREATE SEQUENCE int_yucca.data_type_id_data_type_seq;
+	 * ALTER TABLE int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET DEFAULT nextval('int_yucca.data_type_id_data_type_seq');
+	 * ALTER TABLE int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET NOT NULL;
+	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq OWNED BY int_yucca.yucca_d_data_type.id_data_type;    -- 8.2 or later
+	 * 
+	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq RESTART WITH 15;
+	 * 
+	 * @param dataTypeRequest
+	 * @return
+	 */
+	@PostMapping("/data_types")
+	public ResponseEntity<Object> createDataType(@RequestBody final DataTypeRequest dataTypeRequest){
+		logger.info("createDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.insertDataType(dataTypeRequest);
+			}
+		}, logger);		
+	}
+
+	
 	/**
 	 * LOAD SUBDOMAIN
 	 * 

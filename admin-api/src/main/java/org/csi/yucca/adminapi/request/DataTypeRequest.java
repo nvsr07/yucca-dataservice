@@ -1,23 +1,11 @@
-package org.csi.yucca.adminapi.model;
+package org.csi.yucca.adminapi.request;
 
-public class DataType {
-	
+public class DataTypeRequest {
+
 	private Integer idDataType;
 	private String datatypecode;
-	private String description;
+	private String description="";
 	
-	public DataType(Integer idDataType, String datatypecode, String description) {
-		super();
-		this.idDataType = idDataType;
-		this.datatypecode = datatypecode;
-		this.description = description;
-	}
-	
-	public DataType() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	public Integer getIdDataType() {
 		return idDataType;
 	}

@@ -2,6 +2,9 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
@@ -44,6 +47,46 @@ public interface DataTypeMapper {
 	            "</if>" +			
 	            "</foreach>" +
             "</if>";
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE DATA TYPE
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_DATA_TYPE = "DELETE FROM " + DATA_TYPE_TABLE + " WHERE id_data_type=#{idDataType}";
+	@Delete(DELETE_DATA_TYPE)
+	int deleteDataType(int idDataType);	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE DATA TYPE
+	 * 
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_DATA_TYPE = 
+			"<script>" +
+			"UPDATE " + DATA_TYPE_TABLE + 
+			" SET datatypecode=#{datatypecode} " +
+			"<if test=\"description != null \">" +
+				", description=#{description}" +
+	        "</if>" + " WHERE id_data_type=#{idDataType}" +
+	        "</script>" ;
+	@Delete(UPDATE_DATA_TYPE)
+	int updateDataType(DataType dataType);	
+
+
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					INSERT DATA TYPE
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_DATA_TYPE = "INSERT INTO " + DATA_TYPE_TABLE + "( datatypecode, description) VALUES (#{datatypecode}, #{description})";
+	@Insert(INSERT_DATA_TYPE)
+	@Options(useGeneratedKeys=true, keyProperty="idDataType")
+	int insertDataType(DataType dataType);
 	
 
 	/*************************************************************************

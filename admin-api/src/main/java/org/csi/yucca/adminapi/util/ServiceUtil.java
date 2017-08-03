@@ -15,6 +15,18 @@ public class ServiceUtil {
 	private static final String SORT_PROPERTIES_SEPARATOR = ",";
 	private static final String DESC_CHAR = "-";
 
+	public static void checkCount(int count)throws NotFoundException{
+		if (count == 0 ) {
+			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
+		}
+	}
+
+	public static void checkIfFoundRecord(Object object)throws NotFoundException{
+		if (object == null ) {
+			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
+		}
+	}
+	
 	public static <T> List<Response> getResponseList(List<T> modelList, Class<?> responseClass) throws Exception {
 		List<Response> responsesList = new ArrayList<Response>();
 
