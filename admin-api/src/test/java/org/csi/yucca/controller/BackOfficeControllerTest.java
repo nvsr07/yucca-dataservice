@@ -41,7 +41,8 @@ public class BackOfficeControllerTest extends TestBase{
 			     "/BackOfficeController_domain_dataIn.json",
 			     "/BackOfficeController_organization_dataIn.json",
 			     "/BackOfficeController_tag_dataIn.json",
-			     "/BackOfficeController_subdomain_dataIn.json"
+			     "/BackOfficeController_subdomain_dataIn.json",
+			     "/BackOfficeController_data_type_dataIn.json"
 			     );
 	}	
 	
