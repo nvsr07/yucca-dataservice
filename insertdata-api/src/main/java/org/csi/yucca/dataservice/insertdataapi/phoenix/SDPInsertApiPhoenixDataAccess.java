@@ -39,6 +39,8 @@ public class SDPInsertApiPhoenixDataAccess {
 	public int insertBulk(String tenant, DatasetBulkInsert dati) {
 		// String riga=null;
 		// DBObject dbObject = null;
+		final int batchSize = 1000;
+		int count = 0;
 		Connection conn = null;
 		BulkWriteResult result = null;
 		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
@@ -229,6 +231,10 @@ public class SDPInsertApiPhoenixDataAccess {
 				}
 
 				stmt.addBatch();
+				
+				if(++count % batchSize == 0) {
+					stmt.executeBatch();
+				}
 
 			}
 			try {
