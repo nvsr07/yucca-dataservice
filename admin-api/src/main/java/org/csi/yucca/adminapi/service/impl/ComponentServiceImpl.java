@@ -43,6 +43,27 @@ public class ComponentServiceImpl implements ComponentService{
 	private PhenomenonMapper phenomenonMapper;
 
 	/**
+	 * SELECT DATA TYPE
+	 * 
+	 * @param idDataType
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse selectDataType(Integer idDataType) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idDataType, "idDataType");
+
+		DataType dataType = dataTypeMapper.selectDataTypeById(idDataType);
+		
+		ServiceUtil.checkIfFoundRecord(dataType);
+		
+		return ServiceResponse.build().object(new DataTypeResponse(dataType));
+	}
+
+	
+	/**
 	 * 
 	 * SELECT MEASUE UNIT
 	 * 

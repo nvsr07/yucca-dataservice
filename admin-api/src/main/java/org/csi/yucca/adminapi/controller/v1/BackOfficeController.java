@@ -40,6 +40,25 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ComponentService componentService;
 
+
+	/**
+	 * 
+	 * LOAD DATA TYPE
+	 * 
+	 * @param idDataType
+	 * @return
+	 */
+	@GetMapping("/data_types/{idDataType}")
+	public ResponseEntity<Object> loadDataType(@PathVariable final Integer idDataType) {
+		logger.info("loadDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.selectDataType(idDataType);
+			}
+		}, logger);		
+	}
+	
 	
 	/**
 	 * 
