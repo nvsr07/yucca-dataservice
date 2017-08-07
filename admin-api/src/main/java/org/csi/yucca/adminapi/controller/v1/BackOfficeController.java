@@ -40,6 +40,26 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ComponentService componentService;
 
+	
+	/**
+	 * 
+	 * LOAD PHENOMENON
+	 * 
+	 * @param idPhenomenon
+	 * @return
+	 */
+	@GetMapping("/phenomenons/{idPhenomenon}")
+	public ResponseEntity<Object> loadPhenomenon(@PathVariable final Integer idPhenomenon) {
+		logger.info("loadPhenomenon");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.selectPhenomenon(idPhenomenon);
+			}
+		}, logger);		
+	}
+	
+	
 	/**
 	 * 
 	 * DELETE PHENOMENON

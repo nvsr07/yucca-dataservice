@@ -38,10 +38,32 @@ public class ComponentServiceImpl implements ComponentService{
 
 	@Autowired
 	private MeasureUnitMapper measureUnitMapper;
-
+	
 	@Autowired
 	private PhenomenonMapper phenomenonMapper;
 
+	/**
+	 * 
+	 * SELECT PHENOMENON
+	 * 
+	 * @param idPhenomenon
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse selectPhenomenon(Integer idPhenomenon) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idPhenomenon, "idPhenomenon");
+
+		Phenomenon phenomenon = phenomenonMapper.selectPhenomenonById(idPhenomenon);
+		
+		ServiceUtil.checkIfFoundRecord(phenomenon);
+		
+		return ServiceResponse.build().object(new PhenomenonResponse(phenomenon));
+	}
+
+	
 	/**
 	 * 
 	 * DELETE PHENOMENON
