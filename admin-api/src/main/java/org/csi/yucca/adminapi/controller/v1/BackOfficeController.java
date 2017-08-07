@@ -43,6 +43,24 @@ public class BackOfficeController extends YuccaController{
 	
 	/**
 	 * 
+	 * LOAD MEASURE UNIT
+	 * 
+	 * @param idMeasureUnit
+	 * @return
+	 */
+	@GetMapping("/measure_units/{idMeasureUnit}")
+	public ResponseEntity<Object> loadMeasureUnit(@PathVariable final Integer idMeasureUnit) {
+		logger.info("loadMeasureUnit");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.selectMeasureUnit(idMeasureUnit);
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * 
 	 * LOAD PHENOMENON
 	 * 
 	 * @param idPhenomenon

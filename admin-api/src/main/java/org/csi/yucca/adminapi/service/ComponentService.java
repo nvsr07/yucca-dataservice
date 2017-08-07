@@ -9,6 +9,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ComponentService {
 	
+	ServiceResponse selectMeasureUnit(Integer idMeasureUnit) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse selectPhenomenon(Integer idPhenomenon) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deletePhenomenon(Integer idPhenomenon) throws BadRequestException, NotFoundException, Exception;

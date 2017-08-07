@@ -44,6 +44,29 @@ public class ComponentServiceImpl implements ComponentService{
 
 	/**
 	 * 
+	 * SELECT MEASUE UNIT
+	 * 
+	 * @param idMeasureUnit
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse selectMeasureUnit(Integer idMeasureUnit) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(idMeasureUnit, "idMeasureUnit");
+
+		
+		MeasureUnit measureUnit = measureUnitMapper.selectMeasureUnitById(idMeasureUnit);
+		
+		ServiceUtil.checkIfFoundRecord(measureUnit);
+		
+		return ServiceResponse.build().object(new MeasureUnitResponse(measureUnit));
+	}
+
+	
+	/**
+	 * 
 	 * SELECT PHENOMENON
 	 * 
 	 * @param idPhenomenon
