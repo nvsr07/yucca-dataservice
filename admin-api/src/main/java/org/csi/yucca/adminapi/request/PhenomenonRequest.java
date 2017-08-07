@@ -1,24 +1,10 @@
-package org.csi.yucca.adminapi.model;
+package org.csi.yucca.adminapi.request;
 
-import org.csi.yucca.adminapi.request.PhenomenonRequest;
-
-public class Phenomenon {
+public class PhenomenonRequest {
 
 	private Integer idPhenomenon;
 	private String phenomenonname;
 	private String phenomenoncetegory;
-
-	public Phenomenon(Integer idPhenomenon, String phenomenonname, String phenomenoncetegory) {
-		super();
-		this.idPhenomenon = idPhenomenon;
-		this.phenomenonname = phenomenonname;
-		this.phenomenoncetegory = phenomenoncetegory;
-	}
-
-	public Phenomenon() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 
 	public Integer getIdPhenomenon() {
 		return idPhenomenon;

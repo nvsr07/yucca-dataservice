@@ -1,22 +1,10 @@
-package org.csi.yucca.adminapi.model;
+package org.csi.yucca.adminapi.request;
 
-public class MeasureUnit {
+public class MeasureUnitRequest {
 
 	private Integer idMeasureUnit;
 	private String measureunit;
 	private String measureunitcategory;
-	
-	public MeasureUnit(Integer idMeasureUnit, String measureunit, String measureunitcategory) {
-		super();
-		this.idMeasureUnit = idMeasureUnit;
-		this.measureunit = measureunit;
-		this.measureunitcategory = measureunitcategory;
-	}
-
-	public MeasureUnit() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
 	
 	public Integer getIdMeasureUnit() {
 		return idMeasureUnit;
@@ -31,13 +19,9 @@ public class MeasureUnit {
 		this.measureunit = measureunit;
 	}
 	public String getMeasureunitcategory() {
-		if(this.measureunitcategory != null){
-			return this.measureunitcategory.trim();
-		}
-		return null;
+		return measureunitcategory;
 	}
 	public void setMeasureunitcategory(String measureunitcategory) {
 		this.measureunitcategory = measureunitcategory;
 	}
-	
 }

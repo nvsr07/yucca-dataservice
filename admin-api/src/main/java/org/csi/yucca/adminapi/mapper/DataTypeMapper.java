@@ -68,7 +68,7 @@ public interface DataTypeMapper {
 			"<script>" +
 			"UPDATE " + DATA_TYPE_TABLE + 
 			" SET datatypecode=#{datatypecode} " +
-			"<if test=\"description != null \">" +
+			"<if test=\"description != null\">" +
 				", description=#{description}" +
 	        "</if>" + " WHERE id_data_type=#{idDataType}" +
 	        "</script>" ;

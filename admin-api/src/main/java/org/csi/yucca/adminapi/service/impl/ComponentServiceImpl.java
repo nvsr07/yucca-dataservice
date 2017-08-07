@@ -12,6 +12,8 @@ import org.csi.yucca.adminapi.model.DataType;
 import org.csi.yucca.adminapi.model.MeasureUnit;
 import org.csi.yucca.adminapi.model.Phenomenon;
 import org.csi.yucca.adminapi.request.DataTypeRequest;
+import org.csi.yucca.adminapi.request.MeasureUnitRequest;
+import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
@@ -39,6 +41,186 @@ public class ComponentServiceImpl implements ComponentService{
 
 	@Autowired
 	private PhenomenonMapper phenomenonMapper;
+
+	/**
+	 * 
+	 * DELETE PHENOMENON
+	 * 
+	 * @param idPhenomenon
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse deletePhenomenon(Integer idPhenomenon) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idPhenomenon, "idPhenomenon");
+	
+		int count = 0;
+		try {
+			count = phenomenonMapper.deletePhenomenon(idPhenomenon);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+
+	
+	/**
+	 * UPDATE PHENOMENON
+	 */
+	public ServiceResponse updatePhenomenon(PhenomenonRequest phenomenonRequest, Integer idPhenomenon) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(phenomenonRequest, 			           "phenomenonRequest");
+		ServiceUtil.checkMandatoryParameter(phenomenonRequest.getPhenomenonname(), "phenomenonname");
+		ServiceUtil.checkMandatoryParameter(idPhenomenon,                           "idPhenomenon");
+		
+		Phenomenon phenomenon = new Phenomenon(idPhenomenon, phenomenonRequest.getPhenomenonname(), phenomenonRequest.getPhenomenoncetegory()); 
+		
+		int count = phenomenonMapper.updatePhenomenon(phenomenon);
+		
+		ServiceUtil.checkCount(count);
+		
+		if(phenomenonRequest.getPhenomenoncetegory() == null){
+			phenomenon = phenomenonMapper.selectPhenomenonById(idPhenomenon);
+		}
+		
+		return ServiceResponse.build().object(new PhenomenonResponse(phenomenon));
+	}
+
+
+	
+	
+	/**
+	 * 
+	 * INSERT PHENOMENON
+	 * 
+	 * @param phenomenonRequest
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse insertPhenomenon(PhenomenonRequest phenomenonRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(phenomenonRequest, "phenomenonRequest");
+		
+		ServiceUtil.checkMandatoryParameter(phenomenonRequest.getPhenomenonname(), "phenomenonname"); 
+		
+		Phenomenon phenomenon = new Phenomenon();
+		
+		BeanUtils.copyProperties(phenomenonRequest, phenomenon);
+
+		insertPhenomenon(phenomenon);
+		
+		return ServiceResponse.build().object(new PhenomenonResponse(phenomenon));
+	}
+
+	private void insertPhenomenon(Phenomenon phenomenon)throws BadRequestException{
+		
+		try {
+			phenomenonMapper.insertPhenomenon(phenomenon);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			throw new BadRequestException(Errors.DUPLICATE_KEY);
+		}
+	}
+
+
+	
+	/**
+	 * DELETE DATA TYPE
+	 */
+	public ServiceResponse deleteMeasureUnit(Integer idMeasureUnit) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(idMeasureUnit, "idMeasureUnit");
+	
+		int count = 0;
+		try {
+			count = measureUnitMapper.deleteMeasureUnit(idMeasureUnit);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/**
+	 * 
+	 * UPDATE MEASURE UNIT
+	 * 
+	 * @param measureUnitRequest
+	 * @param idMeasureUnit
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse updateMeasureUnit(MeasureUnitRequest measureUnitRequest, Integer idMeasureUnit) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(measureUnitRequest, 			     "measureUnitRequest");
+		ServiceUtil.checkMandatoryParameter(measureUnitRequest.getMeasureunit(), "measureunit");
+		ServiceUtil.checkMandatoryParameter(idMeasureUnit,                       "idMeasureUnit");
+		
+		MeasureUnit measureUnit = new MeasureUnit(idMeasureUnit, measureUnitRequest.getMeasureunit(), measureUnitRequest.getMeasureunitcategory());
+		
+		int count = measureUnitMapper.updateMeasureUnit(measureUnit);
+		
+		ServiceUtil.checkCount(count);
+		
+		if(measureUnit.getMeasureunitcategory() == null){
+			measureUnit = measureUnitMapper.selectMeasureUnitById(idMeasureUnit);
+		}
+		
+		return ServiceResponse.build().object(new MeasureUnitResponse(measureUnit));
+	}
+
+	
+	/**
+	 * 
+	 * INSERT DATA TYPE
+	 * 
+	 * @param dataTypeRequest
+	 * @return
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	public ServiceResponse insertMeasureUnit(MeasureUnitRequest measureUnitRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(measureUnitRequest, "measureUnitRequest");
+		
+		ServiceUtil.checkMandatoryParameter(measureUnitRequest.getMeasureunit(), "measureunit"); 
+
+		MeasureUnit measureUnit = new MeasureUnit();
+		BeanUtils.copyProperties(measureUnitRequest, measureUnit);
+
+		insertMeasureUnit(measureUnit);
+		
+		return ServiceResponse.build().object(new MeasureUnitResponse(measureUnit));
+	}
+
+	private void insertMeasureUnit(MeasureUnit measureUnit)throws BadRequestException{
+		
+		try {
+			measureUnitMapper.insertMeasureUnit(measureUnit);
+		} 
+		catch (DuplicateKeyException duplicateKeyException) {
+			throw new BadRequestException(Errors.DUPLICATE_KEY);
+		}
+	}
+	
 	
 	/**
 	 * DELETE DATA TYPE

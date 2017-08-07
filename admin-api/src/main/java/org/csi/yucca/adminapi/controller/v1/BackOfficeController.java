@@ -8,7 +8,9 @@ import org.csi.yucca.adminapi.request.DataTypeRequest;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
+import org.csi.yucca.adminapi.request.MeasureUnitRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
+import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.service.ClassificationService;
@@ -38,6 +40,135 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ComponentService componentService;
 
+	/**
+	 * 
+	 * DELETE PHENOMENON
+	 * 
+	 * @param idPhenomenon
+	 * @return
+	 */
+	@DeleteMapping("/phenomenons/{idPhenomenon}")
+	public ResponseEntity<Object> deletePhenomenon(@PathVariable final Integer idPhenomenon){
+		logger.info("deletePhenomenon");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.deletePhenomenon(idPhenomenon);
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * 
+	 * UPDATE PHENOMENON
+	 * 
+	 * @param phenomenonRequest
+	 * @param idPhenomenon
+	 * @return
+	 */
+	@PutMapping("/phenomenons/{idPhenomenon}")
+	public ResponseEntity<Object> updatePhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest, @PathVariable final Integer idPhenomenon){
+		logger.info("updatePhenomenon");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.updatePhenomenon(phenomenonRequest, idPhenomenon);
+			}
+		}, logger);		
+	}	
+	
+	
+	/**
+	 * 
+	 * CREATE SEQUENCE int_yucca.phenomenon_id_phenomenon_seq;
+	 * ALTER TABLE int_yucca.yucca_d_phenomenon ALTER COLUMN id_phenomenon SET DEFAULT nextval('int_yucca.phenomenon_id_phenomenon_seq');
+	 * ALTER TABLE int_yucca.yucca_d_phenomenon ALTER COLUMN id_phenomenon SET NOT NULL;
+	 * ALTER SEQUENCE int_yucca.phenomenon_id_phenomenon_seq OWNED BY int_yucca.yucca_d_phenomenon.id_phenomenon;    -- 8.2 or later
+	 * 
+	 * ALTER SEQUENCE int_yucca.phenomenon_id_phenomenon_seq RESTART WITH 49;
+	 * 
+	 * 
+	 * INSERT PHENOMENON
+	 * 
+	 * @param phenomenonRequest
+	 * @return
+	 */
+	@PostMapping("/phenomenons")
+	public ResponseEntity<Object> createPhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest){
+		logger.info("createPhenomenon");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.insertPhenomenon(phenomenonRequest);
+			}
+		}, logger);		
+	}
+
+	
+	/**
+	 * 
+	 * DELETE MEASURE UNIT
+	 * 
+	 * @param idMeasureUnit
+	 * @return
+	 */
+	@DeleteMapping("/measure_units/{idMeasureUnit}")
+	public ResponseEntity<Object> deleteMeasureUnit(@PathVariable final Integer idMeasureUnit){
+		logger.info("deleteMeasureUnit");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.deleteMeasureUnit(idMeasureUnit);
+			}
+		}, logger);		
+	}
+
+	
+	/**
+	 * 
+	 * UPDATE MEASURE UNIT
+	 * 
+	 * @param measureUnitRequest
+	 * @param idMeasureUnit
+	 * @return
+	 */
+	@PutMapping("/measure_units/{idMeasureUnit}")
+	public ResponseEntity<Object> updateMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest, @PathVariable final Integer idMeasureUnit){
+		logger.info("updateMeasureUnit");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.updateMeasureUnit(measureUnitRequest, idMeasureUnit);
+			}
+		}, logger);		
+	}	
+	
+	
+	/**
+	 * 
+	 * CREATE SEQUENCE int_yucca.measure_unit_id_measure_unit_seq;
+	 * ALTER TABLE int_yucca.yucca_d_measure_unit ALTER COLUMN id_measure_unit SET DEFAULT nextval('int_yucca.measure_unit_id_measure_unit_seq');
+	 * ALTER TABLE int_yucca.yucca_d_measure_unit ALTER COLUMN id_measure_unit SET NOT NULL;
+	 * ALTER SEQUENCE int_yucca.measure_unit_id_measure_unit_seq OWNED BY int_yucca.yucca_d_measure_unit.id_measure_unit;    -- 8.2 or later
+	 * 
+	 * ALTER SEQUENCE int_yucca.measure_unit_id_measure_unit_seq RESTART WITH 53;
+	 * 
+	 * 
+	 * @param measureUnitRequest
+	 * @return
+	 */
+	@PostMapping("/measure_units")
+	public ResponseEntity<Object> createMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest){
+		logger.info("createMeasureUnit");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.insertMeasureUnit(measureUnitRequest);
+			}
+		}, logger);		
+	}
+
+	
 	/**
 	 * 
 	 * DELETE FDATA TYPE

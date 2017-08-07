@@ -42,10 +42,11 @@ public class BackOfficeControllerTest extends TestBase{
 			     "/BackOfficeController_organization_dataIn.json",
 			     "/BackOfficeController_tag_dataIn.json",
 			     "/BackOfficeController_subdomain_dataIn.json",
-			     "/BackOfficeController_data_type_dataIn.json"
+			     "/BackOfficeController_data_type_dataIn.json",
+			     "/BackOfficeController_measureunit_dataIn.json",
+			     "/BackOfficeController_phenomenon_dataIn.json"
 			     );
 	}	
-	
 	
 	private Integer post(JSONObject dato, String apiCode, String entitySet, String message, String idName){
 		StringBuilder builder = getUrl(apiCode, entitySet, dato);

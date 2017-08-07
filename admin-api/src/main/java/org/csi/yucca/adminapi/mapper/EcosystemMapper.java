@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Ecosystem;
 import org.csi.yucca.adminapi.util.Constants;
 
@@ -108,7 +109,7 @@ public interface EcosystemMapper {
 	public static final String UPDATE_ECOSYSTEM = 
 			"UPDATE " + ECOSYSTEM_TABLE + 
 			" SET ecosystemcode=#{ecosystemcode}, description=#{description} WHERE id_ecosystem=#{idEcosystem}";
-	@Delete(UPDATE_ECOSYSTEM)
+	@Update(UPDATE_ECOSYSTEM)
 	int updateEcosystem(Ecosystem ecosystem);	
 	
 	/*************************************************************************
