@@ -66,8 +66,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+@Api(value = "public", description = "Endpoint for public")
 @RestController
 @RequestMapping("1/public")
 public class PublicController extends YuccaController{

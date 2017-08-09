@@ -1,7 +1,7 @@
 package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
-
+	
 	public static final String P_LOAD_DOMAINS = "LOAD DOMAINS";
 	public static final String P_LOAD_DOMAINS_NOTES = "Load all domains.";
 	
