@@ -23,6 +23,7 @@
 	</properties>
 	<build>
 		<plugins>
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -72,6 +73,20 @@
 	</repositories>
 	<dependencies>
 
+		<!--swagger -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+
+
 		<!-- PER TEST BEGIN -->
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -89,7 +104,7 @@
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20151123</version>
-		</dependency> 
+		</dependency>
 		<!-- PER TEST END -->
 
 

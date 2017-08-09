@@ -13,6 +13,15 @@ import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
+import org.csi.yucca.adminapi.response.DataTypeResponse;
+import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.EcosystemResponse;
+import org.csi.yucca.adminapi.response.LicenseResponse;
+import org.csi.yucca.adminapi.response.MeasureUnitResponse;
+import org.csi.yucca.adminapi.response.OrganizationResponse;
+import org.csi.yucca.adminapi.response.PhenomenonResponse;
+import org.csi.yucca.adminapi.response.SubdomainResponse;
+import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
 import org.csi.yucca.adminapi.util.ApiCallable;
@@ -27,7 +36,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+@Api(value = "backoffice", description = "Endpoint for backoffice")
 @RestController
 @RequestMapping("1/backoffice")
 public class BackOfficeController extends YuccaController{
@@ -42,12 +57,79 @@ public class BackOfficeController extends YuccaController{
 
 
 	/**
+	 *  
+	 * INSERT DATA TYPE
+	 * 
+	 * CREATE SEQUENCE int_yucca.data_type_id_data_type_seq;
+	 * ALTER TABLE int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET DEFAULT nextval('int_yucca.data_type_id_data_type_seq');
+	 * ALTER TABLE int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET NOT NULL;
+	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq OWNED BY int_yucca.yucca_d_data_type.id_data_type;    -- 8.2 or later
+	 * 
+	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq RESTART WITH 15;
+	 * 
+	 * @param dataTypeRequest
+	 * @return
+	 */
+	@ApiOperation(value = BO_CREATE_DATA_TYPE, notes = BO_CREATE_DATA_TYPE_NOTES, response = DataTypeResponse.class)
+	@PostMapping("/data_types")
+	public ResponseEntity<Object> createDataType(@RequestBody final DataTypeRequest dataTypeRequest){
+		logger.info("createDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.insertDataType(dataTypeRequest);
+			}
+		}, logger);		
+	}
+
+	/**
+	 * UPDATE DATA TYPE
+	 * 
+	 * @param dataTypeRequest
+	 * @param idDataType
+	 * @return
+	 */
+	@ApiOperation(value = BO_UPDATE_DATA_TYPE, notes = BO_UPDATE_DATA_TYPE_NOTES, response = DataTypeResponse.class)
+	@PutMapping("/data_types/{idDataType}")
+	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest, @PathVariable final Integer idDataType){
+		logger.info("updateDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.updateDataType(dataTypeRequest, idDataType);
+			}
+		}, logger);		
+	}	
+
+	
+	/**
+	 * 
+	 * DELETE FDATA TYPE
+	 * 
+	 * @param idDataType
+	 * @return
+	 */
+	@ApiOperation(value = BO_DELETE_DATA_TYPE, notes = BO_DELETE_DATA_TYPE_NOTES, response = ServiceResponse.class)
+	@DeleteMapping("/data_types/{idDataType}")
+	public ResponseEntity<Object> deleteDataType(@PathVariable final Integer idDataType){
+		logger.info("deleteDataType");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return componentService.deleteDataType(idDataType);
+			}
+		}, logger);		
+	}
+
+	
+	/**
 	 * 
 	 * LOAD DATA TYPE
 	 * 
 	 * @param idDataType
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_DATA_TYPE, notes = BO_LOAD_DATA_TYPE_NOTES, response = DataTypeResponse.class)
 	@GetMapping("/data_types/{idDataType}")
 	public ResponseEntity<Object> loadDataType(@PathVariable final Integer idDataType) {
 		logger.info("loadDataType");
@@ -60,6 +142,8 @@ public class BackOfficeController extends YuccaController{
 	}
 	
 	
+	
+	
 	/**
 	 * 
 	 * LOAD MEASURE UNIT
@@ -67,6 +151,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idMeasureUnit
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_MEASURE_UNIT, notes = BO_LOAD_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class)
 	@GetMapping("/measure_units/{idMeasureUnit}")
 	public ResponseEntity<Object> loadMeasureUnit(@PathVariable final Integer idMeasureUnit) {
 		logger.info("loadMeasureUnit");
@@ -85,6 +170,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idPhenomenon
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_PHENOMENON, notes = BO_LOAD_PHENOMENON_NOTES, response = PhenomenonResponse.class)
 	@GetMapping("/phenomenons/{idPhenomenon}")
 	public ResponseEntity<Object> loadPhenomenon(@PathVariable final Integer idPhenomenon) {
 		logger.info("loadPhenomenon");
@@ -104,6 +190,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idPhenomenon
 	 * @return
 	 */
+	@ApiOperation(value = BO_DELETE_PHENOMENON, notes = BO_DELETE_PHENOMENON_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/phenomenons/{idPhenomenon}")
 	public ResponseEntity<Object> deletePhenomenon(@PathVariable final Integer idPhenomenon){
 		logger.info("deletePhenomenon");
@@ -123,6 +210,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idPhenomenon
 	 * @return
 	 */
+	@ApiOperation(value = BO_UPDATE_PHENOMENON, notes = BO_UPDATE_PHENOMENON_NOTES, response = PhenomenonResponse.class)
 	@PutMapping("/phenomenons/{idPhenomenon}")
 	public ResponseEntity<Object> updatePhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest, @PathVariable final Integer idPhenomenon){
 		logger.info("updatePhenomenon");
@@ -133,7 +221,6 @@ public class BackOfficeController extends YuccaController{
 			}
 		}, logger);		
 	}	
-	
 	
 	/**
 	 * 
@@ -150,6 +237,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param phenomenonRequest
 	 * @return
 	 */
+	@ApiOperation(value = BO_CREATE_PHENOMENON, notes = BO_CREATE_PHENOMENON_NOTES, response = PhenomenonResponse.class)
 	@PostMapping("/phenomenons")
 	public ResponseEntity<Object> createPhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest){
 		logger.info("createPhenomenon");
@@ -169,6 +257,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idMeasureUnit
 	 * @return
 	 */
+	@ApiOperation(value = BO_DELETE_MEASURE_UNIT, notes = BO_DELETE_MEASURE_UNIT_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/measure_units/{idMeasureUnit}")
 	public ResponseEntity<Object> deleteMeasureUnit(@PathVariable final Integer idMeasureUnit){
 		logger.info("deleteMeasureUnit");
@@ -189,6 +278,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idMeasureUnit
 	 * @return
 	 */
+	@ApiOperation(value = BO_UPDATE_MEASURE_UNIT, notes = BO_UPDATE_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class)
 	@PutMapping("/measure_units/{idMeasureUnit}")
 	public ResponseEntity<Object> updateMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest, @PathVariable final Integer idMeasureUnit){
 		logger.info("updateMeasureUnit");
@@ -214,6 +304,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param measureUnitRequest
 	 * @return
 	 */
+	@ApiOperation(value = BO_CREATE_MEASURE_UNIT, notes = BO_CREATE_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class)
 	@PostMapping("/measure_units")
 	public ResponseEntity<Object> createMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest){
 		logger.info("createMeasureUnit");
@@ -227,74 +318,12 @@ public class BackOfficeController extends YuccaController{
 
 	
 	/**
-	 * 
-	 * DELETE FDATA TYPE
-	 * 
-	 * @param idDataType
-	 * @return
-	 */
-	@DeleteMapping("/data_types/{idDataType}")
-	public ResponseEntity<Object> deleteDataType(@PathVariable final Integer idDataType){
-		logger.info("deleteDataType");
-		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return componentService.deleteDataType(idDataType);
-			}
-		}, logger);		
-	}
-
-	
-	/**
-	 * UPDATE DATA TYPE
-	 * 
-	 * @param dataTypeRequest
-	 * @param idDataType
-	 * @return
-	 */
-	@PutMapping("/data_types/{idDataType}")
-	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest, @PathVariable final Integer idDataType){
-		logger.info("updateDataType");
-		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return componentService.updateDataType(dataTypeRequest, idDataType);
-			}
-		}, logger);		
-	}	
-	
-	/**
-	 *  
-	 * INSERT DATA TYPE
-	 * 
-	 * CREATE SEQUENCE int_yucca.data_type_id_data_type_seq;
-	 * ALTER TABLE int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET DEFAULT nextval('int_yucca.data_type_id_data_type_seq');
-	 * ALTER TABLE int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET NOT NULL;
-	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq OWNED BY int_yucca.yucca_d_data_type.id_data_type;    -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq RESTART WITH 15;
-	 * 
-	 * @param dataTypeRequest
-	 * @return
-	 */
-	@PostMapping("/data_types")
-	public ResponseEntity<Object> createDataType(@RequestBody final DataTypeRequest dataTypeRequest){
-		logger.info("createDataType");
-		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return componentService.insertDataType(dataTypeRequest);
-			}
-		}, logger);		
-	}
-
-	
-	/**
 	 * LOAD SUBDOMAIN
 	 * 
 	 * @param idSubdomain
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_SUBDOMAIN, notes = BO_LOAD_SUBDOMAIN_NOTES, response = SubdomainResponse.class)
 	@GetMapping("/subdomains/{idSubdomain}")
 	public ResponseEntity<Object> loadSubdomain(@PathVariable final Integer idSubdomain) {
 		logger.info("loadSubdomain");
@@ -313,6 +342,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idOrganization
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_ORGANIZATION, notes = BO_LOAD_ORGANIZATION_NOTES, response = OrganizationResponse.class)
 	@GetMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> loadOrganization(@PathVariable final Integer idOrganization) {
 		logger.info("loadOrganization");
@@ -331,6 +361,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idLicense
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_LICENSE, notes = BO_LOAD_LICENSE_NOTES, response = LicenseResponse.class)
 	@GetMapping("/licenses/{idLicense}")
 	public ResponseEntity<Object> loadLicense(@PathVariable final Integer idLicense) {
 		logger.info("loadLicense");
@@ -349,6 +380,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idEcosystem
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_ECOSYSTEM, notes = BO_LOAD_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@GetMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> loadEcosystem(@PathVariable final Integer idEcosystem) {
 		logger.info("loadEcosystem");
@@ -366,6 +398,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idTag
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_TAG, notes = BO_LOAD_TAG_NOTES, response = TagResponse.class)
 	@GetMapping("/tags/{idTag}")
 	public ResponseEntity<Object> loadTag(@PathVariable final Integer idTag) {
 		logger.info("loadTag");
@@ -384,6 +417,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idDomain
 	 * @return
 	 */
+	@ApiOperation(value = BO_LOAD_DOMAIN, notes = BO_LOAD_DOMAIN_NOTES, response = DomainResponse.class)
 	@GetMapping("/domains/{idDomain}")
 	public ResponseEntity<Object> loadDomain(@PathVariable final Integer idDomain) {
 		logger.info("loadDomain");
@@ -403,6 +437,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idSubdomain
 	 * @return
 	 */
+	@ApiOperation(value = BO_DELETE_SUBDOMAIN, notes = BO_DELETE_SUBDOMAIN_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/subdomains/{idSubdomain}")
 	public ResponseEntity<Object> deleteSubdomain(@PathVariable final Integer idSubdomain){
 		logger.info("deleteSubdomain");
@@ -422,6 +457,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idSubdomain
 	 * @return
 	 */
+	@ApiOperation(value = BO_UPDATE_SUBDOMAIN, notes = BO_UPDATE_SUBDOMAIN_NOTES, response = SubdomainResponse.class)
 	@PutMapping("/subdomains/{idSubdomain}")
 	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest, @PathVariable final Integer idSubdomain ){
 		logger.info("updateSubdomain");
@@ -449,6 +485,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param subdomainRequest
 	 * @return
 	 */
+	@ApiOperation(value = BO_CREATE_SUBDOMAIN, notes = BO_CREATE_SUBDOMAIN_NOTES, response = SubdomainResponse.class)
 	@PostMapping("/subdomains")
 	public ResponseEntity<Object> createSubdomain(@RequestBody final SubdomainRequest subdomainRequest ){
 		logger.info("createSubdomain");
@@ -460,6 +497,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
+	@ApiOperation(value = BO_DELETE_TAG, notes = BO_DELETE_TAG_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/tags/{idTag}")
 	public ResponseEntity<Object> deleteTag(@PathVariable final Integer idTag){
 		logger.info("deleteTag");
@@ -471,6 +509,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
+	@ApiOperation(value = BO_UPDATE_TAG, notes = BO_UPDATE_TAG_NOTES, response = TagResponse.class)
 	@PutMapping("/tags/{idTag}")
 	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest, @PathVariable final Integer idTag){
 		logger.info("updateTag");
@@ -482,7 +521,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}	
 	
-	
+	@ApiOperation(value = BO_CREATE_TAG, notes = BO_CREATE_TAG_NOTES, response = TagResponse.class)
 	@PostMapping("/tags")
 	public ResponseEntity<Object> createTag(@RequestBody final TagRequest tagRequest ){
 		logger.info("createTag");
@@ -494,7 +533,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 
-	
+	@ApiOperation(value = BO_DELETE_LICENSE, notes = BO_DELETE_LICENSE_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/licenses/{idLicense}")
 	public ResponseEntity<Object> deleteLicense(@PathVariable final Integer idLicense){
 		logger.info("deleteLicense");
@@ -506,7 +545,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 
-	
+	@ApiOperation(value = BO_UPDATE_LICENSE, notes = BO_UPDATE_LICENSE_NOTES, response = LicenseResponse.class)
 	@PutMapping("/licenses/{idLicense}")
 	public ResponseEntity<Object> updateLicense(@RequestBody final LicenseRequest licenseRequest, @PathVariable final Integer idLicense ){
 		logger.info("updateLicense");
@@ -528,6 +567,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param licenseRequest
 	 * @return
 	 */
+	@ApiOperation(value = BO_CREATE_LICENSE, notes = BO_CREATE_LICENSE_NOTES, response = LicenseResponse.class)
 	@PostMapping("/licenses")
 	public ResponseEntity<Object> createLicense(@RequestBody final LicenseRequest licenseRequest ){
 		logger.info("createLicense");
@@ -539,7 +579,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 
-	
+	@ApiOperation(value = BO_UPDATE_ORGANIZATION, notes = BO_UPDATE_ORGANIZATION_NOTES, response = OrganizationResponse.class)
 	@PutMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest, @PathVariable final Integer idOrganization ){
 		logger.info("updateOrganization");
@@ -551,6 +591,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}	
 	
+	@ApiOperation(value = BO_DELETE_ORGANIZATION, notes = BO_DELETE_ORGANIZATION_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> deleteOrganization(@PathVariable final Integer idOrganization){
 		logger.info("deleteOrganization");
@@ -562,6 +603,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
+	@ApiOperation(value = BO_CREATE_ORGANIZATION, notes = BO_CREATE_ORGANIZATION_NOTES, response = OrganizationResponse.class)
 	@PostMapping("/organizations")
 	public ResponseEntity<Object> createOrganization(@RequestBody final OrganizationRequest organizationRequest ){
 		logger.info("createOrganization");
@@ -573,6 +615,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
+	@ApiOperation(value = BO_DELETE_ECOSYSTEM, notes = BO_DELETE_ECOSYSTEM_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> deleteEcosystem(@PathVariable final Integer idEcosystem){
 		logger.info("deleteEcosystem");
@@ -584,6 +627,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
+	@ApiOperation(value = BO_CREATE_ECOSYSTEM, notes = BO_CREATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PostMapping("/ecosystems")
 	public ResponseEntity<Object> createEcosystem(@RequestBody final EcosystemRequest ecosystemRequest ){
 		logger.info("createEcosystem");
@@ -595,7 +639,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
-	
+	@ApiOperation(value = BO_UPDATE_ECOSYSTEM, notes = BO_UPDATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PutMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest, @PathVariable final Integer idEcosystem ){
 		logger.info("updateEcosystem");
@@ -607,7 +651,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}	
 	
-	
+	@ApiOperation(value = BO_DELETE_DOMAIN, notes = BO_DELETE_DOMAIN_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/domains/{idDomain}")
 	public ResponseEntity<Object> deleteDomain(@PathVariable final Integer idDomain){
 		logger.info("deleteDomain");
@@ -630,6 +674,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param domainRequest
 	 * @return
 	 */
+	@ApiOperation(value = BO_DELETE_DOMAIN, notes = BO_DELETE_DOMAIN_NOTES, response = ServiceResponse.class)
 	@PostMapping("/domains")
 	public ResponseEntity<Object> createDomain(@RequestBody final DomainRequest domainRequest ){
 		logger.info("createDomain");
@@ -641,6 +686,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 
+	@ApiOperation(value = BO_UPDATE_DOMAIN, notes = BO_UPDATE_DOMAIN_NOTES, response = DomainResponse.class)
 	@PutMapping("/domains/{idDomain}")
 	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest, @PathVariable final Integer idDomain ){
 		logger.info("updateDomain");

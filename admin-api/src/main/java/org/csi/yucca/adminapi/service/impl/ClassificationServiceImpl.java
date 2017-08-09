@@ -115,7 +115,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		ServiceUtil.checkMandatoryParameter(idEcosystem, "idEcosystem");
 
-		Ecosystem ecosystem = ecosystemMapper.selectEcosystem(idEcosystem);
+		Ecosystem ecosystem = ecosystemMapper.selectEcosystemById(idEcosystem);
 		
 		ServiceUtil.checkIfFoundRecord(ecosystem);
 		

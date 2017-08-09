@@ -19,6 +19,7 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface EcosystemMapper {
 	
+	
 	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + ".yucca_ecosystem";
 	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
 	
@@ -79,7 +80,7 @@ public interface EcosystemMapper {
         @Result(property = "description", column = "description")
       })
 	@Select(SELECT_ECOSYSTEM_BY_ID) 
-	Ecosystem selectEcosystem(@Param("idEcosystem") int idEcosystem);
+	Ecosystem selectEcosystemById(@Param("idEcosystem") int idEcosystem);
 	
 	/*************************************************************************
 	 * 
