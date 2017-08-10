@@ -1,8 +1,6 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
-
+import static org.csi.yucca.adminapi.util.ApiDoc.*;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
@@ -14,6 +12,7 @@ import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +29,24 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private SmartObjectService smartObjectService;    
+
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param soCode
+	 * @return
+	 */
+//	@ApiOperation(value = M_DELETE_SMARTOBJECT, notes = M_DELETE_SMARTOBJECT_NOTES, response = ServiceResponse.class)
+//	@DeleteMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
+//	public ResponseEntity<Object> deleteSmartobject(@PathVariable final Integer organizationCode, @PathVariable final String soCode, ){
+//		logger.info("deleteSmartobject");
+//		
+//		return run(new ApiCallable() {
+//			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+//				return smartObjectService.deleteSmartObject(organizationCode, soCode);
+//			}
+//		}, logger);		
+//	}
 	
 	/**
 	 * IMPORTANTE!

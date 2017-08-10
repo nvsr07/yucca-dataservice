@@ -28,6 +28,7 @@ import org.csi.yucca.adminapi.model.SupplyType;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.ExposureTypeResponse;
 import org.csi.yucca.adminapi.response.LocationTypeResponse;
+import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.response.SoCategoryResponse;
 import org.csi.yucca.adminapi.response.SoTypeResponse;
 import org.csi.yucca.adminapi.response.SupplyTypeResponse;
@@ -82,10 +83,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		
 		smartobjectMapper.insertTenantSmartobject(smartobjectRequest.getIdTenant(), smartobject.getIdSmartObject(), now);
 		
-		
-		
-//		return ServiceResponse.build().object(new PhenomenonResponse(phenomenon));
-		return ServiceResponse.build().object("Okkkkkkkkkkkkkkkkkkkkkkkkkk");
+		return ServiceResponse.build().object(new SmartobjectResponse(smartobject));
 	}
 
 	
