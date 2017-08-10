@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -54,7 +56,35 @@ public class ServiceUtil {
 			// TODO: handle exception
 		}
 	}
+	
+	public static boolean isAlphaNumeric(String s){
+	    String pattern= "^[a-zA-Z0-9]*$";
+	    return s.matches(pattern);
+	}
+	
+	public static void checkAphanumeric(String s, String fieldName) throws BadRequestException{
+		if (!isAlphaNumeric(s)){
+			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED.arg("received " + fieldName + " [ " + s + " ]"));
+		}
 
+	}
+	
+	public static boolean containsWhitespace(String s){
+		
+		Pattern pattern = Pattern.compile("\\s");
+		
+		Matcher matcher = pattern.matcher(s);
+		
+		return matcher.find();
+		
+	}
+	
+	public static void checkWhitespace(String s, String parameterName) throws BadRequestException {
+		if(containsWhitespace(s)){
+			throw new BadRequestException(Errors.WHITE_SPACES.arg(parameterName));
+		}
+	}
+	
 	public static void checkMandatoryParameter(boolean isEmpty, String parameterName) throws BadRequestException {
 		if (isEmpty) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));
