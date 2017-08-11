@@ -34,6 +34,16 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private SmartObjectService smartObjectService;    
 
+	/**
+	 * 
+	 * campi che non possono essere cambiati:
+	 * idsotype , slug, socode
+	 * 
+	 * @param smartobjectRequest
+	 * @param organizationCode
+	 * @param soCode
+	 * @return
+	 */
 	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
 	public ResponseEntity<Object> updateSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final Integer organizationCode, @PathVariable final String soCode ){
