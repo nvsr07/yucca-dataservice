@@ -5,6 +5,8 @@ import java.sql.Timestamp;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.util.Errors;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class SmartobjectResponse extends Response {
 
 	private Integer idSmartObject;
@@ -19,14 +21,31 @@ public class SmartobjectResponse extends Response {
 	private Integer deploymentversion;
 	private String sostatus;
 	private Timestamp creationdate;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusername;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long twtmaxsearchnumber;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long twtmaxsearchinterval;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusertoken;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twttokensecret;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtname;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long twtuserid;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer twtmaxstreams;
+	
 	private String slug;
 	private Integer idLocationType;
 	private Integer idExposureType;

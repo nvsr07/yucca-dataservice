@@ -36,17 +36,17 @@ public class ManagementController extends YuccaController{
 	 * @param soCode
 	 * @return
 	 */
-//	@ApiOperation(value = M_DELETE_SMARTOBJECT, notes = M_DELETE_SMARTOBJECT_NOTES, response = ServiceResponse.class)
-//	@DeleteMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
-//	public ResponseEntity<Object> deleteSmartobject(@PathVariable final Integer organizationCode, @PathVariable final String soCode, ){
-//		logger.info("deleteSmartobject");
-//		
-//		return run(new ApiCallable() {
-//			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-//				return smartObjectService.deleteSmartObject(organizationCode, soCode);
-//			}
-//		}, logger);		
-//	}
+	@ApiOperation(value = M_DELETE_SMARTOBJECT, notes = M_DELETE_SMARTOBJECT_NOTES, response = ServiceResponse.class)
+	@DeleteMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
+	public ResponseEntity<Object> deleteSmartobject(@PathVariable final Integer organizationCode, @PathVariable final String soCode ){
+		logger.info("deleteSmartobject");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return smartObjectService.deleteSmartObject(organizationCode, soCode);
+			}
+		}, logger);		
+	}
 	
 	/**
 	 * IMPORTANTE!

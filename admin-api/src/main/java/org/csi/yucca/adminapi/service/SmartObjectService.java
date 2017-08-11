@@ -7,6 +7,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface SmartObjectService {
 	
+	ServiceResponse deleteSmartObject(Integer organizationCode, String socode) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse selectExposureType(String sort) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectSoCategory(String sort) throws BadRequestException, NotFoundException, Exception;

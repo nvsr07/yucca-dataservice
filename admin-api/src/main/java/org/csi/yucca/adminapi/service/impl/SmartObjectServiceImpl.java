@@ -11,6 +11,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
+import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.ExposureTypeMapper;
 import org.csi.yucca.adminapi.mapper.LocationTypeMapper;
@@ -35,6 +36,7 @@ import org.csi.yucca.adminapi.response.SupplyTypeResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ServiceResponse;
+import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.BeanUtils;
 //import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +71,39 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 	@Autowired
 	private SmartobjectMapper smartobjectMapper;
+	
+	/**
+	 * DELETE SMARTOBJECT
+	 */
+	public ServiceResponse deleteSmartObject(Integer organizationCode, String socode) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");
+		ServiceUtil.checkMandatoryParameter(socode, "soCode");
+		
+		Smartobject smartobject = smartobjectMapper.selectSmartobject(socode, organizationCode);
+
+		if(org.csi.yucca.adminapi.util.SoType.INTERNAL.id() == smartobject.getIdSoType()){
+			throw new BadRequestException(Errors.INCORRECT_VALUE.arg("idSoType di tipo: " + org.csi.yucca.adminapi.util.SoType.INTERNAL.code() + " delete denied."));
+		}
+		
+		smartobjectMapper.deleteTenantSmartobject(smartobject.getIdSmartObject());
+	
+		int count = 0;
+		try {
+			count = smartobjectMapper.deleteSmartobject(socode, organizationCode);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+
 	
 	/**
 	 * INSERT SMART OBJECT
