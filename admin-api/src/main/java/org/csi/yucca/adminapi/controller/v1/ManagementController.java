@@ -5,8 +5,11 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
+import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -15,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +34,19 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private SmartObjectService smartObjectService;    
 
+	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
+	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
+	public ResponseEntity<Object> updateSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final Integer organizationCode, @PathVariable final String soCode ){
+		logger.info("updateSmartobject");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+//				return smartObjectService.updateSmartobject(smartobjectRequest, organizationCode, soCode);
+				return null;
+			}
+		}, logger);		
+	}	
+	
 	/**
 	 * 
 	 * @param organizationCode

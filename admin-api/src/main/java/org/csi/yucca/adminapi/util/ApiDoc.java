@@ -2,6 +2,9 @@ package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
 	
+	public static final String M_UPDATE_SMARTOBJECT = "UPDATE SMARTOBJECT";
+	public static final String M_UPDATE_SMARTOBJECT_NOTES = "Update Smartobject in the System.";
+	
 	public static final String M_DELETE_SMARTOBJECT = "DELETE SMARTOBJECT";
 	public static final String M_DELETE_SMARTOBJECT_NOTES = "Delete Smartobject in the System.";
 	
@@ -55,8 +58,6 @@ public class ApiDoc {
 
 	public static final String P_LOAD_DATA_TYPES = "LOAD DATA TYPES";
 	public static final String P_LOAD_DATA_TYPES_NOTES = "Load all Data Types.";
-	
-	
 	
 	public static final String BO_UPDATE_DOMAIN = "UPDATE DOMAIN";
 	public static final String BO_UPDATE_DOMAIN_NOTES = "Update a Domain in the System.";

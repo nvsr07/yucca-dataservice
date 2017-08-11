@@ -72,6 +72,13 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Autowired
 	private SmartobjectMapper smartobjectMapper;
 	
+	public ServiceResponse updateSmartobject(SmartobjectRequest smartobjectRequest, Integer organizationCode, String soCode) throws BadRequestException, NotFoundException, Exception{
+		
+		
+		return null;
+	}
+	
+	
 	/**
 	 * DELETE SMARTOBJECT
 	 */
