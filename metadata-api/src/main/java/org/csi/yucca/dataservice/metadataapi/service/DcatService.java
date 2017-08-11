@@ -18,8 +18,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
@@ -28,12 +28,12 @@ import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatCatalog;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDataset;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDate;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatDistribution;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatLicenseType;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatObject;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatResult;
+import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatVCard;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.I18NString;
 import org.csi.yucca.dataservice.metadataapi.model.dcat.IdString;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatLicenseType;
-import org.csi.yucca.dataservice.metadataapi.model.dcat.DCatVCard;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
@@ -61,7 +61,7 @@ public class DcatService extends AbstractService {
 			@QueryParam("subdomain") String subdomain, @QueryParam("opendata") Boolean opendata, @QueryParam("geolocalized") Boolean geolocalized,
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang, @QueryParam("tags") String tags, @QueryParam("visibility") String visibility, @QueryParam("isSearchExact") Boolean isSearchExact,
-			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("externalReference") String externalReference, @QueryParam("linkedData") Boolean linkedData)
+			@QueryParam("includeSandbox") Boolean includeSandbox, @QueryParam("externalReference") String externalReference, @QueryParam("linkedData") Boolean linkedData , @QueryParam("outputFormat") String outputFormat)
 			throws NumberFormatException, UnknownHostException {
 
 		// SimpleDateFormat catalogDateFormat = new
@@ -279,7 +279,7 @@ public class DcatService extends AbstractService {
 					// String keyWords = "";
 					if (metadataST.getTags() != null) {
 						for (String tag : metadataST.getTags()) {
-							dsDCAT.addKeyword(tag);
+							dsDCAT.addKeyword(tag.replaceAll("[&]", "and"));
 						}
 					}
 					dsDCAT.setTheme(DCatSdpHelper.getDcatTheme(metadataST.getDomainCode()));
@@ -414,8 +414,58 @@ public class DcatService extends AbstractService {
 		
 //		return Response.ok(arrayOutputStream.toString()).build();
 		
-		
-		
-		return Response.ok(json).build();
+		if (null!=outputFormat && "turtle".equalsIgnoreCase(outputFormat)) {
+			return Response.ok(convertToTurtle(json),"text/turtle; charset=UTF-8").build();
+		} else {
+			return Response.ok(json,"application/ld+json; charset=UTF-8").build();
+		}
 	}
+
+	
+	private String convertToTurtle(String json) {
+		com.hp.hpl.jena.rdf.model.Model model = com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel();
+		InputStream in = new ByteArrayInputStream(json.getBytes());
+		RDFDataMgr.read(model, in, null, Lang.JSONLD);
+		ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+		
+		RDFDataMgr.write(arrayOutputStream, model, Lang.TURTLE);
+		
+		
+		return arrayOutputStream.toString();
+	}
+	/*
+	public static void main(String[] args) {
+		com.hp.hpl.jena.rdf.model.Model model = com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel();
+
+		 // use the FileManager to find the input file
+		 InputStream in = com.hp.hpl.jena.util.FileManager.get().open( "D:\\catalogo.jsonld" );
+//		 InputStream in = new ByteArrayInputStream( json.getBytes(  ) );
+		if (in == null) {
+		    throw new IllegalArgumentException("not found");
+		}
+
+		try {
+		StringWriter writer = new StringWriter();
+		IOUtils.copy(in, writer,"UTF-8");
+		String theString = writer.toString();
+		
+
+		
+		//System.out.println(convertToTurtle(theString));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		RDFDataMgr.read(model, in, null, Lang.JSONLD);
+		// read the RDF/XML file
+		//model.read(in,"json-ld");
+
+		// write it to standard out
+		ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
+		
+		RDFDataMgr.write(arrayOutputStream, model, Lang.TURTLE);
+		System.out.println(arrayOutputStream.toString());
+		
+		
+	}
+		*/
 }
