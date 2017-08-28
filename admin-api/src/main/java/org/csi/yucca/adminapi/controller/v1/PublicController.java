@@ -293,7 +293,7 @@ public class PublicController extends YuccaController{
 
 	@ApiOperation(value = P_LOAD_DOMAINS, notes = P_LOAD_DOMAINS_NOTES, response = DomainResponse.class, responseContainer="List")
 	@GetMapping("/domains")
-	public ResponseEntity<Object> loadDomains(@RequestParam(required=false)final Integer ecosystemCode, 
+	public ResponseEntity<Object> loadDomains(@RequestParam(required=false)final String ecosystemCode, 
 			@RequestParam(required=false) final String lang, @RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadDomains");

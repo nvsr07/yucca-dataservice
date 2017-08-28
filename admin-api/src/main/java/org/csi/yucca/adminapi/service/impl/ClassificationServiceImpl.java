@@ -709,7 +709,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 	/**
 	 * 
 	 */
-	public ServiceResponse selectDomain(Integer ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectDomain(String ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
 		

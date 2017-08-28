@@ -54,7 +54,7 @@ public interface ClassificationService {
 	
 	ServiceResponse insertEcosystem(EcosystemRequest ecosystemRequest) throws BadRequestException, NotFoundException, Exception;
 	
-	ServiceResponse selectDomain(Integer ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectDomain(String ecosystemCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectEcosystem(Integer organizationCode, String sort) throws BadRequestException, NotFoundException, Exception;
 	

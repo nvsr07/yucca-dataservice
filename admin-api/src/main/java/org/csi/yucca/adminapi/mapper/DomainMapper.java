@@ -32,7 +32,7 @@ public interface DomainMapper {
 	public static final String SELECT_DOMAIN = "FROM " + DOMAIN_TABLE + " " +
 			"JOIN "+ R_ECOSYSTEM_DOMAIN_TABLE + " ON " + DOMAIN_TABLE + ".id_domain = " + R_ECOSYSTEM_DOMAIN_TABLE + ".id_domain " +
 			"JOIN " + ECOSYSTEM_TABLE + " ON " + R_ECOSYSTEM_DOMAIN_TABLE + ".id_ecosystem = " + ECOSYSTEM_TABLE + ".id_ecosystem " +
-			"WHERE " + ECOSYSTEM_TABLE + ".id_ecosystem = #{id} " + 
+			"WHERE " + ECOSYSTEM_TABLE + ".ecosystemcode = #{id} " + 
 
 			"<if test=\"sortList != null\">" +
 		      " ORDER BY " +
@@ -150,7 +150,7 @@ public interface DomainMapper {
 		        "SELECT domaincode, ", DOMAIN_TABLE, ".id_domain, deprecated, langit, langen " ,
 		        SELECT_DOMAIN,
              "</script>"}) 
-	List<Domain> selectDomainAllLanguage(@Param("id") int id, @Param("sortList") List<String> sortList);
+	List<Domain> selectDomainAllLanguage(@Param("id") String id, @Param("sortList") List<String> sortList);
 	
 	
 	/*************************************************************************
@@ -186,7 +186,7 @@ public interface DomainMapper {
 		        "SELECT domaincode, ", DOMAIN_TABLE, ".id_domain, deprecated, langit" ,
 		        SELECT_DOMAIN,
              "</script>"}) 
-	List<Domain> selectDomainITLanguage(@Param("id") int id, @Param("sortList") List<String> sortList);
+	List<Domain> selectDomainITLanguage(@Param("id") String id, @Param("sortList") List<String> sortList);
 	
 	
 	/*************************************************************************
@@ -205,6 +205,6 @@ public interface DomainMapper {
 		        "SELECT domaincode, ", DOMAIN_TABLE, ".id_domain, deprecated, langen " ,
 		        SELECT_DOMAIN, 
              "</script>"}) 
-	List<Domain> selectDomainENLanguage(@Param("id") int id, @Param("sortList") List<String> sortList);
+	List<Domain> selectDomainENLanguage(@Param("id") String id, @Param("sortList") List<String> sortList);
 	
 }
