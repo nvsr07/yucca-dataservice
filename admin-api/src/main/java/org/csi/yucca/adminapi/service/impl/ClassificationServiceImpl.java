@@ -502,7 +502,7 @@ public class ClassificationServiceImpl implements ClassificationService{
     /**
      * 	SELECT SUBDOMAIN
      */
-	public ServiceResponse selectSubdomain(Integer domainCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectSubdomain(String domainCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(domainCode, "domainCode");
 		

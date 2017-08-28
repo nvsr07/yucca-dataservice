@@ -20,10 +20,13 @@ public interface SubdomainMapper {
 	
 	String SUBDOMAIN_TABLE = Constants.SCHEMA_DB + ".yucca_d_subdomain";
 	
-	public static final String SELECT =
-			" FROM " + SUBDOMAIN_TABLE + " " + 
-			" WHERE id_domain = #{domainCode} " + 
+	public static final String FROM =
+	" FROM " + SUBDOMAIN_TABLE + " SUB, " + DomainMapper.DOMAIN_TABLE + " DOM  " +
+	" where DOM.domaincode = #{domainCode} AND " +
+	" DOM.id_domain = SUB.id_domain ";
 	
+	public static final String SELECT =
+			FROM +	
 			"<if test=\"sortList != null\">" +
 				" ORDER BY " +
 			
@@ -165,10 +168,10 @@ public interface SubdomainMapper {
         @Result(property = "idDomain", column = "id_domain")
 	})
 	@Select({"<script>",
-				" SELECT id_subdomain, subdomaincode, lang_it, lang_en, deprecated, id_domain ",
+				" SELECT id_subdomain, subdomaincode, lang_it, lang_en, SUB.deprecated, SUB.id_domain ",
 				SELECT,
              "</script>"}) 
-	List<Subdomain> selectSubdomainAllLanguage(@Param("domainCode") int domainCode, @Param("sortList") List<String> sortList);
+	List<Subdomain> selectSubdomainAllLanguage(@Param("domainCode") String domainCode, @Param("sortList") List<String> sortList);
 	
 	
 	@Results({
@@ -179,10 +182,10 @@ public interface SubdomainMapper {
         @Result(property = "idDomain", column = "id_domain")
 	})
 	@Select({"<script>",
-				" SELECT id_subdomain, subdomaincode, lang_it, deprecated, id_domain ",
+				" SELECT id_subdomain, subdomaincode, lang_it, SUB.deprecated, SUB.id_domain ",
 				SELECT,
              "</script>"}) 
-	List<Subdomain> selectSubdomainITLanguage(@Param("domainCode") int domainCode, @Param("sortList") List<String> sortList);
+	List<Subdomain> selectSubdomainITLanguage(@Param("domainCode") String domainCode, @Param("sortList") List<String> sortList);
 	
 
 	@Results({
@@ -193,10 +196,10 @@ public interface SubdomainMapper {
         @Result(property = "idDomain", column = "id_domain")
 	})
 	@Select({"<script>",
-				" SELECT id_subdomain, subdomaincode, lang_en, deprecated, id_domain ",
+				" SELECT id_subdomain, subdomaincode, lang_en, SUB.deprecated, SUB.id_domain ",
 				SELECT,
              "</script>"}) 
-	List<Subdomain> selectSubdomainENLanguage(@Param("domainCode") int domainCode, @Param("sortList") List<String> sortList);
+	List<Subdomain> selectSubdomainENLanguage(@Param("domainCode") String domainCode, @Param("sortList") List<String> sortList);
 	
 
 	

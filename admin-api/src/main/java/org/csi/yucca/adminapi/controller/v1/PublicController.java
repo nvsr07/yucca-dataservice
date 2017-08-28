@@ -234,7 +234,7 @@ public class PublicController extends YuccaController{
 	
 	@ApiOperation(value = P_LOAD_SUBDOMAINS, notes = P_LOAD_SUBDOMAINS_NOTES, response = SubdomainResponse.class, responseContainer="List")
 	@GetMapping("/subdomains")
-	public ResponseEntity<Object> loadSubdomains(@RequestParam(required=false) final Integer domainCode, 
+	public ResponseEntity<Object> loadSubdomains(@RequestParam(required=false) final String domainCode, 
 			@RequestParam(required=false) final String sort, @RequestParam(required=false) final String lang  ) {
 
 		logger.info("loadSubdomains");
