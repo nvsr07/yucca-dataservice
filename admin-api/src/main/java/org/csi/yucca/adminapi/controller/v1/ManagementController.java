@@ -1,14 +1,18 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.*;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
-import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
-import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.util.ApiCallable;

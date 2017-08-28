@@ -18,17 +18,18 @@ import org.csi.yucca.adminapi.util.Constants;
  *
  */
 public interface OrganizationMapper {
-	
+
 	String ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_organization";
 	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
-	
+		
 	public static final String SELECT = 
 			
-			
-			" SELECT ORG.id_organization, organizationcode, description " +
-			" FROM " + ORGANIZATION_TABLE + " ORG, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " R_ORG_ECO " +
-			" WHERE R_ORG_ECO.id_ecosystem = #{ecosystemCode} AND " +
-			" ORG.id_organization = R_ORG_ECO.id_organization " +
+			" SELECT ORG.id_organization, organizationcode, ORG.description " + 
+			" FROM " + ORGANIZATION_TABLE + " ORG, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " R_ORG_ECO, "
+					+ EcosystemMapper.ECOSYSTEM_TABLE + " ECO " +
+			" WHERE ECO.ecosystemcode = #{ecosystemCode} AND  " +
+			" R_ORG_ECO.id_ecosystem = ECO.id_ecosystem AND " + 
+			" ORG.id_organization = R_ORG_ECO.id_organization  " +
 
 			"<if test=\"sortList != null\">" +
 				" ORDER BY " +
@@ -144,6 +145,6 @@ public interface OrganizationMapper {
 	@Select({"<script>",
 				SELECT,
              "</script>"}) 
-	List<Organization> selectOrganization(@Param("ecosystemCode") int ecosystemCode, @Param("sortList") List<String> sortList);
+	List<Organization> selectOrganization(@Param("ecosystemCode") String ecosystemCode, @Param("sortList") List<String> sortList);
 	
 }

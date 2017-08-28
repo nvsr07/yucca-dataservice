@@ -539,7 +539,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	public ServiceResponse selectOrganization(Integer ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectOrganization(String ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemCode, "ecosystemCode");
 		

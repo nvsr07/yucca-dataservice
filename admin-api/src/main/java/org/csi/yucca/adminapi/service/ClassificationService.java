@@ -60,7 +60,7 @@ public interface ClassificationService {
 	
 	ServiceResponse selectLicense(String sort) throws BadRequestException, NotFoundException, Exception;
 	
-	ServiceResponse selectOrganization(Integer ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectOrganization(String ecosystemCode, String sort) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectSubdomain(Integer domainCode, String lang, String sort) throws BadRequestException, NotFoundException, Exception;
 	
