@@ -20,9 +20,13 @@ public interface TagMapper {
 	
 	String TAG_TABLE = Constants.SCHEMA_DB + ".yucca_d_tag";
 	
-	public static final String SELECT =
-			" FROM " + TAG_TABLE + " where id_ecosystem= #{ecosystemCode} " + 
+	public static final String FROM =
+		" FROM " + TAG_TABLE + " TAG, " + EcosystemMapper.ECOSYSTEM_TABLE + " ECO " +
+		" where TAG.id_ecosystem = ECO.id_ecosystem AND " +
+		" ECO.ecosystemcode = #{ecosystemCode} ";
 	
+	public static final String SELECT =
+			FROM + 
 			"<if test=\"sortList != null\">" +
 				" ORDER BY " +
 			
@@ -133,10 +137,10 @@ public interface TagMapper {
         @Result(property = "idEcosystem", column = "id_ecosystem")
 	})
 	@Select({"<script>",
-				" SELECT id_tag, tagcode, langit, langen, id_ecosystem ",
+				" SELECT id_tag, tagcode, langit, langen, TAG.id_ecosystem ",
 				SELECT,
              "</script>"}) 
-	List<Tag> selectTagAllLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") Integer ecosystemCode);
+	List<Tag> selectTagAllLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") String ecosystemCode);
 	
 	
 	@Results({
@@ -146,10 +150,10 @@ public interface TagMapper {
         @Result(property = "idEcosystem", column = "id_ecosystem")
 	})
 	@Select({"<script>",
-				" SELECT id_tag, tagcode, langit, id_ecosystem ",
+				" SELECT id_tag, tagcode, langit, TAG.id_ecosystem ",
 				SELECT,
              "</script>"}) 
-	List<Tag> selectTagITLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") Integer ecosystemCode);
+	List<Tag> selectTagITLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") String ecosystemCode);
 	
 
 	@Results({
@@ -159,10 +163,10 @@ public interface TagMapper {
         @Result(property = "idEcosystem", column = "id_ecosystem")
 	})
 	@Select({"<script>",
-				" SELECT id_tag, tagcode, langen, id_ecosystem ",
+				" SELECT id_tag, tagcode, langen, TAG.id_ecosystem ",
 				SELECT,
              "</script>"}) 
-	List<Tag> selectTagENLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") Integer ecosystemCode);
+	List<Tag> selectTagENLanguage(@Param("sortList") List<String> sortList, @Param("ecosystemCode") String ecosystemCode);
 	
 
 	

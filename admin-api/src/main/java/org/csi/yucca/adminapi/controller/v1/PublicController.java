@@ -221,7 +221,7 @@ public class PublicController extends YuccaController{
 	@GetMapping("/tags")
 	public ResponseEntity<Object> loadTags( @RequestParam(required=false) final String sort, 
 			@RequestParam(required=false) final String lang,
-			@RequestParam(required=false) final Integer ecosystemCode ) {
+			@RequestParam(required=false) final String ecosystemCode ) {
 
 		logger.info("loadTags");
 
