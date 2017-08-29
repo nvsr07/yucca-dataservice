@@ -350,7 +350,8 @@ public class ComponentServiceImpl implements ComponentService{
 		
 		ServiceUtil.checkMandatoryParameter(dataTypeRequest, "tagRequest");
 		
-		ServiceUtil.checkMandatoryParameter(dataTypeRequest.getDatatypecode(), "datatypecode"); 
+//		ServiceUtil.checkMandatoryParameter(dataTypeRequest.getDatatypecode(), "datatypecode"); 
+		ServiceUtil.checkCode(dataTypeRequest.getDatatypecode(), "datatypecode"); 
 
 		DataType dataType = new DataType();
 		BeanUtils.copyProperties(dataTypeRequest, dataType);

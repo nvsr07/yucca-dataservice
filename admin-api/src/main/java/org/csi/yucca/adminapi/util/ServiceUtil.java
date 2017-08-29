@@ -79,6 +79,12 @@ public class ServiceUtil {
 		
 	}
 	
+	public static void checkCode(String s, String parameterName) throws BadRequestException {
+		checkMandatoryParameter(s, parameterName);
+		checkWhitespace(s, parameterName);
+		checkAphanumeric(s, parameterName);
+	}
+	
 	public static void checkWhitespace(String s, String parameterName) throws BadRequestException {
 		if(containsWhitespace(s)){
 			throw new BadRequestException(Errors.WHITE_SPACES.arg(parameterName));

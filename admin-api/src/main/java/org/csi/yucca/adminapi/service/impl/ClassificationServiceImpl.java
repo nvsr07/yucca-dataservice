@@ -168,7 +168,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(subdomainRequest,                    "subdomainRequest");
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangEn(),        "langEn");
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangIt(),        "langIt");
-		ServiceUtil.checkMandatoryParameter(subdomainRequest.getSubdomaincode(), "subdomaincode");
+//		ServiceUtil.checkMandatoryParameter(subdomainRequest.getSubdomaincode(), "subdomaincode");
+		ServiceUtil.checkCode(subdomainRequest.getSubdomaincode(), "subdomaincode");
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getIdDomain(),      "idDomain");
 		
 		Subdomain subdomain = new Subdomain();
@@ -194,10 +195,10 @@ public class ClassificationServiceImpl implements ClassificationService{
 	public ServiceResponse insertSubdomain(SubdomainRequest subdomainRequest) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(subdomainRequest, "subdomainRequest");
-		
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangEn(), "langEn"); 
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getLangIt(), "langIt"); 
-		ServiceUtil.checkMandatoryParameter(subdomainRequest.getSubdomaincode(), "subdomaincode"); 
+		ServiceUtil.checkCode(subdomainRequest.getSubdomaincode(), "subdomaincode"); 
+//		ServiceUtil.checkMandatoryParameter(subdomainRequest.getSubdomaincode(), "subdomaincode"); 
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getIdDomain(), "idDomain"); 
 		
 		Subdomain subdomain = new Subdomain();
@@ -244,7 +245,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 	public ServiceResponse updateTag(TagRequest tagRequest, Integer idTag) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(tagRequest, 			 "tagRequest");
-		ServiceUtil.checkMandatoryParameter(tagRequest.getTagcode(), "tagcode");
+//		ServiceUtil.checkMandatoryParameter(tagRequest.getTagcode(), "tagcode");
+		ServiceUtil.checkCode(tagRequest.getTagcode(), "tagcode");
 		ServiceUtil.checkMandatoryParameter(tagRequest.getLangen(),  "langen");
 		ServiceUtil.checkMandatoryParameter(tagRequest.getLangit(),  "langit");
 		ServiceUtil.checkMandatoryParameter(idTag,                   "idTag");
@@ -271,7 +273,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		ServiceUtil.checkMandatoryParameter(tagRequest.getLangen(), "langen"); 
 		ServiceUtil.checkMandatoryParameter(tagRequest.getLangit(), "langit"); 
-		ServiceUtil.checkMandatoryParameter(tagRequest.getTagcode(), "tagcode"); 
+		ServiceUtil.checkCode(tagRequest.getTagcode(), "tagcode"); 
+//		ServiceUtil.checkMandatoryParameter(tagRequest.getTagcode(), "tagcode"); 
 		
 		Tag tag = new Tag();
 		BeanUtils.copyProperties(tagRequest, tag);
@@ -319,7 +322,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		ServiceUtil.checkMandatoryParameter(licenseRequest, "licenseRequest");
 		ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "description");
-		ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode");
+//		ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode");
+		ServiceUtil.checkCode(licenseRequest.getLicensecode(), "licensecode");
 		ServiceUtil.checkMandatoryParameter(idLicense, "idLicense");
 
 		License license = new License(idLicense, licenseRequest.getLicensecode(), licenseRequest.getDescription());
@@ -338,7 +342,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(licenseRequest, "licenseRequest");
 		
 		ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "description"); 
-		ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode"); 
+//		ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode"); 
+		ServiceUtil.checkCode(licenseRequest.getLicensecode(), "licensecode"); 
 		
 		License license = new License();
 		BeanUtils.copyProperties(licenseRequest, license);
@@ -354,8 +359,9 @@ public class ClassificationServiceImpl implements ClassificationService{
 	public ServiceResponse updateOrganization(OrganizationRequest organizationRequest, Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
-		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "domaincode");
-		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "domaincode");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "description");
+//		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "organizationcode");
+		ServiceUtil.checkCode(organizationRequest.getOrganizationcode(), "organizationcode");
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList(), "ecosystemCodeList");
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList");
 		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
@@ -428,7 +434,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemRequest, "ecosystemRequest");
 		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getDescription(), "description");
-		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getEcosystemcode(), "ecosystemcode");
+//		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getEcosystemcode(), "ecosystemcode");
+		ServiceUtil.checkCode(ecosystemRequest.getEcosystemcode(), "ecosystemcode");
 		ServiceUtil.checkMandatoryParameter(idEcosystem, "idEcosystem");
 
 		Ecosystem ecosystem  = new Ecosystem(idEcosystem,ecosystemRequest.getEcosystemcode(), ecosystemRequest.getDescription() );
@@ -452,7 +459,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(ecosystemRequest, "ecosystemRequest");
 		
 		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getDescription(), "description"); 
-		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getEcosystemcode(), "ecosystemcode"); 
+//		ServiceUtil.checkMandatoryParameter(ecosystemRequest.getEcosystemcode(), "ecosystemcode"); 
+		ServiceUtil.checkCode(ecosystemRequest.getEcosystemcode(), "ecosystemcode"); 
 		
 		Ecosystem  ecosystem = new Ecosystem();
 		BeanUtils.copyProperties(ecosystemRequest, ecosystem);
@@ -596,7 +604,9 @@ public class ClassificationServiceImpl implements ClassificationService{
 	public ServiceResponse updateDomain(DomainRequest domainRequest, Integer idDomain) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(domainRequest, "domainRequest");
-		ServiceUtil.checkMandatoryParameter(domainRequest.getDomaincode(), "domaincode");
+//		ServiceUtil.checkMandatoryParameter(domainRequest.getDomaincode(), "domaincode");
+		ServiceUtil.checkCode(domainRequest.getDomaincode(), "domaincode");
+		
 		ServiceUtil.checkMandatoryParameter(domainRequest.getEcosystemCodeList(), "ecosystemCodeList");
 		ServiceUtil.checkMandatoryParameter(idDomain, "idDomain");
 		ServiceUtil.checkMandatoryParameter(domainRequest.getLangen(), "langen");
@@ -646,7 +656,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
 		
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "description"); 
-		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "organizationcode"); 
+//		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "organizationcode"); 
+		ServiceUtil.checkCode(organizationRequest.getOrganizationcode(), "organizationcode"); 
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList(), "ecosystemCodeList"); 
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList"); 
 		
@@ -668,7 +679,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(domainRequest, "domainRequest");
 		
 		ServiceUtil.checkMandatoryParameter(domainRequest.getDeprecated(), "deprecated"); 
-		ServiceUtil.checkMandatoryParameter(domainRequest.getDomaincode(), "domaincode"); 
+//		ServiceUtil.checkMandatoryParameter(domainRequest.getDomaincode(), "domaincode"); 
+		ServiceUtil.checkCode(domainRequest.getDomaincode(), "domaincode"); 
 		ServiceUtil.checkMandatoryParameter(domainRequest.getEcosystemCodeList(), "ecosystemCodeList"); 
 		ServiceUtil.checkMandatoryParameter(domainRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList"); 
 		ServiceUtil.checkMandatoryParameter(domainRequest.getLangen(), "langen"); 

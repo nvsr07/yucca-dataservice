@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkAphanumeric;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkCode;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkWhitespace;
@@ -227,16 +227,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	private void validation(SmartobjectRequest smartobjectRequest, Integer organizationCode)throws BadRequestException, NotFoundException, Exception{
 		checkMandatoryParameter(smartobjectRequest, "smartobjectRequest");
 		checkMandatoryParameter(smartobjectRequest.getName(), "name");
-		checkMandatoryParameter(smartobjectRequest.getSlug(), "slug");
 		checkMandatoryParameter(smartobjectRequest.getIdSoCategory(), "idSoCategory");
 		checkMandatoryParameter(smartobjectRequest.getSocode(), "socode");
 		checkMandatoryParameter(smartobjectRequest.getIdSoType(), "idSoType");
 		checkMandatoryParameter(smartobjectRequest.getIdTenant(), "idTenant");
 		checkWhitespace(smartobjectRequest.getSocode(), "socode");
-		checkWhitespace(smartobjectRequest.getSlug(), "slug");
 		checkTweet(smartobjectRequest);		
 		checkOrganizationTenant(organizationCode, smartobjectRequest.getIdTenant());		
-		checkAphanumeric(smartobjectRequest.getSlug(), "slug");
+		checkCode(smartobjectRequest.getSlug(), "slug");
 	}
 
 	private Smartobject insertSmartObject(SmartobjectRequest smartobjectRequest, Integer organizationCode, Timestamp now)throws BadRequestException{
