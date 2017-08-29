@@ -104,7 +104,7 @@ public class PublicController extends YuccaController{
 	
 	@ApiOperation(value = P_LOAD_DATASET_SUBTYPES, notes = P_LOAD_DATASET_SUBTYPES_NOTES, response = DatasetSubtypeResponse.class, responseContainer="List")
 	@GetMapping("/dataset_subtypes")
-	public ResponseEntity<Object> loadDatasetSubtypes( @RequestParam(required=false) final Integer datasetTypeCode, 
+	public ResponseEntity<Object> loadDatasetSubtypes( @RequestParam(required=false) final String datasetTypeCode, 
 			@RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadDatasetSubtypes");

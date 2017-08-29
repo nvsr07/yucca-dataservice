@@ -41,7 +41,7 @@ public class TechnicalServiceImpl implements TechnicalService{
 		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class));
 	}		
 	
-	public ServiceResponse selectDatasetSubtype(Integer datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectDatasetSubtype(String datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(datasetTypeCode, "datasetTypeCode");
 		

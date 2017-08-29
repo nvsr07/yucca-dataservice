@@ -16,17 +16,15 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface DatasetSubtypeMapper {
 	
-//	SELECT id_dataset_subtype, dataset_subtype, description, id_dataset_type
-//	  FROM int_yucca.yucca_d_dataset_subtype where id_dataset_type = 1;
-	
 	String DATASET_SUBTYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_dataset_subtype";
 	
 	public static final String SELECT = 
 			
 			
-			" SELECT id_dataset_subtype, dataset_subtype, description, id_dataset_type " +
-			" FROM " + DATASET_SUBTYPE_TABLE +
-			" WHERE id_dataset_type = #{datasetTypeCode} " +
+			" SELECT id_dataset_subtype, dataset_subtype, DS_SUBTYPE.description, DS_SUBTYPE.id_dataset_type " +
+			" FROM " + DATASET_SUBTYPE_TABLE + " DS_SUBTYPE, " + DatasetTypeMapper.DATASET_TYPE_TABLE + " DS_TYPE " +
+			" where DS_SUBTYPE.id_dataset_type = DS_TYPE.id_dataset_type AND " +
+			" DS_TYPE.dataset_type = #{datasetTypeCode} " +
 
 			"<if test=\"sortList != null\">" +
 				" ORDER BY " +
@@ -70,10 +68,6 @@ public interface DatasetSubtypeMapper {
 	 * 					select dataset subtype
 	 * 
 	 * ***********************************************************************/
-//	SELECT id_dataset_subtype, dataset_subtype, description, id_dataset_type
-//	  FROM int_yucca.yucca_d_dataset_subtype where id_dataset_type = 1;
-
-	
 	@Results({
         @Result(property = "idDatasetSubtype", column = "id_dataset_subtype"),
         @Result(property = "datasetSubtype", column = "dataset_subtype"),
@@ -83,6 +77,6 @@ public interface DatasetSubtypeMapper {
 	@Select({"<script>",
 				SELECT,
              "</script>"}) 
-	List<DatasetSubtype> selectDatasetSubtype(@Param("datasetTypeCode") int datasetTypeCode, @Param("sortList") List<String> sortList);
+	List<DatasetSubtype> selectDatasetSubtype(@Param("datasetTypeCode") String datasetTypeCode, @Param("sortList") List<String> sortList);
 	
 }

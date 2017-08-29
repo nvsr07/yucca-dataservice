@@ -6,7 +6,7 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface TechnicalService {
 	
-	ServiceResponse selectDatasetSubtype(Integer datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectDatasetSubtype(String datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse selectDatasetType(String sort) throws BadRequestException, NotFoundException, Exception;
 }
