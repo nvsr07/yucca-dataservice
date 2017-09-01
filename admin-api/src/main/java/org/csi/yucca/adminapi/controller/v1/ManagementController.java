@@ -69,7 +69,7 @@ public class ManagementController extends YuccaController{
 	 */
 	@ApiOperation(value = M_DELETE_SMARTOBJECT, notes = M_DELETE_SMARTOBJECT_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
-	public ResponseEntity<Object> deleteSmartobject(@PathVariable final Integer organizationCode, @PathVariable final String soCode ){
+	public ResponseEntity<Object> deleteSmartobject(@PathVariable final String organizationCode, @PathVariable final String soCode ){
 		logger.info("deleteSmartobject");
 		
 		return run(new ApiCallable() {
@@ -97,7 +97,7 @@ public class ManagementController extends YuccaController{
 	 */
 	@ApiOperation(value = M_CREATE_SMARTOBJECT, notes = M_CREATE_SMARTOBJECT_NOTES, response = DataTypeResponse.class)
 	@PostMapping("/organizations/{organizationCode}/smartobjects")
-	public ResponseEntity<Object> createSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final Integer organizationCode){
+	public ResponseEntity<Object> createSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final String organizationCode){
 		logger.info("createSmartobject");
 		
 		return run(new ApiCallable() {

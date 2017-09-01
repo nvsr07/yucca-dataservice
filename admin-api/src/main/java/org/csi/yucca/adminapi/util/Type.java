@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.util;
 
-public enum SoType {
+public enum Type {
 
 	INTERNAL    (0, "Internal",    "Internal"),
 	DEVICE      (1, "Device",      "Device"),
@@ -11,7 +11,7 @@ public enum SoType {
 	private String code;
 	private String description;
 	
-	SoType(int id, String code, String description){
+	Type(int id, String code, String description){
 		this.id = id;
 		this.code = code;
 		this.description = description;

@@ -1,9 +1,13 @@
 package org.csi.yucca.adminapi.response;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.csi.yucca.adminapi.model.Smartobject;
+import org.csi.yucca.adminapi.request.SoPositionRequest;
 import org.csi.yucca.adminapi.util.Errors;
+import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -21,6 +25,9 @@ public class SmartobjectResponse extends Response {
 	private Integer deploymentversion;
 	private String sostatus;
 	private Timestamp creationdate;
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<SoPositionResponse> positions; 
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusername;
@@ -55,8 +62,16 @@ public class SmartobjectResponse extends Response {
 	private Integer idStatus;
 	private Integer idOrganization;
 
-	public SmartobjectResponse(Smartobject smartobject) {
+	public SmartobjectResponse(Smartobject smartobject, List<SoPositionRequest> positionsRequest) {
 		super();
+		if(positionsRequest != null && !positionsRequest.isEmpty()){
+			this.positions = new ArrayList<SoPositionResponse>();
+			for (SoPositionRequest soPositionRequest : positionsRequest) {
+				SoPositionResponse positionResponse = new SoPositionResponse();
+				BeanUtils.copyProperties(soPositionRequest, positionResponse);
+				this.positions.add(positionResponse);
+			}
+		}
 		this.idSmartObject = smartobject.getIdSmartObject();
 		this.socode = smartobject.getSocode();
 		this.name = smartobject.getName();
@@ -320,5 +335,13 @@ public class SmartobjectResponse extends Response {
 	public void setIdOrganization(Integer idOrganization) {
 		this.idOrganization = idOrganization;
 	}
+	
+	public List<SoPositionResponse> getPositions() {
+		return positions;
+	}
+
+	public void setPositions(List<SoPositionResponse> positions) {
+		this.positions = positions;
+	}	
 
 }

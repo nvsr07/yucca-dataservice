@@ -21,7 +21,6 @@ public interface SmartobjectMapper {
 	String TENANT_SMARTOBJECT_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_smart_object";
 	
 	
-	
 	/*************************************************************************
 	 * 
 	 * 					DELETE TENANT SMARTOBJECT
@@ -54,6 +53,21 @@ public interface SmartobjectMapper {
       })
 	@Select(SELECT_ID_SMARTOBJECT_SO_TYPE)
 	Smartobject selectSmartobject( @Param("socode") String socode, @Param("idOrganization") Integer idOrganization);	
+
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT SMARTOBJECT BY SLUG AND ID_ORGANIZATION
+	 * 
+	 * ***********************************************************************/	
+	public static final String SELECT_ID_SMARTOBJECT_SO_TYPE_BY_SLUG 
+		= "SELECT id_smart_object, id_so_type FROM " + SMARTOBJECT_TABLE + " WHERE slug = #{slug} AND id_organization = #{idOrganization}";
+	@Results({
+        @Result(property = "idSmartObject", column = "id_smart_object"),
+        @Result(property = "idSoType", column = "id_so_type")
+      })
+	@Select(SELECT_ID_SMARTOBJECT_SO_TYPE_BY_SLUG)
+	Smartobject selectSmartobjectBySlugAndOrganization( @Param("slug") String slug, @Param("idOrganization") Integer idOrganization);	
 	
 	
 	

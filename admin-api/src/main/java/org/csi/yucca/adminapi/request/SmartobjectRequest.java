@@ -1,9 +1,12 @@
 package org.csi.yucca.adminapi.request;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 public class SmartobjectRequest {
 
+	private List<SoPositionRequest> positions;
+	
 	private Integer idSmartObject;
 	private String socode;
 	private String name;
@@ -32,8 +35,14 @@ public class SmartobjectRequest {
 	private Integer idSoType;
 	private Integer idStatus;
 	private Integer idTenant;
+
 	
-	
+	public List<SoPositionRequest> getPositions() {
+		return positions;
+	}
+	public void setPositions(List<SoPositionRequest> positions) {
+		this.positions = positions;
+	}
 	public Integer getIdTenant() {
 		return idTenant;
 	}

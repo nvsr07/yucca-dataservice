@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.model.Smartobject;
+import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.Response;
 import org.springframework.beans.BeanUtils;
 
@@ -17,6 +19,14 @@ public class ServiceUtil {
 	private static final String SORT_PROPERTIES_SEPARATOR = ",";
 	private static final String DESC_CHAR = "-";
 
+	public static boolean isType(Type TYPE, SmartobjectRequest smartobjectRequest){
+		return TYPE.id() == smartobjectRequest.getIdSoType();
+	}
+
+	public static boolean isType(Type TYPE, Smartobject smartobject){
+		return TYPE.id() == smartobject.getIdSoType();
+	}
+	
 	public static void checkCount(int count)throws NotFoundException{
 		if (count == 0 ) {
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
@@ -24,7 +34,16 @@ public class ServiceUtil {
 	}
 
 	public static void checkIfFoundRecord(Object object)throws NotFoundException{
+		checkIfFoundRecord(object, null);
+	}
+
+	public static void checkIfFoundRecord(Object object, String arg)throws NotFoundException{
 		if (object == null ) {
+			
+			if (arg != null) {
+				throw new NotFoundException(Errors.RECORD_NOT_FOUND.arg(arg));
+			}
+			
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
 		}
 	}
@@ -61,7 +80,17 @@ public class ServiceUtil {
 	    String pattern= "^[a-zA-Z0-9]*$";
 	    return s.matches(pattern);
 	}
+
+	public static boolean isUUID(String s){
+	    String pattern= "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
+	    return s.matches(pattern);
+	}
 	
+	public static boolean isCodeForNoteDeviceType(String s){
+	    String pattern= "/^(?!.*(?:[ *./#<>àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ]))/";
+	    return s.matches(pattern);
+	}
+
 	public static void checkAphanumeric(String s, String fieldName) throws BadRequestException{
 		if (!isAlphaNumeric(s)){
 			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED.arg("received " + fieldName + " [ " + s + " ]"));
