@@ -1,8 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.request.SoPositionRequest;
@@ -27,7 +25,7 @@ public class SmartobjectResponse extends Response {
 	private Timestamp creationdate;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private List<SoPositionResponse> positions; 
+	private SoPositionResponse position; 
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusername;
@@ -62,15 +60,12 @@ public class SmartobjectResponse extends Response {
 	private Integer idStatus;
 	private Integer idOrganization;
 
-	public SmartobjectResponse(Smartobject smartobject, List<SoPositionRequest> positionsRequest) {
+	public SmartobjectResponse(Smartobject smartobject, SoPositionRequest positionRequest) {
 		super();
-		if(positionsRequest != null && !positionsRequest.isEmpty()){
-			this.positions = new ArrayList<SoPositionResponse>();
-			for (SoPositionRequest soPositionRequest : positionsRequest) {
-				SoPositionResponse positionResponse = new SoPositionResponse();
-				BeanUtils.copyProperties(soPositionRequest, positionResponse);
-				this.positions.add(positionResponse);
-			}
+		if (positionRequest != null) {
+			SoPositionResponse positionResponse = new SoPositionResponse();
+			BeanUtils.copyProperties(positionRequest, positionResponse);
+			this.position=positionResponse;
 		}
 		this.idSmartObject = smartobject.getIdSmartObject();
 		this.socode = smartobject.getSocode();
@@ -335,13 +330,14 @@ public class SmartobjectResponse extends Response {
 	public void setIdOrganization(Integer idOrganization) {
 		this.idOrganization = idOrganization;
 	}
-	
-	public List<SoPositionResponse> getPositions() {
-		return positions;
+
+	public SoPositionResponse getPosition() {
+		return position;
 	}
 
-	public void setPositions(List<SoPositionResponse> positions) {
-		this.positions = positions;
-	}	
+	public void setPosition(SoPositionResponse position) {
+		this.position = position;
+	}
+
 
 }

@@ -155,14 +155,13 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		smartobjectMapper.insertTenantSmartobject(smartobjectRequest.getIdTenant(), smartobject.getIdSmartObject(), now);
 
 		//		inserimento ventuali positions
-		if(smartobjectRequest.getPositions() != null){
-			for (SoPositionRequest soPositionRequest : smartobjectRequest.getPositions()) {
-				soPositionRequest.setIdSmartObject(smartobject.getIdSmartObject());
-				insertSoPosition(soPositionRequest);
-			}
+		SoPositionRequest soPositionRequest = smartobjectRequest.getPosition();
+		if(soPositionRequest != null){
+			soPositionRequest.setIdSmartObject(smartobject.getIdSmartObject());
+			insertSoPosition(soPositionRequest);
 		}
 		
-		return ServiceResponse.build().object(new SmartobjectResponse(smartobject, smartobjectRequest.getPositions()));
+		return ServiceResponse.build().object(new SmartobjectResponse(smartobject, smartobjectRequest.getPosition()));
 	}
 
 	
@@ -286,12 +285,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 	}
 
-	private void checkPositions(List<SoPositionRequest> positions) throws BadRequestException {
-		if (positions != null) {
-			for (SoPositionRequest position : positions) {
-				checkMandatoryParameter(position.getLon(), "lon");
-				checkMandatoryParameter(position.getLat(), "lat");
-			}
+	private void checkPosition(SoPositionRequest position) throws BadRequestException {
+		if (position != null) {
+			checkMandatoryParameter(position.getLon(), "lon");
+			checkMandatoryParameter(position.getLat(), "lat");
 		}
 	}
 
@@ -326,7 +323,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		/******************************************************************************************************************************************
 		 * verifico i campi mandatory delle position:
 		 ******************************************************************************************************************************************/
-		checkPositions(smartobjectRequest.getPositions());
+		checkPosition(smartobjectRequest.getPosition());
 		
 		/******************************************************************************************************************************************
 		 * verifica che slug non sia null o stringa vuota verifica sintassi slug
@@ -352,11 +349,11 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		 * se non è device il codice deve passare questa regex /^(?!.*(?:[
 		 * *./#<>àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ]))/;
 		 ******************************************************************************************************************************************/
-		if (!isType(Type.DEVICE, smartobjectRequest)
-				&& !ServiceUtil.isCodeForNoteDeviceType(smartobjectRequest.getSocode())) {
-			throw new BadRequestException(Errors.INCORRECT_VALUE
-					.arg("Not correct pattern for not device type [ " + smartobjectRequest.getSocode() + " ] ."));
-		}
+//		if (!isType(Type.DEVICE, smartobjectRequest)
+//				&& !ServiceUtil.isCodeForNoteDeviceType(smartobjectRequest.getSocode())) {
+//			throw new BadRequestException(Errors.INCORRECT_VALUE
+//					.arg("Not correct pattern for not device type [ " + smartobjectRequest.getSocode() + " ] ."));
+//		}
 		
 		/******************************************************************************************************************************************
 		 * se è di tipo twitter deve avere questi campi:
