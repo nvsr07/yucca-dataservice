@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.util.Errors;
 
-public class ErrorResponse implements Response{
+public class ErrorResponse extends Response{
 	
 	private String errorCode;
 	private String errorName;

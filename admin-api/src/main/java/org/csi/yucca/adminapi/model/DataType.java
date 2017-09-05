@@ -6,6 +6,18 @@ public class DataType {
 	private String datatypecode;
 	private String description;
 	
+	public DataType(Integer idDataType, String datatypecode, String description) {
+		super();
+		this.idDataType = idDataType;
+		this.datatypecode = datatypecode;
+		this.description = description;
+	}
+	
+	public DataType() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public Integer getIdDataType() {
 		return idDataType;
 	}

@@ -1,0 +1,43 @@
+{
+"data" : [
+    {
+    	"test-name": "BackOfficeController_organization_dataIns: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "organizations",
+		"adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"organizationcode\": \"testorg1\",\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[1]}",
+        "adminapi.message.update" : "{\"organizationcode\": \"testupdateorg1\",\"description\": \"desc_test_update_org_1\",\"ecosystemCodeList\":[1]}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+     {
+        "test-name": "BackOfficeController_organization_dataIns: mandatario lang en!",
+        "adminapi.apicode": "backoffice",
+        "adminapi.entityset": "organizations",
+        "adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[1]}",
+        "adminapi.message.update" : "{\"organizationcode\": \"testupdateorg1\",\"description\": \"desc_test_update_org_1\",\"ecosystemCodeList\":[1]}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.httpStatus.update-response" : 400,
+        "expected.httpStatus.delete-response" : 204,
+        "expected.update-errorName" : "Mandatory parameter"
+     },
+     {
+        "test-name": "BackOfficeController_organization_dataIns: ecosystem non presente",
+        "adminapi.apicode": "backoffice",
+        "adminapi.entityset": "organizations",
+        "adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"organizationcode\": \"testorg1\",\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[7777]}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Integrity violation"
+     }
+     
+]
+}

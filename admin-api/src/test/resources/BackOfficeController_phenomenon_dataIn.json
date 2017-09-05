@@ -1,0 +1,30 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_phenomenon_dataIn.json: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "phenomenons",
+		"adminapi.id-generated": "idPhenomenon",
+        "adminapi.message" : "{\"phenomenonname\": \"test-phenomenonname-333\",\"phenomenoncetegory\": \"test-phenomenoncetegory-333\"}",
+        "adminapi.message.update" : "{\"phenomenonname\": \"test-update-phenomenonname-333\",\"phenomenoncetegory\": \"test-update-phenomenoncetegory-333\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+	 {
+    	"test-name": "BackOfficeController_phenomenon_dataIn.json: campo mandatario non presente",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "phenomenons",
+		"adminapi.id-generated": "idPhenomenon",
+        "adminapi.message" : "{\"phenomenoncetegory\": \"test-phenomenoncetegory-333\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Mandatory parameter"
+     }
+     
+]
+}

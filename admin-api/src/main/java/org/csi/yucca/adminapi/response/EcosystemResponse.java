@@ -1,13 +1,28 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.csi.yucca.adminapi.model.Ecosystem;
+import org.csi.yucca.adminapi.util.Errors;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class EcosystemResponse implements Response{
+public class EcosystemResponse extends Response{
 	private Integer idEcosystem;
 	private String ecosystemcode;
 	private String description;
 	
+	public EcosystemResponse(Ecosystem ecosystem) {
+		super();
+		this.idEcosystem = ecosystem.getIdEcosystem();
+		this.ecosystemcode = ecosystem.getEcosystemcode();
+		this.description = ecosystem.getDescription();
+	}
+	
+	public EcosystemResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public EcosystemResponse(Errors errors) {
+		super(errors);
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getIdEcosystem() {
 		return idEcosystem;
 	}

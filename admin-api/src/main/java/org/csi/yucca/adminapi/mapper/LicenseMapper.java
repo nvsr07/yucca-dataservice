@@ -2,6 +2,9 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
@@ -43,6 +46,55 @@ public interface LicenseMapper {
 	            "</foreach>" +
             "</if>";
 	
+	
+	/*************************************************************************
+	 * 
+	 * 					select licenses by idLicense
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_LICENSE_BY_ID = 
+			"SELECT id_license, licensecode, description FROM " + LICENSE_TABLE + " WHERE id_license=#{idLicense}";
+	@Results({
+        @Result(property = "idLicense", column = "id_license"),
+        @Result(property = "licensecode", column = "licensecode"),
+        @Result(property = "description", column = "description")
+      })
+	@Select(SELECT_LICENSE_BY_ID) 
+	License selectLicenseById(@Param("idLicense") Integer idLicense);
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE LICENSE
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_LICENSE = "DELETE FROM " + LICENSE_TABLE + " WHERE id_license=#{idLicense}";
+	@Delete(DELETE_LICENSE)
+	int deleteLicense(int idLicense);	
+
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE LICENSE
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_LICENSE = 
+			"UPDATE " + LICENSE_TABLE + 
+			" SET licensecode=#{licensecode}, description=#{description} WHERE id_license=#{idLicense}";
+	@Delete(UPDATE_LICENSE)
+	int updateLicense(License license);	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					INSERT LICENSE
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_LICENSE = "INSERT INTO " + LICENSE_TABLE
+			+ "(licensecode, description) VALUES (#{licensecode}, #{description})";
+	@Insert(INSERT_LICENSE)                      
+	@Options(useGeneratedKeys=true, keyProperty="idLicense")
+	int insertLicense(License license);
 
 	/*************************************************************************
 	 * 

@@ -8,12 +8,10 @@ import org.csi.yucca.adminapi.mapper.DatasetSubtypeMapper;
 import org.csi.yucca.adminapi.mapper.DatasetTypeMapper;
 import org.csi.yucca.adminapi.model.DatasetSubtype;
 import org.csi.yucca.adminapi.model.DatasetType;
-import org.csi.yucca.adminapi.model.ExposureType;
 import org.csi.yucca.adminapi.response.DatasetSubtypeResponse;
 import org.csi.yucca.adminapi.response.DatasetTypeResponse;
-import org.csi.yucca.adminapi.response.ExposureTypeResponse;
-import org.csi.yucca.adminapi.response.Response;
-import org.csi.yucca.adminapi.service.PublicTechnicalService;
+import org.csi.yucca.adminapi.service.TechnicalService;
+import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-public class PublicTechnicalServiceImpl implements PublicTechnicalService{
+public class TechnicalServiceImpl implements TechnicalService{
 
 	@Autowired
 	private DatasetTypeMapper datasetTypeMapper;
@@ -30,7 +28,7 @@ public class PublicTechnicalServiceImpl implements PublicTechnicalService{
 	@Autowired
 	private DatasetSubtypeMapper datasetSubtypeMapper;
 	
-	public List<Response> selectDatasetType(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectDatasetType(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, DatasetType.class);
 		
@@ -38,11 +36,12 @@ public class PublicTechnicalServiceImpl implements PublicTechnicalService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class);
+//		return ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class);
 		
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class));
 	}		
 	
-	public List<Response> selectDatasetSubtype(Integer datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectDatasetSubtype(String datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(datasetTypeCode, "datasetTypeCode");
 		
@@ -52,7 +51,8 @@ public class PublicTechnicalServiceImpl implements PublicTechnicalService{
 		
 		ServiceUtil.checkList(modelList);
 		
-		return ServiceUtil.getResponseList(modelList, DatasetSubtypeResponse.class);
+//		return ServiceUtil.getResponseList(modelList, DatasetSubtypeResponse.class);
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, DatasetSubtypeResponse.class));
 		
 	}		
 

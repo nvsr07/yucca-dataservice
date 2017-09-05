@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class SupplyTypeResponse implements Response{
+public class SupplyTypeResponse extends Response{
 	
 	private Integer idSupplyType;
 	private String supplytype;

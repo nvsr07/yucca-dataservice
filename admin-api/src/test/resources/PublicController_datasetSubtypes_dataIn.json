@@ -1,0 +1,11 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_datasetSubtypes_dataIns: deve restituire http status 200!",
+    	"adminapi.entityset": "dataset_subtypes",
+    	"adminapi.sort": "idDatasetSubtype",
+    	"adminapi.datasetTypeCode": "dataset",
+		"expected.httpStatus.response":200
+     }
+	]
+}

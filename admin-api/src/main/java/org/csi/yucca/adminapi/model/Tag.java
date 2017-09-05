@@ -8,6 +8,18 @@ public class Tag {
 	private String langen;
 	private Integer idEcosystem;
 	
+	public Tag(Integer idTag, String tagcode, String langit, String langen, Integer idEcosystem) {
+		super();
+		this.idTag = idTag;
+		this.tagcode = tagcode;
+		this.langit = langit;
+		this.langen = langen;
+		this.idEcosystem = idEcosystem;
+	}
+	public Tag() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getIdTag() {
 		return idTag;
 	}

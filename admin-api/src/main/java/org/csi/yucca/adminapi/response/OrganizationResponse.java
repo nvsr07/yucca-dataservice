@@ -1,14 +1,29 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.csi.yucca.adminapi.model.Organization;
+import org.csi.yucca.adminapi.util.Errors;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class OrganizationResponse implements Response{
+public class OrganizationResponse extends Response{
 	
 	private Integer idOrganization;
 	private String organizationcode;
 	private String description;
 	
+	public OrganizationResponse(Organization organization) {
+		super();
+		this.idOrganization = organization.getIdOrganization();
+		this.organizationcode = organization.getOrganizationcode();
+		this.description = organization.getDescription();
+	}
+	
+	public OrganizationResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public OrganizationResponse(Errors errors) {
+		super(errors);
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getIdOrganization() {
 		return idOrganization;
 	}

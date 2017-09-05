@@ -5,5 +5,6 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 
 public interface ApiCallable {
 	
-	Object call() throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse call() throws BadRequestException, NotFoundException, Exception;
+	
 }

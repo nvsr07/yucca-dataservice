@@ -1,0 +1,30 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_ecosystem_dataIn: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "ecosystems",
+		"adminapi.id-generated": "idEcosystem",
+        "adminapi.message" : "{\"ecosystemcode\":\"codetest1111\",\"description\":\"desc_code_test_1\"}",
+        "adminapi.message.update" : "{\"ecosystemcode\":\"updatedcodetest1111\",\"description\":\"updated_desc_code_test_1\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+	 {
+    	"test-name": "BackOfficeController_ecosystem_dataIn: campo mandatario non presente",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "ecosystems",
+		"adminapi.id-generated": "idEcosystem",
+        "adminapi.message" : "{\"description\":\"desc_code_test_1\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Mandatory parameter"
+     }
+     
+]
+}

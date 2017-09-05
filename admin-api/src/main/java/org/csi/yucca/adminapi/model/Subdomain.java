@@ -6,7 +6,7 @@ public class Subdomain {
 	private String subdomaincode;
 	private String langIt;
 	private String langEn;
-	private String deprecated;
+	private int deprecated;
 	private Integer idDomain;
 
 	public Integer getIdSubdomain() {
@@ -41,20 +41,20 @@ public class Subdomain {
 		this.langEn = langEn;
 	}
 
-	public String getDeprecated() {
-		return deprecated;
-	}
-
-	public void setDeprecated(String deprecated) {
-		this.deprecated = deprecated;
-	}
-
 	public Integer getIdDomain() {
 		return idDomain;
 	}
 
 	public void setIdDomain(Integer idDomain) {
 		this.idDomain = idDomain;
+	}
+
+	public int getDeprecated() {
+		return deprecated;
+	}
+
+	public void setDeprecated(int deprecated) {
+		this.deprecated = deprecated;
 	}
 
 }

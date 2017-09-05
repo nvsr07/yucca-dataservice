@@ -708,7 +708,13 @@ public class SearchEngineMetadata {
 					result = parser.parse(date);
 				} catch (Exception eq)
 				{
-					log.error("ERROR Parsing date "+date,eq);
+					try {
+						Long millis = Long.parseLong(date);
+						result = new Date(millis); 
+					} catch (Exception eq1)
+					{
+						log.error("ERROR Parsing date "+date,eq1);
+					}
 				}
 			}
 		}

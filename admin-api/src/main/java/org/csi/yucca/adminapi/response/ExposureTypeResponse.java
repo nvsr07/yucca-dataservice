@@ -1,9 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ExposureTypeResponse implements Response {
+public class ExposureTypeResponse extends Response {
 
 	private int idExposureType;
 	private String exposuretype;

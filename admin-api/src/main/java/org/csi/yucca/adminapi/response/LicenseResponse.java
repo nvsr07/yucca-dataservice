@@ -1,12 +1,32 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.License;
+import org.csi.yucca.adminapi.util.Errors;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class LicenseResponse implements Response{
-
+public class LicenseResponse extends Response{
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Integer idLicense;
+	
 	private String licensecode;
 	private String description;
+	
+	public LicenseResponse() {
+		super();
+	}
+
+	public LicenseResponse(License license) {
+		super();
+		this.idLicense = license.getIdLicense();
+		this.licensecode = license.getLicensecode();
+		this.description = license.getDescription();
+	}
+	
+	public LicenseResponse(Errors errors) {
+		super(errors);
+	}
 	
 	public String getLicensecode() {
 		return licensecode;
@@ -19,6 +39,14 @@ public class LicenseResponse implements Response{
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Integer getIdLicense() {
+		return idLicense;
+	}
+
+	public void setIdLicense(Integer idLicense) {
+		this.idLicense = idLicense;
 	}
 	
 }

@@ -1,0 +1,19 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_data_type_dataIn.json: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "data_types",
+		"adminapi.id-generated": "idDataType",
+        "adminapi.message" : "{\"datatypecode\":\"testnewdatatype\",\"description\":\"test-new-datatype-description\"}",
+        "adminapi.message.update" : "{\"datatypecode\":\"testupddatatype\",\"description\":\"test-upd-datatype-description\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     }
+     
+]
+}

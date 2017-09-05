@@ -1,0 +1,30 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_subdomain_dataIn: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "subdomains",
+		"adminapi.id-generated": "idSubdomain",
+        "adminapi.message" : "{\"subdomaincode\": \"TESTNEWSUBDOMAIN1\",\"langIt\": \"TEST-NEW_SUBDOMAIN_1_LANG_IT\",\"langEn\": \"TEST-NEW_SUBDOMAIN_1_LANG_EN\"}",
+        "adminapi.message.update" : "{\"subdomaincode\": \"TESTUPDATEDSUBDOMAIN\",\"langIt\": \"TEST-UPDATED_SUBDOMAIN_2_LANG_IT\",\"langEn\": \"TEST-UPDATED_SUBDOMAIN_2_LANG_EN\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+	 {
+    	"test-name": "BackOfficeController_subdomain_dataIn: campo mandatario non presente",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "subdomains",
+		"adminapi.id-generated": "idSubdomain",
+        "adminapi.message" : "{\"subdomaincode\": \"\",\"langIt\": \"TEST-NEW_SUBDOMAIN_1_LANG_IT\",\"langEn\": \"TEST-NEW_SUBDOMAIN_1_LANG_EN\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Mandatory parameter"
+     }
+     
+]
+}

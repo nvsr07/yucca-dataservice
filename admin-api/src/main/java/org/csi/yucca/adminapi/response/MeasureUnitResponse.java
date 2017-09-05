@@ -1,14 +1,29 @@
 package org.csi.yucca.adminapi.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import org.csi.yucca.adminapi.model.MeasureUnit;
+import org.csi.yucca.adminapi.util.Errors;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class MeasureUnitResponse implements Response{
+public class MeasureUnitResponse extends Response{
 	
 	private Integer idMeasureUnit;
 	private String measureunit;
 	private String measureunitcategory;
 	
+	public MeasureUnitResponse(MeasureUnit measureUnit) {
+		super();
+		this.idMeasureUnit = measureUnit.getIdMeasureUnit();
+		this.measureunit = measureUnit.getMeasureunit();
+		this.measureunitcategory = measureUnit.getMeasureunitcategory();
+	}
+	
+	public MeasureUnitResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public MeasureUnitResponse(Errors errors) {
+		super(errors);
+		// TODO Auto-generated constructor stub
+	}
 	public Integer getIdMeasureUnit() {
 		return idMeasureUnit;
 	}

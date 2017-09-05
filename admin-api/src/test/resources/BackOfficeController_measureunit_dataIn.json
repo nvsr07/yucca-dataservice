@@ -1,0 +1,30 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_measureunit_dataIn.json: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "measure_units",
+		"adminapi.id-generated": "idMeasureUnit",
+        "adminapi.message" : "{\"measureunit\": \"test-measureunit-333\",\"measureunitcategory\": \"test-measureunitcategory-333\"}",
+        "adminapi.message.update" : "{\"measureunit\": \"test-update-measureunit-333\",\"measureunitcategory\": \"test-update-measureunitcategory-333\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+	 {
+    	"test-name": "BackOfficeController_measureunit_dataIn.json: campo mandatario non presente",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "measure_units",
+		"adminapi.id-generated": "idMeasureUnit",
+        "adminapi.message" : "{\"measureunitcategory\": \"test-measureunitcategory-333\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Mandatory parameter"
+     }
+     
+]
+}
