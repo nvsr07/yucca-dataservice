@@ -1,5 +1,7 @@
 package org.csi.yucca.controller;
 
+import static io.restassured.RestAssured.given;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,6 +15,10 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
@@ -33,11 +39,11 @@ public class TestBase {
 	static {
         Map<String, String> aMap = new HashMap<String, String>();
         aMap.put("sort",             STRING_TYPE);
-        aMap.put("ecosystemCode",    INT_TYPE);
+        aMap.put("ecosystemCode",    STRING_TYPE);
         aMap.put("lang",             STRING_TYPE);
-        aMap.put("organizationCode", INT_TYPE);
-        aMap.put("domainCode",       INT_TYPE);
-        aMap.put("datasetTypeCode",  INT_TYPE);
+        aMap.put("organizationCode", STRING_TYPE);
+        aMap.put("domainCode",       STRING_TYPE);
+        aMap.put("datasetTypeCode",  STRING_TYPE);
         
         KEY_TYPE = Collections.unmodifiableMap(aMap);
     }
@@ -66,7 +72,24 @@ public class TestBase {
     	
     	return url.toString();
 	}
+    
+	protected String getUrl(JSONObject dato){
+		StringBuilder urlBuilder = new StringBuilder();
+		urlBuilder.append(dato.get("adminapi.url"))
+		.append("/")
+		.append(dato.get("adminapi.version"))
+		.append("/");
+		
+		return urlBuilder.toString();
+	}
 
+	protected StringBuilder getUrl(String apiCode, String entitySet, JSONObject dato){
+		StringBuilder builder = new StringBuilder();
+		builder.append(getUrl(dato)).append(apiCode).append("/").append(entitySet);
+		
+		return builder;
+	}
+    
     private void setJsonObject(JSONObject jsonObject){
     	if(this.jsonObject == null){
     		this.jsonObject = jsonObject;
@@ -244,5 +267,12 @@ public class TestBase {
 		return jsonData;
 	}	
 	
+	
+	protected Integer postMessage(String url, String message, String idName){
+		RequestSpecification requestSpecification = given().body(message).contentType(ContentType.JSON);
+		Response response = requestSpecification.when().post(url);
+		Integer id =  response.then().extract().path(idName);
+		return id;
+	}
 	
 }

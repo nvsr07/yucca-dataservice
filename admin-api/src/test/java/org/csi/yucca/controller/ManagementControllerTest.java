@@ -24,7 +24,7 @@ import io.restassured.specification.RequestSpecification;
  * @author gianfranco.stolfa
  *
  */
-public class BackOfficeControllerTest extends TestBase{
+public class ManagementControllerTest extends TestBase{
 	
 	public static final String ECOSYSTEM_MESSAGE = "{\"ecosystemcode\":\"test_ecosystem_code-999\",\"description\":\"test_ecosystem_description-999\"}";
 	
@@ -47,6 +47,17 @@ public class BackOfficeControllerTest extends TestBase{
 			     "/BackOfficeController_phenomenon_dataIn.json"
 			     );
 	}	
+	
+	private Integer post(JSONObject dato, String apiCode, String entitySet, String message, String idName){
+		StringBuilder builder = getUrl(apiCode, entitySet, dato);
+		
+		RequestSpecification requestSpecification = given().body(message).contentType(ContentType.JSON);
+		Response response = requestSpecification.when().post(builder.toString());
+//		ValidatableResponse validatableResponse  = response.then().statusCode(200);
+		Integer id =  response.then().extract().path(idName);
+		return id;
+	}
+	
 	
 	private void delete(JSONObject dato, String apiCode, String entitySet, Integer idEcosystem){
 		StringBuilder ecosystemUrlBuilder = getUrl(apiCode, entitySet, dato);
@@ -94,7 +105,7 @@ public class BackOfficeControllerTest extends TestBase{
 	
 	private Integer postEchosystem(String url, JSONObject dato){
 		if(!dato.getString("test-name").contains("ecosystem")){
-			String message = "{\"ecosystemcode\":\"testEcosystemCode999\",\"description\":\"test_ecosystem_description-999\"}";
+			String message = "{\"ecosystemcode\":\"test_ecosystem_code-999\",\"description\":\"test_ecosystem_description-999\"}";
 			return postMessage(url, message, "idEcosystem");			
 		}
 		return null;
@@ -102,12 +113,19 @@ public class BackOfficeControllerTest extends TestBase{
 
 	private Integer postDomain(String url, Integer idEcosystem){
 		if(idEcosystem != null){
-			String message = "{\"langen\": \"newDomain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"newDomain3333\",\"deprecated\": 1,\"ecosystemCodeList\":[" + idEcosystem + "]}";
+			String message = "{\"langen\": \"new-domain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"new-domain-3333\",\"deprecated\": 1,\"ecosystemCodeList\":[" + idEcosystem + "]}";
 			return postMessage(url, message, "idDomain");
 		}
 		
 		return null;
 	}
+	
+//	private Integer postMessage(String url, String message, String idName){
+//		RequestSpecification requestSpecification = given().body(message).contentType(ContentType.JSON);
+//		Response response = requestSpecification.when().post(url);
+//		Integer id =  response.then().extract().path(idName);
+//		return id;
+//	}
 	
 	private void delete(StringBuilder domainUrlBuilder, Integer id){
 		try {
@@ -164,22 +182,7 @@ public class BackOfficeControllerTest extends TestBase{
 		
 	}
 	
-//	private String getUrl(JSONObject dato){
-//		StringBuilder urlBuilder = new StringBuilder();
-//		urlBuilder.append(dato.get("adminapi.url"))
-//		.append("/")
-//		.append(dato.get("adminapi.version"))
-//		.append("/");
-//		
-//		return urlBuilder.toString();
-//	}
-//
-//	private StringBuilder getUrl(String apiCode, String entitySet, JSONObject dato){
-//		StringBuilder builder = new StringBuilder();
-//		builder.append(getUrl(dato)).append(apiCode).append("/").append(entitySet);
-//		
-//		return builder;
-//	}
+
 
 	
 	

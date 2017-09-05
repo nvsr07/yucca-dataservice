@@ -4,7 +4,7 @@
 		"test-name": "PublicController_loadOrganizations_dataIns: deve restituire http status 200!",
     	"adminapi.entityset": "organizations",
     	"adminapi.sort": "idOrganization",
-    	"adminapi.ecosystemCode": 1,
+    	"adminapi.ecosystemCode": "eco111",
 		"expected.httpStatus.response":200
      },
     {
@@ -18,7 +18,7 @@
      	"test-name": "PublicController_loadOrganizations_dataIns: record not found, ecosysteCode non presente in sistema!",
     	"adminapi.entityset": "organizations",
     	"adminapi.sort": "idOrganization",
-    	"adminapi.ecosystemCode": 9999,
+    	"adminapi.ecosystemCode": "eco111333",
 		"expected.httpStatus.response":404,
 		"expected.errorName": "Record not found"    
      },
@@ -26,16 +26,9 @@
 		"test-name": "PublicController_loadOrganizations_dataIns: viene passata come sort una property inesitente!",
     	"adminapi.entityset": "organizations",
     	"adminapi.sort": "nome_campo_inesistente",
-    	"adminapi.ecosystemCode": 2,
+    	"adminapi.ecosystemCode": "eco111",
 		"expected.httpStatus.response":400,
 		"expected.errorName": "Property not found: nome_campo_inesistente"
-     },
-    {
-		"test-name": "PublicController_loadOrganizations_dataIns: bad request -> viene passata una stringa dove si aspetta in int [ecosystemCode]",
-    	"adminapi.entityset": "organizations",
-    	"adminapi.sort": "idOrganization",
-    	"adminapi.ecosystemCode": "e",
-		"expected.httpStatus.response":400
      }          
 	]
 }

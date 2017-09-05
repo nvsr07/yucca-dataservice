@@ -4,38 +4,8 @@
 		"test-name": "PublicController_datasetSubtypes_dataIns: deve restituire http status 200!",
     	"adminapi.entityset": "dataset_subtypes",
     	"adminapi.sort": "idDatasetSubtype",
-    	"adminapi.datasetTypeCode": 1,
+    	"adminapi.datasetTypeCode": "dataset",
 		"expected.httpStatus.response":200
-     },
-    {
-		"test-name": "PublicController_datasetSubtypes_dataIns: non viene passato parametro mandatario [datasetTypeCode]",
-    	"adminapi.entityset": "dataset_subtypes",
-    	"adminapi.sort": "idDatasetSubtype",
-		"expected.httpStatus.response":400,
-        "expected.errorName": "Mandatory parameter: datasetTypeCode"
-     },    
-     { 
-     	"test-name": "PublicController_datasetSubtypes_dataIns: record not found, datasetTypeCode non presente in sistema!",
-    	"adminapi.entityset": "dataset_subtypes",
-    	"adminapi.sort": "idDatasetSubtype",
-    	"adminapi.datasetTypeCode": 9999,
-		"expected.httpStatus.response":404,
-		"expected.errorName": "Record not found"    
-     },
-     {
-		"test-name": "PublicController_datasetSubtypes_dataIns: viene passata come sort una property inesitente!",
-    	"adminapi.entityset": "dataset_subtypes",
-    	"adminapi.sort": "nome_campo_inesistente",
-    	"adminapi.datasetTypeCode": 2,
-		"expected.httpStatus.response":400,
-		"expected.errorName": "Property not found: nome_campo_inesistente"
-     },
-    {
-		"test-name": "PublicController_datasetSubtypes_dataIns: bad request -> viene passata una stringa dove si aspetta in int [datasetTypeCode]",
-    	"adminapi.entityset": "dataset_subtypes",
-    	"adminapi.sort": "idDatasetSubtype",
-    	"adminapi.datasetTypeCode": "e",
-		"expected.httpStatus.response":400
-     }          
+     }
 	]
 }
