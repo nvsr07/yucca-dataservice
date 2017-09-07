@@ -13,6 +13,7 @@ import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
+import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
@@ -24,6 +25,7 @@ import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
+import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +57,33 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private ComponentService componentService;
 
+	@Autowired
+	private TenantService tenantService;
+	
+	
+	/**
+	 * 
+	 * CREATE SEQUENCE int_yucca.tenant_id_tenant_seq;
+	 * ALTER TABLE int_yucca.yucca_tenant ALTER COLUMN id_tenant SET DEFAULT nextval('int_yucca.tenant_id_tenant_seq');
+	 * ALTER TABLE int_yucca.yucca_tenant ALTER COLUMN id_tenant SET NOT NULL;
+	 * ALTER SEQUENCE int_yucca.tenant_id_tenant_seq OWNED BY int_yucca.yucca_tenant.id_tenant;    -- 8.2 or later
+	 * 
+	 * ALTER SEQUENCE int_yucca.tenant_id_tenant_seq RESTART WITH 150;
+	 * 
+	 * @param tenantRequest
+	 * @return
+	 */
+	@ApiOperation(value = BO_CREATE_TENANT, notes = BO_CREATE_TENANT_NOTES, response = ServiceResponse.class)
+	@PostMapping("/tenants")
+	public ResponseEntity<Object> createTenant(@RequestBody final TenantRequest tenantRequest ){
+		logger.info("createTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.insertTenant(tenantRequest);
+			}
+		}, logger);		
+	}
 
 	/**
 	 *  

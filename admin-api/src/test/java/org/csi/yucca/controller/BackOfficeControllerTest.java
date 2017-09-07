@@ -26,8 +26,6 @@ import io.restassured.specification.RequestSpecification;
  */
 public class BackOfficeControllerTest extends TestBase{
 	
-	public static final String ECOSYSTEM_MESSAGE = "{\"ecosystemcode\":\"test_ecosystem_code-999\",\"description\":\"test_ecosystem_description-999\"}";
-	
 	@BeforeClass
 	public void setUpSecretObject() throws IOException {
 		super.setUpSecretObject("/testSecret.json");
@@ -48,12 +46,6 @@ public class BackOfficeControllerTest extends TestBase{
 			     );
 	}	
 	
-	private void delete(JSONObject dato, String apiCode, String entitySet, Integer idEcosystem){
-		StringBuilder ecosystemUrlBuilder = getUrl(apiCode, entitySet, dato);
-		delete(ecosystemUrlBuilder, idEcosystem);
-	}
-	
-	
 	/**
 	 * POST
 	 * http://localhost:8080/adminapi/1/backoffice/domains
@@ -65,61 +57,24 @@ public class BackOfficeControllerTest extends TestBase{
 	@Test(dataProvider = "json")
 	public void backOfficeTestCrud(JSONObject dato) throws JSONException, InterruptedException {
 		
-		// create ecosystem and domain:
-		StringBuilder ecosystemUrlBuilder = getUrl("backoffice", "ecosystems", dato);
-		Integer idEcosystem = postEchosystem(ecosystemUrlBuilder.toString(), dato); 
-		StringBuilder domainUrlBuilder = getUrl("backoffice", "domains", dato);
-		Integer idDomain = postDomain(domainUrlBuilder.toString(), idEcosystem); 
-		
+		init(dato);
+
 		// define url
 		StringBuilder urlBuilder = getUrl(dato.getString("adminapi.apicode"), dato.getString("adminapi.entityset"), dato);
 		
 		// test post
-		Integer id = testPost(urlBuilder.toString(), dato, idEcosystem, idDomain);
+		Integer id = testPost(urlBuilder.toString(), dato, getIdEcosystem(), getIdDomain());
 		
 		// test put and delete
 		if (id != null) {
 			urlBuilder.append("/").append(id);
-			testPut(urlBuilder.toString(), dato, idEcosystem, idDomain);
+			testPut(urlBuilder.toString(), dato, getIdEcosystem(), getIdDomain());
 			testDelete(urlBuilder.toString(), dato);
 		}
-		
-		// delete domain
-		delete(dato, "backoffice", "domains", idDomain);
 
-		// delete ecosystem
-		delete(dato, "backoffice", "ecosystems", idEcosystem);
 		
+		reset(dato);
 	}
-	
-	private Integer postEchosystem(String url, JSONObject dato){
-		if(!dato.getString("test-name").contains("ecosystem")){
-			String message = "{\"ecosystemcode\":\"testEcosystemCode999\",\"description\":\"test_ecosystem_description-999\"}";
-			return postMessage(url, message, "idEcosystem");			
-		}
-		return null;
-	}
-
-	private Integer postDomain(String url, Integer idEcosystem){
-		if(idEcosystem != null){
-			String message = "{\"langen\": \"newDomain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"newDomain3333\",\"deprecated\": 1,\"ecosystemCodeList\":[" + idEcosystem + "]}";
-			return postMessage(url, message, "idDomain");
-		}
-		
-		return null;
-	}
-	
-	private void delete(StringBuilder domainUrlBuilder, Integer id){
-		try {
-			if (id != null) {
-				domainUrlBuilder.append("/").append(id);
-				given().when().contentType(ContentType.JSON).delete(domainUrlBuilder.toString());
-			}
-		} 
-		catch (Exception e) {
-			System.out.println(e.toString());
-		}
-	}	
 	
 	private String getMessage(JSONObject dato, String keyMessage, Integer idEcosystem, Integer idDomain){
 		String jsonString = (String)dato.get(keyMessage);
@@ -158,29 +113,9 @@ public class BackOfficeControllerTest extends TestBase{
 		ValidatableResponse updateValidatableResponse  = updateResponse.then().statusCode(expectedHttpStatusUpdateResponse);
 		// check dell'eventuale messaggio di errore:
 		if(!dato.optString("expected.update-errorName").isEmpty()){
-//			updateValidatableResponse.assertThat().body("errorName", Matchers.contains(dato.get("expected.update-errorName")));
 			updateValidatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString("expected.update-errorName")));
 		}
 		
 	}
-	
-//	private String getUrl(JSONObject dato){
-//		StringBuilder urlBuilder = new StringBuilder();
-//		urlBuilder.append(dato.get("adminapi.url"))
-//		.append("/")
-//		.append(dato.get("adminapi.version"))
-//		.append("/");
-//		
-//		return urlBuilder.toString();
-//	}
-//
-//	private StringBuilder getUrl(String apiCode, String entitySet, JSONObject dato){
-//		StringBuilder builder = new StringBuilder();
-//		builder.append(getUrl(dato)).append(apiCode).append("/").append(entitySet);
-//		
-//		return builder;
-//	}
-
-	
 	
 }

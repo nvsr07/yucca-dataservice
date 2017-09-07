@@ -22,6 +22,29 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
+	public static final int VALUE_VERSION = 8;
+	public static final String ECOSYSTEM_CODE_TEST_VALUE    = "eco00" + VALUE_VERSION;
+	public static final String ORGANIZATION_CODE_TEST_VALUE = "org00" + VALUE_VERSION;
+	public static final String DOMAIN_CODE_TEST_VALUE       = "dom00" + VALUE_VERSION;
+	public static final String SMARTOBJECT_CODE_TEST_VALUE  = "soc00" + VALUE_VERSION;
+	public static final String SUBDOMAIN_CODE_TEST_VALUE    = "sub00" + VALUE_VERSION;
+	public static final String TAG_CODE_TEST_VALUE          = "tag00" + VALUE_VERSION;
+	
+	
+	public static final String JSON_KEY_MESSAGE = "adminapi.message";
+	public static final String JSON_KEY_EXPECTED_HTTP_STATUS = "expected.httpStatus.response";
+	public static final String JSON_KEY_EXPECTED_HTTP_STATUS_DELETE = "expected.httpStatus.delete-response";
+	public static final String JSON_KEY_ID_GENERATED = "adminapi.id-generated";
+	public static final String JSON_KEY_APICODE = "adminapi.apicode"; 
+	
+	
+	
+	private Integer idEcosystem;
+	private Integer idTag;
+	private Integer idDomain;
+	private Integer idSubdomain;		
+	private Integer idOrganization;
+	
 	protected JSONObject secretObject = new JSONObject();
 	protected JSONObject jsonObject = null;
 
@@ -32,6 +55,9 @@ public class TestBase {
 	private static final String KEY_FORMAT = "$format";
 	private static final String APP_NAME = "adminapi";
 
+	
+	
+	
 	private static final String STRING_TYPE = "String";
 	private static final String INT_TYPE = "Int";
 
@@ -51,6 +77,38 @@ public class TestBase {
 	private void reset(){
 		this.jsonObject = null;
 	}
+	
+	protected void init(JSONObject dato){
+		this.idEcosystem    = postEchosystem(dato);
+		this.idTag          = postTag(idEcosystem, dato);
+		this.idDomain       = postDomain(idEcosystem, dato);
+		this.idSubdomain    = postSubdomain(idDomain, dato);		
+		this.idOrganization = postOrganization(idEcosystem, dato);		
+	}
+	
+	protected void reset(JSONObject dato){
+		deleteOrganization(this.idOrganization, dato);
+		deleteSubdomain(this.idSubdomain, dato);
+		deleteDomain(this.idDomain, dato);
+		deleteTag(this.idTag, dato);
+		deleteEcosystem(this.idEcosystem, dato);
+	}
+
+	
+	
+	/*
+	 * 
+	 * DA FARE IL CRAETE TENANT A CUI PASSARE L'ORGANIZZATION INIZIALIZZATA NELL'INIT
+	 * 
+	 */
+	//protected Integer postTenant(Integer idEcosystem, JSONObject dato){
+//	String url = getUrl("backoffice", "tags", dato).toString();
+//	String message = "{\"tagcode\": \"" + TAG_CODE_TEST_VALUE + "\",\"langit\": \"new-tag-it_1\",\"langen\": \"new-tag-en_1\",\"idEcosystem\": " + idEcosystem + "}";
+//	return postMessage(url, message, "idTag");			
+//}
+
+	
+	
 	
 	/**
 	 * 
@@ -122,7 +180,6 @@ public class TestBase {
     	    	addIntParameter(key, url);
     	    }
     	}
-    	
     }
     
 	private Object val(String key){
@@ -274,5 +331,108 @@ public class TestBase {
 		Integer id =  response.then().extract().path(idName);
 		return id;
 	}
+
+
+	
+	protected void deleteEcosystem(Integer idEcosystem, JSONObject dato){
+		String url = getUrl("backoffice", "ecosystems", dato).append("/").append(idEcosystem).toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+
+	protected void deleteDomain(Integer idDomain, JSONObject dato){
+		String url = getUrl("backoffice", "domains", dato).append("/").append(idDomain).toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+	
+	protected Integer postTag(Integer idEcosystem, JSONObject dato){
+		String url = getUrl("backoffice", "tags", dato).toString();
+		String message = "{\"tagcode\": \"" + TAG_CODE_TEST_VALUE + "\",\"langit\": \"new-tag-it_1\",\"langen\": \"new-tag-en_1\",\"idEcosystem\": " + idEcosystem + "}";
+		return postMessage(url, message, "idTag");			
+	}
+
+	protected void deleteTag(Integer idTag, JSONObject dato){
+		String url = getUrl("backoffice", "tags", dato).append("/").append(idTag).toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+
+	protected void deleteSubdomain(Integer idSubdomain, JSONObject dato){
+		String url = getUrl("backoffice", "subdomains", dato).append("/").append(idSubdomain).toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+	
+	protected Integer postDomain(Integer idEcosystem, JSONObject dato){
+		String url = getUrl("backoffice", "domains", dato).toString();
+		String message = "{\"langen\": \"newDomain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"" + DOMAIN_CODE_TEST_VALUE + "\",\"deprecated\": 1,\"ecosystemCodeList\":[" + idEcosystem + "]}";
+		return postMessage(url, message, "idDomain");
+	}	
+	
+	protected Integer postSubdomain(Integer idDomain, JSONObject dato){
+		String url = getUrl("backoffice", "subdomains", dato).toString();
+		String message = "{\"subdomaincode\": \"" + SUBDOMAIN_CODE_TEST_VALUE + "\",\"langIt\": \"NEW_SUBDOMAIN_1_LANG_IT\",\"langEn\": \"NEW_SUBDOMAIN_1_LANG_EN\",\"idDomain\": "+ idDomain+ "}";
+		return postMessage(url, message, "idSubdomain");			
+	}
+	
+	protected Integer postOrganization(Integer idEcosystem, JSONObject dato){
+		String url = getUrl("backoffice", "organizations", dato).toString();
+		String message = "{\"organizationcode\": \"" + ORGANIZATION_CODE_TEST_VALUE + "\",\"description\": \"DESC TRIAL0041\",\"ecosystemCodeList\":[" + idEcosystem + "]}";
+		return postMessage(url, message, "idOrganization");			
+	}
+
+	protected void deleteOrganization(Integer idOrganization, JSONObject dato){
+		String url = getUrl("backoffice", "organizations", dato).append("/").append(idOrganization).toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+
+	protected Integer postEchosystem(JSONObject dato){
+		String url = getUrl("backoffice", "ecosystems", dato).toString();
+		String message = "{\"ecosystemcode\":\"" + ECOSYSTEM_CODE_TEST_VALUE + "\",\"description\":\"" + ECOSYSTEM_CODE_TEST_VALUE + "_description\"}";
+		return postMessage(url, message, "idEcosystem");			
+	}
+
+	
+	
+	
+	public Integer getIdEcosystem() {
+		return idEcosystem;
+	}
+
+	public void setIdEcosystem(Integer idEcosystem) {
+		this.idEcosystem = idEcosystem;
+	}
+
+	public Integer getIdTag() {
+		return idTag;
+	}
+
+	public void setIdTag(Integer idTag) {
+		this.idTag = idTag;
+	}
+
+	public Integer getIdDomain() {
+		return idDomain;
+	}
+
+	public void setIdDomain(Integer idDomain) {
+		this.idDomain = idDomain;
+	}
+
+	public Integer getIdSubdomain() {
+		return idSubdomain;
+	}
+
+	public void setIdSubdomain(Integer idSubdomain) {
+		this.idSubdomain = idSubdomain;
+	}
+
+	public Integer getIdOrganization() {
+		return idOrganization;
+	}
+
+	public void setIdOrganization(Integer idOrganization) {
+		this.idOrganization = idOrganization;
+	}
+	
+	
+	
 	
 }

@@ -90,12 +90,8 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		return null;
 	}
 
+
 	/**
-	 * 
-	 * DELETE SMARTOBJECT: da sistemare!!!!!! da eccezione se viene passato un
-	 * socode inseistente
-	 * 
-	 *
 	 * 
 	 */
 	public ServiceResponse deleteSmartObject(String organizationCode, String socode)
@@ -108,11 +104,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		Smartobject smartobject = smartobjectMapper.selectSmartobject(socode, organization.getIdOrganization());
 
+		ServiceUtil.checkIfFoundRecord(smartobject);
+		
 		if (isType(Type.INTERNAL, smartobject)) {
-			throw new BadRequestException(
-					Errors.INCORRECT_VALUE.arg("idSoType di tipo: " + Type.INTERNAL.code() + " delete denied."));
+			throw new BadRequestException(Errors.INCORRECT_VALUE.arg("idSoType di tipo: " + Type.INTERNAL.code() + " delete denied."));
 		}
 
+		soPositionMapper.deleteSoPosition(smartobject.getIdSmartObject());
+		
 		smartobjectMapper.deleteTenantSmartobject(smartobject.getIdSmartObject());
 
 		int count = 0;
@@ -163,12 +162,11 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		
 		return ServiceResponse.build().object(new SmartobjectResponse(smartobject, smartobjectRequest.getPosition()));
 	}
-
 	
-	
-	private void checkOrganizationTenant(Integer soIdOrganization, Integer soIdTenant)
-			throws NotFoundException, BadRequestException {
+	private void checkOrganizationTenant(Integer soIdOrganization, Integer soIdTenant) throws NotFoundException, BadRequestException {
+		
 		Integer idOrganization = tenantMapper.selectIdOrganizationByIdTenant(soIdTenant);
+		
 		if (idOrganization == null) {
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND.arg("idTenant [" + soIdTenant + "]"));
 		}
@@ -176,6 +174,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 			throw new BadRequestException(Errors.NOT_CONSISTENT_DATA.arg(
 					"tenant with id " + soIdTenant + " does not belong to organozation with id " + soIdOrganization));
 		}
+		
 	}
 
 	/**
