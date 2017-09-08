@@ -60,6 +60,19 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private TenantService tenantService;
 	
+	@ApiOperation(value = BO_DELETE_TENANT, notes = BO_DELETE_TENANT_NOTES, response = ServiceResponse.class)
+	@DeleteMapping("/tenants/{tenantcode}")
+	public ResponseEntity<Object> deleteTenant(@PathVariable final String tenantcode){
+		logger.info("deleteTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.deleteTenant(tenantcode);
+			}
+		}, logger);		
+	}
+
+	
 	
 	/**
 	 * 
@@ -660,6 +673,9 @@ public class BackOfficeController extends YuccaController{
 	@PostMapping("/ecosystems")
 	public ResponseEntity<Object> createEcosystem(@RequestBody final EcosystemRequest ecosystemRequest ){
 		logger.info("createEcosystem");
+		
+		String stop="";
+		stop="";
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {

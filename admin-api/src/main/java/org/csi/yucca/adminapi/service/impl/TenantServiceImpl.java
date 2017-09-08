@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.service.impl;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
+import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.model.Tenant;
@@ -26,7 +27,29 @@ public class TenantServiceImpl implements TenantService {
 	private TenantMapper tenantMapper;
 
 	/**
-	 * INSERT DOMAIN
+	 * DELETE TENANT
+	 */
+	public ServiceResponse deleteTenant(String tenantcode) throws BadRequestException, NotFoundException, Exception{
+		ServiceUtil.checkMandatoryParameter(tenantcode, "tenantcode");
+	
+		int count = 0;
+		try {
+			count = tenantMapper.deleteTenant(tenantcode);
+		} 		
+		catch (DataIntegrityViolationException dataIntegrityViolationException) {
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+		}
+		
+		if (count == 0 ) {
+			throw new BadRequestException(Errors.RECORD_NOT_FOUND);
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/**
+	 * INSERT TENANT
 	 */
 	public ServiceResponse insertTenant(TenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception {
 

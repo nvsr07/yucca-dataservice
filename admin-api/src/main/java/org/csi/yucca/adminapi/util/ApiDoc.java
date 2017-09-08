@@ -67,6 +67,9 @@ public class ApiDoc {
 	
 	public static final String BO_DELETE_DOMAIN = "DELETE DOMAIN";
 	public static final String BO_DELETE_DOMAIN_NOTES = "Delete Domain in the System.";
+
+	public static final String BO_DELETE_TENANT = "DELETE TENANT";
+	public static final String BO_DELETE_TENANT_NOTES = "Delete Tenant in the System.";
 	
 	public static final String BO_UPDATE_ECOSYSTEM = "UPDATE ECOSYSTEM";
 	public static final String BO_UPDATE_ECOSYSTEM_NOTES = "Update Ecosystem in the System.";

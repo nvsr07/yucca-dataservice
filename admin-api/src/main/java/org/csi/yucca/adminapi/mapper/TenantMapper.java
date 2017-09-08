@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.mapper;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -63,5 +64,14 @@ public interface TenantMapper {
 	@Insert(INSERT_TENANT)
 	@Options(useGeneratedKeys=true, keyProperty="idTenant")
 	int insertTenant(Tenant tenant);
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE TENANT
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_TENANT = "DELETE FROM " + TENANT_TABLE + " WHERE tenantcode=#{tenantcode}";
+	@Delete(DELETE_TENANT)
+	int deleteTenant(String tenantcode);	
 	
 }

@@ -8,4 +8,6 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 public interface TenantService {
 
 	ServiceResponse insertTenant(TenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse deleteTenant(String tenantcode) throws BadRequestException, NotFoundException, Exception;
 }

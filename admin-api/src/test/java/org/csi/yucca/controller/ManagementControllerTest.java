@@ -5,7 +5,6 @@ import static io.restassured.RestAssured.given;
 import java.io.IOException;
 import java.util.Iterator;
 
-import org.hamcrest.Matchers;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.testng.annotations.BeforeClass;
@@ -54,7 +53,17 @@ public class ManagementControllerTest extends TestBase{
 		String url = getUrl(dato) + dato.getString(JSON_KEY_APICODE) + "/organizations/" + ORGANIZATION_CODE_TEST_VALUE + "/smartobjects" ;
 		
 		String jsonBody                           = (String)dato.get(JSON_KEY_MESSAGE);
-		RequestSpecification requestSpecification = given().body(jsonBody).contentType(ContentType.JSON);
+		jsonBody = "{\"idTenant\":"+ getIdTenant() + ","  + "\"twtusername\":\"" + TWTUSERNAME_TEST_VALUE + "\"," + "\"socode\":\"" + SMARTOBJECT_CODE_TEST_VALUE + "\"," + jsonBody.substring(1);
+		
+		RequestSpecification requestSpecification = null;
+		try {
+			requestSpecification = given().body(jsonBody).contentType(ContentType.JSON);	
+		} catch (Exception e) {
+			// TODO: handle exception
+			String gg="";
+			gg="";
+		}
+		
 		Response response                         = requestSpecification.when().post(url);
 		ValidatableResponse validatableResponse   = response.then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS));
 		Integer idGenerated                       = validatableResponse.extract().path(dato.getString(JSON_KEY_ID_GENERATED));

@@ -170,7 +170,8 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		if (idOrganization == null) {
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND.arg("idTenant [" + soIdTenant + "]"));
 		}
-		if (idOrganization != soIdOrganization) {
+//		if (idOrganization != soIdOrganization) {
+		if (!idOrganization.equals(soIdOrganization)) {
 			throw new BadRequestException(Errors.NOT_CONSISTENT_DATA.arg(
 					"tenant with id " + soIdTenant + " does not belong to organozation with id " + soIdOrganization));
 		}

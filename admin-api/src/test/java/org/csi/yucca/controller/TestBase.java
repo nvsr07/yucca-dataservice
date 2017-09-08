@@ -22,14 +22,15 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
-	public static final int VALUE_VERSION = 8;
+	public static final int VALUE_VERSION = 31;
 	public static final String ECOSYSTEM_CODE_TEST_VALUE    = "eco00" + VALUE_VERSION;
 	public static final String ORGANIZATION_CODE_TEST_VALUE = "org00" + VALUE_VERSION;
 	public static final String DOMAIN_CODE_TEST_VALUE       = "dom00" + VALUE_VERSION;
 	public static final String SMARTOBJECT_CODE_TEST_VALUE  = "soc00" + VALUE_VERSION;
 	public static final String SUBDOMAIN_CODE_TEST_VALUE    = "sub00" + VALUE_VERSION;
 	public static final String TAG_CODE_TEST_VALUE          = "tag00" + VALUE_VERSION;
-	
+	public static final String TENANT_CODE_TEST_VALUE       = "ten00" + VALUE_VERSION;
+	public static final String TWTUSERNAME_TEST_VALUE       = "twtusn00" + VALUE_VERSION;
 	
 	public static final String JSON_KEY_MESSAGE = "adminapi.message";
 	public static final String JSON_KEY_EXPECTED_HTTP_STATUS = "expected.httpStatus.response";
@@ -44,6 +45,7 @@ public class TestBase {
 	private Integer idDomain;
 	private Integer idSubdomain;		
 	private Integer idOrganization;
+	private Integer idTenant;
 	
 	protected JSONObject secretObject = new JSONObject();
 	protected JSONObject jsonObject = null;
@@ -83,17 +85,18 @@ public class TestBase {
 		this.idTag          = postTag(idEcosystem, dato);
 		this.idDomain       = postDomain(idEcosystem, dato);
 		this.idSubdomain    = postSubdomain(idDomain, dato);		
-		this.idOrganization = postOrganization(idEcosystem, dato);		
+		this.idOrganization = postOrganization(idEcosystem, dato);
+		this.idTenant       = postTenant(idEcosystem, idOrganization, dato);
 	}
 	
 	protected void reset(JSONObject dato){
+		deleteTenant(dato);
 		deleteOrganization(this.idOrganization, dato);
 		deleteSubdomain(this.idSubdomain, dato);
 		deleteDomain(this.idDomain, dato);
 		deleteTag(this.idTag, dato);
 		deleteEcosystem(this.idEcosystem, dato);
 	}
-
 	
 	
 	/*
@@ -366,6 +369,13 @@ public class TestBase {
 		return postMessage(url, message, "idDomain");
 	}	
 	
+	protected Integer postTenant(Integer idEcosystem, Integer idOrganization, JSONObject dato){
+		String url = getUrl("backoffice", "tenants", dato).toString();
+		String message = "{\"tenantcode\":\"" + TENANT_CODE_TEST_VALUE + "\",\"name\":\"tenantName002\",\"maxdatasetnum\": 3,\"maxstreamsnum\": 3,\"usagedaysnumber\": 4,\"username\": \"tenantUserName001\",\"userfirstname\": \"tenantUserfirstname001\",\"userlastname\": \"tenantUserlastname001\",\"useremail\": \"useremail@test.it\",\"usertypeauth\":\"usertypeauth001\",\"idTenantType\": 1,\"idTenantStatus\": 1}";
+		message = "{\"idEcosystem\":"+idEcosystem+"," + "\"idOrganization\":"+idOrganization+ "," + message.substring(1);
+		return postMessage(url, message, "idTenant");
+	}	
+	
 	protected Integer postSubdomain(Integer idDomain, JSONObject dato){
 		String url = getUrl("backoffice", "subdomains", dato).toString();
 		String message = "{\"subdomaincode\": \"" + SUBDOMAIN_CODE_TEST_VALUE + "\",\"langIt\": \"NEW_SUBDOMAIN_1_LANG_IT\",\"langEn\": \"NEW_SUBDOMAIN_1_LANG_EN\",\"idDomain\": "+ idDomain+ "}";
@@ -380,6 +390,11 @@ public class TestBase {
 
 	protected void deleteOrganization(Integer idOrganization, JSONObject dato){
 		String url = getUrl("backoffice", "organizations", dato).append("/").append(idOrganization).toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+
+	protected void deleteTenant(JSONObject dato){
+		String url = getUrl("backoffice", "tenants", dato).append("/").append(TENANT_CODE_TEST_VALUE).toString();
 		given().when().contentType(ContentType.JSON).delete(url);
 	}
 
@@ -430,6 +445,14 @@ public class TestBase {
 
 	public void setIdOrganization(Integer idOrganization) {
 		this.idOrganization = idOrganization;
+	}
+
+	public Integer getIdTenant() {
+		return idTenant;
+	}
+
+	public void setIdTenant(Integer idTenant) {
+		this.idTenant = idTenant;
 	}
 	
 	
