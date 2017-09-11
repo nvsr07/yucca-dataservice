@@ -22,7 +22,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
-	public static final int VALUE_VERSION = 31;
+	public static final int VALUE_VERSION = 34;
 	public static final String ECOSYSTEM_CODE_TEST_VALUE    = "eco00" + VALUE_VERSION;
 	public static final String ORGANIZATION_CODE_TEST_VALUE = "org00" + VALUE_VERSION;
 	public static final String DOMAIN_CODE_TEST_VALUE       = "dom00" + VALUE_VERSION;

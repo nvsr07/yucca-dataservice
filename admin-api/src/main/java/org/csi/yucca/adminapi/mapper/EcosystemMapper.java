@@ -23,7 +23,16 @@ public interface EcosystemMapper {
 	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + ".yucca_ecosystem";
 	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
 	
-	public static final String SELECT_BY_ORGANIZATION_CODE = 
+	
+	public static final String SELECT_BY_ORGANIZATION_CODE =
+    " SELECT ECOSYSTEM.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description " + 
+	" FROM " + EcosystemMapper.ECOSYSTEM_TABLE + " ECOSYSTEM, " + OrganizationMapper.ORGANIZATION_TABLE + " ORG, " +
+	" " + R_ECOSYSTEM_ORGANIZATION_TABLE + " ECOS_ORG  " +
+	" WHERE ORG.organizationcode = #{organizationCode} AND " +
+	" ECOS_ORG.id_organization = ORG.id_organization AND " + 
+	" ECOS_ORG.id_ecosystem = ECOSYSTEM.id_ecosystem  ";
+
+	public static final String SELECT_BY_ORGANIZATION_CODE_OLD = 
 			"SELECT ECOSYSTEM.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description "
 			+ "FROM " + ECOSYSTEM_TABLE + " ECOSYSTEM, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " ECOS_ORG "
 			+ "WHERE ECOS_ORG.id_organization = #{organizationCode} AND "
@@ -124,13 +133,10 @@ public interface EcosystemMapper {
         @Result(property = "description", column = "description")
       })
 	@Select({"<script>",
-		"SELECT ECOSYSTEM.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description "
-		+ "FROM " + ECOSYSTEM_TABLE + " ECOSYSTEM, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " ECOS_ORG "
-		+ "WHERE ECOS_ORG.id_organization = #{organizationCode} AND "
-		+ "ECOS_ORG.id_ecosystem = ECOSYSTEM.id_ecosystem ",
+				SELECT_BY_ORGANIZATION_CODE,
 				ORDER_BY,
              "</script>"}) 
-	List<Ecosystem> selectEcosystem(@Param("organizationCode") int id, @Param("sortList") List<String> sortList);
+	List<Ecosystem> selectEcosystem(@Param("organizationCode") String id, @Param("sortList") List<String> sortList);
 	
 	@Results({
         @Result(property = "idEcosystem", column = "id_ecosystem"),

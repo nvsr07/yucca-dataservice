@@ -579,7 +579,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 	/**
 	 * SELECT ECOSYSTEM
 	 */
-	public ServiceResponse selectEcosystem(Integer organizationCode, String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectEcosystem(String organizationCode, String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, Ecosystem.class);
 		
@@ -807,7 +807,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		return ecosystemMapper.selectAllEcosystem(0,sortList);
 	}
 
-	private List<Ecosystem> selectEcosystemByOrganizationCode(Integer organizationCode, List<String> sortList){
+	private List<Ecosystem> selectEcosystemByOrganizationCode(String organizationCode, List<String> sortList){
 		return ecosystemMapper.selectEcosystem(organizationCode, sortList);
 	}
 

@@ -278,7 +278,7 @@ public class PublicController extends YuccaController{
 	
 	@ApiOperation(value = P_LOAD_ECOSYSTEMS, notes = P_LOAD_ECOSYSTEMS_NOTES, response = EcosystemResponse.class, responseContainer="List")
 	@GetMapping("/ecosystems")
-	public ResponseEntity<Object> loadEcosystems(@RequestParam(required=false) final Integer organizationCode, 
+	public ResponseEntity<Object> loadEcosystems(@RequestParam(required=false) final String organizationCode, 
 			@RequestParam(required=false) final String sort  ) {
 
 		logger.info("loadEcosystems");
