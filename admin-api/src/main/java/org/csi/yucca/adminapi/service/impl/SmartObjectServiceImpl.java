@@ -107,7 +107,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		ServiceUtil.checkIfFoundRecord(smartobject);
 		
 		if (isType(Type.INTERNAL, smartobject)) {
-			throw new BadRequestException(Errors.INCORRECT_VALUE.arg("idSoType di tipo: " + Type.INTERNAL.code() + " delete denied."));
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "idSoType di tipo: " + Type.INTERNAL.code() + " delete denied.");
 		}
 
 		soPositionMapper.deleteSoPosition(smartobject.getIdSmartObject());
@@ -118,7 +118,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		try {
 			count = smartobjectMapper.deleteSmartobject(socode, organization.getIdOrganization());
 		} catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 
 		if (count == 0) {
@@ -168,12 +168,12 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		Integer idOrganization = tenantMapper.selectIdOrganizationByIdTenant(soIdTenant);
 		
 		if (idOrganization == null) {
-			throw new NotFoundException(Errors.RECORD_NOT_FOUND.arg("idTenant [" + soIdTenant + "]"));
+			throw new NotFoundException(Errors.RECORD_NOT_FOUND, "idTenant [" + soIdTenant + "]");
 		}
 //		if (idOrganization != soIdOrganization) {
 		if (!idOrganization.equals(soIdOrganization)) {
-			throw new BadRequestException(Errors.NOT_CONSISTENT_DATA.arg(
-					"tenant with id " + soIdTenant + " does not belong to organozation with id " + soIdOrganization));
+			throw new BadRequestException(Errors.NOT_CONSISTENT_DATA,
+					"tenant with id " + soIdTenant + " does not belong to organozation with id " + soIdOrganization);
 		}
 		
 	}
@@ -273,14 +273,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		if (smartobject != null && smartobject.getIdSmartObject() != null) {
 			throw new BadRequestException(
-					Errors.DUPLICATE_KEY.arg("socode: " + soCode + ", idOrganization: " + idOrganization));
+					Errors.DUPLICATE_KEY, "socode: " + soCode + ", idOrganization: " + idOrganization);
 		}
 
 		smartobject = smartobjectMapper.selectSmartobjectBySlugAndOrganization(slug, idOrganization);
 
 		if (smartobject != null && smartobject.getIdSmartObject() != null) {
 			throw new BadRequestException(
-					Errors.DUPLICATE_KEY.arg("slug: " + slug + ", idOrganization: " + idOrganization));
+					Errors.DUPLICATE_KEY, "slug: " + slug + ", idOrganization: " + idOrganization);
 		}
 
 	}
@@ -296,14 +296,17 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		if (isType(Type.DEVICE, smartobjectRequest)) {
 
 			// se è device id codice deve avere il pattern uuid
-			if (!ServiceUtil.isUUID(smartobjectRequest.getSocode())) {
-				throw new BadRequestException(
-						Errors.INCORRECT_VALUE.arg("For device type the socode must have UUID pattern [ "
-								+ smartobjectRequest.getSocode() + " ] ."));
+			if (!ServiceUtil.matchUUIDPattern(smartobjectRequest.getSocode())) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "For device type the socode must have UUID pattern [ "+ smartobjectRequest.getSocode() + " ] .");
 			}
 
 			// se è device tipo esposizione obbligatorio (iterno/esterno)
 			checkMandatoryParameter(smartobjectRequest.getIdExposureType(), "idExposureType");
+		}
+		else{
+			if (!ServiceUtil.matchNotDevicePattern(smartobjectRequest.getSocode())) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "Not correct pattern for not device type [ " + smartobjectRequest.getSocode() + " ] .");
+			}
 		}
 	}
 
@@ -318,7 +321,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		checkMandatoryParameter(smartobjectRequest.getIdTenant(), "idTenant");
 		checkMandatoryParameter(smartobjectRequest.getSocode(), "socode");
 		checkMandatoryParameter(smartobjectRequest.getName(), "name");
-		checkWhitespace(smartobjectRequest.getSocode(), "socode");
+		checkWhitespace(smartobjectRequest.getSocode(), "socode"); // bad request
 
 		/******************************************************************************************************************************************
 		 * verifico i campi mandatory delle position:
@@ -342,18 +345,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		 * se è device id codice deve avere il pattern uuid se è device tipo
 		 * esposizione obbligatorio (iterno/esterno) se è device latitudine,
 		 * longitudine, elevation, piano (floor) devono essere float
+		 * 
+		 * se non è device controlla il pattern.
 		 ******************************************************************************************************************************************/
 		checkDevice(smartobjectRequest);
-
-		/******************************************************************************************************************************************
-		 * se non è device il codice deve passare questa regex /^(?!.*(?:[
-		 * *./#<>àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ]))/;
-		 ******************************************************************************************************************************************/
-//		if (!isType(Type.DEVICE, smartobjectRequest)
-//				&& !ServiceUtil.isCodeForNoteDeviceType(smartobjectRequest.getSocode())) {
-//			throw new BadRequestException(Errors.INCORRECT_VALUE
-//					.arg("Not correct pattern for not device type [ " + smartobjectRequest.getSocode() + " ] ."));
-//		}
 		
 		/******************************************************************************************************************************************
 		 * se è di tipo twitter deve avere questi campi:
@@ -392,10 +387,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg(duplicateKeyException.getRootCause().getMessage()));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, duplicateKeyException.getRootCause().getMessage());
 		} 
 		catch (DataIntegrityViolationException e) {
-			throw new BadRequestException(Errors.INCORRECT_VALUE.arg(e.getRootCause().getMessage()));
+			throw new BadRequestException(Errors.INCORRECT_VALUE, e.getRootCause().getMessage());
 		}
 
 		return soPosition;
@@ -418,10 +413,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg(duplicateKeyException.getRootCause().getMessage()));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, duplicateKeyException.getRootCause().getMessage());
 		} 
 		catch (DataIntegrityViolationException e) {
-			throw new BadRequestException(Errors.INCORRECT_VALUE.arg(e.getRootCause().getMessage()));
+			throw new BadRequestException(Errors.INCORRECT_VALUE, e.getRootCause().getMessage());
 		}
 
 		return smartobject;

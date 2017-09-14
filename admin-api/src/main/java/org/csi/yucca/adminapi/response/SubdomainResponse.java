@@ -33,8 +33,8 @@ public class SubdomainResponse extends Response{
 		// TODO Auto-generated constructor stub
 	}
 
-	public SubdomainResponse(Errors errors) {
-		super(errors);
+	public SubdomainResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 

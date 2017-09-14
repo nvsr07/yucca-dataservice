@@ -19,8 +19,8 @@ public class PhenomenonResponse extends Response{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public PhenomenonResponse(Errors errors) {
-		super(errors);
+	public PhenomenonResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 	public Integer getIdPhenomenon() {

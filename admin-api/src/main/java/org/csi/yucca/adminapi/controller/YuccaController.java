@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class YuccaController {
 
 	public ResponseEntity<Object> buildErrorResponse(YuccaException exception){
-		return new ResponseEntity<Object>(new Response(exception.errors()), 
+		return new ResponseEntity<Object>(new Response(exception.errors(), exception.getArg()), 
 				exception.getHttpStatus());
 	}
 	
@@ -31,13 +31,13 @@ public class YuccaController {
 	}
 	
 	public ResponseEntity<Object> internalServerError(Exception exception){
-		return new ResponseEntity<Object>(new Response(Errors.INTERNAL_SERVER_ERROR.arg(exception.toString())), 
+		return new ResponseEntity<Object>(new Response(Errors.INTERNAL_SERVER_ERROR, exception.toString()), 
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleBindException(Exception be) {
-		return new ResponseEntity<Object>(new Response(Errors.PARAMETER_TYPE_ERROR.arg(be.getMessage())), 
+		return new ResponseEntity<Object>(new Response(Errors.PARAMETER_TYPE_ERROR, be.getMessage()), 
 				HttpStatus.BAD_REQUEST);
 	}
 	

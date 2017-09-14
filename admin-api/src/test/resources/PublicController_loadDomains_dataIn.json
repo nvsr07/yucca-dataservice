@@ -16,6 +16,7 @@
 		"expected.httpStatus.response":400,
 		"expected.errorName": "Mandatory parameter: ecosystemCode"
      },
+     
      { 
      	"test-name": "PublicController_loadDomains_dataIns: record not found, ecosysteCode non presente in sistema!",
     	"adminapi.entityset": "domains",

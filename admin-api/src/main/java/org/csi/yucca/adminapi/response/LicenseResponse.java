@@ -24,8 +24,8 @@ public class LicenseResponse extends Response{
 		this.description = license.getDescription();
 	}
 	
-	public LicenseResponse(Errors errors) {
-		super(errors);
+	public LicenseResponse(Errors errors, String arg) {
+		super(errors, arg);
 	}
 	
 	public String getLicensecode() {

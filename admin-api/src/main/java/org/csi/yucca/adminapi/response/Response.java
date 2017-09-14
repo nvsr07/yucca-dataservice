@@ -13,9 +13,14 @@ public class Response {
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String errorName;
 	
-	public Response(Errors errors){
+	public Response(Errors errors, String arg){
 		this.errorCode = errors.errorCode();
-		this.errorName = errors.errorName();
+		if (arg != null) {
+			this.errorName = errors.errorName() + ": " + arg;
+		}
+		else{
+			this.errorName = errors.errorName();	
+		}
 	}
 
 	public Response() {

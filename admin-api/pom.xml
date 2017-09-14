@@ -73,6 +73,13 @@
 	</repositories>
 	<dependencies>
 
+		<!-- CREATE STRING FROM REGEX -->
+		<dependency>
+		    <groupId>com.github.mifmif</groupId>
+		    <artifactId>generex</artifactId>
+		    <version>0.0.3</version>
+		</dependency>
+
 		<!--swagger -->
 		<dependency>
 			<groupId>io.springfox</groupId>

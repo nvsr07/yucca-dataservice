@@ -53,8 +53,6 @@ public class PublicControllerTest extends TestBase {
 		
 		init(dato);
 		
-		String url = makeUrl(dato,"json");
-		
 		Response rsp = rs.when().get(makeUrl(dato,"json"));
 		
 		ValidatableResponse response = rsp.then().assertThat().statusCode(Matchers.equalTo(dato.get("expected.httpStatus.response")));

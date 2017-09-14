@@ -16,26 +16,15 @@ public enum Errors {
     INCORRECT_VALUE             ("E12", "Incorrect value"),
     ALPHANUMERIC_VALUE_REQUIRED ("E13", "Alphanumeric value required");
 	
-//	Incorrect value
-	
 	private String errorName;
 	private String errorCode;
-	private String arg;
 	
 	Errors(String errorCode, String errorName){
 		this.errorName = errorName;
 		this.errorCode = errorCode;
 	}
 	
-	public Errors arg(String arg){
-		this.arg = arg;
-		return this;
-	}
-	
 	public String errorName(){
-		if(this.arg != null && !this.arg.isEmpty()){
-			return this.errorName + ": " + this.arg;
-		}
 		return this.errorName;
 	}
 

@@ -29,8 +29,8 @@ public class DomainResponse extends Response{
 		this.deprecated = domain.getDeprecated();
 	}
 	
-	public DomainResponse(Errors errors) {
-		super(errors);
+	public DomainResponse(Errors errors, String arg) {
+		super(errors, arg);
 	}
 	
 	public Integer getIdDomain() {

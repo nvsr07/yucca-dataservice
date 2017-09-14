@@ -148,7 +148,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			count = subdomainMapper.deleteSubdomain(idSubdomain);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -221,7 +221,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			count = tagMapper.deleteTag(idTag);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -297,7 +297,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			count = licenseMapper.deleteLicense(idLicense);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -389,7 +389,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			count = organizationMapper.deleteOrganization(idOrganization);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -410,7 +410,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			count = ecosystemMapper.deleteEcosystem(idEcosystem);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -498,7 +498,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			modelList =  tagMapper.selectTagENLanguage(sortList, ecosystemCode);
 		}
 		else{
-			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED.arg(lang));
+			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED, lang);
 		}
 
 		ServiceUtil.checkList(modelList);
@@ -528,7 +528,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			subdomainList =  subdomainMapper.selectSubdomainENLanguage(domainCode, sortList);
 		}
 		else{
-			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED.arg(lang));
+			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED, lang);
 		}
 
 		ServiceUtil.checkList(subdomainList);
@@ -637,7 +637,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			count = domainMapper.deleteDomain(idDomain);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -739,7 +739,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 			domainList =  domainMapper.selectDomainENLanguage(ecosystemCode, sortList);
 		}
 		else{
-			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED.arg(lang));
+			throw new BadRequestException(Errors.LANGUAGE_NOT_SUPPORTED, lang);
 		}
 
 		ServiceUtil.checkList(domainList);
@@ -761,7 +761,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un ecosystemcode gia inserito
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("ecosystemcode"));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "ecosystemcode");
 		}
 	}
 
@@ -772,7 +772,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un subdomaincode gia inserito
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("subdomaincode"));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "subdomaincode");
 		}
 	}
 
@@ -783,7 +783,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un licensecode gia inserito
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("licensecode"));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "licensecode");
 		}
 	}
 	
@@ -798,7 +798,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		}
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, "idEcosystem not present.");
 		}
 	}
 	
@@ -818,11 +818,11 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un domaincode gia inserito
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("domaincode"));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "domaincode");
 		}
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, "idEcosystem not present.");
 		}
 		
 	}
@@ -834,11 +834,11 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un domaincode gia inserito
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("organizationcode"));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "organizationcode");
 		}
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg("idEcosystem not present."));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, "idEcosystem not present.");
 		}
 		
 	}
@@ -852,7 +852,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem on un idDomain inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg(dataIntegrityViolationException.getRootCause().getMessage()));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, dataIntegrityViolationException.getRootCause().getMessage());
 		}
 		
 	}
@@ -867,7 +867,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem inesistente
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg(dataIntegrityViolationException.getRootCause().getMessage()));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, dataIntegrityViolationException.getRootCause().getMessage());
 		}
 		
 	}

@@ -22,23 +22,27 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
-	public static final int VALUE_VERSION = 34;
-	public static final String ECOSYSTEM_CODE_TEST_VALUE    = "eco00" + VALUE_VERSION;
-	public static final String ORGANIZATION_CODE_TEST_VALUE = "org00" + VALUE_VERSION;
-	public static final String DOMAIN_CODE_TEST_VALUE       = "dom00" + VALUE_VERSION;
-	public static final String SMARTOBJECT_CODE_TEST_VALUE  = "soc00" + VALUE_VERSION;
-	public static final String SUBDOMAIN_CODE_TEST_VALUE    = "sub00" + VALUE_VERSION;
-	public static final String TAG_CODE_TEST_VALUE          = "tag00" + VALUE_VERSION;
-	public static final String TENANT_CODE_TEST_VALUE       = "ten00" + VALUE_VERSION;
-	public static final String TWTUSERNAME_TEST_VALUE       = "twtusn00" + VALUE_VERSION;
+	public static final int VALUE_VERSION = 100;
+	public static final String ECOSYSTEM_CODE_TEST_VALUE              = "eco00" + VALUE_VERSION;
+	public static final String ORGANIZATION_CODE_TEST_VALUE           = "org00" + VALUE_VERSION;
+	public static final String DOMAIN_CODE_TEST_VALUE                 = "dom00" + VALUE_VERSION;
+	public static final String SMARTOBJECT_CODE_TEST_VALUE            = "soc00" + VALUE_VERSION;
+	public static final String SMARTOBJECT_CODE_TEST_VALUE_NO_DEVICE  = "SOC00" + VALUE_VERSION;
+	public static final String SUBDOMAIN_CODE_TEST_VALUE              = "sub00" + VALUE_VERSION;
+	public static final String TAG_CODE_TEST_VALUE                    = "tag00" + VALUE_VERSION;
+	public static final String TENANT_CODE_TEST_VALUE                 = "ten00" + VALUE_VERSION;
+	public static final String TWTUSERNAME_TEST_VALUE                 = "twtusn00" + VALUE_VERSION;
+	public static final String SLUG_TEST_VALUE                        = "slg00" + VALUE_VERSION;
 	
-	public static final String JSON_KEY_MESSAGE = "adminapi.message";
-	public static final String JSON_KEY_EXPECTED_HTTP_STATUS = "expected.httpStatus.response";
+	public static final String JSON_KEY_MESSAGE                     = "adminapi.message";
+	public static final String JSON_KEY_EXPECTED_HTTP_STATUS        = "expected.httpStatus.response";
 	public static final String JSON_KEY_EXPECTED_HTTP_STATUS_DELETE = "expected.httpStatus.delete-response";
-	public static final String JSON_KEY_ID_GENERATED = "adminapi.id-generated";
-	public static final String JSON_KEY_APICODE = "adminapi.apicode"; 
-	
-	
+	public static final String JSON_KEY_ID_GENERATED                = "adminapi.id-generated";
+	public static final String JSON_KEY_APICODE                     = "adminapi.apicode"; 
+	public static final String JSON_KEY_ID_SO_TYPE                  = "adminapi.idSoType";
+	public static final String JSON_KEY_SOCODE                      = "adminapi.socode";
+	public static final String JSON_KEY_TWTUSERNAME                 = "adminapi.twtusername";
+	public static final String JSON_KEY_ID_TENANT                   = "adminapi.idTenant";
 	
 	private Integer idEcosystem;
 	private Integer idTag;
@@ -46,6 +50,8 @@ public class TestBase {
 	private Integer idSubdomain;		
 	private Integer idOrganization;
 	private Integer idTenant;
+	private String socode;
+	
 	
 	protected JSONObject secretObject = new JSONObject();
 	protected JSONObject jsonObject = null;
@@ -254,6 +260,7 @@ public class TestBase {
 
 	private void addData(ArrayList<Object[]> data, JSONObject arr){
 		
+		@SuppressWarnings("rawtypes")
 		Iterator iterSecret = secretObject.keys();
 		
 		String tmp_key;
@@ -284,6 +291,7 @@ public class TestBase {
 
 			// merge with secret
 
+			@SuppressWarnings("rawtypes")
 			Iterator iterSecret = secretObject.keys();
 			String tmp_key;
 			while(iterSecret.hasNext()) {
@@ -453,6 +461,14 @@ public class TestBase {
 
 	public void setIdTenant(Integer idTenant) {
 		this.idTenant = idTenant;
+	}
+
+	public String getSocode() {
+		return socode;
+	}
+
+	public void setSocode(String socode) {
+		this.socode = socode;
 	}
 	
 	

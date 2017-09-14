@@ -18,9 +18,17 @@ public class ServiceUtil {
 
 	private static final String SORT_PROPERTIES_SEPARATOR = ",";
 	private static final String DESC_CHAR = "-";
-
+	
+	public static final String UUID_PATTERN         = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
+	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
+	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
+	
 	public static boolean isType(Type TYPE, SmartobjectRequest smartobjectRequest){
-		return TYPE.id() == smartobjectRequest.getIdSoType();
+		return isType(TYPE, smartobjectRequest.getIdSoType());
+	}
+
+	public static boolean isType(Type TYPE, Integer idSoType){
+		return TYPE.id() == idSoType;
 	}
 
 	public static boolean isType(Type TYPE, Smartobject smartobject){
@@ -41,7 +49,7 @@ public class ServiceUtil {
 		if (object == null ) {
 			
 			if (arg != null) {
-				throw new NotFoundException(Errors.RECORD_NOT_FOUND.arg(arg));
+				throw new NotFoundException(Errors.RECORD_NOT_FOUND, arg);
 			}
 			
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
@@ -77,23 +85,20 @@ public class ServiceUtil {
 	}
 	
 	public static boolean isAlphaNumeric(String s){
-	    String pattern= "^[a-zA-Z0-9]*$";
-	    return s.matches(pattern);
+	    return s.matches(ALPHANUMERIC_PATTERN);
 	}
 
-	public static boolean isUUID(String s){
-	    String pattern= "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[34][0-9a-fA-F]{3}-[89ab][0-9a-fA-F]{3}-[0-9a-fA-F]{12}";
-	    return s.matches(pattern);
+	public static boolean matchUUIDPattern(String s){
+	    return s.matches(UUID_PATTERN);
 	}
 	
-	public static boolean isCodeForNoteDeviceType(String s){
-	    String pattern= "/^(?!.*(?:[ *./#<>àèìòùÀÈÌÒÙáéíóúýÁÉÍÓÚÝâêîôûÂÊÎÔÛãñõÃÑÕäëïöüÿÄËÏÖÜŸçÇßØøÅåÆæœ]))/";
-	    return s.matches(pattern);
+	public static boolean matchNotDevicePattern(String s){
+	    return s.matches(NOT_DEVICE_PATTERN);
 	}
 
 	public static void checkAphanumeric(String s, String fieldName) throws BadRequestException{
 		if (!isAlphaNumeric(s)){
-			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED.arg("received " + fieldName + " [ " + s + " ]"));
+			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED, "received " + fieldName + " [ " + s + " ]");
 		}
 
 	}
@@ -116,25 +121,25 @@ public class ServiceUtil {
 	
 	public static void checkWhitespace(String s, String parameterName) throws BadRequestException {
 		if(containsWhitespace(s)){
-			throw new BadRequestException(Errors.WHITE_SPACES.arg(parameterName));
+			throw new BadRequestException(Errors.WHITE_SPACES, parameterName);
 		}
 	}
 	
 	public static void checkMandatoryParameter(boolean isEmpty, String parameterName) throws BadRequestException {
 		if (isEmpty) {
-			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
 
 	public static void checkMandatoryParameter(Object parameterObj, String parameterName) throws BadRequestException {
 		if (parameterObj == null) {
-			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
 
 	public static void checkMandatoryParameter(String parameterObj, String parameterName) throws BadRequestException {
 		if (parameterObj == null || parameterObj.isEmpty()) {
-			throw new BadRequestException(Errors.MANDATORY_PARAMETER.arg(parameterName));
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
 	
@@ -167,7 +172,7 @@ public class ServiceUtil {
 		for (String sortProperty : sortList) {
 
 			if (propertyNotFound(sortProperty, clazz)) {
-				throw new BadRequestException(Errors.PROPERTY_NOT_FOUND.arg(sortProperty));
+				throw new BadRequestException(Errors.PROPERTY_NOT_FOUND, sortProperty);
 			}
 
 		}

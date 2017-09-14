@@ -126,7 +126,7 @@ public class ComponentServiceImpl implements ComponentService{
 			count = phenomenonMapper.deletePhenomenon(idPhenomenon);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -211,7 +211,7 @@ public class ComponentServiceImpl implements ComponentService{
 			count = measureUnitMapper.deleteMeasureUnit(idMeasureUnit);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -299,7 +299,7 @@ public class ComponentServiceImpl implements ComponentService{
 			count = dataTypeMapper.deleteDataType(idDataType);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {

@@ -20,8 +20,8 @@ public class MeasureUnitResponse extends Response{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public MeasureUnitResponse(Errors errors) {
-		super(errors);
+	public MeasureUnitResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 	public Integer getIdMeasureUnit() {

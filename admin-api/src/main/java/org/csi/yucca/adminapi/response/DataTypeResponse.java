@@ -20,8 +20,8 @@ public class DataTypeResponse extends Response{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public DataTypeResponse(Errors errors) {
-		super(errors);
+	public DataTypeResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 	public Integer getIdDataType() {

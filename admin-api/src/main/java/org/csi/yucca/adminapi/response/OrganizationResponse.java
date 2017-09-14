@@ -20,8 +20,8 @@ public class OrganizationResponse extends Response{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public OrganizationResponse(Errors errors) {
-		super(errors);
+	public OrganizationResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 	public Integer getIdOrganization() {

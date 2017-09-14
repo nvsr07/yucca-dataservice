@@ -9,6 +9,8 @@ public class YuccaException extends Exception {
 	
 	private HttpStatus httpStatus;
 	
+	private String arg;
+	
 	/**
 	 * 
 	 */
@@ -18,9 +20,10 @@ public class YuccaException extends Exception {
 		super(message);
 	}
 	
-	public YuccaException(Errors errors) {
+	public YuccaException(Errors errors, String arg) {
 		super(errors.errorName());
 		this.errors = errors;
+		this.arg = arg;
 	}
 
 	public Errors errors(){
@@ -41,6 +44,14 @@ public class YuccaException extends Exception {
 
 	public void setHttpStatus(HttpStatus httpStatus) {
 		this.httpStatus = httpStatus;
+	}
+
+	public String getArg() {
+		return arg;
+	}
+
+	public void setArg(String arg) {
+		this.arg = arg;
 	}
 	
 }

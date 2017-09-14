@@ -37,7 +37,7 @@ public class TenantServiceImpl implements TenantService {
 			count = tenantMapper.deleteTenant(tenantcode);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION.arg("Not possible to delete, dependency problems."));
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
 		}
 		
 		if (count == 0 ) {
@@ -84,10 +84,10 @@ public class TenantServiceImpl implements TenantService {
 			tenantMapper.insertTenant(tenant);
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
-			throw new BadRequestException(Errors.DUPLICATE_KEY.arg("tenantcode"));
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "tenantcode");
 		}
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new BadRequestException(Errors.INTEGRITY_VIOLATION.arg(dataIntegrityViolationException.getRootCause().toString()));
+			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, dataIntegrityViolationException.getRootCause().toString());
 		}
 		
 	}

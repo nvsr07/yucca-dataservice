@@ -61,8 +61,8 @@ public class TenantResponse extends Response{
 		super();
 	}
 	
-	public TenantResponse(Errors errors) {
-		super(errors);
+	public TenantResponse(Errors errors, String arg) {
+		super(errors, arg);
 	}
 
 	public TenantResponse(Tenant tenant) {

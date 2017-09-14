@@ -29,8 +29,8 @@ public class TagResponse extends Response{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public TagResponse(Errors errors) {
-		super(errors);
+	public TagResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 	public Integer getIdTag() {

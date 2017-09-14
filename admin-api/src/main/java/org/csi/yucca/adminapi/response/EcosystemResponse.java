@@ -19,8 +19,8 @@ public class EcosystemResponse extends Response{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public EcosystemResponse(Errors errors) {
-		super(errors);
+	public EcosystemResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 	public Integer getIdEcosystem() {

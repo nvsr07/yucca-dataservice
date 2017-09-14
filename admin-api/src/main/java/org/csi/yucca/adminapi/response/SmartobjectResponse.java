@@ -102,8 +102,8 @@ public class SmartobjectResponse extends Response {
 		// TODO Auto-generated constructor stub
 	}
 
-	public SmartobjectResponse(Errors errors) {
-		super(errors);
+	public SmartobjectResponse(Errors errors, String arg) {
+		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}
 
