@@ -46,10 +46,23 @@ public interface SmartobjectMapper {
 	 * 
 	 * ***********************************************************************/	
 	public static final String SELECT_ID_SMARTOBJECT_SO_TYPE 
-		= "SELECT id_smart_object, id_so_type FROM " + SMARTOBJECT_TABLE + " WHERE socode = #{socode} AND id_organization = #{idOrganization}";
+		= " SELECT id_smart_object, socode, name, description, " + 
+				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
+				" deploymentversion, sostatus, creationdate, twtusername, twtmaxsearchnumber, " + 
+				" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, " + 
+				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
+				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
+		  " FROM " + SMARTOBJECT_TABLE + 
+		  " WHERE socode = #{socode} AND id_organization = #{idOrganization}";
 	@Results({
-        @Result(property = "idSmartObject", column = "id_smart_object"),
-        @Result(property = "idSoType", column = "id_so_type")
+        @Result(property = "idSmartObject",  column = "id_smart_object"),
+        @Result(property = "idSoType",       column = "id_so_type"),
+        @Result(property = "idLocationType", column = "id_location_type"),
+        @Result(property = "idExposureType", column = "id_exposure_type"),
+        @Result(property = "idSupplyType",   column = "id_supply_type"),
+        @Result(property = "idSoCategory",   column = "id_so_category"),
+        @Result(property = "idStatus",       column = "id_status"),
+        @Result(property = "idOrganization", column = "id_organization")
       })
 	@Select(SELECT_ID_SMARTOBJECT_SO_TYPE)
 	Smartobject selectSmartobject( @Param("socode") String socode, @Param("idOrganization") Integer idOrganization);	
@@ -68,6 +81,28 @@ public interface SmartobjectMapper {
       })
 	@Select(SELECT_ID_SMARTOBJECT_SO_TYPE_BY_SLUG)
 	Smartobject selectSmartobjectBySlugAndOrganization( @Param("slug") String slug, @Param("idOrganization") Integer idOrganization);	
+
+	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE SMART OBJECT
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_SMARTOBJECT = 
+			" UPDATE " + SMARTOBJECT_TABLE +
+			" SET name=#{name}, twttokensecret=#{twttokensecret},  "
+			+ " twtusername=#{twtusername},  twtmaxsearchnumber=#{twtmaxsearchnumber}, "
+			+ " twtmaxsearchinterval=#{twtmaxsearchinterval}, " 
+			+ " twtusertoken=#{twtusertoken}, twtname=#{twtname}, twtuserid=#{twtuserid}, "
+	        + " twtmaxstreams=#{twtmaxstreams}, id_exposure_type=#{idExposureType}, "
+	        + " id_location_type=#{idLocationType}, " 
+	        + " urladmin=#{urladmin}, swclientversion=#{swclientversion}, id_supply_type=#{idSupplyType}, model=#{model} " +
+			" WHERE socode=#{socode} and id_organization=#{idOrganization} ";
+	@Update(UPDATE_SMARTOBJECT)
+	int updateSmartobject(Smartobject smartobject);	
+	
 	
 	
 	

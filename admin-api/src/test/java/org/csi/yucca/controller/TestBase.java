@@ -22,7 +22,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
-	public static final int VALUE_VERSION = 100;
+	public static final int VALUE_VERSION = 113;
 	public static final String ECOSYSTEM_CODE_TEST_VALUE              = "eco00" + VALUE_VERSION;
 	public static final String ORGANIZATION_CODE_TEST_VALUE           = "org00" + VALUE_VERSION;
 	public static final String DOMAIN_CODE_TEST_VALUE                 = "dom00" + VALUE_VERSION;
@@ -35,6 +35,7 @@ public class TestBase {
 	public static final String SLUG_TEST_VALUE                        = "slg00" + VALUE_VERSION;
 	
 	public static final String JSON_KEY_MESSAGE                     = "adminapi.message";
+	public static final String JSON_KEY_UPDATE_MESSAGE              = "adminapi.update-message";
 	public static final String JSON_KEY_EXPECTED_HTTP_STATUS        = "expected.httpStatus.response";
 	public static final String JSON_KEY_EXPECTED_HTTP_STATUS_DELETE = "expected.httpStatus.delete-response";
 	public static final String JSON_KEY_ID_GENERATED                = "adminapi.id-generated";
@@ -51,7 +52,7 @@ public class TestBase {
 	private Integer idOrganization;
 	private Integer idTenant;
 	private String socode;
-	
+	private Integer idSmartObject;
 	
 	protected JSONObject secretObject = new JSONObject();
 	protected JSONObject jsonObject = null;
@@ -94,7 +95,25 @@ public class TestBase {
 		this.idOrganization = postOrganization(idEcosystem, dato);
 		this.idTenant       = postTenant(idEcosystem, idOrganization, dato);
 	}
+
+	protected void initAll(JSONObject dato){
+		this.idEcosystem    = postEchosystem(dato);
+		this.idTag          = postTag(idEcosystem, dato);
+		this.idDomain       = postDomain(idEcosystem, dato);
+		this.idSubdomain    = postSubdomain(idDomain, dato);		
+		this.idOrganization = postOrganization(idEcosystem, dato);
+		this.idTenant       = postTenant(idEcosystem, idOrganization, dato);
+		this.idSmartObject  = postSmartObject(dato);
+	}
 	
+	protected void resetAll(JSONObject dato){
+		
+		String stop = "";
+		stop = "";
+		
+		deleteSmartobject(dato);
+		reset(dato);
+	}
 	protected void reset(JSONObject dato){
 		deleteTenant(dato);
 		deleteOrganization(this.idOrganization, dato);
@@ -335,15 +354,15 @@ public class TestBase {
 		return jsonData;
 	}	
 	
-	
 	protected Integer postMessage(String url, String message, String idName){
 		RequestSpecification requestSpecification = given().body(message).contentType(ContentType.JSON);
 		Response response = requestSpecification.when().post(url);
+					
+		Object object = response.then().extract().path(idName);
+		
 		Integer id =  response.then().extract().path(idName);
 		return id;
 	}
-
-
 	
 	protected void deleteEcosystem(Integer idEcosystem, JSONObject dato){
 		String url = getUrl("backoffice", "ecosystems", dato).append("/").append(idEcosystem).toString();
@@ -370,12 +389,73 @@ public class TestBase {
 		String url = getUrl("backoffice", "subdomains", dato).append("/").append(idSubdomain).toString();
 		given().when().contentType(ContentType.JSON).delete(url);
 	}
+
+	private void deleteSmartobject(JSONObject dato){
+		String url = getUrl("management", "organizations", dato).append("/").append(ORGANIZATION_CODE_TEST_VALUE).append("/smartobjects/") + getSocode().toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
+	
+	
+	
 	
 	protected Integer postDomain(Integer idEcosystem, JSONObject dato){
 		String url = getUrl("backoffice", "domains", dato).toString();
 		String message = "{\"langen\": \"newDomain_en_3333\",\"langit\": \"new-domain_it_3333\",\"domaincode\": \"" + DOMAIN_CODE_TEST_VALUE + "\",\"deprecated\": 1,\"ecosystemCodeList\":[" + idEcosystem + "]}";
 		return postMessage(url, message, "idDomain");
 	}	
+	
+	protected Integer postSmartObject(JSONObject dato){
+		
+		String url = getUrl("management", "organizations", dato)
+				.append("/")
+				.append(ORGANIZATION_CODE_TEST_VALUE).append("/smartobjects")				
+				.toString();
+		
+		setSocode(SMARTOBJECT_CODE_TEST_VALUE_NO_DEVICE);
+		
+		String message = " { " +
+				" \"twtusername\" : \"" + TWTUSERNAME_TEST_VALUE + "\", " +
+				" \"slug\" : \"" + SLUG_TEST_VALUE + "\", " +
+				" \"socode\" : \"" + SMARTOBJECT_CODE_TEST_VALUE_NO_DEVICE + "\", " +
+				" \"positions\" :  " +
+				" { " +
+					" \"lat\":0, " + 
+					" \"lon\":7511974, " +
+					" \"elevation\":247, " +
+					" \"room\": 22, " +
+					" \"building\":\"CSI PIEM\", " +
+					" \"floor\":33, " +
+					" \"address\":\"Corso Unione\", " +
+					" \"city\":\"Turin\", " +
+					" \"country\":\"Piemonte\", " +
+					" \"placegeometry\":\"aaa\" " +
+				" }, " +
+				" \"name\" : \"name_1\", " +
+				" \"description\" : \"description\", " +
+				" \"urladmin\" : \"urladmin\", " +
+				" \"fbcoperationfeedback\" : \"fbcoperationfeedback\", " +
+				" \"swclientversion\" : \"swclie\", " +
+				" \"version\" : 1, " +
+				" \"model\" : \"model\", " +
+				" \"deploymentversion\" : 1, " +
+				" \"sostatus\" : \"sostatus\", " +
+				" \"twtmaxsearchnumber\" : 1, " +
+				" \"twtmaxsearchinterval\" : 1, " +
+				" \"twtusertoken\" : \"twtusertoken\", " +
+				" \"twttokensecret\" : \"twttokensecret\", " +
+				" \"twtname\" : \"twtname\", " +
+				" \"twtuserid\" : 1, " +
+				" \"twtmaxstreams\" : 1, " +
+				" \"idLocationType\" : 1, " +
+				" \"idExposureType\" : 1, " +
+				" \"idSupplyType\" : 1, " +
+				" \"idSoCategory\" : 1, " +
+				" \"idSoType\" : 3, " +
+				" \"idStatus\" : 1, " +
+				" \"idTenant\": "+ getIdTenant() + " " +
+				" } ";
+		return postMessage(url, message, "idSmartObject");
+	}
 	
 	protected Integer postTenant(Integer idEcosystem, Integer idOrganization, JSONObject dato){
 		String url = getUrl("backoffice", "tenants", dato).toString();

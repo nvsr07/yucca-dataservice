@@ -20,8 +20,6 @@ import io.restassured.specification.RequestSpecification;
 
 
 /**
- * https://github.com/csipiemonte/yucca-dataservice/blob/oData-multiapi/insertdata-api/src/test/java/org/csi/yucca/dataservice/insertdataapi/test/unit/HttpDatasetInsertTest.java
-
  * @author gianfranco.stolfa
  *
  */
@@ -32,31 +30,39 @@ public class ManagementControllerTest extends TestBase{
 		super.setUpSecretObject("/testSecret.json");
 	}
 
-	@DataProvider(name="json")
+	@DataProvider(name="createJson")
 	public Iterator<Object[]> getFromJson(){  
 		return super.getFromJson("/ManagementController_createSmartObject_dataIn.json");
 	}	
 
-	@Test(dataProvider = "json")
-	public void backOfficeTestCrud(JSONObject dato) throws JSONException, InterruptedException {
-		init(dato);
-		
-		testPost(dato);
-		
-		testDelete(dato);
-		
-		reset(dato);
-	}
+	@DataProvider(name="updateJson")
+	public Iterator<Object[]> getFromUpdateJson(){  
+		return super.getFromJson("/ManagementController_updateSmartObject.json");
+	}	
 	
+	@Test(dataProvider = "updateJson")
+	public void testPut(JSONObject dato){
+		initAll(dato);	
+		
+		String url = getUrl(dato) + dato.getString(JSON_KEY_APICODE) + "/organizations/" + ORGANIZATION_CODE_TEST_VALUE + "/smartobjects/" + getSocode() ;
+		
+		String jsonBody = (String)dato.get(JSON_KEY_MESSAGE);
+		
+		int expectedHttpStatusResponse = dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS);
+		
+		RequestSpecification updateRequestSpecification = given().body(jsonBody).contentType(ContentType.JSON);
+		
+		Response updateResponse = updateRequestSpecification.when().put(url);
+		
+		@SuppressWarnings("unused")
+		ValidatableResponse updateValidatableResponse  = updateResponse.then().statusCode(expectedHttpStatusResponse);
 	
-	// ******************************************************************
-	//
-	//                  PRIVATE METHODS
-	//
-	// ******************************************************************
-	
+		resetAll(dato);
+	}	
 
-	private Integer testPost(JSONObject dato){
+	@Test(dataProvider = "createJson")
+	public void testPost(JSONObject dato) throws JSONException, InterruptedException {
+		init(dato);
 		
 		String url = getUrl(dato) + dato.getString(JSON_KEY_APICODE) + "/organizations/" + ORGANIZATION_CODE_TEST_VALUE + "/smartobjects" ;
 		
@@ -68,7 +74,6 @@ public class ManagementControllerTest extends TestBase{
 		String jsonBody = (String)dato.get(JSON_KEY_MESSAGE);
 		jsonBody = addToJsonObj("slug",         SLUG_TEST_VALUE,             jsonBody);
 
-//		jsonBody = addToJsonObj("idTenant",     getIdTenant(),               jsonBody);
 		jsonBody = addIdTenantToJsonObj(jsonBody, idTenant);
 		jsonBody = addTwtUsernameToJsonObj(jsonBody, twtUsername);
 		jsonBody = addSocodeToJsonObj(jsonBody, idSoType, socode);
@@ -81,12 +86,17 @@ public class ManagementControllerTest extends TestBase{
 		}
 		
 		Response response                         = requestSpecification.when().post(url);
-		ValidatableResponse validatableResponse   = response.then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS));
-		Integer idGenerated                       = validatableResponse.extract().path(dato.getString(JSON_KEY_ID_GENERATED));
-		return idGenerated;
-	}	
+		response.then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS));
+		
+		resetAll(dato);
+	}
 	
 	
+	// ******************************************************************
+	//
+	//                  PRIVATE METHODS
+	//
+	// ******************************************************************
 	
 	private String addToJsonObj(String key, String value, String jsonBody){
 		
@@ -169,29 +179,14 @@ public class ManagementControllerTest extends TestBase{
 		}
 	}
 	
-	private void testDelete(JSONObject dato){
-		String url = getUrl(dato) 
-				+ dato.getString(JSON_KEY_APICODE) 
-				+ "/organizations/" + ORGANIZATION_CODE_TEST_VALUE 
-				+ "/smartobjects/" + getSocode() ;
-		given().when().contentType(ContentType.JSON).delete(url).then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS_DELETE));
-	}
-
-	
-//	private void testPut(String url, JSONObject dato, Integer idEcosystem, Integer idDomain){
-//		String messageUpdate = getMessage(dato, "adminapi.message.update", idEcosystem, idDomain);
-//		
-//		int expectedHttpStatusUpdateResponse = dato.getInt("expected.httpStatus.update-response");
-//		
-//		RequestSpecification updateRequestSpecification = given().body(messageUpdate).contentType(ContentType.JSON);
-//		Response updateResponse = updateRequestSpecification.when().put(url);
-//		ValidatableResponse updateValidatableResponse  = updateResponse.then().statusCode(expectedHttpStatusUpdateResponse);
-//		// check dell'eventuale messaggio di errore:
-//		if(!dato.optString("expected.update-errorName").isEmpty()){
-//			updateValidatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString("expected.update-errorName")));
-//		}
-//		
+//	private void testDelete(JSONObject dato){
+//		String url = getUrl(dato) 
+//				+ dato.getString(JSON_KEY_APICODE) 
+//				+ "/organizations/" + ORGANIZATION_CODE_TEST_VALUE 
+//				+ "/smartobjects/" + getSocode() ;
+//		given().when().contentType(ContentType.JSON).delete(url).then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS_DELETE));
 //	}
+
 	
 //	private String getMessage(JSONObject dato, String keyMessage, Integer idEcosystem, Integer idDomain){
 //	

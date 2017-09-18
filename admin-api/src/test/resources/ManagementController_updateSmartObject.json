@@ -1,0 +1,37 @@
+{
+"data" : [
+     {
+    	"test-name": "ManagementController_updateSmartObject: deve restituire http status 200!",
+		"adminapi.apicode": "management",
+		"adminapi.message" : "{\"description\":\"desczzz\",\"name\":\"namezzz\",\"twttokensecret\":\"twttokensecretzzz\",\"twtusername\":\"twtusn0071zzz\",\"twtmaxsearchnumber\":2,\"twtmaxsearchinterval\":1,\"twtusertoken\":\"twtusertokenzzz\",\"twtname\":\"twtnamezzz\",\"twtuserid\":2,\"twtmaxstreams\":1,\"idExposureType\":1,\"idLocationType\":1,\"urladmin\":\"urlzzz\",\"swclientversion\":\"swclie\", \"idSupplyType\":1,\"model\":\"modelzzz\"}",
+        "expected.httpStatus.response" : 200,		
+		"expected.httpStatus.delete-response" : 204,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_updateSmartObject: 400 ==> name mancante!",
+		"adminapi.apicode": "management",
+		"adminapi.message" : "{\"description\":\"desczzz\",\"twttokensecret\":\"twttokensecretzzz\",\"twtusername\":\"twtusn0071zzz\",\"twtmaxsearchnumber\":2,\"twtmaxsearchinterval\":1,\"twtusertoken\":\"twtusertokenzzz\",\"twtname\":\"twtnamezzz\",\"twtuserid\":2,\"twtmaxstreams\":1,\"idExposureType\":1,\"idLocationType\":1,\"urladmin\":\"urlzzz\",\"swclientversion\":\"swclie\", \"idSupplyType\":1,\"model\":\"modelzzz\"}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 204,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_updateSmartObject: deve restituire http status 200!",
+		"adminapi.apicode": "management",
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEMzzzwwwwwwwz\",\"floor\":33,\"address\":\"Corso Unionezzzz\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"description\":\"desczzz\",\"name\":\"namezzz\",\"twttokensecret\":\"twttokensecretzzz\",\"twtusername\":\"twtusn0071zzz\",\"twtmaxsearchnumber\":2,\"twtmaxsearchinterval\":1,\"twtusertoken\":\"twtusertokenzzz\",\"twtname\":\"twtnamezzz\",\"twtuserid\":2,\"twtmaxstreams\":1,\"idExposureType\":1,\"idLocationType\":1,\"urladmin\":\"urlzzz\",\"swclientversion\":\"swclie\", \"idSupplyType\":1,\"model\":\"modelzzz\"}",
+        "expected.httpStatus.response" : 200,		
+		"expected.httpStatus.delete-response" : 204,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_updateSmartObject: 400 ==> lat mandatory",
+		"adminapi.apicode": "management",
+		"adminapi.message" : "{\"position\":{\"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEMzzzwwwwwwwz\",\"floor\":33,\"address\":\"Corso Unionezzzz\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"description\":\"desczzz\",\"name\":\"namezzz\",\"twttokensecret\":\"twttokensecretzzz\",\"twtusername\":\"twtusn0071zzz\",\"twtmaxsearchnumber\":2,\"twtmaxsearchinterval\":1,\"twtusertoken\":\"twtusertokenzzz\",\"twtname\":\"twtnamezzz\",\"twtuserid\":2,\"twtmaxstreams\":1,\"idExposureType\":1,\"idLocationType\":1,\"urladmin\":\"urlzzz\",\"swclientversion\":\"swclie\", \"idSupplyType\":1,\"model\":\"modelzzz\"}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 204,		
+		"adminapi.id-generated": "idSmartObject"		
+     }
+     
+]
+}

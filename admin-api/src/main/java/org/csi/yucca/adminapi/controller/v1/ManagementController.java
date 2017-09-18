@@ -50,13 +50,13 @@ public class ManagementController extends YuccaController{
 	 */
 	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
-	public ResponseEntity<Object> updateSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final Integer organizationCode, @PathVariable final String soCode ){
+	public ResponseEntity<Object> updateSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, 
+			@PathVariable final String organizationCode, @PathVariable final String soCode ){
 		logger.info("updateSmartobject");
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-//				return smartObjectService.updateSmartobject(smartobjectRequest, organizationCode, soCode);
-				return null;
+				return smartObjectService.updateSmartobject(smartobjectRequest, organizationCode, soCode);
 			}
 		}, logger);		
 	}	

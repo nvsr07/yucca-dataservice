@@ -84,12 +84,45 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Autowired
 	private SoPositionMapper soPositionMapper;
 
-	public ServiceResponse updateSmartobject(SmartobjectRequest smartobjectRequest, Integer organizationCode,
-			String soCode) throws BadRequestException, NotFoundException, Exception {
+	/**
+	 * 
+	 */
+	public ServiceResponse updateSmartobject(SmartobjectRequest smartobjectRequest, String organizationCode, String soCode) throws BadRequestException, NotFoundException, Exception {
 
-		return null;
+		ServiceUtil.checkMandatoryParameter(smartobjectRequest, "smartobjectRequest");
+		ServiceUtil.checkMandatoryParameter(smartobjectRequest.getName(), "name");
+		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");
+		ServiceUtil.checkMandatoryParameter(soCode, "soCode");
+		checkPosition(smartobjectRequest.getPosition());
+		
+		//	verifica che lo smart object esista (soCode + organizationCode)
+		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
+		ServiceUtil.checkIfFoundRecord(organization);
+		
+		Smartobject currentSmartobject = smartobjectMapper.selectSmartobject(soCode, organization.getIdOrganization());
+		ServiceUtil.checkIfFoundRecord(currentSmartobject);
+		
+		//	aggionrnamento so
+		Smartobject smartobject = new Smartobject();
+		BeanUtils.copyProperties(smartobjectRequest, smartobject);
+		smartobject.setIdOrganization(organization.getIdOrganization());
+		smartobject.setSocode(soCode);
+		int count = smartobjectMapper.updateSmartobject(smartobject);
+		ServiceUtil.checkCount(count);
+
+		//	aggiornamento aventuali positions
+		if(smartobjectRequest.getPosition() != null){
+			soPositionMapper.deleteSoPosition(currentSmartobject.getIdSmartObject());
+			insertSoPosition(smartobjectRequest.getPosition(), currentSmartobject.getIdSmartObject());
+		}
+		
+		Smartobject smartobjectResponse = smartobjectMapper.selectSmartobject(soCode, organization.getIdOrganization());
+		
+		return ServiceResponse.build().object(new SmartobjectResponse(smartobjectResponse, smartobjectRequest.getPosition()));
 	}
 
+	
+	
 
 	/**
 	 * 
@@ -156,8 +189,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		//		inserimento ventuali positions
 		SoPositionRequest soPositionRequest = smartobjectRequest.getPosition();
 		if(soPositionRequest != null){
-			soPositionRequest.setIdSmartObject(smartobject.getIdSmartObject());
-			insertSoPosition(soPositionRequest);
+			insertSoPosition(soPositionRequest, smartobject.getIdSmartObject());
 		}
 		
 		return ServiceResponse.build().object(new SmartobjectResponse(smartobject, smartobjectRequest.getPosition()));
@@ -374,7 +406,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 	}
 	
-	private SoPosition insertSoPosition(SoPositionRequest soPositionRequest) throws BadRequestException {
+	private SoPosition insertSoPosition(SoPositionRequest soPositionRequest, Integer idSmartobject) throws BadRequestException {
 
 		SoPosition soPosition = null;
 
@@ -382,6 +414,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 			soPosition = new SoPosition();
 
 			BeanUtils.copyProperties(soPositionRequest, soPosition);
+			soPosition.setIdSmartObject(idSmartobject);
 
 			soPositionMapper.insertSoPosition(soPosition);
 
