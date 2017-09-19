@@ -238,7 +238,10 @@ public class HdfsFSUtils {
 				csvIn = null;
 			}
 			else {
-
+				if (fields[0].equals("8880122851"))
+				{
+					System.out.println("-->"+Arrays.toString(fields));
+				}
 				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
