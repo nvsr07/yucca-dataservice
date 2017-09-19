@@ -112,7 +112,7 @@ public class HdfsFSUtils {
         	CSVReader csv = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
 			
 					
-			Reader sis = new TryReader(csv);
+			Reader sis = new TryReader(csv,maxFields,headerLine,extractpostValuesMetadata);
 
 			
 			logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"] END");
@@ -189,8 +189,16 @@ public class HdfsFSUtils {
  class TryReader extends Reader {
 	CSVReader csvIn;
 	StringReader buf;
-	public TryReader(CSVReader csv) throws IOException {
+	
+	int maxFields;
+	int curMaxFields=0;
+	String[] headerLine;
+	String[] extractpostValuesMetadata;
+	public TryReader(CSVReader csv, int maxFields, String[] headerLine, String[] extractpostValuesMetadata) throws IOException {
 		this.csvIn = csv;
+		this.maxFields = maxFields;
+		this.headerLine = headerLine;
+		this.extractpostValuesMetadata = extractpostValuesMetadata;
 		System.out.println("Inizializzazione");
 		nextLine(true);
 	}
@@ -221,7 +229,7 @@ public class HdfsFSUtils {
 		
 	}
 
-	private void nextLine(boolean b) throws IOException {
+	private void nextLine(boolean writeHeader) throws IOException {
 		if (csvIn!=null)
 		{
 			String[] fields = csvIn.readNext();
@@ -234,17 +242,13 @@ public class HdfsFSUtils {
 				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
-				if (b) csvw.writeNext(new String[]{"ss", "ss", "ss"});
-				csvw.writeNext(fields);
+				if (writeHeader) csvw.writeNext(headerLine);
+				else csvw.writeNext(fields);
 				
 				
 				buf = new StringReader(sw.toString());
 				
 				
-//				if (writeHeader) 
-//					buf = new StringReader(Arrays.toString(headerLine)+"\n"+sw.toString());
-//				else
-//					buf = new StringReader(sw.toString());
 				csvw.flush();
 				csvw.close();
 			}
