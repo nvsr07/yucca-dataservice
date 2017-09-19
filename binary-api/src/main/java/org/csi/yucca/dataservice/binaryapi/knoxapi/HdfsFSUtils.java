@@ -201,7 +201,6 @@ public class HdfsFSUtils {
 	}
 	@Override
 	public int read(char[] c, int off, int len) throws IOException {
-		System.out.println("read!");
 		if (buf == null) {
 			System.out.println("buff nullo!");
 			return -1;
