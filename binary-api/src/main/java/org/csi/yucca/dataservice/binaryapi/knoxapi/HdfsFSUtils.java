@@ -2,6 +2,7 @@ package org.csi.yucca.dataservice.binaryapi.knoxapi;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.HashMap;
 
@@ -95,7 +96,13 @@ public class HdfsFSUtils {
 				logger.warn("[KnoxHdfsFSUtils::readDir] No elements found in :["+remotePath+"]");
 			}
 			
-			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
+			//Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
+			
+			// try to fix max size (50 MB)
+			HDFSFileProps curF=(HDFSFileProps) list.nextElement();
+        	String p = curF.getFullFilePath();
+			Reader sis =new InputStreamReader(new KnoxWebHDFSConnection().open(p));
+			
 			logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"] END");
 			return sis;
 		} catch (Exception e) {

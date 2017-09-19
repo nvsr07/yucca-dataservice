@@ -260,17 +260,7 @@ public class BinaryService {
 					if (is != null) {
 						LOG.info("[BinaryService::downloadCSVFile] - Download OK!");
 						
-						File targetFile = new File("/tmp/scaricocsv.txt");
-					    byte[] buffer;
-						try {
-						    FileUtils.touch(targetFile);
-							buffer = IOUtils.toByteArray(is);
-						    FileUtils.writeByteArrayToFile(targetFile, buffer);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					    
+						
 						StreamingOutput stream = new StreamingOutputReader(is);
 					    
 						return Response.ok(stream).header("Content-Disposition", "attachment; filename=" + tenantCode + "-"
