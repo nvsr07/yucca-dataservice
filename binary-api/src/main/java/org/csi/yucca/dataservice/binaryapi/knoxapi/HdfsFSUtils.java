@@ -238,7 +238,7 @@ public class HdfsFSUtils {
 				csvIn = null;
 			}
 			else {
-				if (fields[0].equals("8880122851"))
+				if (fields[0].startsWith("8880122851"))
 				{
 					System.out.println("-->"+Arrays.toString(fields));
 				}
