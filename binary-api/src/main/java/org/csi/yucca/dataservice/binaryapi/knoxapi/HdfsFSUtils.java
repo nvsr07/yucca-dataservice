@@ -192,7 +192,7 @@ public class HdfsFSUtils {
 	public TryReader(CSVReader csv) throws IOException {
 		this.csvIn = csv;
 		System.out.println("Inizializzazione");
-		nextLine(false);
+		nextLine(true);
 	}
 	
 	@Override
@@ -223,10 +223,8 @@ public class HdfsFSUtils {
 	}
 
 	private void nextLine(boolean b) throws IOException {
-		System.out.println("nextline");
 		if (csvIn!=null)
 		{
-			System.out.println("read fields");
 			String[] fields = csvIn.readNext();
 			if (fields==null) {
 				System.out.println("fields null!");
@@ -237,7 +235,7 @@ public class HdfsFSUtils {
 				
 				StringWriter sw = new StringWriter();
 				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
-//				if (b) csvw.writeNext("ss");
+				if (b) csvw.writeNext(new String[]{"ss", "ss", "ss"});
 				csvw.writeNext(fields);
 				
 				
