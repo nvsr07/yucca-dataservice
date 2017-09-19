@@ -238,9 +238,9 @@ public class HdfsFSUtils {
 				csvIn = null;
 			}
 			else {
-				if (fields[0].startsWith("8880122851"))
+				if (fields[0].length()>24)
 				{
-					System.out.println("-->"+Arrays.toString(fields));
+					System.out.println("-->"+fields[0].length());
 				}
 				
 				StringWriter sw = new StringWriter();
