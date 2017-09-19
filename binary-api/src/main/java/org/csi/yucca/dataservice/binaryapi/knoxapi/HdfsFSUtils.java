@@ -191,6 +191,7 @@ public class HdfsFSUtils {
 	StringReader buf;
 	public TryReader(CSVReader csv) throws IOException {
 		this.csvIn = csv;
+		System.out.println("Inizializzazione");
 		nextLine(false);
 	}
 	
@@ -200,7 +201,9 @@ public class HdfsFSUtils {
 	}
 	@Override
 	public int read(char[] c, int off, int len) throws IOException {
+		System.out.println("read!");
 		if (buf == null) {
+			System.out.println("buff nullo!");
 			return -1;
 		} else if (c == null) {
 			throw new NullPointerException();
@@ -220,8 +223,10 @@ public class HdfsFSUtils {
 	}
 
 	private void nextLine(boolean b) throws IOException {
+		System.out.println("nextline");
 		if (csvIn!=null)
 		{
+			System.out.println("read fields");
 			String[] fields = csvIn.readNext();
 			if (fields==null) {
 				System.out.println("fields null!");
@@ -248,7 +253,8 @@ public class HdfsFSUtils {
 			}
 		}
 		else
-		{
+		{			
+			System.out.println("csvIn nullo");
 			buf = null;
 		}
 		
