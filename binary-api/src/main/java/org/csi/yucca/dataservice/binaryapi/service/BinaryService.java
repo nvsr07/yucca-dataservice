@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.binaryapi.service;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +29,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -257,11 +259,20 @@ public class BinaryService {
 
 					if (is != null) {
 						LOG.info("[BinaryService::downloadCSVFile] - Download OK!");
-										
 						
+						File targetFile = new File("/tmp/scaricocsv.txt");
+					    byte[] buffer;
+						try {
+						    FileUtils.touch(targetFile);
+							buffer = IOUtils.toByteArray(is);
+						    FileUtils.writeByteArrayToFile(targetFile, buffer);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					    
 						StreamingOutput stream = new StreamingOutputReader(is);
-						
-						
+					    
 						return Response.ok(stream).header("Content-Disposition", "attachment; filename=" + tenantCode + "-"
 								+ datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv")
 								.build();
