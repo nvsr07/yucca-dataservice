@@ -58,7 +58,7 @@ public class SequenceHDFSReader extends Reader {
 	int maxFields;
 	int curMaxFields=0;
 	
-	
+	int rows = 0;
 	String[] headerLine;
 	String[] extractpostValuesMetadata;
 	/**
@@ -163,8 +163,8 @@ public class SequenceHDFSReader extends Reader {
 				nextPath();
 			}
 			else {
-				
-	            //System.out.println("))) nextLine  fields.length --> "+fields.length);
+				rows++;
+	            System.out.println(" ---> riga numero "+ rows);
 	            //System.out.println("))) nextLine  curMaxFields --> "+curMaxFields);
 	            //System.out.println("))) nextLine  maxFields --> "+maxFields);
 	            //System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+(extractpostValuesMetadata!=null ? extractpostValuesMetadata.length :"null"));
