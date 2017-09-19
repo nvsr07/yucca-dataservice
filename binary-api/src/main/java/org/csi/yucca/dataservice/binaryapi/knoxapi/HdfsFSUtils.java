@@ -104,15 +104,13 @@ public class HdfsFSUtils {
 				logger.warn("[KnoxHdfsFSUtils::readDir] No elements found in :["+remotePath+"]");
 			}
 			
-//			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
+			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
 			
 			// try to fix max size (50 MB)
-			HDFSFileProps curF=(HDFSFileProps) list.nextElement();
-        	String p = curF.getFullFilePath();
-        	CSVReader csv = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
-			
-					
-			Reader sis = new TryReader(csv,maxFields,headerLine,extractpostValuesMetadata);
+//			HDFSFileProps curF=(HDFSFileProps) list.nextElement();
+//        	String p = curF.getFullFilePath();
+//        	CSVReader csv = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
+//			Reader sis = new TryReader(csv,maxFields,headerLine,extractpostValuesMetadata);
 
 			
 			logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"] END");
