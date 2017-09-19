@@ -1,8 +1,12 @@
 package org.csi.yucca.dataservice.binaryapi.service;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +26,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -252,7 +257,12 @@ public class BinaryService {
 
 					if (is != null) {
 						LOG.info("[BinaryService::downloadCSVFile] - Download OK!");
-						return Response.ok(is).header("Content-Disposition", "attachment; filename=" + tenantCode + "-"
+										
+						
+						StreamingOutput stream = new StreamingOutputReader(is);
+						
+						
+						return Response.ok(stream).header("Content-Disposition", "attachment; filename=" + tenantCode + "-"
 								+ datasetCode + "-" + ((dsVersion == 0) ? "all" : dsVersion.toString()) + ".csv")
 								.build();
 					} else {
@@ -839,6 +849,23 @@ public class BinaryService {
 		}
 
 		return map;
+	}
+	
+	
+	private class StreamingOutputReader implements StreamingOutput{
+
+		Reader is;
+		
+		public StreamingOutputReader(Reader is) {
+			this.is = is;
+		}
+		
+		public void write(OutputStream output) throws IOException,
+				WebApplicationException {
+
+			IOUtils.copy(is, output);
+		}
+		
 	}
 
 }
