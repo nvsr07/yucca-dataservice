@@ -109,7 +109,7 @@ public class HdfsFSUtils {
 			// try to fix max size (50 MB)
 			HDFSFileProps curF=(HDFSFileProps) list.nextElement();
         	String p = curF.getFullFilePath();
-        	CSVReader csv = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)));
+        	CSVReader csv = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)), ',', '"', 1);
 			
 					
 			Reader sis = new TryReader(csv);
@@ -223,6 +223,7 @@ public class HdfsFSUtils {
 		{
 			String[] fields = csvIn.readNext();
 			if (fields==null) {
+				System.out.println("fields null!");
 				csvIn = null;
 			}
 			else {
