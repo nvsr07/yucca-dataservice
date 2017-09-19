@@ -189,8 +189,9 @@ public class HdfsFSUtils {
  class TryReader extends Reader {
 	CSVReader csvIn;
 	StringReader buf;
-	public TryReader(CSVReader csv) {
+	public TryReader(CSVReader csv) throws IOException {
 		this.csvIn = csv;
+		nextLine(false);
 	}
 	
 	@Override
