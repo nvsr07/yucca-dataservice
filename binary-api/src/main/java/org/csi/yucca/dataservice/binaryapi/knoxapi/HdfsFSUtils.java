@@ -1,11 +1,16 @@
 package org.csi.yucca.dataservice.binaryapi.knoxapi;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Arrays;
 import java.util.HashMap;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.RootLogger;
 import org.csi.yucca.dataservice.binaryapi.HDFSFileProps;
@@ -15,6 +20,9 @@ import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatus;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusesContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.util.KnoxWebHDFSConnection;
+
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class HdfsFSUtils {
 
@@ -96,12 +104,16 @@ public class HdfsFSUtils {
 				logger.warn("[KnoxHdfsFSUtils::readDir] No elements found in :["+remotePath+"]");
 			}
 			
-			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
+//			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
 			
 			// try to fix max size (50 MB)
-//			HDFSFileProps curF=(HDFSFileProps) list.nextElement();
-//        	String p = curF.getFullFilePath();
-//			Reader sis =new InputStreamReader(new KnoxWebHDFSConnection().open(p));
+			HDFSFileProps curF=(HDFSFileProps) list.nextElement();
+        	String p = curF.getFullFilePath();
+        	CSVReader csv = new CSVReader(new InputStreamReader(new KnoxWebHDFSConnection().open(p)));
+			
+					
+			Reader sis = new TryReader(csv);
+
 			
 			logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"] END");
 			return sis;
@@ -110,6 +122,9 @@ public class HdfsFSUtils {
 			throw e;
 		}
 	}
+	
+	
+	
 
 	public static String writeFile(String remotePath, InputStream is, String fileName) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::writeFile] info for path:["+remotePath+"]["+fileName+"]");
@@ -169,4 +184,71 @@ public class HdfsFSUtils {
 		
 	}
 
+}
+
+ class TryReader extends Reader {
+	CSVReader csvIn;
+	StringReader buf;
+	public TryReader(CSVReader csv) {
+		this.csvIn = csv;
+	}
+	
+	@Override
+	public void close() throws IOException {
+		csvIn.close();
+	}
+	@Override
+	public int read(char[] c, int off, int len) throws IOException {
+		if (buf == null) {
+			return -1;
+		} else if (c == null) {
+			throw new NullPointerException();
+		} else if (off < 0 || len < 0 || len > c.length - off) {
+			throw new IndexOutOfBoundsException();
+		} else if (len == 0) {
+			return 0;
+		}
+
+		int n = buf.read(c, off, len);
+		if (n <= 0) {
+			nextLine(false);
+			return read(c, off, len);
+		}
+		return n;
+		
+	}
+
+	private void nextLine(boolean b) throws IOException {
+		if (csvIn!=null)
+		{
+			String[] fields = csvIn.readNext();
+			if (fields==null) {
+				csvIn = null;
+			}
+			else {
+
+				
+				StringWriter sw = new StringWriter();
+				CSVWriter csvw =new CSVWriter(sw,';',CSVWriter.DEFAULT_QUOTE_CHARACTER,"\n" );
+//				if (b) csvw.writeNext("ss");
+				csvw.writeNext(fields);
+				
+				
+				buf = new StringReader(sw.toString());
+				
+				
+//				if (writeHeader) 
+//					buf = new StringReader(Arrays.toString(headerLine)+"\n"+sw.toString());
+//				else
+//					buf = new StringReader(sw.toString());
+				csvw.flush();
+				csvw.close();
+			}
+		}
+		else
+		{
+			buf = null;
+		}
+		
+	}
 }

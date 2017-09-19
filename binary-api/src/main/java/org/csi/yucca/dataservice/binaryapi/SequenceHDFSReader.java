@@ -163,8 +163,8 @@ public class SequenceHDFSReader extends Reader {
 				nextPath();
 			}
 			else {
-				rows++;
-	            System.out.println(" ---> riga numero "+ rows);
+//				rows++;
+//	            System.out.println(" ---> riga numero "+ rows);
 	            //System.out.println("))) nextLine  curMaxFields --> "+curMaxFields);
 	            //System.out.println("))) nextLine  maxFields --> "+maxFields);
 	            //System.out.println("))) nextLine  xtractpostValuesMetadata.length --> "+(extractpostValuesMetadata!=null ? extractpostValuesMetadata.length :"null"));
