@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -28,6 +30,18 @@ public interface TenantMapper {
 	@Select(SELECT_ORGANIZATION_BY_ID_TENANT) 
 	Integer selectIdOrganizationByIdTenant(@Param("idTenant") int idTenant);
 
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT ID TENANT BY ID ORGANIZATION
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_ID_TENANT_BY_ID_ORGANIZATION = "SELECT id_tenant FROM " + TENANT_TABLE
+	+ " where id_organization = #{idOrganization}";
+	@Select(SELECT_ID_TENANT_BY_ID_ORGANIZATION) 
+	List<Integer> selectIdTenantByIdOrganization(@Param("idOrganization") int idOrganization);
+	
+	
 	/*************************************************************************
 	 * 
 	 * 					INSERT TENANT

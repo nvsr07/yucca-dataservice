@@ -22,7 +22,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
-	public static final int VALUE_VERSION = 113;
+	public static final int VALUE_VERSION = 130;
 	public static final String ECOSYSTEM_CODE_TEST_VALUE              = "eco00" + VALUE_VERSION;
 	public static final String ORGANIZATION_CODE_TEST_VALUE           = "org00" + VALUE_VERSION;
 	public static final String DOMAIN_CODE_TEST_VALUE                 = "dom00" + VALUE_VERSION;
@@ -44,6 +44,16 @@ public class TestBase {
 	public static final String JSON_KEY_SOCODE                      = "adminapi.socode";
 	public static final String JSON_KEY_TWTUSERNAME                 = "adminapi.twtusername";
 	public static final String JSON_KEY_ID_TENANT                   = "adminapi.idTenant";
+
+	private static final String KEY_URL = "url";
+	private static final String KEY_VERSION = "version";
+	private static final String KEY_APICODE = "apicode";
+	private static final String KEY_ENTITYSET = "entityset";
+	private static final String KEY_FORMAT = "$format";
+	private static final String APP_NAME = "adminapi";
+	private static final String STRING_TYPE = "String";
+	private static final String INT_TYPE = "Int";
+	private static final Map<String, String> KEY_TYPE;
 	
 	private Integer idEcosystem;
 	private Integer idTag;
@@ -57,20 +67,6 @@ public class TestBase {
 	protected JSONObject secretObject = new JSONObject();
 	protected JSONObject jsonObject = null;
 
-	private static final String KEY_URL = "url";
-	private static final String KEY_VERSION = "version";
-	private static final String KEY_APICODE = "apicode";
-	private static final String KEY_ENTITYSET = "entityset";
-	private static final String KEY_FORMAT = "$format";
-	private static final String APP_NAME = "adminapi";
-
-	
-	
-	
-	private static final String STRING_TYPE = "String";
-	private static final String INT_TYPE = "Int";
-
-	private static final Map<String, String> KEY_TYPE;
 	static {
         Map<String, String> aMap = new HashMap<String, String>();
         aMap.put("sort",             STRING_TYPE);
@@ -107,13 +103,10 @@ public class TestBase {
 	}
 	
 	protected void resetAll(JSONObject dato){
-		
-		String stop = "";
-		stop = "";
-		
 		deleteSmartobject(dato);
 		reset(dato);
 	}
+	
 	protected void reset(JSONObject dato){
 		deleteTenant(dato);
 		deleteOrganization(this.idOrganization, dato);
@@ -122,21 +115,6 @@ public class TestBase {
 		deleteTag(this.idTag, dato);
 		deleteEcosystem(this.idEcosystem, dato);
 	}
-	
-	
-	/*
-	 * 
-	 * DA FARE IL CRAETE TENANT A CUI PASSARE L'ORGANIZZATION INIZIALIZZATA NELL'INIT
-	 * 
-	 */
-	//protected Integer postTenant(Integer idEcosystem, JSONObject dato){
-//	String url = getUrl("backoffice", "tags", dato).toString();
-//	String message = "{\"tagcode\": \"" + TAG_CODE_TEST_VALUE + "\",\"langit\": \"new-tag-it_1\",\"langen\": \"new-tag-en_1\",\"idEcosystem\": " + idEcosystem + "}";
-//	return postMessage(url, message, "idTag");			
-//}
-
-	
-	
 	
 	/**
 	 * 
@@ -357,8 +335,6 @@ public class TestBase {
 	protected Integer postMessage(String url, String message, String idName){
 		RequestSpecification requestSpecification = given().body(message).contentType(ContentType.JSON);
 		Response response = requestSpecification.when().post(url);
-					
-		Object object = response.then().extract().path(idName);
 		
 		Integer id =  response.then().extract().path(idName);
 		return id;
@@ -395,8 +371,10 @@ public class TestBase {
 		given().when().contentType(ContentType.JSON).delete(url);
 	}
 	
-	
-	
+	public void deleteSmartobject(JSONObject dato, String socode, String organizationCode){
+		String url = getUrl("management", "organizations", dato).append("/").append(organizationCode).append("/smartobjects/") + socode.toString();
+		given().when().contentType(ContentType.JSON).delete(url);
+	}
 	
 	protected Integer postDomain(Integer idEcosystem, JSONObject dato){
 		String url = getUrl("backoffice", "domains", dato).toString();
@@ -491,9 +469,6 @@ public class TestBase {
 		String message = "{\"ecosystemcode\":\"" + ECOSYSTEM_CODE_TEST_VALUE + "\",\"description\":\"" + ECOSYSTEM_CODE_TEST_VALUE + "_description\"}";
 		return postMessage(url, message, "idEcosystem");			
 	}
-
-	
-	
 	
 	public Integer getIdEcosystem() {
 		return idEcosystem;
@@ -550,8 +525,13 @@ public class TestBase {
 	public void setSocode(String socode) {
 		this.socode = socode;
 	}
-	
-	
-	
+
+	public Integer getIdSmartObject() {
+		return idSmartObject;
+	}
+
+	public void setIdSmartObject(Integer idSmartObject) {
+		this.idSmartObject = idSmartObject;
+	}
 	
 }

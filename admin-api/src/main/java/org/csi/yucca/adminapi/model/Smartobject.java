@@ -13,7 +13,7 @@ public class Smartobject {
 	private Integer version;
 	private String model;
 	private Integer deploymentversion;
-	private String sostatus;
+//	private String sostatus;
 	private Timestamp creationdate;
 	private String twtusername;
 	private Long twtmaxsearchnumber;
@@ -112,13 +112,13 @@ public class Smartobject {
 		this.deploymentversion = deploymentversion;
 	}
 
-	public String getSostatus() {
-		return sostatus;
-	}
-
-	public void setSostatus(String sostatus) {
-		this.sostatus = sostatus;
-	}
+//	public String getSostatus() {
+//		return sostatus;
+//	}
+//
+//	public void setSostatus(String sostatus) {
+//		this.sostatus = sostatus;
+//	}
 
 	public Timestamp getCreationdate() {
 		return creationdate;

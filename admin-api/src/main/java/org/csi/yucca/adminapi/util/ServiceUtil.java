@@ -23,6 +23,11 @@ public class ServiceUtil {
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
 	
+	
+	public static String getDefaultInternalSocode(String organizationcode){
+		return "SOinternal" + organizationcode;
+	}
+	
 	public static boolean isType(Type TYPE, SmartobjectRequest smartobjectRequest){
 		return isType(TYPE, smartobjectRequest.getIdSoType());
 	}

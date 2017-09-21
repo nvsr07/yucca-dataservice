@@ -77,7 +77,7 @@ public class SmartobjectResponse extends Response {
 		this.version = smartobject.getVersion();
 		this.model = smartobject.getModel();
 		this.deploymentversion = smartobject.getDeploymentversion();
-		this.sostatus = smartobject.getSostatus();
+//		this.sostatus = smartobject.getSostatus();
 		this.creationdate = smartobject.getCreationdate();
 		this.twtusername = smartobject.getTwtusername();
 		this.twtmaxsearchnumber = smartobject.getTwtmaxsearchnumber();

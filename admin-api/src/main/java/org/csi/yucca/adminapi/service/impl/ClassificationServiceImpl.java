@@ -31,6 +31,7 @@ import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
+import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.Languages;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -64,6 +65,9 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private TagMapper tagMapper;
+
+	@Autowired
+	private SmartObjectService smartObjectService;
 
 	/**
 	 * SELECT SUBDOMAIN
@@ -376,6 +380,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		return ServiceResponse.build().object(new OrganizationResponse(organization));
 	}	
 	
+	
+	
 	/**
 	 * DELETE ORGANOZATION
 	 */
@@ -383,9 +389,10 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
 		
 		organizationMapper.deleteEcosystemOrganization(idOrganization);
-
+		
 		int count = 0;
 		try {
+			smartObjectService.deleteInternalSmartObject(idOrganization);
 			count = organizationMapper.deleteOrganization(idOrganization);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
@@ -656,7 +663,6 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
 		
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "description"); 
-//		ServiceUtil.checkMandatoryParameter(organizationRequest.getOrganizationcode(), "organizationcode"); 
 		ServiceUtil.checkCode(organizationRequest.getOrganizationcode(), "organizationcode"); 
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList(), "ecosystemCodeList"); 
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList"); 
@@ -666,6 +672,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		insertOrganization(organization);
 		insertEcosystemOrganization(organizationRequest.getEcosystemCodeList(), organization.getIdOrganization());
+		
+		smartObjectService.insertInternalSmartObject(organization);
 		
 		return ServiceResponse.build().object(new OrganizationResponse(organization));
 	}

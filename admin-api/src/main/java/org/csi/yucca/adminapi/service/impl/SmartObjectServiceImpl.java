@@ -40,9 +40,11 @@ import org.csi.yucca.adminapi.response.SoCategoryResponse;
 import org.csi.yucca.adminapi.response.SoTypeResponse;
 import org.csi.yucca.adminapi.response.SupplyTypeResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
+import org.csi.yucca.adminapi.util.Category;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
+import org.csi.yucca.adminapi.util.Status;
 import org.csi.yucca.adminapi.util.Type;
 import org.springframework.beans.BeanUtils;
 //import org.csi.yucca.adminapi.util.ServiceUtil;
@@ -84,6 +86,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Autowired
 	private SoPositionMapper soPositionMapper;
 
+	public List<Integer> selectTenantByOrganization(Integer idOrganization){
+		return tenantMapper.selectIdTenantByIdOrganization(idOrganization);
+	}
+	
 	/**
 	 * 
 	 */
@@ -121,14 +127,17 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		return ServiceResponse.build().object(new SmartobjectResponse(smartobjectResponse, smartobjectRequest.getPosition()));
 	}
 
-	
-	
+	/**
+	 * Rimuove gli smart object con id_so_type di tipo INTERNAL per una determinata organization. 
+	 */
+	public void deleteInternalSmartObject(Integer idOrganization) throws  Exception {
+		smartobjectMapper.deleteInternalSmartobject(Type.INTERNAL.id(), idOrganization);
+	}
 
 	/**
 	 * 
 	 */
-	public ServiceResponse deleteSmartObject(String organizationCode, String socode)
-			throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse deleteSmartObject(String organizationCode, String socode) throws BadRequestException, NotFoundException, Exception {
 
 		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");
 		ServiceUtil.checkMandatoryParameter(socode, "soCode");
@@ -159,7 +168,6 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		}
 
 		return ServiceResponse.build().NO_CONTENT();
-
 	}
 
 	private Organization getOrganization(String organizationCode) throws NotFoundException {
@@ -168,6 +176,40 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		return organization;
 	}
 
+	public Smartobject insertInternalSmartObject(Organization organization)throws BadRequestException{
+
+		SmartobjectRequest smartobjectRequest = new SmartobjectRequest();
+		
+		smartobjectRequest.setVersion(1);
+		smartobjectRequest.setIdStatus(Status.INSTALLED.id());
+		smartobjectRequest.setSocode(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
+		smartobjectRequest.setSlug(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
+		smartobjectRequest.setName(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
+		smartobjectRequest.setDescription(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
+		smartobjectRequest.setIdSoType(Type.INTERNAL.id());
+		smartobjectRequest.setIdSoCategory(Category.NONE.id());
+		
+		return insertSmartObject(smartobjectRequest, organization.getIdOrganization(), new Timestamp(System.currentTimeMillis()));
+		
+	}
+	
+	public Smartobject insertSmartObject(SmartobjectRequest smartobjectRequest, Organization organization)throws BadRequestException{
+
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization.getIdOrganization(), now);
+		
+		insertManagerTenantSmartobject(smartobjectRequest.getIdTenant(), smartobject.getIdSmartObject(), now);
+		
+		return smartobject;
+	}
+	
+	private void insertManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now){
+		smartobjectMapper.insertTenantSmartobject(idTenant, idSmartobject, now, 1);
+	}
+
+//	private void insertNotManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now){
+//		smartobjectMapper.insertTenantSmartobject(idTenant, idSmartobject, now, 0);
+//	}
 	
 	/**
 	 * INSERT SMART OBJECT
@@ -175,17 +217,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	public ServiceResponse insertSmartobject(SmartobjectRequest smartobjectRequest, String organizationCode)
 			throws BadRequestException, NotFoundException, Exception {
 		
-		// recuera l'organizatione con il code passato:
+		// recupera l'organizatione con il code passato:
 		Organization organization = getOrganization(organizationCode);
 
 		validation(smartobjectRequest, organization.getIdOrganization());
-
-		Timestamp now = new Timestamp(System.currentTimeMillis());
-
-		//		inserimento so
-		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization.getIdOrganization(), now);
-		smartobjectMapper.insertTenantSmartobject(smartobjectRequest.getIdTenant(), smartobject.getIdSmartObject(), now);
-
+		
+		//		inserimento so		
+		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization);		
+		
 		//		inserimento ventuali positions
 		SoPositionRequest soPositionRequest = smartobjectRequest.getPosition();
 		if(soPositionRequest != null){
@@ -399,7 +438,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		checkSmartObject(idOrganization, smartobjectRequest.getSocode(), smartobjectRequest.getSlug());
 		
 		/******************************************************************************************************************************************
-		 * verifica che l'oranzataion passata sia legata al tenant fornito nel json della request.
+		 * verifica che l'organization passata sia legata al tenant fornito nel json della request.
 		 ******************************************************************************************************************************************/
 		checkOrganizationTenant(idOrganization, smartobjectRequest.getIdTenant());
 

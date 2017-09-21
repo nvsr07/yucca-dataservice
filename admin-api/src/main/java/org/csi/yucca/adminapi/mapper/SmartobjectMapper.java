@@ -42,13 +42,23 @@ public interface SmartobjectMapper {
 
 	/*************************************************************************
 	 * 
+	 * 					DELETE INTERNAL SMARTOBJECT
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_INTERNAL_SMARTOBJECT 
+		= "DELETE FROM " + SMARTOBJECT_TABLE + " WHERE id_so_type = #{idSoType} AND id_organization = #{idOrganization}";
+	@Delete(DELETE_INTERNAL_SMARTOBJECT)
+	int deleteInternalSmartobject( @Param("idSoType") Integer idSoType, @Param("idOrganization") Integer idOrganization);	
+
+	/*************************************************************************
+	 * 
 	 * 					SELECT SMARTOBJECT
 	 * 
 	 * ***********************************************************************/	
 	public static final String SELECT_ID_SMARTOBJECT_SO_TYPE 
 		= " SELECT id_smart_object, socode, name, description, " + 
 				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
-				" deploymentversion, sostatus, creationdate, twtusername, twtmaxsearchnumber, " + 
+				" deploymentversion, creationdate, twtusername, twtmaxsearchnumber, " + 
 				" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, " + 
 				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
 				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
@@ -134,11 +144,12 @@ public interface SmartobjectMapper {
 	public static final String INSERT_TENANT_SMARTOBJECT = 
 		" INSERT INTO int_yucca.yucca_r_tenant_smart_object( " +
 		" id_tenant, id_smart_object, isactive, ismanager, activationdate, managerfrom) " +
-		" VALUES (#{idTenant}, #{idSmartObject}, 1, 1, #{now}, #{now}) ";
+		" VALUES (#{idTenant}, #{idSmartObject}, 1, #{isManager}, #{now}, #{now}) ";
 	@Insert(INSERT_TENANT_SMARTOBJECT)
 	int insertTenantSmartobject(@Param("idTenant") Integer idTenant, 
 						        @Param("idSmartObject") Integer idSmartObject, 
-						        @Param("now") Timestamp now);
+						        @Param("now") Timestamp now,
+						        @Param("isManager") Integer isManager);
 	
 	/*************************************************************************
 	 * 
@@ -148,13 +159,13 @@ public interface SmartobjectMapper {
 	public static final String INSERT_SMARTOBJECT = 
 	" INSERT INTO " + SMARTOBJECT_TABLE + " ( " +
 			" socode, name, description, urladmin, fbcoperationfeedback, " + 
-			" swclientversion, version, model, deploymentversion, sostatus, " +
+			" swclientversion, version, model, deploymentversion, " +
 			" creationdate, twtusername, twtmaxsearchnumber, twtmaxsearchinterval, " + 
 			" twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, " +
 			" slug, id_location_type, id_exposure_type, id_supply_type, id_so_category, " + 
 			" id_so_type, id_status, id_organization) " +
 			" VALUES (#{socode}, #{name}, #{description}, #{urladmin}, #{fbcoperationfeedback}, " + 
-			"  #{swclientversion}, #{version}, #{model}, #{deploymentversion}, #{sostatus}, " +
+			"  #{swclientversion}, #{version}, #{model}, #{deploymentversion},  " +
 			" #{creationdate}, #{twtusername}, #{twtmaxsearchnumber}, #{twtmaxsearchinterval}, " +
 			" #{twtusertoken}, #{twttokensecret}, #{twtname}, #{twtuserid}, #{twtmaxstreams}, " +
 			" #{slug}, #{idLocationType}, #{idExposureType}, #{idSupplyType}, #{idSoCategory}, " +

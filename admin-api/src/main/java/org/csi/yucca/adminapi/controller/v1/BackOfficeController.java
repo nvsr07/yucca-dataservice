@@ -672,10 +672,8 @@ public class BackOfficeController extends YuccaController{
 	@ApiOperation(value = BO_CREATE_ECOSYSTEM, notes = BO_CREATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PostMapping("/ecosystems")
 	public ResponseEntity<Object> createEcosystem(@RequestBody final EcosystemRequest ecosystemRequest ){
+
 		logger.info("createEcosystem");
-		
-		String stop="";
-		stop="";
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
