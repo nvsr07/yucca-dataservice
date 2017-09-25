@@ -450,7 +450,10 @@ public class TestBase {
 	
 	protected Integer postOrganization(Integer idEcosystem, JSONObject dato){
 		String url = getUrl("backoffice", "organizations", dato).toString();
-		String message = "{\"organizationcode\": \"" + ORGANIZATION_CODE_TEST_VALUE + "\",\"description\": \"DESC TRIAL0041\",\"ecosystemCodeList\":[" + idEcosystem + "]}";
+		String message = "{\"organizationcode\": \"" + ORGANIZATION_CODE_TEST_VALUE + "\",\"description\": \"DESC TRIAL0041\",\"ecosystemCodeList\":[" + idEcosystem + "],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}";
+
+
+		
 		return postMessage(url, message, "idOrganization");			
 	}
 

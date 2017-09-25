@@ -645,6 +645,36 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 	
+	
+	/**
+	 * 
+	 * ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN datasolrcollectionname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN measuresolrcollectionname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN mediasolrcollectionname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN socialsolrcollectionname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN dataphoenixtablename character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN dataphoenixschemaname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN measuresphoenixtablename character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN measuresphoenixschemaname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN mediaphoenixtablename character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN mediaphoenixschemaname character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN socialphoenixtablename character varying(200);
+ALTER TABLE int_yucca.yucca_organization
+  ADD COLUMN socialphoenixschemaname character varying(200);
+
+	 * 
+	 */
 	@ApiOperation(value = BO_CREATE_ORGANIZATION, notes = BO_CREATE_ORGANIZATION_NOTES, response = OrganizationResponse.class)
 	@PostMapping("/organizations")
 	public ResponseEntity<Object> createOrganization(@RequestBody final OrganizationRequest organizationRequest ){

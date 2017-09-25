@@ -661,6 +661,19 @@ public class ClassificationServiceImpl implements ClassificationService{
 	public ServiceResponse insertOrganization(OrganizationRequest organizationRequest) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
+
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getDatasolrcollectionname(), "Datasolrcollectionname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getMeasuresolrcollectionname(), "Measuresolrcollectionname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getMediasolrcollectionname(), "Mediasolrcollectionname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getSocialsolrcollectionname(), "Socialsolrcollectionname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getDataphoenixtablename(), "Dataphoenixtablename");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getDataphoenixschemaname(), "Dataphoenixschemaname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getMeasuresphoenixtablename(), "Measuresphoenixtablename");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getMeasuresphoenixschemaname(), "Measuresphoenixschemaname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getMediaphoenixtablename(), "Mediaphoenixtablename");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getMediaphoenixschemaname(), "Mediaphoenixschemaname");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getSocialphoenixtablename(), "Socialphoenixtablename");
+		ServiceUtil.checkMandatoryParameter(organizationRequest.getSocialphoenixschemaname(), "Socialphoenixschemaname");				
 		
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getDescription(), "description"); 
 		ServiceUtil.checkCode(organizationRequest.getOrganizationcode(), "organizationcode"); 

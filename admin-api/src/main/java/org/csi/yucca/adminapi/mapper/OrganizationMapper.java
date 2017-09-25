@@ -127,8 +127,7 @@ public interface OrganizationMapper {
 	 * 
 	 * ***********************************************************************/
 	public static final String INSERT_ORGANIZATION 
-	= "INSERT INTO " + ORGANIZATION_TABLE + "( organizationcode, description) VALUES (#{organizationcode}, #{description})";
-	
+	= "INSERT INTO " + ORGANIZATION_TABLE + "( organizationcode, description, datasolrcollectionname, measuresolrcollectionname, mediasolrcollectionname, socialsolrcollectionname, dataphoenixtablename, dataphoenixschemaname, measuresphoenixtablename, measuresphoenixschemaname, mediaphoenixtablename, mediaphoenixschemaname, socialphoenixtablename, socialphoenixschemaname) VALUES (#{organizationcode}, #{description}, #{datasolrcollectionname}, #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, #{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, #{measuresphoenixschemaname}, #{mediaphoenixtablename}, #{mediaphoenixschemaname}, #{socialphoenixtablename}, #{socialphoenixschemaname})";
 	@Insert(INSERT_ORGANIZATION)
 	@Options(useGeneratedKeys=true, keyProperty="idOrganization")
 	int insertOrganization(Organization organization);
