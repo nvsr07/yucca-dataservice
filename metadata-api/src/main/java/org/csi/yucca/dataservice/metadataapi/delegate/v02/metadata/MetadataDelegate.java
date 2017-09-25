@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +27,9 @@ import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetCount;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetField;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.facet.FacetPivot;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
+import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineFacetPivot;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineMetadata;
 import org.csi.yucca.dataservice.metadataapi.model.searchengine.v02.SearchEngineResult;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
@@ -49,8 +52,8 @@ public class MetadataDelegate {
 	protected String SEARCH_ENGINE_BASE_URL = Config.getInstance().getSearchEngineBaseUrl();
 
 	private MetadataDelegate() {
-		//super();
-		
+		// super();
+
 	}
 
 	public static MetadataDelegate getInstance() {
@@ -59,37 +62,32 @@ public class MetadataDelegate {
 		return instance;
 	}
 
-	
 	private SolrClient getSolrServer() {
-		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
-		{
+		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess())) {
 			TEHttpSolrClient solrServer = KnoxSolrSingleton.getServer();
-			//solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
+			// solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
 			return solrServer;
-		}
-		else {
+		} else {
 			CloudSolrClient solrServer = CloudSolrSingleton.getServer();
 			solrServer.setDefaultCollection(Config.getInstance().getSearchEngineCollection());
 			return solrServer;
 		}
 	}
-	
+
 	public Result search(HttpServletRequest request, String q, Integer start, Integer rows, String sort, String tenant, String organization, String domain, String subdomain,
-			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, 
-			String lang, Boolean dCatReady, FacetParams facet, Boolean hasDataset, Boolean hasStream, 
-			String tags, String visibility, Boolean isSearchExact, Boolean includeSandbox, String externalReference)
-			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException,UserWebServiceException {
+			Boolean opendata, Boolean geolocalizated, Double minLat, Double minLon, Double maxLat, Double maxLon, String lang, Boolean dCatReady, FacetParams facet,
+			Boolean hasDataset, Boolean hasStream, String tags, String visibility, Boolean isSearchExact, Boolean includeSandbox, String externalReference)
+			throws NumberFormatException, UnknownHostException, UnsupportedEncodingException, UserWebServiceException {
 
 		log.info("[MetadataDelegate::search] START ");
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
-		
-		SolrClient solrServer= getSolrServer();
 
-		
-		
+		SolrClient solrServer = getSolrServer();
+
 		Map<String, String> params = new HashMap<String, String>();
-//		StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL + "select?wt=json");
+		// StringBuffer searchUrl = new StringBuffer(SEARCH_ENGINE_BASE_URL +
+		// "select?wt=json");
 
 		StringBuffer searchUrl = new StringBuffer();
 		// http://sdnet-master4.sdp.csi.it:8983/solr/sdp_int_metasearch_shard3_replica2/select?q=search_lemma:parametroQfq=domainCode:%22AGRICOLTURE%22&fq=sudomain:"sss"
@@ -99,70 +97,58 @@ public class MetadataDelegate {
 
 		params.put("q", q);
 
-		if (BooleanUtils.isTrue(isSearchExact))
-		{
+		if (BooleanUtils.isTrue(isSearchExact)) {
 			searchUrl.append("&q=search_text:" + URLEncoder.encode(q, "UTF-8"));
 			params.put("isSearchExact", "true");
-		}
-		else {
+		} else {
 			searchUrl.append("&q=search_lemma:" + URLEncoder.encode(q, "UTF-8"));
 		}
-		
-		if (tenantAuthorized==null || tenantAuthorized.size()==0)
-		{
+
+		if (tenantAuthorized == null || tenantAuthorized.size() == 0) {
 			searchUrl.append("&fq=visibility:public");
-		}
-		else {
+		} else {
 			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
-			
+
 			Iterator<String> iter = tenantAuthorized.iterator();
-			while(iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				String tenantAuth = iter.next();
-				searchTenants .append(tenantAuth);
+				searchTenants.append(tenantAuth);
 				if (iter.hasNext())
 					searchTenants.append(" OR ");
 			}
 			searchTenants.append("))");
-			
-			
-			searchUrl.append("&fq="+URLEncoder.encode(searchTenants.toString(), "UTF-8"));
+
+			searchUrl.append("&fq=" + URLEncoder.encode(searchTenants.toString(), "UTF-8"));
 		}
 
 		if (geolocalizated != null) {
 			// FIXME
 		}
-		
-		if (minLat!=null || minLon!=null || maxLon!=null || maxLat!=null)
-		{
-			double mxlon = NumberUtils.max((maxLon==null?180D:maxLon),180D);
-			double mxlat = NumberUtils.max((maxLat==null?90D:maxLat),90D);
-			double mnlon = NumberUtils.max((minLon==null?-180D:minLon),-180D);
-			double mnlat = NumberUtils.max((minLat==null?-90D:minLat),-90D);
-			
-			String geoStr  = "["+mnlat+","+mnlon+" TO "+mxlat+","+mxlon+"]";
-//			if (BooleanUtils.isTrue(geolocalizated))
-//			{
-//				
-//			}
-//			else {
-//				geoStr = "["+mnlat+","+mnlon+" TO "+mxlat+","+mxlon+"]";
-//			}
+
+		if (minLat != null || minLon != null || maxLon != null || maxLat != null) {
+			double mxlon = NumberUtils.max((maxLon == null ? 180D : maxLon), 180D);
+			double mxlat = NumberUtils.max((maxLat == null ? 90D : maxLat), 90D);
+			double mnlon = NumberUtils.max((minLon == null ? -180D : minLon), -180D);
+			double mnlat = NumberUtils.max((minLat == null ? -90D : minLat), -90D);
+
+			String geoStr = "[" + mnlat + "," + mnlon + " TO " + mxlat + "," + mxlon + "]";
+			// if (BooleanUtils.isTrue(geolocalizated))
+			// {
+			//
+			// }
+			// else {
+			// geoStr = "["+mnlat+","+mnlon+" TO "+mxlat+","+mxlon+"]";
+			// }
 			// TO_UNDERSTAND
-			
-			
+
 			searchUrl.append("&fq=geogeo:" + URLEncoder.encode(geoStr, "UTF-8"));
-			params.put("minLat", ""+mnlat);
-			params.put("minLon", ""+mnlon);
-			params.put("maxLat", ""+mxlat);
-			params.put("maxLon", ""+mxlon);
-			
-			
-			
-			
+			params.put("minLat", "" + mnlat);
+			params.put("minLon", "" + mnlon);
+			params.put("maxLat", "" + mxlat);
+			params.put("maxLon", "" + mxlon);
+
 		}
-		
-		
+
 		if (domain != null) {
 			searchUrl.append("&fq=domainCode:" + URLEncoder.encode(domain, "UTF-8"));
 			params.put("domain", domain);
@@ -191,11 +177,10 @@ public class MetadataDelegate {
 
 		if (opendata != null) {
 			searchUrl.append("&fq=isOpendata:" + (opendata ? "true" : "false"));
-			params.put("opendata", ""+opendata);
+			params.put("opendata", "" + opendata);
 		}
 
-		if (hasDataset != null)
-		{
+		if (hasDataset != null) {
 			if (BooleanUtils.isTrue(hasDataset)) {
 				searchUrl.append("&fq=entityType:dataset");
 				params.put("hasDataset", "true");
@@ -205,8 +190,7 @@ public class MetadataDelegate {
 			}
 		}
 
-		if (hasStream != null)
-		{
+		if (hasStream != null) {
 			if (BooleanUtils.isTrue(hasStream)) {
 				searchUrl.append("&fq=entityType:stream");
 				params.put("hasStream", "true");
@@ -214,27 +198,24 @@ public class MetadataDelegate {
 				searchUrl.append("&fq=-entityType:stream");
 				params.put("hasStream", "false");
 			}
-			
-			
+
 		}
 
-		if (tags!=null)
-		{
-			String[] tagsArr = StringUtils.split(tags,',');
+		if (tags != null) {
+			String[] tagsArr = StringUtils.split(tags, ',');
 			for (int i = 0; i < tagsArr.length; i++) {
 				String tag = tagsArr[i];
-				searchUrl.append("&fq=tagCode:" +URLEncoder.encode(tag,"UTF-8"));		
-			} 
-			params.put("tags", ""+tags);
-		} 
+				searchUrl.append("&fq=tagCode:" + URLEncoder.encode(tag, "UTF-8"));
+			}
+			params.put("tags", "" + tags);
+		}
 
-		if (BooleanUtils.isNotTrue(includeSandbox))
-		{
+		if (BooleanUtils.isNotTrue(includeSandbox)) {
 			searchUrl.append("&fq=-tenantCode:sandbox");
 		} else {
 			params.put("includeSandbox", "true");
 		}
-		
+
 		if (facet != null) {
 			searchUrl.append("&" + facet.toSorlParams());
 			for (String facetKey : facet.getParamsMap().keySet()) {
@@ -243,10 +224,10 @@ public class MetadataDelegate {
 		}
 
 		if (visibility != null) {
-			searchUrl.append("&fq=visibility:" +URLEncoder.encode(visibility,"UTF-8"));
-			params.put("visibility", ""+visibility);
+			searchUrl.append("&fq=visibility:" + URLEncoder.encode(visibility, "UTF-8"));
+			params.put("visibility", "" + visibility);
 		}
-		
+
 		if (start == null)
 			start = 0;
 		searchUrl.append("&start=" + start);
@@ -260,27 +241,29 @@ public class MetadataDelegate {
 
 		log.info("[MetadataDelegate::search] searchUrl: " + searchUrl);
 
-// 		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
-		
+		// String resultString =
+		// HttpUtil.getInstance().doGet(searchUrl.toString(),
+		// "application/json", null, null);
+
 		GenericSolrRequest req;
 		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
-			req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+			req = new GenericSolrRequest(METHOD.GET, "/" + Config.getInstance().getSearchEngineCollection() + "/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
 		else
-			req = new GenericSolrRequest(METHOD.GET,"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+			req = new GenericSolrRequest(METHOD.GET, "/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
 		req.setResponseParser(new NoOpResponseParser("json"));
 		String resultString = "";
 		NamedList<Object> resp = null;
 		try {
 			resp = solrServer.request(req);
 		} catch (Exception e1) {
-			log.error("Errore durante la chiamata SOLR:"+e1.getMessage(),e1);
+			log.error("Errore durante la chiamata SOLR:" + e1.getMessage(), e1);
 			ErrorResponse error = new ErrorResponse();
 			error.setErrorCode("503");
 			error.setMessage(e1.getMessage());
 			resultString = error.toJson();
 		}
-		if (resp!=null)
-			resultString = (String)resp.get("response");
+		if (resp != null)
+			resultString = (String) resp.get("response");
 
 		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
 
@@ -293,10 +276,10 @@ public class MetadataDelegate {
 				} catch (Exception e) {
 					log.error("[MetadataDelegate::search] ERROR on metadata conversion - datasetCode:" + searchEngineItem.getDatasetCode() + "- streamCode:"
 							+ searchEngineItem.getStreamCode() + " - smartobjectCode:" + searchEngineItem.getSoCode() + " - ERROR:  " + e.getMessage());
-					discardedCount ++;
+					discardedCount++;
 				}
 			}
-			result.setCount(searchEngineResult.getResponse().getDocs().size()- discardedCount);
+			result.setCount(searchEngineResult.getResponse().getDocs().size() - discardedCount);
 
 		}
 		result.setStart(searchEngineResult.getResponse().getStart());
@@ -309,12 +292,27 @@ public class MetadataDelegate {
 
 		if (searchEngineResult.getFacet_counts() != null) {
 			FacetCount facetCount = new FacetCount();
-			for (String facetKey : searchEngineResult.getFacet_counts().getFacet_fields().keySet()) {
+			if (searchEngineResult.getFacet_counts().getFacet_fields() != null) {
+				for (String facetKey : searchEngineResult.getFacet_counts().getFacet_fields().keySet()) {
 
-				List<Object> facetFieldValues = searchEngineResult.getFacet_counts().getFacet_fields().get(facetKey);
-				FacetField facetField = new FacetField(facetFieldValues);
-				facetCount.addFacetField(facetKey, facetField);
+					List<Object> facetFieldValues = searchEngineResult.getFacet_counts().getFacet_fields().get(facetKey);
+					FacetField facetField = new FacetField(facetFieldValues);
+					facetCount.addFacetField(facetKey, facetField);
+				}
 			}
+			
+			if(searchEngineResult.getFacet_counts().getFacet_pivot()!=null){
+				for (String facetPivotKey : searchEngineResult.getFacet_counts().getFacet_pivot().keySet()) {
+					List<SearchEngineFacetPivot> searchEnginefacetPivotList = searchEngineResult.getFacet_counts().getFacet_pivot().get(facetPivotKey);
+					List<FacetPivot> facetPivotList = new LinkedList<FacetPivot>();
+					for (SearchEngineFacetPivot searchEngineFacetPivot : searchEnginefacetPivotList) {
+						FacetPivot facetPivot = new FacetPivot(searchEngineFacetPivot);
+						facetPivotList.add(facetPivot);						
+					}
+					facetCount.addFacetPivot(facetPivotKey, facetPivotList);
+				}
+			}
+			
 			result.setFacetCount(facetCount);
 		}
 
@@ -326,75 +324,74 @@ public class MetadataDelegate {
 
 	}
 
-
 	public Metadata loadDatasetMetadata(HttpServletRequest request, String datasetCode, String version, String lang) throws UserWebServiceException, UnsupportedEncodingException {
 		String query = "datasetCode:" + datasetCode;
-		return loadMetadata(request,query, lang);
+		return loadMetadata(request, query, lang);
 
 	}
 
-	public Metadata loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String lang) throws UserWebServiceException, UnsupportedEncodingException {
-		String query = "(tenantCode:"+tenantCode+" AND streamCode:"+streamCode+" AND soCode:"+smartobjectCode+")";
-		return loadMetadata(request,query, lang); 
+	public Metadata loadStreamMetadata(HttpServletRequest request, String tenantCode, String smartobjectCode, String streamCode, String version, String lang)
+			throws UserWebServiceException, UnsupportedEncodingException {
+		String query = "(tenantCode:" + tenantCode + " AND streamCode:" + streamCode + " AND soCode:" + smartobjectCode + ")";
+		return loadMetadata(request, query, lang);
 
 	}
 
-	private Metadata loadMetadata(HttpServletRequest request,String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
+	private Metadata loadMetadata(HttpServletRequest request, String query, String lang) throws UserWebServiceException, UnsupportedEncodingException {
 
 		List<String> tenantAuthorized = SecurityDelegate.getInstance().getTenantAuthorized(request);
 
-		SolrClient solrServer= getSolrServer();
+		SolrClient solrServer = getSolrServer();
 
-		
 		StringBuffer searchUrl = new StringBuffer();
 
-		searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query,"UTF-8") + "&start=0&end=1");
+		searchUrl.append("q=*:*&fq=" + URLEncoder.encode(query, "UTF-8") + "&start=0&end=1");
 
-		if (tenantAuthorized==null || tenantAuthorized.size()==0)
-		{
-			searchUrl.append("&fq="+URLEncoder.encode("visibility:public","UTF-8"));
-		}
-		else {
+		if (tenantAuthorized == null || tenantAuthorized.size() == 0) {
+			searchUrl.append("&fq=" + URLEncoder.encode("visibility:public", "UTF-8"));
+		} else {
 			StringBuffer searchTenants = new StringBuffer("(visibility:public OR tenantsCode:(");
-			
+
 			Iterator<String> iter = tenantAuthorized.iterator();
-			while(iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				String tenantAuth = iter.next();
-				searchTenants .append(tenantAuth);
+				searchTenants.append(tenantAuth);
 				if (iter.hasNext())
 					searchTenants.append(" OR ");
 			}
 			searchTenants.append("))");
-			
-			
-			searchUrl.append("&fq="+URLEncoder.encode(searchTenants.toString(), "UTF-8"));
+
+			searchUrl.append("&fq=" + URLEncoder.encode(searchTenants.toString(), "UTF-8"));
 		}
-		
+
 		log.info("[AbstractService::dopost] searchUrl: " + searchUrl);
 
-//		String resultString = HttpUtil.getInstance().doGet(searchUrl.toString(), "application/json", null, null);
-		//GenericSolrRequest req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+		// String resultString =
+		// HttpUtil.getInstance().doGet(searchUrl.toString(),
+		// "application/json", null, null);
+		// GenericSolrRequest req = new
+		// GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select",
+		// SolrRequestParsers.parseQueryString(searchUrl.toString()));
 		GenericSolrRequest req;
 		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
-			req = new GenericSolrRequest(METHOD.GET,"/"+Config.getInstance().getSearchEngineCollection()+"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+			req = new GenericSolrRequest(METHOD.GET, "/" + Config.getInstance().getSearchEngineCollection() + "/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
 		else
-			req = new GenericSolrRequest(METHOD.GET,"/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
-		
+			req = new GenericSolrRequest(METHOD.GET, "/select", SolrRequestParsers.parseQueryString(searchUrl.toString()));
+
 		req.setResponseParser(new NoOpResponseParser("json"));
 		String resultString = "";
 		NamedList<Object> resp = null;
 		try {
 			resp = solrServer.request(req);
 		} catch (Exception e1) {
-			log.error("Errore durante la chiamata SOLR:"+e1.getMessage(),e1);
+			log.error("Errore durante la chiamata SOLR:" + e1.getMessage(), e1);
 			ErrorResponse error = new ErrorResponse();
 			error.setErrorCode("503");
 			error.setMessage(e1.getMessage());
 			resultString = error.toJson();
 		}
-		if (resp!=null)
-			resultString = (String)resp.get("response");
+		if (resp != null)
+			resultString = (String) resp.get("response");
 
 		SearchEngineResult searchEngineResult = SearchEngineResult.fromJson(resultString);
 
@@ -407,26 +404,25 @@ public class MetadataDelegate {
 			SearchEngineMetadata searchEngineMetadata = searchEngineResult.getResponse().getDocs().get(0);
 			Metadata metadata = Metadata.createFromSearchEngineItem(searchEngineMetadata, lang);
 			return metadata;
-//			if (format != null && format.equals(Constants.OUTPUT_FORMAT_CKAN))
-//				result = metadata.toCkan();
-//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_STREAM))
-//				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
-//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_DATASET))
-//				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
-//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_V01_LIST))
-//				result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_LIST);
-//			else  if (format != null && format.equals(Constants.OUTPUT_FORMAT_JSON))
-//				result = metadata.toV01(Constants.OUTPUT_FORMAT_JSON);
-//			else
-//				result = metadata.toJson();
+			// if (format != null &&
+			// format.equals(Constants.OUTPUT_FORMAT_CKAN))
+			// result = metadata.toCkan();
+			// else if (format != null &&
+			// format.equals(Constants.OUTPUT_FORMAT_V01_STREAM))
+			// result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_STREAM);
+			// else if (format != null &&
+			// format.equals(Constants.OUTPUT_FORMAT_V01_DATASET))
+			// result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_DATASET);
+			// else if (format != null &&
+			// format.equals(Constants.OUTPUT_FORMAT_V01_LIST))
+			// result = metadata.toV01(Constants.OUTPUT_FORMAT_V01_LIST);
+			// else if (format != null &&
+			// format.equals(Constants.OUTPUT_FORMAT_JSON))
+			// result = metadata.toV01(Constants.OUTPUT_FORMAT_JSON);
+			// else
+			// result = metadata.toJson();
 
-			
 		}
 	}
-	
-	
-	
 
-	
-	
 }

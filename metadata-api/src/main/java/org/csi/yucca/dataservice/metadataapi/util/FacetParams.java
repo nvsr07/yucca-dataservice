@@ -13,13 +13,15 @@ public class FacetParams {
 	private String facetOffset;
 	private String facetMinCount;
 	private String facetMissing;
+	private String facetPivotFields;
+	private String facetPivotMinCount;
 
 	public FacetParams() {
 		super();
 	}
 
 	public FacetParams(String facetFields, String facetPrefix, String facetSort, String facetContains, String facetContainsIgnoreCase, String facetLimit, String facetOffset,
-			String facetMinCount, String facetMissing) {
+			String facetMinCount, String facetMissing, String facetPivotFields, String facetPivotMinCount) {
 		super();
 		setFacetFields(facetFields);
 		this.setFacetPrefix(facetPrefix);
@@ -30,6 +32,9 @@ public class FacetParams {
 		this.facetOffset = facetOffset;
 		this.facetMinCount = facetMinCount;
 		this.facetMissing = facetMissing;
+		this.facetPivotFields = facetPivotFields;
+		this.facetPivotMinCount = facetPivotMinCount;
+
 	}
 
 	public void setFacetContains(String facetContains) {
@@ -112,7 +117,6 @@ public class FacetParams {
 	public String toSorlParams() {
 		StringBuffer params = new StringBuffer("");
 		if (facetFields != null) {
-			params.append("&facet=true");
 			for (String facetField : facetFields) {
 				params.append("&facet.field=" + facetField);
 			}
@@ -134,35 +138,66 @@ public class FacetParams {
 			if (getFacetMissing() != null)
 				params.append("&facet.missing=" + getFacetMissing());
 		}
+		if (facetPivotFields != null) {
+			// for (String facetPivotField : facetPivotFields) {
+			// params.append("&facet.pivot=" + facetPivotField);
+			// }
+			params.append("&facet.pivot=" + facetPivotFields);
+			if (getFacetPivotMinCount() != null)
+				params.append("&facet.pivot.mincount=" + getFacetPivotMinCount());
+		}
+		if (facetFields != null || facetPivotFields != null)
+			params.append("&facet=true");
+
 		return params.toString();
 	}
-	
-	public Map<String, String> getParamsMap(){
+
+	public Map<String, String> getParamsMap() {
 		Map<String, String> paramsMap = new HashMap<String, String>();
 		if (facetFields != null) {
 			for (String facetField : facetFields) {
-				paramsMap.put("facet.field",facetField);
+				paramsMap.put("facet.field", facetField);
 			}
 
 			if (getFacetContains() != null)
-				paramsMap.put("facet.contains",getFacetContains());
+				paramsMap.put("facet.contains", getFacetContains());
 			if (getFacetContainsIgnoreCase() != null)
-				paramsMap.put("facet.contains.ignoreCase",getFacetContainsIgnoreCase());
+				paramsMap.put("facet.contains.ignoreCase", getFacetContainsIgnoreCase());
 			if (getFacetPrefix() != null)
-				paramsMap.put("facet.prefix",getFacetPrefix());
+				paramsMap.put("facet.prefix", getFacetPrefix());
 			if (getFacetSort() != null)
-				paramsMap.put("facet.sort",getFacetSort());
+				paramsMap.put("facet.sort", getFacetSort());
 			if (getFacetLimit() != null)
-				paramsMap.put("facet.limit",getFacetLimit());
+				paramsMap.put("facet.limit", getFacetLimit());
 			if (getFacetOffset() != null)
-				paramsMap.put("facet.offset",getFacetOffset());
+				paramsMap.put("facet.offset", getFacetOffset());
 			if (getFacetMinCount() != null)
-				paramsMap.put("facet.mincount",getFacetMinCount());
+				paramsMap.put("facet.mincount", getFacetMinCount());
 			if (getFacetMissing() != null)
-				paramsMap.put("facet.missing",getFacetMissing());
+				paramsMap.put("facet.missing", getFacetMissing());
 		}
 		return paramsMap;
 	}
-	
-	
+
+	public String getFacetPivotFields() {
+		return facetPivotFields;
+	}
+
+	public void setFacetPivotFields(String facetPivotFields) {
+		this.facetPivotFields = facetPivotFields;
+	}
+
+	// public void setFacetPivotFields(String facetPivotFields) {
+	// if (facetPivotFields != null)
+	// this.facetPivotFields = facetPivotFields.split(",");
+	// }
+
+	public String getFacetPivotMinCount() {
+		return facetPivotMinCount;
+	}
+
+	public void setFacetPivotMinCount(String facetPivotMinCount) {
+		this.facetPivotMinCount = facetPivotMinCount;
+	}
+
 }

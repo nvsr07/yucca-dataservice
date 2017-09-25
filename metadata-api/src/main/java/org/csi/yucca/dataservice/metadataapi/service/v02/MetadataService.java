@@ -38,6 +38,7 @@ public class MetadataService extends AbstractService {
 			@QueryParam("minLat") Double minLat, @QueryParam("minLon") Double minLon, @QueryParam("maxLat") Double maxLat, @QueryParam("maxLon") Double maxLon,
 			@QueryParam("lang") String lang, @QueryParam("facet.field") String facetFields, @QueryParam("facet.prefix") String facetPrefix,
 			@QueryParam("facet.sort") String facetSort, @QueryParam("facet.contains") String facetContains,
+			@QueryParam("facet.pivot") String facetPivotFields,@QueryParam("facet.pivot.mincount") String facetPivotMincount,
 			@QueryParam("facet.contains.ignoreCase") String facetContainsIgnoreCase, @QueryParam("facet.limit") String facetLimit, @QueryParam("facet.offset") String facetOffset,
 			@QueryParam("facet.mincount") String facetMinCount, @QueryParam("facet.missing") String facetMissing,
 			@QueryParam("tags") String tags, @QueryParam("visibility") String visibility,@QueryParam("isSearchExact") Boolean isSearchExact,
@@ -46,8 +47,8 @@ public class MetadataService extends AbstractService {
 
 
 		FacetParams facetParams = null;
-		if (facetFields != null)
-			facetParams = new FacetParams(facetFields, facetPrefix, facetSort, facetContains, facetContainsIgnoreCase, facetLimit, facetOffset, facetMinCount, facetMissing);
+		if (facetFields != null || facetPivotFields!=null)
+			facetParams = new FacetParams(facetFields, facetPrefix, facetSort, facetContains, facetContainsIgnoreCase, facetLimit, facetOffset, facetMinCount, facetMissing, facetPivotFields, facetPivotMincount);
 
 		String result;
 		try {
