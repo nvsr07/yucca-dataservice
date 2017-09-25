@@ -19,10 +19,7 @@ import io.restassured.specification.RequestSpecification;
 
 
 /**
- * https://github.com/csipiemonte/yucca-dataservice/blob/oData-multiapi/insertdata-api/src/test/java/org/csi/yucca/dataservice/insertdataapi/test/unit/HttpDatasetInsertTest.java
-
  * @author gianfranco.stolfa
- *
  */
 public class BackOfficeControllerTest extends TestBase{
 	
@@ -60,7 +57,7 @@ public class BackOfficeControllerTest extends TestBase{
 		init(dato);
 
 		// define url
-		StringBuilder urlBuilder = getUrl(dato.getString("adminapi.apicode"), dato.getString("adminapi.entityset"), dato);
+		StringBuilder urlBuilder = getUrl(dato.getString(JSON_KEY_APICODE), dato.getString(JSON_KEY_ENTITY_SET), dato);
 		
 		// test post
 		Integer id = testPost(urlBuilder.toString(), dato, getIdEcosystem(), getIdDomain());
@@ -85,35 +82,35 @@ public class BackOfficeControllerTest extends TestBase{
 	}
 	
 	private Integer testPost(String url, JSONObject dato, Integer idEcosystem, Integer idDomain){
-		String jsonString = getMessage(dato, "adminapi.message", idEcosystem, idDomain);
+		String jsonString = getMessage(dato, JSON_KEY_MESSAGE, idEcosystem, idDomain);
 		RequestSpecification requestSpecification = given().body(jsonString).contentType(ContentType.JSON);
 		
 		Response response = requestSpecification.when().post(url);
-		ValidatableResponse validatableResponse  = response.then().statusCode(dato.getInt("expected.httpStatus.response"));
-		Integer idGenerated =  validatableResponse.extract().path(dato.getString("adminapi.id-generated"));
+		ValidatableResponse validatableResponse  = response.then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS));
+		Integer idGenerated =  validatableResponse.extract().path(dato.getString(JSON_KEY_ID_GENERATED));
 		// check dell'eventuale messaggio di errore:
-		if(!dato.optString("expected.errorName").isEmpty()){
-			validatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString("expected.errorName")));
+		if(!dato.optString(JSON_KEY_EXPECTED_ERROR_NAME).isEmpty()){
+			validatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString(JSON_KEY_EXPECTED_ERROR_NAME)));
 		}
 		return idGenerated;
 
 	}
 
 	private void testDelete(String url, JSONObject dato){
-		given().when().contentType(ContentType.JSON).delete(url).then().statusCode(dato.getInt("expected.httpStatus.delete-response"));
+		given().when().contentType(ContentType.JSON).delete(url).then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS_DELETE));
 	}
 	
 	private void testPut(String url, JSONObject dato, Integer idEcosystem, Integer idDomain){
-		String messageUpdate = getMessage(dato, "adminapi.message.update", idEcosystem, idDomain);
+		String messageUpdate = getMessage(dato, JSON_KEY_MESSAGE_UPDATE, idEcosystem, idDomain);
 		
-		int expectedHttpStatusUpdateResponse = dato.getInt("expected.httpStatus.update-response");
+		int expectedHttpStatusUpdateResponse = dato.getInt(JSON_KEY_UPDATE_RESPONSE);
 		
 		RequestSpecification updateRequestSpecification = given().body(messageUpdate).contentType(ContentType.JSON);
 		Response updateResponse = updateRequestSpecification.when().put(url);
 		ValidatableResponse updateValidatableResponse  = updateResponse.then().statusCode(expectedHttpStatusUpdateResponse);
 		// check dell'eventuale messaggio di errore:
-		if(!dato.optString("expected.update-errorName").isEmpty()){
-			updateValidatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString("expected.update-errorName")));
+		if(!dato.optString(JSON_KEY_UPDATE_ERROR_NAME).isEmpty()){
+			updateValidatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString(JSON_KEY_UPDATE_ERROR_NAME)));
 		}
 		
 	}

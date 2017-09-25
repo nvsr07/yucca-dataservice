@@ -55,10 +55,10 @@ public class PublicControllerTest extends TestBase {
 		
 		Response rsp = rs.when().get(makeUrl(dato,"json"));
 		
-		ValidatableResponse response = rsp.then().assertThat().statusCode(Matchers.equalTo(dato.get("expected.httpStatus.response")));
+		ValidatableResponse response = rsp.then().assertThat().statusCode(Matchers.equalTo(dato.get(JSON_KEY_EXPECTED_HTTP_STATUS)));
 		
-		if(!dato.optString("expected.errorName").isEmpty()){
-			response.assertThat().body("errorName", Matchers.equalTo(dato.get("expected.errorName")));
+		if(!dato.optString(JSON_KEY_EXPECTED_ERROR_NAME).isEmpty()){
+			response.assertThat().body("errorName", Matchers.equalTo(dato.get(JSON_KEY_EXPECTED_ERROR_NAME)));
 		}
 
 		reset(dato);

@@ -179,25 +179,4 @@ public class ManagementControllerTest extends TestBase{
 		}
 	}
 	
-//	private void testDelete(JSONObject dato){
-//		String url = getUrl(dato) 
-//				+ dato.getString(JSON_KEY_APICODE) 
-//				+ "/organizations/" + ORGANIZATION_CODE_TEST_VALUE 
-//				+ "/smartobjects/" + getSocode() ;
-//		given().when().contentType(ContentType.JSON).delete(url).then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS_DELETE));
-//	}
-
-	
-//	private String getMessage(JSONObject dato, String keyMessage, Integer idEcosystem, Integer idDomain){
-//	
-//	String jsonString = (String)dato.get(keyMessage);
-//	
-//	if(!dato.getString("test-name").contains("ecosystem")){
-//		jsonString = "{\"idEcosystem\":"+idEcosystem+"," + "\"idDomain\":"+idDomain+ "," + jsonString.substring(1);	
-//	}
-//	
-//	return jsonString;
-//}
-	
-	
 }

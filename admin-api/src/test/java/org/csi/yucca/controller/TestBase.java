@@ -22,7 +22,7 @@ import io.restassured.specification.RequestSpecification;
 
 public class TestBase {
 
-	public static final int VALUE_VERSION = 130;
+	public static final int VALUE_VERSION = 131;
 	public static final String ECOSYSTEM_CODE_TEST_VALUE              = "eco00" + VALUE_VERSION;
 	public static final String ORGANIZATION_CODE_TEST_VALUE           = "org00" + VALUE_VERSION;
 	public static final String DOMAIN_CODE_TEST_VALUE                 = "dom00" + VALUE_VERSION;
@@ -34,12 +34,17 @@ public class TestBase {
 	public static final String TWTUSERNAME_TEST_VALUE                 = "twtusn00" + VALUE_VERSION;
 	public static final String SLUG_TEST_VALUE                        = "slg00" + VALUE_VERSION;
 	
+	public static final String JSON_KEY_UPDATE_ERROR_NAME           = "expected.update-errorName";
+	public static final String JSON_KEY_UPDATE_RESPONSE             = "expected.httpStatus.update-response";
+	public static final String JSON_KEY_MESSAGE_UPDATE              = "adminapi.message.update";
 	public static final String JSON_KEY_MESSAGE                     = "adminapi.message";
+	public static final String JSON_KEY_EXPECTED_ERROR_NAME         = "expected.errorName";
 	public static final String JSON_KEY_UPDATE_MESSAGE              = "adminapi.update-message";
 	public static final String JSON_KEY_EXPECTED_HTTP_STATUS        = "expected.httpStatus.response";
 	public static final String JSON_KEY_EXPECTED_HTTP_STATUS_DELETE = "expected.httpStatus.delete-response";
 	public static final String JSON_KEY_ID_GENERATED                = "adminapi.id-generated";
 	public static final String JSON_KEY_APICODE                     = "adminapi.apicode"; 
+	public static final String JSON_KEY_ENTITY_SET                  = "adminapi.entityset"; 
 	public static final String JSON_KEY_ID_SO_TYPE                  = "adminapi.idSoType";
 	public static final String JSON_KEY_SOCODE                      = "adminapi.socode";
 	public static final String JSON_KEY_TWTUSERNAME                 = "adminapi.twtusername";
