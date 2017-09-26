@@ -839,7 +839,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
 			// se passo un domaincode gia inserito
-			throw new BadRequestException(Errors.DUPLICATE_KEY, "domaincode");
+			throw new BadRequestException(Errors.DUPLICATE_KEY, "domaincode: " + duplicateKeyException.getRootCause().getMessage());
 		}
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
 			// se passo un ecosystem inesistente
