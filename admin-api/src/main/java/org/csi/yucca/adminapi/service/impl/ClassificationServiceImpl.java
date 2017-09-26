@@ -838,7 +838,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 			domainMapper.insertDomain(domain);
 		} 
 		catch (DuplicateKeyException duplicateKeyException) {
-			// se passo un domaincode gia inserito
+			
+			// se passo un domaincode gia inserito .gjhgjhg
 			throw new BadRequestException(Errors.DUPLICATE_KEY, "domaincode: " + duplicateKeyException.getRootCause().getMessage());
 		}
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
