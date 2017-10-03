@@ -203,13 +203,13 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		return smartobject;
 	}
 	
-	private void insertManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now){
+	public void insertManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now){
 		smartobjectMapper.insertTenantSmartobject(idTenant, idSmartobject, now, 1);
 	}
 
-//	private void insertNotManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now){
-//		smartobjectMapper.insertTenantSmartobject(idTenant, idSmartobject, now, 0);
-//	}
+	public void insertNotManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now){
+		smartobjectMapper.insertTenantSmartobject(idTenant, idSmartobject, now, 0);
+	}
 	
 	/**
 	 * INSERT SMART OBJECT
@@ -338,6 +338,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 	}
 
+	public Smartobject selectSmartObjectByOrganizationAndSoType(Integer idOrganization, Integer idSoType){
+		return smartobjectMapper.selectSmartobjectByOrganizationAndSoType(idOrganization, idSoType);
+	}
+	
 	private void checkSmartObject(Integer idOrganization, String soCode, String slug)
 			throws NotFoundException, BadRequestException {
 		Smartobject smartobject = smartobjectMapper.selectSmartobject(soCode, idOrganization);

@@ -19,7 +19,7 @@ import org.csi.yucca.adminapi.util.Constants;
 public interface LicenseMapper {
 	
 	String LICENSE_TABLE = Constants.SCHEMA_DB + ".yucca_d_license";
-	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
+//	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
 	
 	public static final String SELECT = 
 			"SELECT id_license, licensecode, description FROM " + LICENSE_TABLE + " " + 

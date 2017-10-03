@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
@@ -682,15 +683,21 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		Organization organization = new Organization();
 		BeanUtils.copyProperties(organizationRequest, organization);
-		
-		insertOrganization(organization);
-		insertEcosystemOrganization(organizationRequest.getEcosystemCodeList(), organization.getIdOrganization());
-		
-		smartObjectService.insertInternalSmartObject(organization);
+
+		insertOrganization(organization, organizationRequest.getEcosystemCodeList());
 		
 		return ServiceResponse.build().object(new OrganizationResponse(organization));
 	}
+
+	public void insertOrganization(Organization organization, Integer idEcosystemCode)throws BadRequestException{
+		insertOrganization(organization, Arrays.asList(idEcosystemCode));
+	}
 	
+	public void insertOrganization(Organization organization, List<Integer> ecosystemCodeList)throws BadRequestException{
+		insertOrganization(organization);
+		insertEcosystemOrganization(ecosystemCodeList, organization.getIdOrganization());
+		smartObjectService.insertInternalSmartObject(organization);
+	}
 	
 	/**
 	 *	INSERT DOMAIN 

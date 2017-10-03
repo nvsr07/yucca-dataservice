@@ -648,7 +648,7 @@ public class BackOfficeController extends YuccaController{
 	
 	/**
 	 * 
-	 * ALTER TABLE int_yucca.yucca_organization
+ALTER TABLE int_yucca.yucca_organization
   ADD COLUMN datasolrcollectionname character varying(200);
 ALTER TABLE int_yucca.yucca_organization
   ADD COLUMN measuresolrcollectionname character varying(200);

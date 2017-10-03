@@ -1,46 +1,29 @@
 package org.csi.yucca.adminapi.model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Tenant {
 
+	private Timestamp creationdate;
+	private Timestamp expirationdate;
+	private Timestamp activationdate;
+	private Timestamp deactivationdate;
+	private Integer idShareType;
 	private Integer idTenant;
 	private String tenantcode;
 	private String name;
 	private String description;
 	private String clientkey;
 	private String clientsecret;
-	private Integer maxdatasetnum;
-	private Integer maxstreamsnum;
-	private String tenantPassword;
-	private Date activationdate;
-	private Date deactivationdate;
 	private Integer usagedaysnumber;
-	private String username;
 	private String userfirstname;
 	private String userlastname;
 	private String useremail;
 	private String usertypeauth;
-	private Date creationdate;
-	private Date expirationdate;
-	private String zeppelin;
-	private String hasstage;
 	private Integer idEcosystem;
 	private Integer idOrganization;
 	private Integer idTenantType;
 	private Integer idTenantStatus;
-	private String datacollectionname;
-	private String datacollectiondb;
-	private String measurecollectionname;
-	private String measurecollectiondb;
-	private String mediacollectionname;
-	private String mediacollectiondb;
-	private String socialcollectionname;
-	private String socialcollectiondb;
-	private String archivedatacollectionname;
-	private String archivedatacollectiondb;
-	private String archivemeasurescollectionname;
-	private String archivemeasurescollectiondb;
 	private String datasolrcollectionname;
 	private String measuresolrcollectionname;
 	private String mediasolrcollectionname;
@@ -53,7 +36,12 @@ public class Tenant {
 	private String mediaphoenixschemaname;
 	private String socialphoenixtablename;
 	private String socialphoenixschemaname;
-	
+	public Integer getIdShareType() {
+		return idShareType;
+	}
+	public void setIdShareType(Integer idShareType) {
+		this.idShareType = idShareType;
+	}
 	public Integer getIdTenant() {
 		return idTenant;
 	}
@@ -90,34 +78,16 @@ public class Tenant {
 	public void setClientsecret(String clientsecret) {
 		this.clientsecret = clientsecret;
 	}
-	public Integer getMaxdatasetnum() {
-		return maxdatasetnum;
-	}
-	public void setMaxdatasetnum(Integer maxdatasetnum) {
-		this.maxdatasetnum = maxdatasetnum;
-	}
-	public Integer getMaxstreamsnum() {
-		return maxstreamsnum;
-	}
-	public void setMaxstreamsnum(Integer maxstreamsnum) {
-		this.maxstreamsnum = maxstreamsnum;
-	}
-	public String getTenantPassword() {
-		return tenantPassword;
-	}
-	public void setTenantPassword(String tenantPassword) {
-		this.tenantPassword = tenantPassword;
-	}
-	public Date getActivationdate() {
+	public Timestamp getActivationdate() {
 		return activationdate;
 	}
-	public void setActivationdate(Date activationdate) {
+	public void setActivationdate(Timestamp activationdate) {
 		this.activationdate = activationdate;
 	}
-	public Date getDeactivationdate() {
+	public Timestamp getDeactivationdate() {
 		return deactivationdate;
 	}
-	public void setDeactivationdate(Date deactivationdate) {
+	public void setDeactivationdate(Timestamp deactivationdate) {
 		this.deactivationdate = deactivationdate;
 	}
 	public Integer getUsagedaysnumber() {
@@ -125,12 +95,6 @@ public class Tenant {
 	}
 	public void setUsagedaysnumber(Integer usagedaysnumber) {
 		this.usagedaysnumber = usagedaysnumber;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
 	}
 	public String getUserfirstname() {
 		return userfirstname;
@@ -156,29 +120,17 @@ public class Tenant {
 	public void setUsertypeauth(String usertypeauth) {
 		this.usertypeauth = usertypeauth;
 	}
-	public Date getCreationdate() {
+	public Timestamp getCreationdate() {
 		return creationdate;
 	}
-	public void setCreationdate(Date creationdate) {
+	public void setCreationdate(Timestamp creationdate) {
 		this.creationdate = creationdate;
 	}
-	public Date getExpirationdate() {
+	public Timestamp getExpirationdate() {
 		return expirationdate;
 	}
-	public void setExpirationdate(Date expirationdate) {
+	public void setExpirationdate(Timestamp expirationdate) {
 		this.expirationdate = expirationdate;
-	}
-	public String getZeppelin() {
-		return zeppelin;
-	}
-	public void setZeppelin(String zeppelin) {
-		this.zeppelin = zeppelin;
-	}
-	public String getHasstage() {
-		return hasstage;
-	}
-	public void setHasstage(String hasstage) {
-		this.hasstage = hasstage;
 	}
 	public Integer getIdEcosystem() {
 		return idEcosystem;
@@ -203,78 +155,6 @@ public class Tenant {
 	}
 	public void setIdTenantStatus(Integer idTenantStatus) {
 		this.idTenantStatus = idTenantStatus;
-	}
-	public String getDatacollectionname() {
-		return datacollectionname;
-	}
-	public void setDatacollectionname(String datacollectionname) {
-		this.datacollectionname = datacollectionname;
-	}
-	public String getDatacollectiondb() {
-		return datacollectiondb;
-	}
-	public void setDatacollectiondb(String datacollectiondb) {
-		this.datacollectiondb = datacollectiondb;
-	}
-	public String getMeasurecollectionname() {
-		return measurecollectionname;
-	}
-	public void setMeasurecollectionname(String measurecollectionname) {
-		this.measurecollectionname = measurecollectionname;
-	}
-	public String getMeasurecollectiondb() {
-		return measurecollectiondb;
-	}
-	public void setMeasurecollectiondb(String measurecollectiondb) {
-		this.measurecollectiondb = measurecollectiondb;
-	}
-	public String getMediacollectionname() {
-		return mediacollectionname;
-	}
-	public void setMediacollectionname(String mediacollectionname) {
-		this.mediacollectionname = mediacollectionname;
-	}
-	public String getMediacollectiondb() {
-		return mediacollectiondb;
-	}
-	public void setMediacollectiondb(String mediacollectiondb) {
-		this.mediacollectiondb = mediacollectiondb;
-	}
-	public String getSocialcollectionname() {
-		return socialcollectionname;
-	}
-	public void setSocialcollectionname(String socialcollectionname) {
-		this.socialcollectionname = socialcollectionname;
-	}
-	public String getSocialcollectiondb() {
-		return socialcollectiondb;
-	}
-	public void setSocialcollectiondb(String socialcollectiondb) {
-		this.socialcollectiondb = socialcollectiondb;
-	}
-	public String getArchivedatacollectionname() {
-		return archivedatacollectionname;
-	}
-	public void setArchivedatacollectionname(String archivedatacollectionname) {
-		this.archivedatacollectionname = archivedatacollectionname;
-	}
-	public String getArchivedatacollectiondb() {
-		return archivedatacollectiondb;
-	}
-	public void setArchivedatacollectiondb(String archivedatacollectiondb) {
-		this.archivedatacollectiondb = archivedatacollectiondb;
-	}
-	public String getArchivemeasurescollectionname() {
-		return archivemeasurescollectionname;
-	}
-	public void setArchivemeasurescollectionname(String archivemeasurescollectionname) {
-		this.archivemeasurescollectionname = archivemeasurescollectionname;
-	}
-	public String getArchivemeasurescollectiondb() {
-		return archivemeasurescollectiondb;
-	}
-	public void setArchivemeasurescollectiondb(String archivemeasurescollectiondb) {
-		this.archivemeasurescollectiondb = archivemeasurescollectiondb;
 	}
 	public String getDatasolrcollectionname() {
 		return datasolrcollectionname;

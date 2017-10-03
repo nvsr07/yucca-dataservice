@@ -13,6 +13,7 @@ import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.Response;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.StringUtils;
 
 public class ServiceUtil {
 
@@ -22,7 +23,6 @@ public class ServiceUtil {
 	public static final String UUID_PATTERN         = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
-	
 	
 	public static String getDefaultInternalSocode(String organizationcode){
 		return "SOinternal" + organizationcode;
@@ -108,6 +108,55 @@ public class ServiceUtil {
 
 	}
 	
+	public static void checkIdTenantType(Integer idTenantType) throws BadRequestException{
+		
+		for (TenantType type : TenantType.values()) {
+			if(type.id() == idTenantType)return;
+		}
+		
+		List<Integer> listIdTenantType = new ArrayList<>();
+		for (TenantType type : TenantType.values()) {
+			listIdTenantType.add(type.id());
+		}
+		
+		String message = "received " + "idTenantType" + " [ " + idTenantType + " ]. Possible values are: " 
+				+ StringUtils.collectionToCommaDelimitedString(listIdTenantType);
+		
+		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
+	}
+	
+	public static void checkTenantTypeAndUserTypeAuth(String userTypeAuth, Integer idTenantType) throws BadRequestException{
+		
+		if ( ( TenantType.DEFAULT.id() == idTenantType || TenantType.PLUS.id()    == idTenantType || 
+			   TenantType.ZERO.id()    == idTenantType || TenantType.DEVELOP.id() == idTenantType  ) && 
+				!UserTypeAuth.ADMIN.description().equals(userTypeAuth)) {
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "tenant type " + tenantTypeDescription(idTenantType) + " [ " + idTenantType + " ] permitted only for " + UserTypeAuth.ADMIN.description() + " user");
+		}
+		
+		if (UserTypeAuth.SOCIAL.description().equals(userTypeAuth) && TenantType.TRIAL.id() != idTenantType) {
+			throw new BadRequestException(Errors.INCORRECT_VALUE, 
+		"user type [ " + UserTypeAuth.SOCIAL.description() + " ] permitted only for " + TenantType.TRIAL.description() + " [ " + TenantType.TRIAL.id() + " ] " + " idTenantType");
+		}
+	}
+	
+	
+	public static void checkUserTypeAuth(String userTypeAuth) throws BadRequestException{
+		
+		for (UserTypeAuth type : UserTypeAuth.values()) {
+			if(type.description().equals(userTypeAuth))return;
+		}
+
+		List<String> listUserTypeAuth = new ArrayList<>();
+		for (UserTypeAuth type : UserTypeAuth.values()) {
+			listUserTypeAuth.add(type.description());
+		}
+		
+		String message = "received " + "userTypeAuth" + " [ " + userTypeAuth + " ]. Possible values are: " 
+				+ StringUtils.collectionToCommaDelimitedString(listUserTypeAuth);
+		
+		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
+	}
+	
 	public static boolean containsWhitespace(String s){
 		
 		Pattern pattern = Pattern.compile("\\s");
@@ -141,7 +190,7 @@ public class ServiceUtil {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
-
+	
 	public static void checkMandatoryParameter(String parameterObj, String parameterName) throws BadRequestException {
 		if (parameterObj == null || parameterObj.isEmpty()) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
@@ -197,6 +246,17 @@ public class ServiceUtil {
 			}
 		}
 		return true;
+	}
+	
+	public static String tenantTypeDescription(int id){
+			
+		for (TenantType type : TenantType.values()) {
+			if(type.id() == id){
+				return type.description();
+			}
+		}
+		return null;
+		
 	}
 
 }

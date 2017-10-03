@@ -50,6 +50,35 @@ public interface SmartobjectMapper {
 	@Delete(DELETE_INTERNAL_SMARTOBJECT)
 	int deleteInternalSmartobject( @Param("idSoType") Integer idSoType, @Param("idOrganization") Integer idOrganization);	
 
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT SMARTOBJECT BY ID_ORGANIZATION AND ID_SO TYPE
+	 * 
+	 * ***********************************************************************/	
+	public static final String SELECT_ID_SMARTOBJECT_BY_ORGANIZATION_AND_SO_TYPE
+		= " SELECT id_smart_object, socode, name, description, " + 
+				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
+				" deploymentversion, creationdate, twtusername, twtmaxsearchnumber, " + 
+				" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, " + 
+				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
+				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
+		  " FROM " + SMARTOBJECT_TABLE + 
+		  " WHERE id_so_type = #{idSoType} AND id_organization = #{idOrganization}";
+	@Results({
+        @Result(property = "idSmartObject",  column = "id_smart_object"),
+        @Result(property = "idSoType",       column = "id_so_type"),
+        @Result(property = "idLocationType", column = "id_location_type"),
+        @Result(property = "idExposureType", column = "id_exposure_type"),
+        @Result(property = "idSupplyType",   column = "id_supply_type"),
+        @Result(property = "idSoCategory",   column = "id_so_category"),
+        @Result(property = "idStatus",       column = "id_status"),
+        @Result(property = "idOrganization", column = "id_organization")
+      })
+	@Select(SELECT_ID_SMARTOBJECT_BY_ORGANIZATION_AND_SO_TYPE)
+	Smartobject selectSmartobjectByOrganizationAndSoType(@Param("idOrganization") Integer idOrganization, @Param("idSoType") Integer idSoType);	
+	
+	
 	/*************************************************************************
 	 * 
 	 * 					SELECT SMARTOBJECT

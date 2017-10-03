@@ -1,7 +1,10 @@
 package org.csi.yucca.adminapi.service;
 
+import java.util.List;
+
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
@@ -71,4 +74,9 @@ public interface ClassificationService {
 	ServiceResponse deleteDomain(Integer idDomain) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse updateDomain(DomainRequest domainRequest, Integer idDomain) throws BadRequestException, NotFoundException, Exception;
+	
+	void insertOrganization(Organization organization, Integer idEcosystemCode)throws BadRequestException;
+	
+	void insertOrganization(Organization organization, List<Integer> ecosystemCodeList)throws BadRequestException;
+
 }

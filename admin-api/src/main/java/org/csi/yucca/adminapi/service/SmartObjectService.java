@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.service;
 
+import java.sql.Timestamp;
+
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.model.Organization;
@@ -8,6 +10,8 @@ import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface SmartObjectService {
+	
+	Smartobject selectSmartObjectByOrganizationAndSoType(Integer idOrganization, Integer idSoType);
 	
 	ServiceResponse updateSmartobject(SmartobjectRequest smartobjectRequest, String organizationCode, String soCode) throws BadRequestException, NotFoundException, Exception;
 	
@@ -30,5 +34,9 @@ public interface SmartObjectService {
 	Smartobject insertInternalSmartObject(Organization organization)throws BadRequestException;
 	
 	void deleteInternalSmartObject(Integer idOrganization) throws  Exception;
+	
+	void insertManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now);
+
+	void insertNotManagerTenantSmartobject(Integer idTenant, Integer idSmartobject, Timestamp now);
 	
 }
