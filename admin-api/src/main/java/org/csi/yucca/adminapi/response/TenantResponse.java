@@ -1,9 +1,8 @@
 package org.csi.yucca.adminapi.response;
 
-import java.sql.Timestamp;
-
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.util.Errors;
+import org.csi.yucca.adminapi.util.Util;
 
 public class TenantResponse extends Response{
 
@@ -14,15 +13,15 @@ public class TenantResponse extends Response{
 	private String description;
 	private String clientkey;
 	private String clientsecret;
-	private Timestamp activationdate;
-	private Timestamp deactivationdate;
+	private String activationdate;
+	private String deactivationdate;
 	private Integer usagedaysnumber;
 	private String userfirstname;
 	private String userlastname;
 	private String useremail;
 	private String usertypeauth;
-	private Timestamp creationdate;
-	private Timestamp expirationdate;
+	private String creationdate;
+	private String expirationdate;
 	private Integer idEcosystem;
 	private Integer idOrganization;
 	private Integer idTenantType;
@@ -50,10 +49,11 @@ public class TenantResponse extends Response{
 
 	public TenantResponse(Tenant tenant) {
 		
-		this.activationdate = tenant.getActivationdate();
-		this.deactivationdate = tenant.getDeactivationdate();
-		this.creationdate = tenant.getCreationdate();
-		this.expirationdate = tenant.getExpirationdate();
+		this.activationdate = Util.dateString(tenant.getActivationdate());
+		this.deactivationdate = Util.dateString(tenant.getDeactivationdate());
+		this.creationdate = Util.dateString(tenant.getCreationdate());
+		this.expirationdate = Util.dateString(tenant.getExpirationdate());
+		
 		this.idShareType = tenant.getIdShareType();
 		this.idTenant = tenant.getIdTenant();
 		this.tenantcode = tenant.getTenantcode();
@@ -140,22 +140,6 @@ public class TenantResponse extends Response{
 		this.clientsecret = clientsecret;
 	}
 
-	public Timestamp getActivationdate() {
-		return activationdate;
-	}
-
-	public void setActivationdate(Timestamp activationdate) {
-		this.activationdate = activationdate;
-	}
-
-	public Timestamp getDeactivationdate() {
-		return deactivationdate;
-	}
-
-	public void setDeactivationdate(Timestamp deactivationdate) {
-		this.deactivationdate = deactivationdate;
-	}
-
 	public Integer getUsagedaysnumber() {
 		return usagedaysnumber;
 	}
@@ -194,22 +178,6 @@ public class TenantResponse extends Response{
 
 	public void setUsertypeauth(String usertypeauth) {
 		this.usertypeauth = usertypeauth;
-	}
-
-	public Timestamp getCreationdate() {
-		return creationdate;
-	}
-
-	public void setCreationdate(Timestamp creationdate) {
-		this.creationdate = creationdate;
-	}
-
-	public Timestamp getExpirationdate() {
-		return expirationdate;
-	}
-
-	public void setExpirationdate(Timestamp expirationdate) {
-		this.expirationdate = expirationdate;
 	}
 
 	public Integer getIdEcosystem() {
@@ -338,6 +306,38 @@ public class TenantResponse extends Response{
 
 	public void setSocialphoenixschemaname(String socialphoenixschemaname) {
 		this.socialphoenixschemaname = socialphoenixschemaname;
+	}
+
+	public String getActivationdate() {
+		return activationdate;
+	}
+
+	public void setActivationdate(String activationdate) {
+		this.activationdate = activationdate;
+	}
+
+	public String getDeactivationdate() {
+		return deactivationdate;
+	}
+
+	public void setDeactivationdate(String deactivationdate) {
+		this.deactivationdate = deactivationdate;
+	}
+
+	public String getCreationdate() {
+		return creationdate;
+	}
+
+	public void setCreationdate(String creationdate) {
+		this.creationdate = creationdate;
+	}
+
+	public String getExpirationdate() {
+		return expirationdate;
+	}
+
+	public void setExpirationdate(String expirationdate) {
+		this.expirationdate = expirationdate;
 	}
 	
 
