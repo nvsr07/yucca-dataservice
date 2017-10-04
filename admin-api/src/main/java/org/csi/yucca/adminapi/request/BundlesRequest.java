@@ -6,7 +6,7 @@ public class BundlesRequest {
 	private Integer maxstreamsnum;
 	private String hasstage;
 	private Integer maxOdataResultperpage;
-	private Integer zeppelin;
+	private String zeppelin;
 	public Integer getMaxdatasetnum() {
 		return maxdatasetnum;
 	}
@@ -31,10 +31,10 @@ public class BundlesRequest {
 	public void setMaxOdataResultperpage(Integer maxOdataResultperpage) {
 		this.maxOdataResultperpage = maxOdataResultperpage;
 	}
-	public Integer getZeppelin() {
+	public String getZeppelin() {
 		return zeppelin;
 	}
-	public void setZeppelin(Integer zeppelin) {
+	public void setZeppelin(String zeppelin) {
 		this.zeppelin = zeppelin;
 	}
 	
