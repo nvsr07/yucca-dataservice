@@ -22,8 +22,5 @@ public interface SequenceMapper {
 	public static final String SEQ_TRIAL_TENANTS_NEXT_VAL =  "select nextval('" + SEQ_TRIAL_TENANTS + "')"; 
 	@Select(SEQ_TRIAL_TENANTS_NEXT_VAL)                      
 	int selectTrialTenantsSequence();
-
-	
-	
 	
 }

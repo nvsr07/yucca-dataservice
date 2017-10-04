@@ -6,4 +6,6 @@ public class Constants {
 	
 	public static final String CLIENT_FORMAT_DATE = "yyyyMMdd";
 	
+	public static final int PASSWORD_LENGTH = 12;
+	
 }

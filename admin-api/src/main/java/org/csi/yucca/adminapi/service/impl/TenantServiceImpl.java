@@ -8,6 +8,7 @@ import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
+import org.csi.yucca.adminapi.mapper.FunctionMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
@@ -59,6 +60,9 @@ public class TenantServiceImpl implements TenantService {
 	
 	@Autowired
 	private SequenceMapper sequenceMapper;
+
+	@Autowired
+	private FunctionMapper functionMapper;
 	
 	@Autowired
 	private ClassificationService classificationService;
@@ -269,11 +273,11 @@ public class TenantServiceImpl implements TenantService {
 		if(user == null){
 			user = new User();
 			user.setIdOrganization(idOrganization);
-			user.setPassword(""); // <<<<< TO DO !!!! 
+			user.setPassword(functionMapper.selectRandomPassword());  
 			user.setUsername(username);
-			Integer idUser = userMapper.insertUser(user);
-			user.setIdUser(idUser);
+			userMapper.insertUser(user);
 		}
+
 		return user;
 	}
 	
