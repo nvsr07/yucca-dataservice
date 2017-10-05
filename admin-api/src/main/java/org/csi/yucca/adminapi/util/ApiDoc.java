@@ -11,6 +11,9 @@ public class ApiDoc {
 	public static final String M_CREATE_SMARTOBJECT = "CREATE SMARTOBJECT";
 	public static final String M_CREATE_SMARTOBJECT_NOTES = "Create Smartobject in the System.";
 	
+	public static final String M_ACTION_ON_TENANT = "ACTION ON TENANT";
+	public static final String M_ACTION_ON_TENANT_NOTES = "Action on Tenant.";
+	
 	public static final String P_LOAD_DOMAINS = "LOAD DOMAINS";
 	public static final String P_LOAD_DOMAINS_NOTES = "Load all domains.";
 	

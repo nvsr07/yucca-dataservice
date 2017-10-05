@@ -3,22 +3,37 @@ package org.csi.yucca.adminapi.response;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.util.Errors;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class OrganizationResponse extends Response{
 	
 	private Integer idOrganization;
 	private String organizationcode;
 	private String description;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String datasolrcollectionname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String measuresolrcollectionname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String mediasolrcollectionname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String socialsolrcollectionname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String dataphoenixtablename;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String dataphoenixschemaname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String measuresphoenixtablename;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String measuresphoenixschemaname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String mediaphoenixtablename;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String mediaphoenixschemaname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String socialphoenixtablename;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String socialphoenixschemaname;	
 	
 	public OrganizationResponse(Organization organization) {

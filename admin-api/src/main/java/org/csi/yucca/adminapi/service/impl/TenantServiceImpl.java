@@ -18,6 +18,7 @@ import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.User;
+import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.BundlesRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.TenantResponse;
@@ -69,7 +70,44 @@ public class TenantServiceImpl implements TenantService {
 
 	@Autowired
 	private SmartObjectService smartObjectService;
-
+	
+	
+	//	-- actionOnTenant
+	//	management
+	//	patch
+	//	/management/tenants/{tenantCode}
+	//	in body: action:	string
+	//
+	//	VERIFICARE CHE LO STATUS DEL TENANT è SU RICHIESTA INSTALLAZIONE ALTRIMENTI DARE ERRORE
+	//
+	//	SE LA RICHIESTA VA A BUON FINE SETTARE LO STATO A : INSTALLAZIONE IN PROGRESS
+	public ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest, String tenantCode) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(tenantCode, "tenantCode");
+		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest, "actionOnTenantRequest");
+		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getCodeTenantStatus(), "CodeTenantStatus");
+		ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
+		
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
+		ServiceUtil.checkIfFoundRecord(tenant);
+		
+		if(Status.REQUEST_INSTALLATION.id()!= tenant.getIdTenantStatus()){
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
+		}
+		
+		// da implementare
+		installationAction(tenantCode);
+		
+		// cambia lo stato del tenant:
+		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), tenantCode);
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+	
+	private void installationAction(String tenantCode){
+		
+	}
+	
 	
 	/**
 	 * DELETE TENANT

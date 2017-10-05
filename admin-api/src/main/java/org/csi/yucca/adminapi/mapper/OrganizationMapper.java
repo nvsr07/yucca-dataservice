@@ -22,10 +22,15 @@ public interface OrganizationMapper {
 	String ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_organization";
 	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
 		
-	public static final String SELECT = 
-			
-			" SELECT ORG.id_organization, organizationcode, ORG.description " + 
-			" FROM " + ORGANIZATION_TABLE + " ORG, " + R_ECOSYSTEM_ORGANIZATION_TABLE + " R_ORG_ECO, "
+	
+	public static final String SELECT_STAR_FROM_ORG_TABLE = 
+			" SELECT ORG.id_organization, ORG.organizationcode, ORG.description, ORG.datasolrcollectionname, " + 
+					" ORG.measuresolrcollectionname, ORG.mediasolrcollectionname, ORG.socialsolrcollectionname, " + 
+					" ORG.dataphoenixtablename, ORG.dataphoenixschemaname, ORG.measuresphoenixtablename, " + 
+					" ORG.measuresphoenixschemaname, ORG.mediaphoenixtablename, ORG.mediaphoenixschemaname, " + 
+					" ORG.socialphoenixtablename, ORG.socialphoenixschemaname FROM " + ORGANIZATION_TABLE + " ORG " ;
+	
+	public static final String SELECT = SELECT_STAR_FROM_ORG_TABLE + ", " + R_ECOSYSTEM_ORGANIZATION_TABLE + " R_ORG_ECO, "
 					+ EcosystemMapper.ECOSYSTEM_TABLE + " ECO " +
 			" WHERE ECO.ecosystemcode = #{ecosystemCode} AND  " +
 			" R_ORG_ECO.id_ecosystem = ECO.id_ecosystem AND " + 
@@ -65,11 +70,9 @@ public interface OrganizationMapper {
 	 * 
 	 * ***********************************************************************/
 	public static final String SELECT_ORGANIZATION_BY_ID = 
-			"SELECT id_organization, organizationcode, description FROM " + ORGANIZATION_TABLE + " WHERE id_organization=#{idOrganization}";
+			SELECT_STAR_FROM_ORG_TABLE + " WHERE id_organization=#{idOrganization}";
 	@Results({
-        @Result(property = "idOrganization", column = "id_organization"),
-        @Result(property = "organizationcode", column = "organizationcode"),
-        @Result(property = "description", column = "description")
+        @Result(property = "idOrganization", column = "id_organization")
       })
 	@Select(SELECT_ORGANIZATION_BY_ID) 
 	Organization selectOrganizationById(@Param("idOrganization") Integer idOrganization);
@@ -79,8 +82,7 @@ public interface OrganizationMapper {
 	 * 					select ORGANIZATIONS by organizationcode
 	 * 
 	 * ***********************************************************************/
-	public static final String SELECT_ORGANIZATION_BY_CODE = 
-			"SELECT id_organization, organizationcode, description FROM " + ORGANIZATION_TABLE + " WHERE organizationcode=#{organizationCode}";
+	public static final String SELECT_ORGANIZATION_BY_CODE = SELECT_STAR_FROM_ORG_TABLE + " WHERE organizationcode=#{organizationCode}";
 	@Results({
         @Result(property = "idOrganization", column = "id_organization"),
         @Result(property = "organizationcode", column = "organizationcode"),

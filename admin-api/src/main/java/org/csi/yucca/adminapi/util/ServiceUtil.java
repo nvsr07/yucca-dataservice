@@ -19,37 +19,75 @@ public class ServiceUtil {
 
 	private static final String SORT_PROPERTIES_SEPARATOR = ",";
 	private static final String DESC_CHAR = "-";
-	
 	public static final String UUID_PATTERN         = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
 	
+	/**
+	 * 
+	 * @param organizationcode
+	 * @return
+	 */
 	public static String getDefaultInternalSocode(String organizationcode){
 		return "SOinternal" + organizationcode;
 	}
 	
+	/**
+	 * 
+	 * @param TYPE
+	 * @param smartobjectRequest
+	 * @return
+	 */
 	public static boolean isType(Type TYPE, SmartobjectRequest smartobjectRequest){
 		return isType(TYPE, smartobjectRequest.getIdSoType());
 	}
 
+	/**
+	 * 
+	 * @param TYPE
+	 * @param idSoType
+	 * @return
+	 */
 	public static boolean isType(Type TYPE, Integer idSoType){
 		return TYPE.id() == idSoType;
 	}
 
+	/**
+	 * 
+	 * @param TYPE
+	 * @param smartobject
+	 * @return
+	 */
 	public static boolean isType(Type TYPE, Smartobject smartobject){
 		return TYPE.id() == smartobject.getIdSoType();
 	}
 	
+	/**
+	 * 
+	 * @param count
+	 * @throws NotFoundException
+	 */
 	public static void checkCount(int count)throws NotFoundException{
 		if (count == 0 ) {
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
 		}
 	}
 
+	/**
+	 * 
+	 * @param object
+	 * @throws NotFoundException
+	 */
 	public static void checkIfFoundRecord(Object object)throws NotFoundException{
 		checkIfFoundRecord(object, null);
 	}
 
+	/**
+	 * 
+	 * @param object
+	 * @param arg
+	 * @throws NotFoundException
+	 */
 	public static void checkIfFoundRecord(Object object, String arg)throws NotFoundException{
 		if (object == null ) {
 			
@@ -61,6 +99,13 @@ public class ServiceUtil {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param modelList
+	 * @param responseClass
+	 * @return
+	 * @throws Exception
+	 */
 	public static <T> List<Response> getResponseList(List<T> modelList, Class<?> responseClass) throws Exception {
 		List<Response> responsesList = new ArrayList<Response>();
 
@@ -73,6 +118,11 @@ public class ServiceUtil {
 		return responsesList;
 	}
 
+	/**
+	 * 
+	 * @param object
+	 * @param fieldName
+	 */
 	public static void checkNullInteger(Object object, String fieldName) {
 		try {
 
@@ -89,18 +139,39 @@ public class ServiceUtil {
 		}
 	}
 	
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean isAlphaNumeric(String s){
 	    return s.matches(ALPHANUMERIC_PATTERN);
 	}
 
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean matchUUIDPattern(String s){
 	    return s.matches(UUID_PATTERN);
 	}
 	
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean matchNotDevicePattern(String s){
 	    return s.matches(NOT_DEVICE_PATTERN);
 	}
 
+	/**
+	 * 
+	 * @param s
+	 * @param fieldName
+	 * @throws BadRequestException
+	 */
 	public static void checkAphanumeric(String s, String fieldName) throws BadRequestException{
 		if (!isAlphaNumeric(s)){
 			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED, "received " + fieldName + " [ " + s + " ]");
@@ -108,6 +179,33 @@ public class ServiceUtil {
 
 	}
 	
+	/**
+	 * 
+	 * @param codeTenantStatus
+	 * @throws BadRequestException
+	 */
+	public static void checkCodeTenantStatus(String codeTenantStatus) throws BadRequestException{
+		
+		for (Status status : Status.values()) {
+			if(status.code().equals(codeTenantStatus))return;
+		}
+		
+		List<String> listCodeTenantStatus = new ArrayList<>();
+		for (Status status : Status.values()) {
+			listCodeTenantStatus.add(status.code());
+		}
+		
+		String message = "received " + "codeTenantStatus" + " [ " + codeTenantStatus + " ]. Possible values are: " 
+				+ StringUtils.collectionToCommaDelimitedString(listCodeTenantStatus);
+		
+		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
+	}
+	
+	/**
+	 * 
+	 * @param idTenantType
+	 * @throws BadRequestException
+	 */
 	public static void checkIdTenantType(Integer idTenantType) throws BadRequestException{
 		
 		for (TenantType type : TenantType.values()) {
@@ -125,6 +223,12 @@ public class ServiceUtil {
 		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
 	}
 	
+	/**
+	 * 
+	 * @param userTypeAuth
+	 * @param idTenantType
+	 * @throws BadRequestException
+	 */
 	public static void checkTenantTypeAndUserTypeAuth(String userTypeAuth, Integer idTenantType) throws BadRequestException{
 		
 		if ( ( TenantType.DEFAULT.id() == idTenantType || TenantType.PLUS.id()    == idTenantType || 
@@ -139,7 +243,11 @@ public class ServiceUtil {
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * @param userTypeAuth
+	 * @throws BadRequestException
+	 */
 	public static void checkUserTypeAuth(String userTypeAuth) throws BadRequestException{
 		
 		for (UserTypeAuth type : UserTypeAuth.values()) {
@@ -157,6 +265,11 @@ public class ServiceUtil {
 		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
 	}
 	
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean containsWhitespace(String s){
 		
 		Pattern pattern = Pattern.compile("\\s");
@@ -167,42 +280,84 @@ public class ServiceUtil {
 		
 	}
 	
+	/**
+	 * 
+	 * @param s
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
 	public static void checkCode(String s, String parameterName) throws BadRequestException {
 		checkMandatoryParameter(s, parameterName);
 		checkWhitespace(s, parameterName);
 		checkAphanumeric(s, parameterName);
 	}
 	
+	/**
+	 * 
+	 * @param s
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
 	public static void checkWhitespace(String s, String parameterName) throws BadRequestException {
 		if(containsWhitespace(s)){
 			throw new BadRequestException(Errors.WHITE_SPACES, parameterName);
 		}
 	}
 	
+	/**
+	 * 
+	 * @param isEmpty
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
 	public static void checkMandatoryParameter(boolean isEmpty, String parameterName) throws BadRequestException {
 		if (isEmpty) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
 
+	/**
+	 * 
+	 * @param parameterObj
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
 	public static void checkMandatoryParameter(Object parameterObj, String parameterName) throws BadRequestException {
 		if (parameterObj == null) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
 	
+	/**
+	 * 
+	 * @param parameterObj
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
 	public static void checkMandatoryParameter(String parameterObj, String parameterName) throws BadRequestException {
 		if (parameterObj == null || parameterObj.isEmpty()) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
 	
+	/**
+	 * 
+	 * @param list
+	 * @throws NotFoundException
+	 */
 	public static void checkList(List<?> list) throws NotFoundException {
 		if (list == null || list.isEmpty()) {
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
 		}
 	}
 
+	/**
+	 * 
+	 * @param sort
+	 * @param clazz
+	 * @return
+	 * @throws BadRequestException
+	 */
 	public static List<String> getSortList(String sort, Class<?> clazz) throws BadRequestException {
 
 		List<String> sortList = null;
@@ -222,6 +377,12 @@ public class ServiceUtil {
 
 	}
 
+	/**
+	 * 
+	 * @param sortList
+	 * @param clazz
+	 * @throws BadRequestException
+	 */
 	private static void validateSortParameter(List<String> sortList, Class<?> clazz) throws BadRequestException {
 		for (String sortProperty : sortList) {
 
@@ -232,6 +393,12 @@ public class ServiceUtil {
 		}
 	}
 
+	/**
+	 * 
+	 * @param sortProperty
+	 * @param clazz
+	 * @return
+	 */
 	private static boolean propertyNotFound(String sortProperty, Class<?> clazz) {
 
 		Field[] fields = clazz.getDeclaredFields();
@@ -248,11 +415,32 @@ public class ServiceUtil {
 		return true;
 	}
 	
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public static String tenantTypeDescription(int id){
-			
+		
 		for (TenantType type : TenantType.values()) {
 			if(type.id() == id){
 				return type.description();
+			}
+		}
+		return null;
+		
+	}
+
+	/**
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public static String codeTenantStatus(int id){
+		
+		for (Status status : Status.values()) {
+			if(status.id() == id){
+				return status.code();
 			}
 		}
 		return null;

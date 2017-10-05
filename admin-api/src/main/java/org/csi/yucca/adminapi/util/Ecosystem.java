@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.util;
 
 public enum Ecosystem {
 
-	SDNET (1, "SDNTE");
+	SDNET (1, "SDNET");
 	
 	private int id;
 	private String code;
