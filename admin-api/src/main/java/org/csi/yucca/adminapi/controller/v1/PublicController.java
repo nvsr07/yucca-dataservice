@@ -46,8 +46,8 @@ import org.csi.yucca.adminapi.response.ExposureTypeResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
 import org.csi.yucca.adminapi.response.LocationTypeResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
-import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
+import org.csi.yucca.adminapi.response.PublicOrganizationResponse;
 import org.csi.yucca.adminapi.response.SoCategoryResponse;
 import org.csi.yucca.adminapi.response.SoTypeResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
@@ -247,7 +247,7 @@ public class PublicController extends YuccaController{
 		
 	}		
 	
-	@ApiOperation(value = P_LOAD_ORGANIZATIONS, notes = P_LOAD_ORGANIZATIONS_NOTES, response = OrganizationResponse.class, responseContainer="List")
+	@ApiOperation(value = P_LOAD_ORGANIZATIONS, notes = P_LOAD_ORGANIZATIONS_NOTES, response = PublicOrganizationResponse.class, responseContainer="List")
 	@GetMapping("/organizations")
 	public ResponseEntity<Object> loadOrganizations( @RequestParam(required=false) final String ecosystemCode, 
 			@RequestParam(required=false) final String sort  ) {

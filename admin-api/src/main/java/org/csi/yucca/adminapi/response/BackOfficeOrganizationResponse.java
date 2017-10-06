@@ -3,40 +3,26 @@ package org.csi.yucca.adminapi.response;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.util.Errors;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
-public class OrganizationResponse extends Response{
+public class BackOfficeOrganizationResponse extends Response{
 	
 	private Integer idOrganization;
 	private String organizationcode;
 	private String description;
 	
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String datasolrcollectionname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String measuresolrcollectionname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String mediasolrcollectionname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String socialsolrcollectionname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String dataphoenixtablename;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String dataphoenixschemaname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String measuresphoenixtablename;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String measuresphoenixschemaname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String mediaphoenixtablename;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String mediaphoenixschemaname;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String socialphoenixtablename;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String socialphoenixschemaname;	
 	
-	public OrganizationResponse(Organization organization) {
+	public BackOfficeOrganizationResponse(Organization organization) {
 		super();
 		this.idOrganization = organization.getIdOrganization();
 		this.organizationcode = organization.getOrganizationcode();
@@ -55,11 +41,11 @@ public class OrganizationResponse extends Response{
 		this.socialphoenixschemaname = organization.getSocialphoenixschemaname();			
 	}
 	
-	public OrganizationResponse() {
+	public BackOfficeOrganizationResponse() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public OrganizationResponse(Errors errors, String arg) {
+	public BackOfficeOrganizationResponse(Errors errors, String arg) {
 		super(errors, arg);
 		// TODO Auto-generated constructor stub
 	}

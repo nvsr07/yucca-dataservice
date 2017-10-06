@@ -1,5 +1,80 @@
 package org.csi.yucca.adminapi.controller.v1;
 
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_DATA_TYPE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_DATA_TYPE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ECOSYSTEM;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ECOSYSTEM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_LICENSE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_LICENSE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_MEASURE_UNIT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_MEASURE_UNIT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ORGANIZATION;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ORGANIZATION_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_PHENOMENON;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_PHENOMENON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_SUBDOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_SUBDOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TAG;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TAG_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DATA_TYPE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DATA_TYPE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ECOSYSTEM;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ECOSYSTEM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_LICENSE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_LICENSE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_MEASURE_UNIT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_MEASURE_UNIT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ORGANIZATION;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ORGANIZATION_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_PHENOMENON;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_PHENOMENON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_SUBDOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_SUBDOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TAG;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TAG_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DATA_TYPE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DATA_TYPE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ECOSYSTEM;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ECOSYSTEM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_LICENSE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_LICENSE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_MEASURE_UNIT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_MEASURE_UNIT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ORGANIZATION;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ORGANIZATION_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_PHENOMENON;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_PHENOMENON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ECOSYSTEM;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ECOSYSTEM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_LICENSE;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_LICENSE_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_MEASURE_UNIT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_MEASURE_UNIT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ORGANIZATION;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ORGANIZATION_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_PHENOMENON;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_PHENOMENON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_SUBDOMAIN;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_SUBDOMAIN_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_TAG;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_TAG_NOTES;
+
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
@@ -14,12 +89,12 @@ import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
+import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
-import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
@@ -38,8 +113,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import static org.csi.yucca.adminapi.util.ApiDoc.*;
-
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -384,7 +457,7 @@ public class BackOfficeController extends YuccaController{
 	 * @param idOrganization
 	 * @return
 	 */
-	@ApiOperation(value = BO_LOAD_ORGANIZATION, notes = BO_LOAD_ORGANIZATION_NOTES, response = OrganizationResponse.class)
+	@ApiOperation(value = BO_LOAD_ORGANIZATION, notes = BO_LOAD_ORGANIZATION_NOTES, response = BackOfficeOrganizationResponse.class)
 	@GetMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> loadOrganization(@PathVariable final Integer idOrganization) {
 		logger.info("loadOrganization");
@@ -621,7 +694,7 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 
-	@ApiOperation(value = BO_UPDATE_ORGANIZATION, notes = BO_UPDATE_ORGANIZATION_NOTES, response = OrganizationResponse.class)
+	@ApiOperation(value = BO_UPDATE_ORGANIZATION, notes = BO_UPDATE_ORGANIZATION_NOTES, response = BackOfficeOrganizationResponse.class)
 	@PutMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest, @PathVariable final Integer idOrganization ){
 		logger.info("updateOrganization");
@@ -675,7 +748,7 @@ ALTER TABLE int_yucca.yucca_organization
 
 	 * 
 	 */
-	@ApiOperation(value = BO_CREATE_ORGANIZATION, notes = BO_CREATE_ORGANIZATION_NOTES, response = OrganizationResponse.class)
+	@ApiOperation(value = BO_CREATE_ORGANIZATION, notes = BO_CREATE_ORGANIZATION_NOTES, response = BackOfficeOrganizationResponse.class)
 	@PostMapping("/organizations")
 	public ResponseEntity<Object> createOrganization(@RequestBody final OrganizationRequest organizationRequest ){
 		logger.info("createOrganization");

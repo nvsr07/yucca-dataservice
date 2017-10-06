@@ -24,11 +24,12 @@ import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
+import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.BackofficeLoadDomainResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
-import org.csi.yucca.adminapi.response.OrganizationResponse;
+import org.csi.yucca.adminapi.response.PublicOrganizationResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
@@ -86,6 +87,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 	
 	/**
 	 * SELECT ORGANIZATION
+	 * 
+	 * chiamato da backoffice
 	 */
 	public ServiceResponse selectOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
 		
@@ -95,7 +98,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		ServiceUtil.checkIfFoundRecord(organization);
 		
-		return ServiceResponse.build().object(new OrganizationResponse(organization));
+		return ServiceResponse.build().object(new BackOfficeOrganizationResponse(organization));
 	}
 
 	
@@ -378,7 +381,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		Organization organization = new Organization(idOrganization, organizationRequest.getOrganizationcode(), organizationRequest.getDescription());
 		organizationMapper.updateOrganization(organization);
 		
-		return ServiceResponse.build().object(new OrganizationResponse(organization));
+		return ServiceResponse.build().object(new BackOfficeOrganizationResponse(organization));
 	}	
 	
 	
@@ -548,6 +551,8 @@ public class ClassificationServiceImpl implements ClassificationService{
 	/**
 	 * SELECT ORGANIZATIONS
 	 * 
+	 * chiamato da public.
+	 * 
 	 * @param ecosystemCode
 	 * @param sort
 	 * @return
@@ -565,7 +570,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 		ServiceUtil.checkList(organizationList);
 		
-		return ServiceResponse.build().object(ServiceUtil.getResponseList(organizationList, OrganizationResponse.class));
+		return ServiceResponse.build().object(ServiceUtil.getResponseList(organizationList, PublicOrganizationResponse.class));
 		
 	}		
 
@@ -686,7 +691,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 		insertOrganization(organization, organizationRequest.getEcosystemCodeList());
 		
-		return ServiceResponse.build().object(new OrganizationResponse(organization));
+		return ServiceResponse.build().object(new BackOfficeOrganizationResponse(organization));
 	}
 
 	public void insertOrganization(Organization organization, Integer idEcosystemCode)throws BadRequestException{

@@ -1,9 +1,12 @@
 package org.csi.yucca.adminapi.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Tenant {
-
+public class Tenant implements Serializable{
+	
+	private static final long serialVersionUID = 4422190936539390175L;
+	
 	private Timestamp creationdate;
 	private Timestamp expirationdate;
 	private Timestamp activationdate;

@@ -13,6 +13,7 @@ import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
+import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
@@ -71,6 +72,9 @@ public class TenantServiceImpl implements TenantService {
 	@Autowired
 	private SmartObjectService smartObjectService;
 	
+	@Autowired
+	private MessageSender messageSender;
+	
 	
 	//	-- actionOnTenant
 	//	management
@@ -104,9 +108,18 @@ public class TenantServiceImpl implements TenantService {
 		return ServiceResponse.build().NO_CONTENT();
 	}
 	
+	
+	
+	
 	private void installationAction(String tenantCode){
-		
+//		messageSender.sendMessage(new Tenant());
+		messageSender.sendMessage(tenantCode);
 	}
+	
+	
+	
+	
+	
 	
 	
 	/**
