@@ -153,7 +153,6 @@ public interface TenantMapper {
 	@Insert(INSERT_TENANT_BUNDLES)
 	int insertTenantBundles(@Param("idTenant") int idTenant, @Param("idBundles") int idBundles);
 	
-	
 	/*************************************************************************
 	 * 
 	 * 					DELETE TENANT
@@ -162,5 +161,27 @@ public interface TenantMapper {
 	public static final String DELETE_TENANT = "DELETE FROM " + TENANT_TABLE + " WHERE tenantcode=#{tenantcode}";
 	@Delete(DELETE_TENANT)
 	int deleteTenant(String tenantcode);	
+
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE TENANT
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_TENANT_BUNDLES_BY_BUNDLES = 
+			"DELETE FROM " + R_TENANT_BUNDLES_TABLE + " WHERE id_bundles=#{idBundles}";
+	@Delete(DELETE_TENANT_BUNDLES_BY_BUNDLES)
+	int deleteTenantBundlesByBundles(Integer idBundles);	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE TENANT BY idOrganaizzation
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_TENANT_BY_ID_ORGANIZATION = 
+			"DELETE FROM " + TENANT_TABLE + " WHERE id_organization=#{idOrganization}";
+	@Delete(DELETE_TENANT_BY_ID_ORGANIZATION)
+	int deleteTenantByIdOrganization(Integer idOrganization);
 	
 }

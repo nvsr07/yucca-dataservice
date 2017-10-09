@@ -33,6 +33,22 @@ public interface SmartobjectMapper {
 	
 	/*************************************************************************
 	 * 
+	 * 					DELETE TENANT SMARTOBJECT BY idOrganization and idSoType
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_TENANT_SMARTOBJECT_BY_ID_ORGANIZATION_AND_ID_SO_TYPE = 
+			" delete from " + TENANT_SMARTOBJECT_TABLE + " where id_smart_object in( " +
+			" SELECT SMARTOBJECT.id_smart_object " +
+			" FROM " + TENANT_SMARTOBJECT_TABLE + " TENANT_SMARTOBJECT, " + SMARTOBJECT_TABLE + " SMARTOBJECT " +
+			" WHERE SMARTOBJECT.id_organization = #{idOrganization} AND " +
+			" SMARTOBJECT.id_so_type = #{idSoType} AND " +
+			" TENANT_SMARTOBJECT.id_smart_object = SMARTOBJECT.id_smart_object) ";	
+	@Delete(DELETE_TENANT_SMARTOBJECT_BY_ID_ORGANIZATION_AND_ID_SO_TYPE)
+	int deleteTenantSmartobjectByOrgAndSoType( @Param("idSoType") Integer idSoType, @Param("idOrganization") Integer idOrganization );	
+
+	
+	/*************************************************************************
+	 * 
 	 * 					DELETE SMARTOBJECT
 	 * 
 	 * ***********************************************************************/

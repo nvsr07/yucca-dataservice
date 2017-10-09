@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.mapper;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
@@ -18,6 +19,38 @@ public interface UserMapper {
 	String USER_TABLE = Constants.SCHEMA_DB + ".yucca_users";
 	String R_TENANT_USERS_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_users";
 
+
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE USER BY idOrganaizzation
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE__USER_BY_ID_ORGANIZATION = 
+			" DELETE FROM " + USER_TABLE + 
+			" where id_user in ( " +
+			" SELECT TENANT_USER.id_user " +
+			" FROM " + R_TENANT_USERS_TABLE + " TENANT_USER, " + TenantMapper.TENANT_TABLE  + " TENANT " +
+			" where TENANT.id_organization = #{idOrganization} AND " +
+			" TENANT_USER.id_tenant = TENANT.id_tenant) ";
+	@Delete(DELETE__USER_BY_ID_ORGANIZATION)
+	int deleteUserByIdOrganization(Integer idOrganization);
+
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE TENANT_USERS BY idOrganaizzation
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_TENANT_USER_BY_ID_ORGANIZATION = 
+			" delete from " + R_TENANT_USERS_TABLE + " where id_tenant in ( " +
+			" SELECT TENANT_USER.id_tenant " +
+			" FROM " + R_TENANT_USERS_TABLE + " TENANT_USER, " + TenantMapper.TENANT_TABLE + " TENANT " +
+			" where TENANT.id_organization = #{idOrganization} AND " +
+			" TENANT_USER.id_tenant = TENANT.id_tenant) ";
+	@Delete(DELETE_TENANT_USER_BY_ID_ORGANIZATION)
+	int deleteTenantUserByIdOrganization(Integer idOrganization);
+	
 	/*************************************************************************
 	 * 					
 	 * 					INSERT R_TENANT_USER

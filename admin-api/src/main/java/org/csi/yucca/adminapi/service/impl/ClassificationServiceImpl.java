@@ -6,12 +6,16 @@ import java.util.List;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.DomainMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
 import org.csi.yucca.adminapi.mapper.LicenseMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TagMapper;
+import org.csi.yucca.adminapi.mapper.TenantMapper;
+import org.csi.yucca.adminapi.mapper.UserMapper;
+import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Domain;
 import org.csi.yucca.adminapi.model.Ecosystem;
 import org.csi.yucca.adminapi.model.License;
@@ -61,6 +65,15 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private OrganizationMapper organizationMapper;
+	
+	@Autowired
+	private TenantMapper tenantMapper;
+
+	@Autowired
+	private UserMapper userMapper;
+
+	@Autowired
+	private BundlesMapper bundlesMapper;
 	
 	@Autowired
 	private SubdomainMapper subdomainMapper;
@@ -384,23 +397,29 @@ public class ClassificationServiceImpl implements ClassificationService{
 		return ServiceResponse.build().object(new BackOfficeOrganizationResponse(organization));
 	}	
 	
-	
-	
 	/**
 	 * DELETE ORGANOZATION
 	 */
 	public ServiceResponse deleteOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
+		
 		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
 		
 		organizationMapper.deleteEcosystemOrganization(idOrganization);
 		
 		int count = 0;
+		
 		try {
-			smartObjectService.deleteInternalSmartObject(idOrganization);
+			
+			deleteBundlesByOrganization(idOrganization);			
+			deleteUserByIdOrganization(idOrganization);			
+
+			smartObjectService.deleteInternalSmartObject(idOrganization);			
+			tenantMapper.deleteTenantByIdOrganization(idOrganization);
+		
 			count = organizationMapper.deleteOrganization(idOrganization);
 		} 		
 		catch (DataIntegrityViolationException dataIntegrityViolationException) {
-			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems.");
+			throw new ConflictException(Errors.INTEGRITY_VIOLATION, "Not possible to delete, dependency problems." + dataIntegrityViolationException.getRootCause());
 		}
 		
 		if (count == 0 ) {
@@ -906,6 +925,18 @@ public class ClassificationServiceImpl implements ClassificationService{
 		
 	}
 
+	private void deleteBundlesByOrganization(Integer idOrganization){
+		List<Bundles> bundles =  bundlesMapper.selectBundlesByOrganization(idOrganization);
+		for (Bundles bundle : bundles) {
+			tenantMapper.deleteTenantBundlesByBundles(bundle.getIdBundles());
+			bundlesMapper.deleteBundles(bundle.getIdBundles());
+		}
+	}
+	
+	private void deleteUserByIdOrganization(Integer idOrganization){
+		userMapper.deleteTenantUserByIdOrganization(idOrganization);
+		userMapper.deleteUserByIdOrganization(idOrganization);
+	}	
 	
 	
 

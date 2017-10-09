@@ -99,26 +99,14 @@ public class TenantServiceImpl implements TenantService {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
 		}
 		
-		// da implementare
-		installationAction(tenantCode);
+		// jms sender
+		messageSender.sendMessage(tenantCode);
 		
 		// cambia lo stato del tenant:
 		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), tenantCode);
 		
 		return ServiceResponse.build().NO_CONTENT();
 	}
-	
-	
-	
-	
-	private void installationAction(String tenantCode){
-//		messageSender.sendMessage(new Tenant());
-		messageSender.sendMessage(tenantCode);
-	}
-	
-	
-	
-	
 	
 	
 	
@@ -195,11 +183,11 @@ public class TenantServiceImpl implements TenantService {
 	 */
 	private void validation(TenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception {
 
+		ServiceUtil.checkMandatoryParameter(tenantRequest,                     "tenantRequest");
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getIdTenantType(),   "idTenantType");
 		ServiceUtil.checkIdTenantType(tenantRequest.getIdTenantType());
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getUsertypeauth(),   "usertypeauth");
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getUsername(),       "username");
-		ServiceUtil.checkMandatoryParameter(tenantRequest,                     "tenantRequest");
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getUserfirstname(),  "userfirstname");
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getUserlastname(),   "userlastname");
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getUseremail(),      "useremail");

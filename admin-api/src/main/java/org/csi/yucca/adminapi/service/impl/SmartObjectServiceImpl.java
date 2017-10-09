@@ -131,9 +131,11 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	 * Rimuove gli smart object con id_so_type di tipo INTERNAL per una determinata organization. 
 	 */
 	public void deleteInternalSmartObject(Integer idOrganization) throws  Exception {
+		smartobjectMapper.deleteTenantSmartobjectByOrgAndSoType(Type.INTERNAL.id(), idOrganization);
 		smartobjectMapper.deleteInternalSmartobject(Type.INTERNAL.id(), idOrganization);
 	}
-
+	
+	
 	/**
 	 * 
 	 */
