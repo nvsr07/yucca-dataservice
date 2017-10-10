@@ -38,20 +38,30 @@ public class MessagingConfiguration {
 	@Value("${default.broker.url}")
 	private String defaultBrokerUrl;
 
-	@Value("${order.queue}")
-	private String orderQueue;
+//	@Value("${jms.queue}")
+//	private String jmsQueue;
 	
-	@Value("${order.response.queue}")
-	private String orderResponseQueue;
-     
+	@Value("${response.queue}")
+	private String responseQueue;
+
+	@Value("${user}")
+	private String user;
+
+	@Value("${password}")
+	private String password;
+
+	
     @Autowired
     MessageReceiver messageReceiver;
-     
+    
+    
     @Bean
     public ConnectionFactory connectionFactory(){
         ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory();
         connectionFactory.setBrokerURL(defaultBrokerUrl);
         connectionFactory.setTrustedPackages(Arrays.asList("com.websystique.spring"));
+        connectionFactory.setUserName(user);
+        connectionFactory.setPassword(password);
         return connectionFactory;
     }
  
@@ -69,14 +79,14 @@ public class MessagingConfiguration {
     /*
      * Message listener container, used for invoking messageReceiver.onMessage on message reception.
      */
-    @Bean
-    public MessageListenerContainer getContainer(){
-        DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory());
-        container.setDestinationName(orderQueue);
-        container.setMessageListener(messageReceiver);
-        return container;
-    }
+//    @Bean
+//    public MessageListenerContainer getContainer(){
+//        DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
+//        container.setConnectionFactory(connectionFactory());
+//        container.setDestinationName(jmsQueue);
+//        container.setMessageListener(messageReceiver);
+//        return container;
+//    }
  
     /*
      * Used for Sending Messages.
@@ -85,7 +95,7 @@ public class MessagingConfiguration {
     public JmsTemplate jmsTemplate(){
         JmsTemplate template = new JmsTemplate();
         template.setConnectionFactory(connectionFactory());
-        template.setDefaultDestinationName(orderResponseQueue);
+        template.setDefaultDestinationName(responseQueue);
         return template;
     }
      
