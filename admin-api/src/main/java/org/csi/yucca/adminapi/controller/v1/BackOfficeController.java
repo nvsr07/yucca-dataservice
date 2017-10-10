@@ -145,32 +145,6 @@ public class BackOfficeController extends YuccaController{
 		}, logger);		
 	}
 
-	
-	
-	/**
-	 * 
-	 * CREATE SEQUENCE int_yucca.tenant_id_tenant_seq;
-	 * ALTER TABLE int_yucca.yucca_tenant ALTER COLUMN id_tenant SET DEFAULT nextval('int_yucca.tenant_id_tenant_seq');
-	 * ALTER TABLE int_yucca.yucca_tenant ALTER COLUMN id_tenant SET NOT NULL;
-	 * ALTER SEQUENCE int_yucca.tenant_id_tenant_seq OWNED BY int_yucca.yucca_tenant.id_tenant;    -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.tenant_id_tenant_seq RESTART WITH 150;
-	 * 
-	 * @param tenantRequest
-	 * @return
-	 */
-	@ApiOperation(value = BO_CREATE_TENANT, notes = BO_CREATE_TENANT_NOTES, response = ServiceResponse.class)
-	@PostMapping("/tenants")
-	public ResponseEntity<Object> createTenant(@RequestBody final TenantRequest tenantRequest ){
-		logger.info("createTenant");
-		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.insertTenant(tenantRequest);
-			}
-		}, logger);		
-	}
-
 	/**
 	 *  
 	 * INSERT DATA TYPE

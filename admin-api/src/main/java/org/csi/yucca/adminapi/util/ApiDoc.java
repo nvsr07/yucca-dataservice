@@ -2,6 +2,9 @@ package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
 	
+	public static final String M_CREATE_TENANT = "CRAETE TENANT";
+	public static final String M_CREATE_TENANT_NOTES = "Insert a new Tenant in the System.";
+	
 	public static final String M_UPDATE_SMARTOBJECT = "UPDATE SMARTOBJECT";
 	public static final String M_UPDATE_SMARTOBJECT_NOTES = "Update Smartobject in the System.";
 	

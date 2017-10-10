@@ -6,6 +6,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_TENANT_NOTES;
 
@@ -15,6 +17,7 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
+import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
@@ -46,6 +49,22 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private TenantService tenantService;    
 
+	
+	/**
+	 * @param tenantRequest
+	 * @return
+	 */
+	@ApiOperation(value = M_CREATE_TENANT, notes = M_CREATE_TENANT_NOTES, response = ServiceResponse.class)
+	@PostMapping("/tenants")
+	public ResponseEntity<Object> createTenant(@RequestBody final TenantRequest tenantRequest ){
+		logger.info("createTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.insertTenant(tenantRequest);
+			}
+		}, logger);		
+	}
 	
 	/**
 	 * 
