@@ -44,10 +44,10 @@ public class MessagingConfiguration {
 	@Value("${response.queue}")
 	private String responseQueue;
 
-	@Value("${user}")
+	@Value("${broker.user}")
 	private String user;
 
-	@Value("${password}")
+	@Value("${broker.password}")
 	private String password;
 
 	
