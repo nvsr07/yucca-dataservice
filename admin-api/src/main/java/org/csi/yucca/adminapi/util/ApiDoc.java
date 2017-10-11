@@ -1,6 +1,9 @@
 package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
+
+	public static final String M_LOAD_TENANT = "LOAD TENANT";
+	public static final String M_LOAD_TENANT_NOTES = "Load all Tenants in the System.";
 	
 	public static final String M_CREATE_TENANT = "CRAETE TENANT";
 	public static final String M_CREATE_TENANT_NOTES = "Insert a new Tenant in the System.";

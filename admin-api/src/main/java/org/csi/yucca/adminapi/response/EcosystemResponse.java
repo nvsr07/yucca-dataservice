@@ -1,12 +1,20 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.Ecosystem;
+import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.util.Errors;
 
 public class EcosystemResponse extends Response{
 	private Integer idEcosystem;
 	private String ecosystemcode;
 	private String description;
+
+	public EcosystemResponse(TenantManagement tenantManagement) {
+		super();
+		this.idEcosystem = tenantManagement.getIdEcosystem();
+		this.ecosystemcode = tenantManagement.getEcosystemcode();
+		this.description = tenantManagement.getEcosystemdescription();
+	}
 	
 	public EcosystemResponse(Ecosystem ecosystem) {
 		super();

@@ -13,4 +13,6 @@ public interface TenantService {
 	ServiceResponse deleteTenant(String tenantcode) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest, String tenantCode) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse selectTenant(String sort) throws BadRequestException, NotFoundException, Exception;
 }

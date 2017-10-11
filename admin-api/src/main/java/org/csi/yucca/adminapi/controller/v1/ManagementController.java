@@ -1,15 +1,17 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -19,6 +21,7 @@ import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
+import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.TenantService;
@@ -27,12 +30,14 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
@@ -48,7 +53,34 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;    
-
+	
+	/**
+	 * LOAD TENANT
+	 * 
+	 * @param skip
+	 * @param limit
+	 * @param fields
+	 * @param sort
+	 * @param embed
+	 * @return
+	 */
+	@ApiOperation(value = M_LOAD_TENANT, notes = M_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer="List")
+	@GetMapping("/tenants")
+	public ResponseEntity<Object> loadTenants(
+			@RequestParam(required=false)final Integer skip, 
+			@RequestParam(required=false) final Integer limit, 
+			@RequestParam(required=false) final String fields,
+			@RequestParam(required=false) final String sort,
+			@RequestParam(required=false) final String embed) {
+		logger.info("loadTenants");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.selectTenant(sort);
+			}
+		}, logger);		
+	}
+	
 	
 	/**
 	 * @param tenantRequest

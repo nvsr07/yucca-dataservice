@@ -389,7 +389,6 @@ public class ServiceUtil {
 			if (propertyNotFound(sortProperty, clazz)) {
 				throw new BadRequestException(Errors.PROPERTY_NOT_FOUND, sortProperty);
 			}
-
 		}
 	}
 

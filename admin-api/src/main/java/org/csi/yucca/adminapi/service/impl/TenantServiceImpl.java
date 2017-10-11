@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.service.impl;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
@@ -19,9 +20,12 @@ import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.User;
+import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.BundlesRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
+import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
@@ -74,6 +78,25 @@ public class TenantServiceImpl implements TenantService {
 	
 	@Autowired
 	private MessageSender messageSender;
+	
+	
+	public ServiceResponse selectTenant(String sort) throws BadRequestException, NotFoundException, Exception{
+		
+		List<String> sortList = ServiceUtil.getSortList(sort, Tenant.class);
+		
+		List<TenantManagement> tenantList = tenantMapper.selectAllTenant(sortList);
+		
+		ServiceUtil.checkList(tenantList);
+
+		List<TenantManagementResponse> responseList = new ArrayList<TenantManagementResponse>();
+		
+		for (TenantManagement tenantManagement : tenantList) {
+			responseList.add(new TenantManagementResponse(tenantManagement));
+		}
+		
+		return ServiceResponse.build().object(responseList);
+		
+	}
 	
 	
 	//	-- actionOnTenant

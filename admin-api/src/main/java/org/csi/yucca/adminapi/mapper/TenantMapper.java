@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Tenant;
+import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.util.Constants;
 
 /**
@@ -23,6 +24,9 @@ public interface TenantMapper {
 	
 	String TENANT_TABLE = Constants.SCHEMA_DB + ".yucca_tenant";
 	String R_TENANT_BUNDLES_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_bundles";
+	String TENANT_STATUS_TABLE = Constants.SCHEMA_DB + ".yucca_d_tenant_status";
+	String TENANT_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_tenant_type";
+	String SHARE_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_share_type";
 	
 	public static final String SELECT_TENANT_COLUMNS = 	
 			" SELECT TENANT.id_tenant, tenantcode, name, description, clientkey, " + 
@@ -34,6 +38,86 @@ public interface TenantMapper {
 			" dataphoenixschemaname, measuresphoenixtablename, measuresphoenixschemaname, " + 
 			" mediaphoenixtablename, mediaphoenixschemaname, socialphoenixtablename, " + 
 			" socialphoenixschemaname, id_share_type ";
+	
+	public static final String SELECT_TENANT_ORDER_BY =  
+			
+			"<if test=\"sortList != null\">" +
+		      " ORDER BY " +
+			
+			" <foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"sortList\">" +
+		    
+			  "<if test=\"propName == 'tenantcode-'\">" +
+		        " tenantcode desc" +
+	          "</if>" +
+	          "<if test=\"propName == 'tenantcode'\">" +
+	            " tenantcode" +
+              "</if>" +
+		      
+		      "<if test=\"propName == 'name-'\">" +
+		        " name desc" +
+	          "</if>" +
+	          "<if test=\"propName == 'name'\">" +
+	            " name" +
+              "</if>" +
+			
+		      "<if test=\"propName == 'idTenantStatus-'\">" +
+		        " id_tenant_status desc" +
+	          "</if>" +
+	          "<if test=\"propName == 'idTenantStatus'\">" +
+	            " id_tenant_status" +
+              "</if>" +
+            
+            "</foreach>" +
+            "</if>";	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT ALL TENANT
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_ALL_TENANTS_JOIN = 	
+			
+	" SELECT USERS.username, " +
+	
+	" BUNDLES.id_bundles, BUNDLES.maxdatasetnum, BUNDLES.maxstreamsnum, BUNDLES.hasstage, BUNDLES.max_odata_resultperpage, BUNDLES.zeppelin, " +
+	
+	" TENANT.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description ecosystemdescription, " +
+	
+	" TENANT.id_organization, ORGANIZATION.organizationcode, ORGANIZATION.description as organizationdescription, " +
+	
+	" TENANT.id_tenant_status, TENANT_STATUS.tenantstatuscode, TENANT_STATUS.description as tenantstatusdescription, " +
+	
+	" TENANT.id_tenant_type, TENANT_TYPE.tenanttypecode, TENANT_TYPE.description tenanttypedescription, " +
+	
+	" TENANT.id_share_type, SHARE_TYPE.description as sharetypedescription, " + 
+	
+	" TENANT.id_tenant, TENANT.description, name, tenantcode, usagedaysnumber, useremail, userfirstname, userlastname, usertypeauth " +
+	
+	" FROM " + TENANT_TABLE + " TENANT " + 
+	
+	" LEFT JOIN " + R_TENANT_BUNDLES_TABLE + " TENANT_BUNDLES ON TENANT.id_tenant = TENANT_BUNDLES.id_tenant " + 
+	" LEFT JOIN " + BundlesMapper.BUNDLES_TABLE  + " BUNDLES ON BUNDLES.id_bundles = TENANT_BUNDLES.id_bundles " +
+	" LEFT JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " ORGANIZATION ON TENANT.id_organization = ORGANIZATION.id_organization " +
+	" LEFT JOIN " + EcosystemMapper.ECOSYSTEM_TABLE + " ECOSYSTEM ON TENANT.id_ecosystem = ECOSYSTEM.id_ecosystem " +
+	" LEFT JOIN " + TENANT_STATUS_TABLE + " TENANT_STATUS ON TENANT.id_tenant_status = TENANT_STATUS.id_tenant_status " +
+	" LEFT JOIN " + TENANT_TYPE_TABLE + " TENANT_TYPE ON TENANT.id_tenant_type = TENANT_TYPE.id_tenant_type " +
+	" LEFT JOIN " + SHARE_TYPE_TABLE + " SHARE_TYPE ON TENANT.id_share_type = SHARE_TYPE.id_share_type " +
+	" LEFT JOIN " + UserMapper.R_TENANT_USERS_TABLE + " TENANT_USERS ON TENANT.id_tenant = TENANT_USERS.id_tenant " + 
+	" LEFT JOIN " + UserMapper.USER_TABLE + " USERS ON USERS.id_user = TENANT_USERS.id_user " + SELECT_TENANT_ORDER_BY;
+	@Results({
+        @Result(property = "idBundles",             column = "id_bundles"),
+        @Result(property = "maxOdataResultperpage", column = "max_odata_resultperpage"),
+        @Result(property = "idEcosystem",           column = "id_ecosystem"),
+        @Result(property = "idOrganization",        column = "id_organization"),
+        @Result(property = "idTenantStatus",        column = "id_tenant_status"),
+        @Result(property = "idTenantType",          column = "id_tenant_type"),        
+        @Result(property = "idShareType",           column = "id_share_type"),
+        @Result(property = "idTenant",              column = "id_tenant")
+      })	
+	
+	@Select({"<script>",SELECT_ALL_TENANTS_JOIN,"</script>"}) 
+	List<TenantManagement> selectAllTenant(@Param("sortList") List<String> sortList);
 	
 	
 	/*************************************************************************
