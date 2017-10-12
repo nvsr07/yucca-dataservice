@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface ExposureTypeMapper {
 	
-	String EXPOSURE_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_exposure_type";
+	String EXPOSURE_TYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_exposure_type";
 	
 	public static final String SELECT = 
 			

@@ -18,7 +18,7 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface TagMapper {
 	
-	String TAG_TABLE = Constants.SCHEMA_DB + ".yucca_d_tag";
+	String TAG_TABLE = Constants.SCHEMA_DB + "yucca_d_tag";
 	
 	public static final String FROM =
 		" FROM " + TAG_TABLE + " TAG, " + EcosystemMapper.ECOSYSTEM_TABLE + " ECO " +

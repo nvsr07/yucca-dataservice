@@ -16,9 +16,9 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface SmartobjectMapper {
 
-	String SMARTOBJECT_TABLE = Constants.SCHEMA_DB + ".yucca_smart_object";
+	String SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_smart_object";
 	
-	String TENANT_SMARTOBJECT_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_smart_object";
+	String TENANT_SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_smart_object";
 	
 	
 	/*************************************************************************

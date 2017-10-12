@@ -20,8 +20,8 @@ import org.csi.yucca.adminapi.util.Constants;
 public interface EcosystemMapper {
 	
 	
-	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + ".yucca_ecosystem";
-	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_organization";
+	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + "yucca_ecosystem";
+	String R_ECOSYSTEM_ORGANIZATION_TABLE = Constants.SCHEMA_DB + "yucca_r_ecosystem_organization";
 	
 	
 	public static final String SELECT_BY_ORGANIZATION_CODE =

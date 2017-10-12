@@ -16,8 +16,8 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface UserMapper {
 	
-	String USER_TABLE = Constants.SCHEMA_DB + ".yucca_users";
-	String R_TENANT_USERS_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_users";
+	String USER_TABLE = Constants.SCHEMA_DB + "yucca_users";
+	String R_TENANT_USERS_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_users";
 
 
 	

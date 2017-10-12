@@ -16,7 +16,7 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface DatasetSubtypeMapper {
 	
-	String DATASET_SUBTYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_dataset_subtype";
+	String DATASET_SUBTYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_dataset_subtype";
 	
 	public static final String SELECT = 
 			

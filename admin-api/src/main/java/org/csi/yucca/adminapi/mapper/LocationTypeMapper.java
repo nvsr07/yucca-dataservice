@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface LocationTypeMapper {
 	
-	String LOCATION_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_location_type";
+	String LOCATION_TYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_location_type";
 	
 	public static final String SELECT = 
 			

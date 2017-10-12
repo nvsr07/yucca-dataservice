@@ -15,7 +15,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface PhenomenonMapper {
 	
-	String PHENOMENON_TABLE = Constants.SCHEMA_DB + ".yucca_d_phenomenon";
+	String PHENOMENON_TABLE = Constants.SCHEMA_DB + "yucca_d_phenomenon";
 	
 	public static final String SELECT = 
 			

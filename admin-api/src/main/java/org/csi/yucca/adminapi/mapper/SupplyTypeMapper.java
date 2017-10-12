@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface SupplyTypeMapper {
 	
-	String SUPPLY_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_supply_type";
+	String SUPPLY_TYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_supply_type";
 	
 	public static final String SELECT = 
 			

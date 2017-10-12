@@ -14,7 +14,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface DataTypeMapper {
 
-	String DATA_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_data_type";
+	String DATA_TYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_data_type";
 
 	public static final String SELECT =
 

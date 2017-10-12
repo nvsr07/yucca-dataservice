@@ -7,7 +7,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface SoPositionMapper {
 
-	String SO_POSITION_TABLE = Constants.SCHEMA_DB + ".yucca_so_position";
+	String SO_POSITION_TABLE = Constants.SCHEMA_DB + "yucca_so_position";
 
 	/*************************************************************************
 	 * 

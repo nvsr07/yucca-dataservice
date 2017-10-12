@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface DatasetTypeMapper {
 	
-	String DATASET_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_dataset_type";
+	String DATASET_TYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_dataset_type";
 	
 	public static final String SELECT = 
 			

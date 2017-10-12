@@ -23,11 +23,11 @@ import org.csi.yucca.adminapi.util.Constants;
 public interface TenantMapper {
 	
 	
-	String TENANT_TABLE = Constants.SCHEMA_DB + ".yucca_tenant";
-	String R_TENANT_BUNDLES_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_bundles";
-	String TENANT_STATUS_TABLE = Constants.SCHEMA_DB + ".yucca_d_tenant_status";
-	String TENANT_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_tenant_type";
-	String SHARE_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_share_type";
+	String TENANT_TABLE =           Constants.SCHEMA_DB + "yucca_tenant";
+	String R_TENANT_BUNDLES_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_bundles";
+	String TENANT_STATUS_TABLE =    Constants.SCHEMA_DB + "yucca_d_tenant_status";
+	String TENANT_TYPE_TABLE =      Constants.SCHEMA_DB + "yucca_d_tenant_type";
+	String SHARE_TYPE_TABLE =       Constants.SCHEMA_DB + "yucca_d_share_type";
 	
 	public static final String SELECT_TENANT_COLUMNS = 	
 			" SELECT TENANT.id_tenant, tenantcode, name, description, clientkey, " + 

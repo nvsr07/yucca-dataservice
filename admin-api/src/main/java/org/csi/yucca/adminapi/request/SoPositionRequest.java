@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.request;
 
 public class SoPositionRequest {
 
-	private Integer idSmartObject;
+//	private Integer idSmartObject;
 	private Float lat;
 	private Float lon;
 	private Float elevation;
@@ -14,13 +14,13 @@ public class SoPositionRequest {
 	private String country;
 	private String placegeometry;
 
-	public Integer getIdSmartObject() {
-		return idSmartObject;
-	}
-
-	public void setIdSmartObject(Integer idSmartObject) {
-		this.idSmartObject = idSmartObject;
-	}
+//	public Integer getIdSmartObject() {
+//		return idSmartObject;
+//	}
+//
+//	public void setIdSmartObject(Integer idSmartObject) {
+//		this.idSmartObject = idSmartObject;
+//	}
 
 	public Float getLat() {
 		return lat;

@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface SoTypeMapper {
 	
-	String SO_TYPE_TABLE = Constants.SCHEMA_DB + ".yucca_d_so_type";
+	String SO_TYPE_TABLE = Constants.SCHEMA_DB + "yucca_d_so_type";
 	
 	public static final String SELECT = 
 			

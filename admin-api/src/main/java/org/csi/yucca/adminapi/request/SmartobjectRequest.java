@@ -1,7 +1,5 @@
 package org.csi.yucca.adminapi.request;
 
-import java.sql.Timestamp;
-
 public class SmartobjectRequest {
 
 	private SoPositionRequest position;
@@ -10,13 +8,13 @@ public class SmartobjectRequest {
 	private String name;
 	private String description;
 	private String urladmin;
-	private String fbcoperationfeedback;
+//	private String fbcoperationfeedback;
 	private String swclientversion;
-	private Integer version;
+//	private Integer version;
 	private String model;
-	private Integer deploymentversion;
+//	private Integer deploymentversion;
 //	private String sostatus;
-	private Timestamp creationdate;
+//	private Timestamp creationdate;
 	private String twtusername;
 	private Long twtmaxsearchnumber;
 	private Long twtmaxsearchinterval;
@@ -31,7 +29,7 @@ public class SmartobjectRequest {
 	private Integer idSupplyType;
 	private Integer idSoCategory;
 	private Integer idSoType;
-	private Integer idStatus;
+//	private Integer idStatus;
 	private Integer idTenant;
 	
 	public SoPositionRequest getPosition() {
@@ -76,48 +74,48 @@ public class SmartobjectRequest {
 	public void setUrladmin(String urladmin) {
 		this.urladmin = urladmin;
 	}
-	public String getFbcoperationfeedback() {
-		return fbcoperationfeedback;
-	}
-	public void setFbcoperationfeedback(String fbcoperationfeedback) {
-		this.fbcoperationfeedback = fbcoperationfeedback;
-	}
+//	public String getFbcoperationfeedback() {
+//		return fbcoperationfeedback;
+//	}
+//	public void setFbcoperationfeedback(String fbcoperationfeedback) {
+//		this.fbcoperationfeedback = fbcoperationfeedback;
+//	}
 	public String getSwclientversion() {
 		return swclientversion;
 	}
 	public void setSwclientversion(String swclientversion) {
 		this.swclientversion = swclientversion;
 	}
-	public Integer getVersion() {
-		return version;
-	}
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
+//	public Integer getVersion() {
+//		return version;
+//	}
+//	public void setVersion(Integer version) {
+//		this.version = version;
+//	}
 	public String getModel() {
 		return model;
 	}
 	public void setModel(String model) {
 		this.model = model;
 	}
-	public Integer getDeploymentversion() {
-		return deploymentversion;
-	}
-	public void setDeploymentversion(Integer deploymentversion) {
-		this.deploymentversion = deploymentversion;
-	}
+//	public Integer getDeploymentversion() {
+//		return deploymentversion;
+//	}
+//	public void setDeploymentversion(Integer deploymentversion) {
+//		this.deploymentversion = deploymentversion;
+//	}
 //	public String getSostatus() {
 //		return sostatus;
 //	}
 //	public void setSostatus(String sostatus) {
 //		this.sostatus = sostatus;
 //	}
-	public Timestamp getCreationdate() {
-		return creationdate;
-	}
-	public void setCreationdate(Timestamp creationdate) {
-		this.creationdate = creationdate;
-	}
+//	public Timestamp getCreationdate() {
+//		return creationdate;
+//	}
+//	public void setCreationdate(Timestamp creationdate) {
+//		this.creationdate = creationdate;
+//	}
 	public String getTwtusername() {
 		return twtusername;
 	}
@@ -202,11 +200,11 @@ public class SmartobjectRequest {
 	public void setIdSoType(Integer idSoType) {
 		this.idSoType = idSoType;
 	}
-	public Integer getIdStatus() {
-		return idStatus;
-	}
-	public void setIdStatus(Integer idStatus) {
-		this.idStatus = idStatus;
-	}
+//	public Integer getIdStatus() {
+//		return idStatus;
+//	}
+//	public void setIdStatus(Integer idStatus) {
+//		this.idStatus = idStatus;
+//	}
 
 }

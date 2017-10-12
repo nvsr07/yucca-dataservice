@@ -15,7 +15,7 @@ import org.csi.yucca.adminapi.util.Constants;
 
 public interface MeasureUnitMapper {
 	
-	String MEASURE_UNIT_TABLE = Constants.SCHEMA_DB + ".yucca_d_measure_unit";
+	String MEASURE_UNIT_TABLE = Constants.SCHEMA_DB + "yucca_d_measure_unit";
 	
 	public static final String SELECT = 
 			

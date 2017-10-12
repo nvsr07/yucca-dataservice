@@ -182,8 +182,8 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		SmartobjectRequest smartobjectRequest = new SmartobjectRequest();
 		
-		smartobjectRequest.setVersion(1);
-		smartobjectRequest.setIdStatus(Status.INSTALLED.id());
+//		smartobjectRequest.setVersion(1);
+//		smartobjectRequest.setIdStatus(Status.INSTALLED.id());
 		smartobjectRequest.setSocode(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
 		smartobjectRequest.setSlug(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
 		smartobjectRequest.setName(ServiceUtil.getDefaultInternalSocode(organization.getOrganizationcode()));
@@ -191,14 +191,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		smartobjectRequest.setIdSoType(Type.INTERNAL.id());
 		smartobjectRequest.setIdSoCategory(Category.NONE.id());
 		
-		return insertSmartObject(smartobjectRequest, organization.getIdOrganization(), new Timestamp(System.currentTimeMillis()));
+		return insertSmartObject(smartobjectRequest, organization.getIdOrganization(), new Timestamp(System.currentTimeMillis()), 1, Status.INSTALLED.id());
 		
 	}
 	
 	public Smartobject insertSmartObject(SmartobjectRequest smartobjectRequest, Organization organization)throws BadRequestException{
 
 		Timestamp now = new Timestamp(System.currentTimeMillis());
-		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization.getIdOrganization(), now);
+		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization.getIdOrganization(), now, 1, Status.INSTALLED.id());
 		
 		insertManagerTenantSmartobject(smartobjectRequest.getIdTenant(), smartobject.getIdSmartObject(), now);
 		
@@ -475,7 +475,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	}
 	
 	private Smartobject insertSmartObject(SmartobjectRequest smartobjectRequest, Integer organizationCode,
-			Timestamp now) throws BadRequestException {
+			Timestamp now, Integer version, Integer idStatus) throws BadRequestException {
 
 		Smartobject smartobject = null;
 
@@ -484,6 +484,8 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 			BeanUtils.copyProperties(smartobjectRequest, smartobject);
 
+			smartobject.setVersion(version);
+			smartobject.setIdStatus(idStatus);
 			smartobject.setIdOrganization(organizationCode);
 			smartobject.setCreationdate(now);
 

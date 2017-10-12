@@ -18,7 +18,7 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface SubdomainMapper {
 	
-	String SUBDOMAIN_TABLE = Constants.SCHEMA_DB + ".yucca_d_subdomain";
+	String SUBDOMAIN_TABLE = Constants.SCHEMA_DB + "yucca_d_subdomain";
 	
 	public static final String FROM =
 	" FROM " + SUBDOMAIN_TABLE + " SUB, " + DomainMapper.DOMAIN_TABLE + " DOM  " +

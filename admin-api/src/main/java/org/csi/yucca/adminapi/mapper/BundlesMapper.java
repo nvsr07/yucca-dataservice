@@ -18,8 +18,8 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface BundlesMapper {
 	
-	String R_TENANT_BUNDLES_TABLE = Constants.SCHEMA_DB + ".yucca_r_tenant_bundles";
-	String BUNDLES_TABLE = Constants.SCHEMA_DB + ".yucca_bundles";
+	String R_TENANT_BUNDLES_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_bundles";
+	String BUNDLES_TABLE = Constants.SCHEMA_DB + "yucca_bundles";
 	
 	/*************************************************************************
 	 * 

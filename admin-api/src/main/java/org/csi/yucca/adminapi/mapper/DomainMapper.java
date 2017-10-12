@@ -19,9 +19,9 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface DomainMapper {
 	
-	String DOMAIN_TABLE = Constants.SCHEMA_DB + ".yucca_d_domain";
-	String R_ECOSYSTEM_DOMAIN_TABLE = Constants.SCHEMA_DB + ".yucca_r_ecosystem_domain";
-	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + ".yucca_ecosystem";
+	String DOMAIN_TABLE = Constants.SCHEMA_DB + "yucca_d_domain";
+	String R_ECOSYSTEM_DOMAIN_TABLE = Constants.SCHEMA_DB + "yucca_r_ecosystem_domain";
+	String ECOSYSTEM_TABLE = Constants.SCHEMA_DB + "yucca_ecosystem";
 	
 	public static final String INSERT_DOMAIN 
 	= "INSERT INTO " + DOMAIN_TABLE + "( domaincode, langit, langen, deprecated) VALUES (#{domaincode}, #{langit}, #{langen}, #{deprecated})";
