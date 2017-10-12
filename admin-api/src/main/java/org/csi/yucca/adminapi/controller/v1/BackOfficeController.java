@@ -16,8 +16,6 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_SUBDOMAIN;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_SUBDOMAIN_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TAG;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TAG_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DATA_TYPE;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DATA_TYPE_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DOMAIN;
@@ -56,6 +54,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DOMAIN;
@@ -88,7 +88,6 @@ import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
-import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
@@ -112,6 +111,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
@@ -132,6 +132,24 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;
+
+	
+	@ApiOperation(value = BO_LOAD_TENANT, notes = BO_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer="List")
+	@GetMapping("/tenants")
+	public ResponseEntity<Object> loadTenants(
+			@RequestParam(required=false)final Integer skip, 
+			@RequestParam(required=false) final Integer limit, 
+			@RequestParam(required=false) final String fields,
+			@RequestParam(required=false) final String sort,
+			@RequestParam(required=false) final String embed) {
+		logger.info("loadTenants");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.selectTenant(sort);
+			}
+		}, logger);		
+	}
 	
 	@ApiOperation(value = BO_DELETE_TENANT, notes = BO_DELETE_TENANT_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/tenants/{tenantcode}")
