@@ -47,6 +47,22 @@ public class DettaglioTenantBackoffice implements Serializable {
 	private String socialphoenixschemaname;
 	private String socialphoenixtablename;
 	private String socialsolrcollectionname;
+	private String dataphoenixtablename;			
+	private String dataphoenixschemaname;	
+	
+	
+	public String getDataphoenixtablename() {
+		return dataphoenixtablename;
+	}
+	public void setDataphoenixtablename(String dataphoenixtablename) {
+		this.dataphoenixtablename = dataphoenixtablename;
+	}
+	public String getDataphoenixschemaname() {
+		return dataphoenixschemaname;
+	}
+	public void setDataphoenixschemaname(String dataphoenixschemaname) {
+		this.dataphoenixschemaname = dataphoenixschemaname;
+	}
 	public String getPassword() {
 		return password;
 	}

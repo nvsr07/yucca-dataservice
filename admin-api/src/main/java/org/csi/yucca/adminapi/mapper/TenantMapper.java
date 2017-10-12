@@ -96,7 +96,9 @@ public interface TenantMapper {
 			" coalesce(TENANT.mediasolrcollectionname, ORGANIZATION.mediasolrcollectionname) AS mediasolrcollectionname, "+
 			" coalesce(TENANT.socialphoenixschemaname, ORGANIZATION.socialphoenixschemaname) AS socialphoenixschemaname, "+
 			" coalesce(TENANT.socialphoenixtablename, ORGANIZATION.socialphoenixtablename) AS socialphoenixtablename, "+
-			" coalesce(TENANT.socialsolrcollectionname, ORGANIZATION.socialsolrcollectionname) AS socialsolrcollectionname "+	
+			" coalesce(TENANT.socialsolrcollectionname, ORGANIZATION.socialsolrcollectionname) AS socialsolrcollectionname, "+	
+			" coalesce(TENANT.dataphoenixtablename, ORGANIZATION.dataphoenixtablename) AS dataphoenixtablename, "+	
+			" coalesce(TENANT.dataphoenixschemaname, ORGANIZATION.dataphoenixschemaname) AS dataphoenixschemaname "+	
 			" FROM int_yucca.yucca_tenant TENANT  "+
 			" LEFT JOIN " + R_TENANT_BUNDLES_TABLE + " TENANT_BUNDLES ON TENANT.id_tenant = TENANT_BUNDLES.id_tenant "+
 			" LEFT JOIN " + BundlesMapper.BUNDLES_TABLE + " BUNDLES ON BUNDLES.id_bundles = TENANT_BUNDLES.id_bundles "+
