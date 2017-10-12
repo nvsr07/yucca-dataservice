@@ -3,24 +3,12 @@ package org.csi.yucca.adminapi.response;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 
 public class TenantManagementResponse extends Response{
-	
-	private String username;
 
-	private BundlesResponse bundles;
-	
-	private EcosystemResponse ecosystem;
-
-    private ManagementOrganizationResponse organization;	
-	
-	private TenantStatusResponse tenantStatus;
-	
-	private TenantTypeResponse tenantType;
-	
-	private ShareTypeResponse shareType;
-	
 	private Integer idTenant;
 
 	private String description;
+
+	private String username;
 
 	private String name;
 
@@ -35,6 +23,18 @@ public class TenantManagementResponse extends Response{
 	private String userlastname;
 	
 	private String usertypeauth;
+
+	private BundlesResponse bundles;
+	
+	private EcosystemResponse ecosystem;
+
+    private OrganizationResponse organization;	
+	
+	private TenantStatusResponse tenantStatus;
+	
+	private TenantTypeResponse tenantType;
+	
+	private ShareTypeResponse shareType;
 	
 	
 	public TenantManagementResponse(TenantManagement tenantManagement) {
@@ -42,7 +42,7 @@ public class TenantManagementResponse extends Response{
 		this.username = tenantManagement.getUsername();
 		this.bundles = new BundlesResponse(tenantManagement);
 		this.ecosystem = new EcosystemResponse(tenantManagement);
-		this.organization = new ManagementOrganizationResponse(tenantManagement);
+		this.organization = new OrganizationResponse(tenantManagement);
 		this.tenantStatus = new TenantStatusResponse(tenantManagement);
 		this.tenantType = new TenantTypeResponse(tenantManagement);
 		this.shareType = new ShareTypeResponse(tenantManagement);
@@ -82,11 +82,11 @@ public class TenantManagementResponse extends Response{
 		this.ecosystem = ecosystem;
 	}
 
-	public ManagementOrganizationResponse getOrganization() {
+	public OrganizationResponse getOrganization() {
 		return organization;
 	}
 
-	public void setOrganization(ManagementOrganizationResponse organization) {
+	public void setOrganization(OrganizationResponse organization) {
 		this.organization = organization;
 	}
 

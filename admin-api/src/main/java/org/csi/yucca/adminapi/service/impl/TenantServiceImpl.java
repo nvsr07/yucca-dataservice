@@ -20,11 +20,12 @@ import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.User;
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.BundlesRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
-import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioTenantResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
@@ -80,7 +81,7 @@ public class TenantServiceImpl implements TenantService {
 	private MessageSender messageSender;
 	
 	
-	public ServiceResponse selectTenant(String sort) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse selectTenants(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, Tenant.class);
 		
@@ -95,6 +96,20 @@ public class TenantServiceImpl implements TenantService {
 		}
 		
 		return ServiceResponse.build().object(responseList);
+		
+	}
+
+	/**
+	 * SELECT DETTAGLIO TENANT BY TENANTCODE
+	 * 
+	 */
+	public ServiceResponse selectTenant(String tenantcode) throws BadRequestException, NotFoundException, Exception{
+		
+		DettaglioTenantBackoffice dettaglioTenant = tenantMapper.selectDettaglioTenant(tenantcode);
+		
+		ServiceUtil.checkIfFoundRecord(dettaglioTenant);
+		
+		return ServiceResponse.build().object(new BackofficeDettaglioTenantResponse(dettaglioTenant));
 		
 	}
 	

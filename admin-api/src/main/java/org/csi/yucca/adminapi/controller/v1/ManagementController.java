@@ -76,7 +76,7 @@ public class ManagementController extends YuccaController{
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.selectTenant(sort);
+				return tenantService.selectTenants(sort);
 			}
 		}, logger);		
 	}

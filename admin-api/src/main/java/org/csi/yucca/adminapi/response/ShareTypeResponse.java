@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 
 public class ShareTypeResponse extends Response{
@@ -12,6 +13,12 @@ public class ShareTypeResponse extends Response{
 		super();
 		this.idShareType = tenantManagement.getIdShareType();
 		this.description = tenantManagement.getSharetypedescription();
+	}
+
+	public ShareTypeResponse(DettaglioTenantBackoffice dettaglioTenant) {
+		super();
+		this.idShareType = dettaglioTenant.getIdShareType();
+		this.description = dettaglioTenant.getSharetypedescription();
 	}
 
 	public Integer getIdShareType() {

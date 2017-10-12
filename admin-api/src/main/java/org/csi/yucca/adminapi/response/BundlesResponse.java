@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 
 public class BundlesResponse extends Response{
@@ -19,6 +20,16 @@ public class BundlesResponse extends Response{
 		this.hasstage = tenantManagement.getHasstage();
 		this.maxOdataResultperpage = tenantManagement.getMaxOdataResultperpage();
 		this.zeppelin = tenantManagement.getZeppelin();
+	}
+
+	public BundlesResponse(DettaglioTenantBackoffice dettaglioTenantBackoffice) {
+		super();
+		this.idBundles = dettaglioTenantBackoffice.getIdBundles();
+		this.maxdatasetnum = dettaglioTenantBackoffice.getMaxdatasetnum();
+		this.maxstreamsnum = dettaglioTenantBackoffice.getMaxstreamsnum();
+		this.hasstage = dettaglioTenantBackoffice.getHasstage();
+		this.maxOdataResultperpage = dettaglioTenantBackoffice.getMaxOdataResultperpage();
+		this.zeppelin = dettaglioTenantBackoffice.getZeppelin();
 	}
 	
 	public Integer getIdBundles() {

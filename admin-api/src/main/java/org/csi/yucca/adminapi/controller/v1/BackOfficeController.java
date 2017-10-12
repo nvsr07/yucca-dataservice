@@ -54,6 +54,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANTS_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE;
@@ -133,20 +135,44 @@ public class BackOfficeController extends YuccaController{
 	@Autowired
 	private TenantService tenantService;
 
-	
+	/**
+	 * 
+	 * LOAD TENANT BY TENANTCODE
+	 * 
+	 * @param tenantcode
+	 * @return
+	 */
 	@ApiOperation(value = BO_LOAD_TENANT, notes = BO_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer="List")
+	@GetMapping("/tenants/{tenantcode}")
+	public ResponseEntity<Object> loadTenant(@PathVariable final String tenantcode) {
+		logger.info("loadTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.selectTenant(tenantcode);
+			}
+		}, logger);		
+	}	
+	
+	/**
+	 * LOAD ALL TENANTS
+	 * 
+	 * @param skip
+	 * @param limit
+	 * @param fields
+	 * @param sort
+	 * @param embed
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_TENANTS, notes = BO_LOAD_TENANTS_NOTES, response = DomainResponse.class, responseContainer="List")
 	@GetMapping("/tenants")
-	public ResponseEntity<Object> loadTenants(
-			@RequestParam(required=false)final Integer skip, 
-			@RequestParam(required=false) final Integer limit, 
-			@RequestParam(required=false) final String fields,
-			@RequestParam(required=false) final String sort,
-			@RequestParam(required=false) final String embed) {
+	public ResponseEntity<Object> loadTenants(@RequestParam(required=false)final Integer skip, @RequestParam(required=false) final Integer limit, 
+			@RequestParam(required=false) final String fields,@RequestParam(required=false) final String sort, @RequestParam(required=false) final String embed) {
 		logger.info("loadTenants");
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.selectTenant(sort);
+				return tenantService.selectTenants(sort);
 			}
 		}, logger);		
 	}

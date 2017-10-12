@@ -1,18 +1,26 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 
-public class ManagementOrganizationResponse extends Response{
+public class OrganizationResponse extends Response{
 	
 	private Integer idOrganization;
 	private String organizationcode;
 	private String description;
 	
-	public ManagementOrganizationResponse(TenantManagement tenantManagement) {
+	public OrganizationResponse(TenantManagement tenantManagement) {
 		super();
 		this.idOrganization = tenantManagement.getIdOrganization();
 		this.organizationcode = tenantManagement.getOrganizationcode();
 		this.description = tenantManagement.getOrganizationdescription();
+	}
+
+	public OrganizationResponse(DettaglioTenantBackoffice dettaglioTenantBackoffice) {
+		super();
+		this.idOrganization = dettaglioTenantBackoffice.getIdOrganization();
+		this.organizationcode = dettaglioTenantBackoffice.getOrganizationcode();
+		this.description = dettaglioTenantBackoffice.getOrganizationdescription();
 	}
 
 	public Integer getIdOrganization() {

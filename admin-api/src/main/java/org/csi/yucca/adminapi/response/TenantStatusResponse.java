@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 
 public class TenantStatusResponse extends Response{
@@ -17,6 +18,16 @@ public class TenantStatusResponse extends Response{
 		this.description = tenantManagement.getTenantstatusdescription();
 	}
 
+	public TenantStatusResponse(DettaglioTenantBackoffice dettaglioTenant) {
+		super();
+		this.idTenantStatus = dettaglioTenant.getIdTenantStatus();
+		this.tenantstatuscode = dettaglioTenant.getTenantstatuscode();
+		this.description = dettaglioTenant.getTenantstatusdescription();
+	}
+
+	
+	
+	
 	public Integer getIdTenantStatus() {
 		return idTenantStatus;
 	}

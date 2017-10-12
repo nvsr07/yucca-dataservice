@@ -1,7 +1,7 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
-import org.csi.yucca.adminapi.util.Errors;
 
 public class TenantTypeResponse extends Response{
 
@@ -16,6 +16,13 @@ public class TenantTypeResponse extends Response{
 		this.idTenantType = tenantManagement.getIdTenantType();
 		this.tenanttypecode = tenantManagement.getTenanttypecode();
 		this.description = tenantManagement.getTenanttypedescription();
+	}
+
+	public TenantTypeResponse(DettaglioTenantBackoffice dettaglioTenant) {
+		super();
+		this.idTenantType = dettaglioTenant.getIdTenantType();
+		this.tenanttypecode = dettaglioTenant.getTenanttypecode();
+		this.description = dettaglioTenant.getTenanttypedescription();
 	}
 
 	public Integer getIdTenantType() {

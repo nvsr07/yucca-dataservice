@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Tenant;
+import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.util.Constants;
 
@@ -69,6 +70,56 @@ public interface TenantMapper {
             
             "</foreach>" +
             "</if>";	
+
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT TENANT BY TENANT CODE
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_DETTAGLIO_TENANT =
+			" SELECT USERS.password,tenantcode, TENANT.id_tenant, TENANT.description, name, usagedaysnumber, useremail, "+ 
+			" userfirstname, userlastname, usertypeauth, USERS.username, BUNDLES.id_bundles, BUNDLES.maxdatasetnum, "+ 
+			" BUNDLES.maxstreamsnum, BUNDLES.hasstage, BUNDLES.max_odata_resultperpage, BUNDLES.zeppelin, "+
+			" TENANT.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description ecosystemdescription, "+
+			" TENANT.id_organization, ORGANIZATION.organizationcode, ORGANIZATION.description as organizationdescription, "+
+			" TENANT.id_tenant_status, TENANT_STATUS.tenantstatuscode, TENANT_STATUS.description as tenantstatusdescription, "+
+			" TENANT.id_tenant_type, TENANT_TYPE.tenanttypecode, TENANT_TYPE.description tenanttypedescription, "+
+			" TENANT.id_share_type, SHARE_TYPE.description as sharetypedescription, "+
+			" coalesce(TENANT.datasolrcollectionname, ORGANIZATION.datasolrcollectionname) AS datasolrcollectionname, "+
+			" coalesce(TENANT.measuresolrcollectionname, ORGANIZATION.measuresolrcollectionname) AS measuresolrcollectionname, "+
+			" coalesce(TENANT.measuresphoenixschemaname, ORGANIZATION.measuresphoenixschemaname) AS measuresphoenixschemaname, "+
+			" coalesce(TENANT.measuresphoenixtablename, ORGANIZATION.measuresphoenixtablename) AS measuresphoenixtablename, "+
+			" coalesce(TENANT.mediaphoenixschemaname, ORGANIZATION.mediaphoenixschemaname) AS mediaphoenixschemaname, "+
+			" coalesce(TENANT.mediaphoenixtablename, ORGANIZATION.mediaphoenixtablename) AS mediaphoenixtablename, "+
+			" coalesce(TENANT.mediasolrcollectionname, ORGANIZATION.mediasolrcollectionname) AS mediasolrcollectionname, "+
+			" coalesce(TENANT.socialphoenixschemaname, ORGANIZATION.socialphoenixschemaname) AS socialphoenixschemaname, "+
+			" coalesce(TENANT.socialphoenixtablename, ORGANIZATION.socialphoenixtablename) AS socialphoenixtablename, "+
+			" coalesce(TENANT.socialsolrcollectionname, ORGANIZATION.socialsolrcollectionname) AS socialsolrcollectionname "+	
+			" FROM int_yucca.yucca_tenant TENANT  "+
+			" LEFT JOIN " + R_TENANT_BUNDLES_TABLE + " TENANT_BUNDLES ON TENANT.id_tenant = TENANT_BUNDLES.id_tenant "+
+			" LEFT JOIN " + BundlesMapper.BUNDLES_TABLE + " BUNDLES ON BUNDLES.id_bundles = TENANT_BUNDLES.id_bundles "+
+			" LEFT JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " ORGANIZATION ON TENANT.id_organization = ORGANIZATION.id_organization "+
+			" LEFT JOIN " + EcosystemMapper.ECOSYSTEM_TABLE + " ECOSYSTEM ON TENANT.id_ecosystem = ECOSYSTEM.id_ecosystem "+
+			" LEFT JOIN " + TENANT_STATUS_TABLE + " TENANT_STATUS ON TENANT.id_tenant_status = TENANT_STATUS.id_tenant_status "+
+			" LEFT JOIN " + TENANT_TYPE_TABLE + " TENANT_TYPE ON TENANT.id_tenant_type = TENANT_TYPE.id_tenant_type "+
+			" LEFT JOIN " + SHARE_TYPE_TABLE + " SHARE_TYPE ON TENANT.id_share_type = SHARE_TYPE.id_share_type "+
+			" LEFT JOIN " + UserMapper.R_TENANT_USERS_TABLE + " TENANT_USERS ON TENANT.id_tenant = TENANT_USERS.id_tenant "+
+			" LEFT JOIN " + UserMapper.USER_TABLE + " USERS ON USERS.id_user = TENANT_USERS.id_user and USERS.username = tenantcode "+ 
+			" where tenantcode=#{tenantcode} ";
+	@Results({
+        @Result(property = "idBundles",             column = "id_bundles"),
+        @Result(property = "maxOdataResultperpage", column = "max_odata_resultperpage"),
+        @Result(property = "idEcosystem",           column = "id_ecosystem"),
+        @Result(property = "idOrganization",        column = "id_organization"),
+        @Result(property = "idTenantStatus",        column = "id_tenant_status"),
+        @Result(property = "idTenantType",          column = "id_tenant_type"),        
+        @Result(property = "idShareType",           column = "id_share_type"),
+        @Result(property = "idTenant",              column = "id_tenant")
+      })	
+	@Select(SELECT_DETTAGLIO_TENANT) 
+	DettaglioTenantBackoffice selectDettaglioTenant(@Param("tenantcode") String tenantcode);
 	
 	
 	/*************************************************************************
@@ -115,7 +166,6 @@ public interface TenantMapper {
         @Result(property = "idShareType",           column = "id_share_type"),
         @Result(property = "idTenant",              column = "id_tenant")
       })	
-	
 	@Select({"<script>",SELECT_ALL_TENANTS_JOIN,"</script>"}) 
 	List<TenantManagement> selectAllTenant(@Param("sortList") List<String> sortList);
 	
