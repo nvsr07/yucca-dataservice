@@ -96,6 +96,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Override
 	public ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 		
+		if(tenantCode != null){
+			// verifico che sia uno di quelli nei ruoli:
+			
+			
+			
+		}
+		
+		
 		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
 		
 		ServiceUtil.checkIfFoundRecord(tenant, "Tenant [" + tenantCode + "] not found!");

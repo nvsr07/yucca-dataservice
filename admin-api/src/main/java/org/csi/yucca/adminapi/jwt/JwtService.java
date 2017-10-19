@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.jwt;
 
-import java.util.Base64;
+//import java.util.Base64;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.nimbusds.jose.JWSObject;
+import com.nimbusds.jose.util.Base64;
 
 import net.minidev.json.JSONObject;
 
@@ -59,7 +60,9 @@ public class JwtService {
 		if (StringUtils.isEmpty(plainSecret)) {
 			throw new IllegalArgumentException("JWT secret cannot be null or empty.");
 		}
-		return Base64.getEncoder().encodeToString(this.tokenSecret.getBytes());
+		
+		return Base64.encode(plainSecret.getBytes()).toString();
+//		return Base64.getEncoder().encodeToString(plainSecret.getBytes());
 	}
 
 	protected Date getExpirationTime() {
