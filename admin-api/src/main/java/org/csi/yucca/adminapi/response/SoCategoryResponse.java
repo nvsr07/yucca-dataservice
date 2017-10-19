@@ -1,10 +1,23 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+
 public class SoCategoryResponse extends Response{
 	
 	private Integer idSoCategory;
 	private String socategorycode;
 	private String description;
+	
+	public SoCategoryResponse(DettaglioSmartobject smartobject) {
+		super();
+		this.idSoCategory = smartobject.getIdSoCategory();
+		this.socategorycode = smartobject.getSocategorycode();
+		this.description = smartobject.getDescriptionSoCategory();
+	}
+	
+	public SoCategoryResponse() {
+		super();
+	}
 	
 	public Integer getIdSoCategory() {
 		return idSoCategory;

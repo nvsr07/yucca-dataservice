@@ -1,12 +1,24 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+
 public class SupplyTypeResponse extends Response{
 	
 	private Integer idSupplyType;
 	private String supplytype;
 	private String description;
-	
 
+	public SupplyTypeResponse(DettaglioSmartobject smartobject) {
+		super();
+		this.idSupplyType = smartobject.getIdSupplyType();
+		this.supplytype = smartobject.getSupplytype();
+		this.description = smartobject.getDescriptionSupplytype();
+	}
+
+	public SupplyTypeResponse() {
+		super();
+	}
+	
 	public Integer getIdSupplyType() {
 		return idSupplyType;
 	}

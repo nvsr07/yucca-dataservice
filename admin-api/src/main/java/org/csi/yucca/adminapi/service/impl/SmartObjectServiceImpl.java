@@ -9,11 +9,14 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
 import static org.csi.yucca.adminapi.util.ServiceUtil.isType;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.mapper.ExposureTypeMapper;
 import org.csi.yucca.adminapi.mapper.LocationTypeMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
@@ -31,8 +34,11 @@ import org.csi.yucca.adminapi.model.SoCategory;
 import org.csi.yucca.adminapi.model.SoPosition;
 import org.csi.yucca.adminapi.model.SoType;
 import org.csi.yucca.adminapi.model.SupplyType;
+import org.csi.yucca.adminapi.model.Tenant;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.request.SoPositionRequest;
+import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.ExposureTypeResponse;
 import org.csi.yucca.adminapi.response.LocationTypeResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
@@ -85,7 +91,34 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 	@Autowired
 	private SoPositionMapper soPositionMapper;
+	
+	
+	@Override
+	public ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+		
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
+		
+		ServiceUtil.checkIfFoundRecord(tenant, "Tenant [" + tenantCode + "] not found!");
+		
+		List<DettaglioSmartobject> list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, Arrays.asList(tenant.getIdTenant()));
 
+		List<DettaglioSmartobjectResponse> responseList = new ArrayList<DettaglioSmartobjectResponse>();
+		
+		for (DettaglioSmartobject smartobject : list) {
+			responseList.add(new DettaglioSmartobjectResponse(smartobject));
+		}
+		
+		return ServiceResponse.build().object(responseList);	
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	public List<Integer> selectTenantByOrganization(Integer idOrganization){
 		return tenantMapper.selectIdTenantByIdOrganization(idOrganization);
 	}
@@ -501,5 +534,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		return smartobject;
 	}
+
+
 
 }

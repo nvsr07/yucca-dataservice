@@ -1,10 +1,24 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+
 public class LocationTypeResponse extends Response{
 
 	private Integer idLocationType;
 	private String locationtype;
 	private String description;
+	
+	public LocationTypeResponse(DettaglioSmartobject smartobject) {
+		super();
+		this.idLocationType = smartobject.getIdLocationType();
+		this.locationtype = smartobject.getLocationtype();
+		this.description = smartobject.getDescriptionLocationtype();
+	}
+	
+	public LocationTypeResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 	public Integer getIdLocationType() {
 		return idLocationType;

@@ -13,6 +13,12 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
+
+
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
@@ -53,6 +59,28 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;    
+
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param tenantCode
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value = M_LOAD_SMART_OBJECTS, notes = M_LOAD_SMART_OBJECTS_NOTES, response = SmartobjectResponse.class, responseContainer="List")
+	@GetMapping("/organizations/{organizationCode}/smartobjects")
+	public ResponseEntity<Object> loadSmartobjects(@PathVariable final String organizationCode,
+			@RequestParam(required=false) final String tenantCode, final HttpServletRequest request) {
+		logger.info("loadSmartobjects");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return smartObjectService.selectSmartObjects(organizationCode, tenantCode, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}
+	
 	
 	/**
 	 * LOAD TENANT

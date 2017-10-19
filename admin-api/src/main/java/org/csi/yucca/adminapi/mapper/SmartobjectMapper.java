@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Smartobject;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.util.Constants;
 
 public interface SmartobjectMapper {
@@ -19,7 +20,8 @@ public interface SmartobjectMapper {
 	String SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_smart_object";
 	
 	String TENANT_SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_smart_object";
-	
+
+	String STATUS_TABLE = Constants.SCHEMA_DB + "yucca_d_status";
 	
 	/*************************************************************************
 	 * 
@@ -65,7 +67,80 @@ public interface SmartobjectMapper {
 		= "DELETE FROM " + SMARTOBJECT_TABLE + " WHERE id_so_type = #{idSoType} AND id_organization = #{idOrganization}";
 	@Delete(DELETE_INTERNAL_SMARTOBJECT)
 	int deleteInternalSmartobject( @Param("idSoType") Integer idSoType, @Param("idOrganization") Integer idOrganization);	
+	
+	
+	/************************************************************************************
+	 * 
+	 * 					SELECT SMARTOBJECT BY ORGANIZATION AND TENANAT
+	 * 								LOAD ELENCO SO
+	 * 
+	 ************************************************************************************/
+	public static final String SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT =
+			" SELECT " +
+			" SMARTOBJECT.id_smart_object, socode, " +
+			" ORGANIZATION.organizationcode, ORGANIZATION.description AS description_organization, " +
+			" STATUS.statuscode, STATUS.description AS description_status, " +
+			" SO_TYPE.sotypecode, SO_TYPE.description AS description_so_type, " +
+			" SO_CATEGORY.socategorycode, SO_CATEGORY.description AS description_so_category, " +
+			" SUPPLY_TYPE.supplytype, SUPPLY_TYPE.description AS description_supplytype, " +
+			" EXPOSURE_TYPE.exposuretype, EXPOSURE_TYPE.description AS description_exposuretype, " +
+			" LOCATION_TYPE.locationtype, LOCATION_TYPE.description AS description_locationtype, " +
+			" name, SMARTOBJECT.description, urladmin, " +
+			" fbcoperationfeedback, swclientversion, version, model, deploymentversion, sostatus, creationdate, twtusername, twtmaxsearchnumber, " + 
+			" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, slug, " +
+			" SMARTOBJECT.id_location_type, " +
+			" SMARTOBJECT.id_exposure_type, " +
+			" SMARTOBJECT.id_supply_type, " +
+			" SMARTOBJECT.id_so_category, " +
+			" SMARTOBJECT.id_so_type, " +
+			" SMARTOBJECT.id_status, " +
+			" SMARTOBJECT.id_organization " +
+			
+			" FROM " + SMARTOBJECT_TABLE + " SMARTOBJECT " + 
+			
+			" LEFT JOIN " + "int_yucca.yucca_d_location_type" + " LOCATION_TYPE ON SMARTOBJECT.id_location_type = LOCATION_TYPE.id_location_type " +   
+			" LEFT JOIN " + ExposureTypeMapper.EXPOSURE_TYPE_TABLE + " EXPOSURE_TYPE ON SMARTOBJECT.id_exposure_type = EXPOSURE_TYPE.id_exposure_type " +
+			" LEFT JOIN " + SupplyTypeMapper.SUPPLY_TYPE_TABLE + " SUPPLY_TYPE ON SMARTOBJECT.id_supply_type = SUPPLY_TYPE.id_supply_type " +
+			" LEFT JOIN " + SoCategoryMapper.SO_CATEGORY_TYPE_TABLE + " SO_CATEGORY ON SMARTOBJECT.id_so_category = SO_CATEGORY.id_so_category " +
+			" LEFT JOIN " + SoTypeMapper.SO_TYPE_TABLE + " SO_TYPE ON SMARTOBJECT.id_so_type = SO_TYPE.id_so_type " +
+			" LEFT JOIN " + STATUS_TABLE + " STATUS ON SMARTOBJECT.id_status = STATUS.id_status " +
+			" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " ORGANIZATION ON ORGANIZATION.id_organization = SMARTOBJECT.id_organization " +
+			
+			" WHERE ORGANIZATION.organizationcode = #{organizationCode} AND " +
+			" SMARTOBJECT.id_smart_object in ( " +
+			" select id_smart_object from "
+			+  TENANT_SMARTOBJECT_TABLE  + " TENANT_SO where " + 
+			
+			" (" 
+	
+			 	+ " <foreach item=\"propName\" separator=\" OR \" index=\"index\" collection=\"idTenantList\">" 
+			
+				+  " TENANT_SO.id_tenant = #{propName} "
 
+				+ " </foreach>" 
+			
+			+ ") AND TENANT_SO.isactive = 1) ";
+	@Results({
+        @Result(property = "descriptionOrganization",  column = "description_organization"),
+        @Result(property = "descriptionStatus",        column = "description_status"),
+        @Result(property = "descriptionSoType",        column = "description_so_type"),
+        @Result(property = "descriptionSoCategory",    column = "description_so_category"),
+        @Result(property = "descriptionSupplytype",    column = "description_supplytype"),
+        @Result(property = "descriptionExposuretype",  column = "description_exposuretype"),
+        @Result(property = "descriptionLocationtype",  column = "description_locationtype"),
+        @Result(property = "idSmartObject",            column = "id_smart_object"),
+        @Result(property = "idSoType",                 column = "id_so_type"),
+        @Result(property = "idLocationType",           column = "id_location_type"),
+        @Result(property = "idExposureType",           column = "id_exposure_type"),
+        @Result(property = "idSupplyType",             column = "id_supply_type"),
+        @Result(property = "idSoCategory",             column = "id_so_category"),
+        @Result(property = "idStatus",                 column = "id_status"),
+        @Result(property = "idOrganization",           column = "id_organization")
+      })
+	@Select({"<script>",SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT,"</script>"})
+	List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(@Param("organizationCode") String organizationCode, 
+			@Param("idTenantList") List<Integer> idTenantList);	
+	
 	
 	/*************************************************************************
 	 * 

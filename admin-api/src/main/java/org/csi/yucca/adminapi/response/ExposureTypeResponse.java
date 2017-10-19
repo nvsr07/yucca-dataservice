@@ -1,16 +1,29 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+
 public class ExposureTypeResponse extends Response {
 
-	private int idExposureType;
+	private Integer idExposureType;
 	private String exposuretype;
 	private String description;
+	
+	public ExposureTypeResponse(DettaglioSmartobject smartobject) {
+		super();
+		this.idExposureType = smartobject.getIdExposureType();
+		this.exposuretype = smartobject.getExposuretype();
+		this.description = smartobject.getDescriptionExposuretype();
+	}
 
-	public int getIdExposureType() {
+	public ExposureTypeResponse() {
+		super();
+	}
+
+	public Integer getIdExposureType() {
 		return idExposureType;
 	}
 
-	public void setIdExposureType(int idExposureType) {
+	public void setIdExposureType(Integer idExposureType) {
 		this.idExposureType = idExposureType;
 	}
 

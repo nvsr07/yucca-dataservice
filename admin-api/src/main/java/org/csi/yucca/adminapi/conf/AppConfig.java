@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -28,6 +29,12 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableTransactionManagement
 @EnableWebMvc
 @ComponentScan(basePackages = "org.csi.yucca.adminapi")
+
+//@ComponentScan(basePackages={"org.csi.yucca.adminapi"},
+//excludeFilters={
+//        @ComponentScan.Filter(type= FilterType.ANNOTATION, value=EnableWebMvc.class)
+//})
+
 @MapperScan("org.csi.yucca.adminapi.mapper")
 @PropertySource(value = { "classpath:datasource.properties" })
 public class AppConfig extends WebMvcConfigurerAdapter {
