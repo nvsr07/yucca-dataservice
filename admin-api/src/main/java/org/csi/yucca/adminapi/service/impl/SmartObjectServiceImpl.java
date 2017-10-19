@@ -16,6 +16,7 @@ import java.util.List;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.mapper.ExposureTypeMapper;
 import org.csi.yucca.adminapi.mapper.LocationTypeMapper;
@@ -92,26 +93,44 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Autowired
 	private SoPositionMapper soPositionMapper;
 	
+
+	private List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
+		List<String> tenantCodeList = new ArrayList<>();
+		for (String role : authorizedUser.getRoles()) {
+			if(role.contains("_subscriber")){
+				tenantCodeList.add(role.substring(0, role.lastIndexOf("_")));
+			}
+		}
+		return tenantCodeList;
+	}
 	
 	@Override
-	public ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
+
+		List<String> userAuthorizedTenantCodeList = getTenantCodeListFromUser(authorizedUser);
 		
+		List<DettaglioSmartobject> list = null;
 		if(tenantCode != null){
-			// verifico che sia uno di quelli nei ruoli:
+
+			// verifica che il tenant code esista:
+			Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
+			ServiceUtil.checkIfFoundRecord(tenant, "Tenant [" + tenantCode + "] not found!");
 			
+			// verifico che il tenant code è autorizzato:
+			if(!userAuthorizedTenantCodeList.contains(tenantCode)){
+				throw new UnauthorizedException(Errors.UNAUTHORIZED, "Not authorized tenant [ " + tenantCode + " ]");
+			}
 			
-			
+			list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, Arrays.asList(tenantCode));
+		}
+		else{
+			//	recupera i tenant dallo user.
+			list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, userAuthorizedTenantCodeList);
 		}
 		
-		
-		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
-		
-		ServiceUtil.checkIfFoundRecord(tenant, "Tenant [" + tenantCode + "] not found!");
-		
-		List<DettaglioSmartobject> list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, Arrays.asList(tenant.getIdTenant()));
-
+		// prepare response 
 		List<DettaglioSmartobjectResponse> responseList = new ArrayList<DettaglioSmartobjectResponse>();
-		
+		ServiceUtil.checkList(responseList);
 		for (DettaglioSmartobject smartobject : list) {
 			responseList.add(new DettaglioSmartobjectResponse(smartobject));
 		}

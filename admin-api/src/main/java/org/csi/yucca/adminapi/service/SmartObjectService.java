@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
@@ -12,7 +13,7 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface SmartObjectService {
 
-	ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException,UnauthorizedException, Exception;
 	
 	Smartobject selectSmartObjectByOrganizationAndSoType(Integer idOrganization, Integer idSoType);
 	

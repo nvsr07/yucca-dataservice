@@ -14,7 +14,10 @@ public enum Errors {
     NO_TWEET_SO_TYPE            ("E10", "Is not Tweet SO Type"),
     NOT_CONSISTENT_DATA         ("E11", "Not consistent data"),
     INCORRECT_VALUE             ("E12", "Incorrect value"),
-    ALPHANUMERIC_VALUE_REQUIRED ("E13", "Alphanumeric value required");
+    ALPHANUMERIC_VALUE_REQUIRED ("E13", "Alphanumeric value required"),
+    UNAUTHORIZED                ("E14", "Unauthorized User")
+    
+    ;
 	
 	private String errorName;
 	private String errorCode;

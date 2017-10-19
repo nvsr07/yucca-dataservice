@@ -109,17 +109,17 @@ public interface SmartobjectMapper {
 			" WHERE ORGANIZATION.organizationcode = #{organizationCode} AND " +
 			" SMARTOBJECT.id_smart_object in ( " +
 			" select id_smart_object from "
-			+  TENANT_SMARTOBJECT_TABLE  + " TENANT_SO where " + 
-			
+			+  TENANT_SMARTOBJECT_TABLE  + " TENANT_SO, " + TenantMapper.TENANT_TABLE + " TENANT where " + 
+				"TENANT.id_tenant = TENANT_SO.id_tenant  and" +
 			" (" 
 	
-			 	+ " <foreach item=\"propName\" separator=\" OR \" index=\"index\" collection=\"idTenantList\">" 
+			 	+ " <foreach item=\"propName\" separator=\" OR \" index=\"index\" collection=\"tenantCodeList\">" 
 			
-				+  " TENANT_SO.id_tenant = #{propName} "
+				+  " TENANT.tenantcode = #{propName} "
 
 				+ " </foreach>" 
 			
-			+ ") AND TENANT_SO.isactive = 1) ";
+			+ ") AND  TENANT_SO.isactive = 1) ";
 	@Results({
         @Result(property = "descriptionOrganization",  column = "description_organization"),
         @Result(property = "descriptionStatus",        column = "description_status"),
@@ -139,7 +139,7 @@ public interface SmartobjectMapper {
       })
 	@Select({"<script>",SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT,"</script>"})
 	List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(@Param("organizationCode") String organizationCode, 
-			@Param("idTenantList") List<Integer> idTenantList);	
+			@Param("tenantCodeList") List<String> tenantCodeList);	
 	
 	
 	/*************************************************************************

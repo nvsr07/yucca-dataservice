@@ -7,6 +7,7 @@ import org.csi.yucca.adminapi.conf.JwtFilter;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.exception.YuccaException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.response.Response;
@@ -64,6 +65,10 @@ public class YuccaController {
 			serviceResponse = apiCallable.call();
 			
 		} 
+		catch (UnauthorizedException unauthorizedException) {
+			logger.error("UnauthorizedException: " + unauthorizedException);
+			return buildErrorResponse(unauthorizedException);
+		}
 		catch (BadRequestException badRequestException) {
 			logger.error("BadRequestException: " + badRequestException);
 			return buildErrorResponse(badRequestException);
