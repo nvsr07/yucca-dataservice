@@ -95,14 +95,42 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	
 
 	private List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
+		
+		if(authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return null;
+		
 		List<String> tenantCodeList = new ArrayList<>();
 		for (String role : authorizedUser.getRoles()) {
 			if(role.contains("_subscriber")){
 				tenantCodeList.add(role.substring(0, role.lastIndexOf("_")));
 			}
 		}
+		
 		return tenantCodeList;
 	}
+	
+	public List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(String socode, String organizationCode, List<String> tenantCodeList)throws NotFoundException{
+		List<DettaglioSmartobject> list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(socode, organizationCode, tenantCodeList);
+		return list;
+	}
+
+	public List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(String organizationCode, List<String> tenantCodeList) throws NotFoundException{
+		return selectSmartobjectByOrganizationAndTenant(null, organizationCode, tenantCodeList);
+	}
+
+	@Override
+	public ServiceResponse selectSmartObject(String organizationCode, String socode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
+	
+		List<String> userAuthorizedTenantCodeList = getTenantCodeListFromUser(authorizedUser);
+		
+		List<DettaglioSmartobject> list = selectSmartobjectByOrganizationAndTenant(socode, organizationCode, userAuthorizedTenantCodeList);
+		
+		if (list == null || list.isEmpty()) {
+			throw new UnauthorizedException(Errors.UNAUTHORIZED);
+		}
+		
+		return ServiceResponse.build().object(new DettaglioSmartobjectResponse(list.get(0))); 
+	}
+	
 	
 	@Override
 	public ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
@@ -121,26 +149,25 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 				throw new UnauthorizedException(Errors.UNAUTHORIZED, "Not authorized tenant [ " + tenantCode + " ]");
 			}
 			
-			list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, Arrays.asList(tenantCode));
+			list = selectSmartobjectByOrganizationAndTenant(organizationCode, Arrays.asList(tenantCode));
 		}
 		else{
 			//	recupera i tenant dallo user.
-			list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, userAuthorizedTenantCodeList);
+			list = selectSmartobjectByOrganizationAndTenant(organizationCode, userAuthorizedTenantCodeList);
 		}
-
-		// not found exception
+		
 		ServiceUtil.checkList(list);
 		
-		// prepare response 
+		return ServiceResponse.build().object(createDettaglioSmartobjectResponseList(list));	
+	}
+	
+	private List<DettaglioSmartobjectResponse> createDettaglioSmartobjectResponseList(List<DettaglioSmartobject> list){
 		List<DettaglioSmartobjectResponse> responseList = new ArrayList<DettaglioSmartobjectResponse>();
 		for (DettaglioSmartobject smartobject : list) {
 			responseList.add(new DettaglioSmartobjectResponse(smartobject));
 		}
-		
-		return ServiceResponse.build().object(responseList);	
+		return responseList;
 	}
-	
-	
 	
 	
 	

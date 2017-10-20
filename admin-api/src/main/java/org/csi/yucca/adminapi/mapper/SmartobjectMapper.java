@@ -102,7 +102,7 @@ public interface SmartobjectMapper {
 			
 			" FROM " + SMARTOBJECT_TABLE + " SMARTOBJECT " + 
 			
-			" LEFT JOIN " + "int_yucca.yucca_d_location_type" + " LOCATION_TYPE ON SMARTOBJECT.id_location_type = LOCATION_TYPE.id_location_type " +   
+			" LEFT JOIN " + LocationTypeMapper.LOCATION_TYPE_TABLE + " LOCATION_TYPE ON SMARTOBJECT.id_location_type = LOCATION_TYPE.id_location_type " +   
 			" LEFT JOIN " + ExposureTypeMapper.EXPOSURE_TYPE_TABLE + " EXPOSURE_TYPE ON SMARTOBJECT.id_exposure_type = EXPOSURE_TYPE.id_exposure_type " +
 			" LEFT JOIN " + SupplyTypeMapper.SUPPLY_TYPE_TABLE + " SUPPLY_TYPE ON SMARTOBJECT.id_supply_type = SUPPLY_TYPE.id_supply_type " +
 			" LEFT JOIN " + SoCategoryMapper.SO_CATEGORY_TYPE_TABLE + " SO_CATEGORY ON SMARTOBJECT.id_so_category = SO_CATEGORY.id_so_category " +
@@ -112,11 +112,18 @@ public interface SmartobjectMapper {
 			" LEFT JOIN " + POSITION_TABLE + "  POSITION ON POSITION.id_smart_object = SMARTOBJECT.id_smart_object " + 
 			
 			" WHERE ORGANIZATION.organizationcode = #{organizationCode} AND " +
+			
+			"<if test=\"socode != null\">" +
+			"SMARTOBJECT.socode = #{socode} AND " +
+		    "</if>" +
+			
 			" SMARTOBJECT.id_smart_object in ( " +
 			" select id_smart_object from "
 			+  TENANT_SMARTOBJECT_TABLE  + " TENANT_SO, " + TenantMapper.TENANT_TABLE + " TENANT where " + 
-				"TENANT.id_tenant = TENANT_SO.id_tenant  and" +
-			" (" 
+				"TENANT.id_tenant = TENANT_SO.id_tenant  " +
+			
+			"<if test=\"tenantCodeList != null\">" +
+			" and (" 
 	
 			 	+ " <foreach item=\"propName\" separator=\" OR \" index=\"index\" collection=\"tenantCodeList\">" 
 			
@@ -124,7 +131,10 @@ public interface SmartobjectMapper {
 
 				+ " </foreach>" 
 			
-			+ ") AND  TENANT_SO.isactive = 1) ";
+			+ ") "
+			+"</if>" 
+			
+			+ " AND  TENANT_SO.isactive = 1) ";
 	@Results({
         @Result(property = "descriptionOrganization",  column = "description_organization"),
         @Result(property = "descriptionStatus",        column = "description_status"),
@@ -143,7 +153,9 @@ public interface SmartobjectMapper {
         @Result(property = "idOrganization",           column = "id_organization")
       })
 	@Select({"<script>",SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT,"</script>"})
-	List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(@Param("organizationCode") String organizationCode, 
+	List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(
+			@Param("socode") String socode,
+			@Param("organizationCode") String organizationCode, 
 			@Param("tenantCodeList") List<String> tenantCodeList);	
 	
 	

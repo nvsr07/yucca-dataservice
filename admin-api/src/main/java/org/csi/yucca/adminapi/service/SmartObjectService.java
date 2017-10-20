@@ -13,6 +13,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface SmartObjectService {
 
+	ServiceResponse selectSmartObject(String organizationCode, String socode, JwtUser authorizedUser) throws BadRequestException, NotFoundException,UnauthorizedException, Exception;
+	
 	ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException,UnauthorizedException, Exception;
 	
 	Smartobject selectSmartObjectByOrganizationAndSoType(Integer idOrganization, Integer idSoType);

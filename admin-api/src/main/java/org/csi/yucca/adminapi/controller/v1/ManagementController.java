@@ -18,6 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
 
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
+
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -27,6 +30,7 @@ import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
+import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
@@ -59,7 +63,19 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;    
-
+	
+	@ApiOperation(value = M_LOAD_SMART_OBJECT, notes = M_LOAD_SMART_OBJECT_NOTES, response = DettaglioSmartobjectResponse.class)
+	@GetMapping("/organizations/{organizationCode}/smartobjects/{socode}")
+	public ResponseEntity<Object> loadSmartobject(@PathVariable final String organizationCode, 
+			@PathVariable final String socode, final HttpServletRequest request) {
+		logger.info("loadSmartobject");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return smartObjectService.selectSmartObject(organizationCode, socode, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}
 	
 	/**
 	 * 
@@ -68,7 +84,7 @@ public class ManagementController extends YuccaController{
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = M_LOAD_SMART_OBJECTS, notes = M_LOAD_SMART_OBJECTS_NOTES, response = SmartobjectResponse.class, responseContainer="List")
+	@ApiOperation(value = M_LOAD_SMART_OBJECTS, notes = M_LOAD_SMART_OBJECTS_NOTES, response = DettaglioSmartobjectResponse.class, responseContainer="List")
 	@GetMapping("/organizations/{organizationCode}/smartobjects")
 	public ResponseEntity<Object> loadSmartobjects(@PathVariable final String organizationCode,
 			@RequestParam(required=false) final String tenantCode, final HttpServletRequest request) {
