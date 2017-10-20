@@ -8,6 +8,10 @@ public class SoCategoryResponse extends Response{
 	private String socategorycode;
 	private String description;
 	
+	public boolean isEmpty(){
+		return this.idSoCategory == null && this.socategorycode == null && this.description == null;
+	}
+	
 	public SoCategoryResponse(DettaglioSmartobject smartobject) {
 		super();
 		this.idSoCategory = smartobject.getIdSoCategory();

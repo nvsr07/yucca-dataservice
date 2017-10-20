@@ -7,6 +7,10 @@ public class LocationTypeResponse extends Response{
 	private Integer idLocationType;
 	private String locationtype;
 	private String description;
+
+	public boolean isEmpty(){
+		return 	this.idLocationType == null && this.locationtype == null && this.description == null;
+	}
 	
 	public LocationTypeResponse(DettaglioSmartobject smartobject) {
 		super();

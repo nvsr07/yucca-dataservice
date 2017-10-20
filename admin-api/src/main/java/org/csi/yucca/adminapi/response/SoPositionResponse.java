@@ -9,7 +9,7 @@ public class SoPositionResponse extends Response {
 	private Float lon;
 	private Float elevation;
 	private Float floor;
-
+	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String room;
 	

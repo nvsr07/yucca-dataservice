@@ -127,10 +127,12 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 			//	recupera i tenant dallo user.
 			list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(organizationCode, userAuthorizedTenantCodeList);
 		}
+
+		// not found exception
+		ServiceUtil.checkList(list);
 		
 		// prepare response 
 		List<DettaglioSmartobjectResponse> responseList = new ArrayList<DettaglioSmartobjectResponse>();
-		ServiceUtil.checkList(responseList);
 		for (DettaglioSmartobject smartobject : list) {
 			responseList.add(new DettaglioSmartobjectResponse(smartobject));
 		}

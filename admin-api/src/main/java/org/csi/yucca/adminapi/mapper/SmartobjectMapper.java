@@ -23,6 +23,9 @@ public interface SmartobjectMapper {
 
 	String STATUS_TABLE = Constants.SCHEMA_DB + "yucca_d_status";
 	
+	String POSITION_TABLE = Constants.SCHEMA_DB + "yucca_so_position";
+	
+	
 	/*************************************************************************
 	 * 
 	 * 					DELETE TENANT SMARTOBJECT
@@ -77,6 +80,7 @@ public interface SmartobjectMapper {
 	 ************************************************************************************/
 	public static final String SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT =
 			" SELECT " +
+		    " lat, lon, elevation, room, building, floor, address, city, country, placegeometry, id_so_position, " +
 			" SMARTOBJECT.id_smart_object, socode, " +
 			" ORGANIZATION.organizationcode, ORGANIZATION.description AS description_organization, " +
 			" STATUS.statuscode, STATUS.description AS description_status, " +
@@ -105,6 +109,7 @@ public interface SmartobjectMapper {
 			" LEFT JOIN " + SoTypeMapper.SO_TYPE_TABLE + " SO_TYPE ON SMARTOBJECT.id_so_type = SO_TYPE.id_so_type " +
 			" LEFT JOIN " + STATUS_TABLE + " STATUS ON SMARTOBJECT.id_status = STATUS.id_status " +
 			" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " ORGANIZATION ON ORGANIZATION.id_organization = SMARTOBJECT.id_organization " +
+			" LEFT JOIN " + POSITION_TABLE + "  POSITION ON POSITION.id_smart_object = SMARTOBJECT.id_smart_object " + 
 			
 			" WHERE ORGANIZATION.organizationcode = #{organizationCode} AND " +
 			" SMARTOBJECT.id_smart_object in ( " +

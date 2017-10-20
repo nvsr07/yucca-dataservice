@@ -8,6 +8,10 @@ public class SupplyTypeResponse extends Response{
 	private String supplytype;
 	private String description;
 
+	public boolean isEmpty(){
+		return this.idSupplyType == null && this.supplytype == null && this.description == null;
+	}
+	
 	public SupplyTypeResponse(DettaglioSmartobject smartobject) {
 		super();
 		this.idSupplyType = smartobject.getIdSupplyType();

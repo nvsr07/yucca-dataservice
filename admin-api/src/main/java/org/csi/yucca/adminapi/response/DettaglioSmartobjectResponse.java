@@ -33,6 +33,7 @@ public class DettaglioSmartobjectResponse extends Response {
 	private SupplyTypeResponse supplyType;
 	private ExposureTypeResponse exposureType;
 	private LocationTypeResponse locationType;
+	private DettaglioSmartobjectPositionResponse position;
 	// -----------------------------------------------------
 	public DettaglioSmartobjectResponse(DettaglioSmartobject smartobject) {
 		super();
@@ -64,11 +65,22 @@ public class DettaglioSmartobjectResponse extends Response {
 		this.supplyType = new SupplyTypeResponse(smartobject);
 		this.exposureType = new ExposureTypeResponse(smartobject);
 		this.locationType = new LocationTypeResponse(smartobject);
+		this.position = new DettaglioSmartobjectPositionResponse(smartobject);
 	}	
 	// -----------------------------------------------------
+	
 	public Integer getIdSmartObject() {
 		return idSmartObject;
 	}
+	public DettaglioSmartobjectPositionResponse getPosition() {
+		if(position != null && position.isEmpty()) return null;
+		return position;
+	}
+
+	public void setPosition(DettaglioSmartobjectPositionResponse position) {
+		this.position = position;
+	}
+
 	public void setIdSmartObject(Integer idSmartObject) {
 		this.idSmartObject = idSmartObject;
 	}
@@ -205,24 +217,28 @@ public class DettaglioSmartobjectResponse extends Response {
 		this.soType = soType;
 	}
 	public SoCategoryResponse getSoCategory() {
+		if(soCategory != null && soCategory.isEmpty()) return null;
 		return soCategory;
 	}
 	public void setSoCategory(SoCategoryResponse soCategory) {
 		this.soCategory = soCategory;
 	}
 	public SupplyTypeResponse getSupplyType() {
+		if(supplyType != null && supplyType.isEmpty()) return null;
 		return supplyType;
 	}
 	public void setSupplyType(SupplyTypeResponse supplyType) {
 		this.supplyType = supplyType;
 	}
 	public ExposureTypeResponse getExposureType() {
+		if(exposureType != null && exposureType.isEmpty()) return null;
 		return exposureType;
 	}
 	public void setExposureType(ExposureTypeResponse exposureType) {
 		this.exposureType = exposureType;
 	}
 	public LocationTypeResponse getLocationType() {
+		if(locationType != null && locationType.isEmpty()) return null;
 		return locationType;
 	}
 	public void setLocationType(LocationTypeResponse locationType) {

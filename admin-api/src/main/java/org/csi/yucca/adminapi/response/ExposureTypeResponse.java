@@ -8,6 +8,10 @@ public class ExposureTypeResponse extends Response {
 	private String exposuretype;
 	private String description;
 	
+	public boolean isEmpty(){
+		return this.idExposureType == null && this.exposuretype == null && this.description == null;
+	}
+	
 	public ExposureTypeResponse(DettaglioSmartobject smartobject) {
 		super();
 		this.idExposureType = smartobject.getIdExposureType();
