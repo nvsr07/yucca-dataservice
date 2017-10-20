@@ -1,86 +1,12 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_DATA_TYPE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_DATA_TYPE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ECOSYSTEM;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ECOSYSTEM_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_LICENSE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_LICENSE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_MEASURE_UNIT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_MEASURE_UNIT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ORGANIZATION;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ORGANIZATION_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_PHENOMENON;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_PHENOMENON_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_SUBDOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_SUBDOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TAG;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_TAG_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DATA_TYPE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DATA_TYPE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_DOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ECOSYSTEM;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ECOSYSTEM_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_LICENSE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_LICENSE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_MEASURE_UNIT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_MEASURE_UNIT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ORGANIZATION;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_ORGANIZATION_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_PHENOMENON;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_PHENOMENON_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_SUBDOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_SUBDOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TAG;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TAG_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DATA_TYPE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DATA_TYPE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ECOSYSTEM;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ECOSYSTEM_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_LICENSE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_LICENSE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_MEASURE_UNIT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_MEASURE_UNIT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ORGANIZATION;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ORGANIZATION_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_PHENOMENON;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_PHENOMENON_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANTS;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANTS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ECOSYSTEM;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ECOSYSTEM_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_LICENSE;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_LICENSE_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_MEASURE_UNIT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_MEASURE_UNIT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ORGANIZATION;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_ORGANIZATION_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_PHENOMENON;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_PHENOMENON_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_SUBDOMAIN;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_SUBDOMAIN_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_TAG;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_TAG_NOTES;
 
+import static org.csi.yucca.adminapi.util.ApiDoc.*;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.DataTypeRequest;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
@@ -90,6 +16,7 @@ import org.csi.yucca.adminapi.request.OrganizationRequest;
 import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
+import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
@@ -108,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -134,7 +62,42 @@ public class BackOfficeController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;
-
+	
+	/**
+	 * 
+	 * @param actionOnTenantRequest
+	 * @param tenantCode
+	 * @return
+	 */
+	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
+	@PatchMapping("/tenants/{tenantCode}")
+	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest, 
+			@PathVariable final String tenantCode){
+		logger.info("actionOnTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.actionOnTenant(actionOnTenantRequest, tenantCode);
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * @param tenantRequest
+	 * @return
+	 */
+	@ApiOperation(value = BO_CREATE_TENANT, notes = BO_CREATE_TENANT_NOTES, response = ServiceResponse.class)
+	@PostMapping("/tenants")
+	public ResponseEntity<Object> createTenant(@RequestBody final TenantRequest tenantRequest ){
+		logger.info("createTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.insertTenant(tenantRequest);
+			}
+		}, logger);		
+	}
+	
 	/**
 	 * 
 	 * LOAD TENANT BY TENANTCODE

@@ -11,9 +11,6 @@ public class ApiDoc {
 	public static final String M_LOAD_TENANT = "LOAD TENANT";
 	public static final String M_LOAD_TENANT_NOTES = "Load all Tenants in the System.";
 	
-	public static final String M_CREATE_TENANT = "CRAETE TENANT";
-	public static final String M_CREATE_TENANT_NOTES = "Insert a new Tenant in the System.";
-	
 	public static final String M_UPDATE_SMARTOBJECT = "UPDATE SMARTOBJECT";
 	public static final String M_UPDATE_SMARTOBJECT_NOTES = "Update Smartobject in the System.";
 	
@@ -22,9 +19,6 @@ public class ApiDoc {
 	
 	public static final String M_CREATE_SMARTOBJECT = "CREATE SMARTOBJECT";
 	public static final String M_CREATE_SMARTOBJECT_NOTES = "Create Smartobject in the System.";
-	
-	public static final String M_ACTION_ON_TENANT = "ACTION ON TENANT";
-	public static final String M_ACTION_ON_TENANT_NOTES = "Action on Tenant.";
 	
 	public static final String P_LOAD_DOMAINS = "LOAD DOMAINS";
 	public static final String P_LOAD_DOMAINS_NOTES = "Load all domains.";
@@ -73,6 +67,9 @@ public class ApiDoc {
 
 	public static final String P_LOAD_DATA_TYPES = "LOAD DATA TYPES";
 	public static final String P_LOAD_DATA_TYPES_NOTES = "Load all Data Types.";
+	
+	public static final String BO_ACTION_ON_TENANT = "ACTION ON TENANT";
+	public static final String BO_ACTION_ON_TENANT_NOTES = "Action on Tenant.";
 	
 	public static final String BO_LOAD_TENANTS = "LOAD TENANTS";
 	public static final String BO_LOAD_TENANTS_NOTES = "Load all Tenants in the System.";

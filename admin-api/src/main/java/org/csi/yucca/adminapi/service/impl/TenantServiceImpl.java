@@ -307,6 +307,7 @@ public class TenantServiceImpl implements TenantService {
 		organization.setDescription(tenantRequest.getDescription());
 		classificationService.insertOrganization(organization, Ecosystem.SDNET.id());
 
+		
 		tenantRequest.setIdOrganization(organization.getIdOrganization());		
 	}
 	

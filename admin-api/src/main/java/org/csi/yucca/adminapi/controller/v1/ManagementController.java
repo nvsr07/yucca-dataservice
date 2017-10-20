@@ -1,13 +1,13 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
@@ -15,20 +15,11 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
-
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
-
-
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
-import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
-import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
@@ -41,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -124,43 +114,6 @@ public class ManagementController extends YuccaController{
 			}
 		}, logger);		
 	}
-	
-	
-	/**
-	 * @param tenantRequest
-	 * @return
-	 */
-	@ApiOperation(value = M_CREATE_TENANT, notes = M_CREATE_TENANT_NOTES, response = ServiceResponse.class)
-	@PostMapping("/tenants")
-	public ResponseEntity<Object> createTenant(@RequestBody final TenantRequest tenantRequest ){
-		logger.info("createTenant");
-		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.insertTenant(tenantRequest);
-			}
-		}, logger);		
-	}
-	
-	/**
-	 * 
-	 * @param actionOnTenantRequest
-	 * @param tenantCode
-	 * @return
-	 */
-	@ApiOperation(value = M_ACTION_ON_TENANT, notes = M_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
-	@PatchMapping("/tenants/{tenantCode}")
-	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest, 
-			@PathVariable final String tenantCode){
-		logger.info("actionOnTenant");
-		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.actionOnTenant(actionOnTenantRequest, tenantCode);
-			}
-		}, logger);		
-	}
-	
 	
 	/**
 	 * 
