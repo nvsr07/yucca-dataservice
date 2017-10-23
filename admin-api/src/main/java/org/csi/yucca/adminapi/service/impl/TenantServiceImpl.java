@@ -7,6 +7,7 @@ import java.util.List;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
 import org.csi.yucca.adminapi.mapper.FunctionMapper;
@@ -24,6 +25,8 @@ import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
 import org.csi.yucca.adminapi.request.BundlesRequest;
+import org.csi.yucca.adminapi.request.PostTenantRequest;
+import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioTenantResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
@@ -31,6 +34,7 @@ import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.TenantService;
+import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.Ecosystem;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -41,6 +45,8 @@ import org.csi.yucca.adminapi.util.TenantType;
 import org.csi.yucca.adminapi.util.Type;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,8 +54,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@PropertySource(value = { "classpath:ambiente_deployment.properties" })
 public class TenantServiceImpl implements TenantService {
 
+	@Value("${collprefix}")
+	private String collprefix;
+	
 	@Autowired
 	private TenantMapper tenantMapper;
 	
@@ -79,6 +89,66 @@ public class TenantServiceImpl implements TenantService {
 	
 	@Autowired
 	private MessageSender messageSender;
+	
+	
+	@Override
+	public ServiceResponse insertTenantSocial(PostTenantSocialRequest request) throws BadRequestException, NotFoundException, Exception{
+		
+		if(TenantType.PERSONAL.id() != request.getIdTenantType() && 
+		   TenantType.TRIAL.id() != request.getIdTenantType()){
+			throw new UnauthorizedException(Errors.UNAUTHORIZED, "Only tenants " + TenantType.PERSONAL.code() + "[ " + TenantType.PERSONAL.id() + " ] or " + TenantType.TRIAL.code() + " [ " + TenantType.TRIAL.id() + " ] permitted.");
+		}
+		
+		// inserimento bundles
+		BundlesRequest bundlesRequest = new BundlesRequest();
+		bundlesRequest.setMaxdatasetnum(Constants.INSTALLATION_TENANT_MAX_DATASET_NUM);
+		bundlesRequest.setMaxstreamsnum(Constants.INSTALLATION_TENANT_MAX_STREAMS_NUM);
+
+		return insertTenant(request, bundlesRequest);
+	}
+	
+	private ServiceResponse insertTenant(TenantRequest request, BundlesRequest bundlesRequest) throws BadRequestException, NotFoundException, Exception {
+		
+		validation(request);
+		
+		if(TenantType.PERSONAL.id() == request.getIdTenantType() || TenantType.TRIAL.id() == request.getIdTenantType()){
+			managePersonalOrTrial(request);
+		}
+
+		Tenant tenant = createTenant(request);
+		
+		// inserimento bundles
+		Bundles bundles = insertBundles(bundlesRequest, request.getIdTenantType());
+		
+		// insert user
+		User user = insertUser(request.getUsername(), request.getIdOrganization());
+
+		// insert tenant
+		tenantMapper.insertTenant(tenant);
+		userMapper.insertTenantUser(tenant.getIdTenant(), user.getIdUser());
+
+		// inserimento tenant bundle
+	    tenantMapper.insertTenantBundles(tenant.getIdTenant(), bundles.getIdBundles());
+		
+		// inserimento r_tenant_users
+	    userMapper.insertTenantUser(tenant.getIdTenant(), user.getIdUser());
+	    
+		//	il tenant deve inoltre essere abilitato allo smartobject internal dell'organizzazione (record nella r_tenant_smartobject con isOwner a false		
+		Smartobject internalSmartObject = smartObjectService.selectSmartObjectByOrganizationAndSoType(request.getIdOrganization(), Type.INTERNAL.id()); 
+		smartObjectService.insertNotManagerTenantSmartobject(tenant.getIdTenant(), internalSmartObject.getIdSmartObject(), new Timestamp(System.currentTimeMillis()));
+		
+		return ServiceResponse.build().object(new TenantResponse(tenant));
+	}
+	
+	/**
+	 * INSERT TENANT
+	 */
+	public ServiceResponse insertTenant(PostTenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception {
+		return insertTenant(tenantRequest, tenantRequest.getBundles());
+	}
+	
+	
+	
 	
 	
 	public ServiceResponse selectTenants(String sort) throws BadRequestException, NotFoundException, Exception{
@@ -171,56 +241,13 @@ public class TenantServiceImpl implements TenantService {
 	}
 
 	
-	/**
-	 * INSERT TENANT
-	 */
-	public ServiceResponse insertTenant(TenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception {
-		
-		validation(tenantRequest);
-		
-		if(TenantType.PERSONAL.id() == tenantRequest.getIdTenantType() || TenantType.TRIAL.id() == tenantRequest.getIdTenantType()){
-			managePersonalOrTrial(tenantRequest);
-		}
-
-		Tenant tenant = createTenant(tenantRequest);
-		
-		// inserimento bundles
-		Bundles bundles = insertBundles(tenantRequest.getBundles(), tenantRequest.getIdTenantType());
-		
-		// insert user
-		User user = insertUser(tenantRequest.getUsername(), tenantRequest.getIdOrganization());
-
-		// insert tenant
-		tenantMapper.insertTenant(tenant);
-		userMapper.insertTenantUser(tenant.getIdTenant(), user.getIdUser());
-
-		// inserimento tenant bundle
-	    tenantMapper.insertTenantBundles(tenant.getIdTenant(), bundles.getIdBundles());
-		
-		// inserimento r_tenant_users
-	    userMapper.insertTenantUser(tenant.getIdTenant(), user.getIdUser());
-	    
-		//	il tenant deve inoltre essere abilitato allo smartobject internal dell'organizzazione (record nella r_tenant_smartobject con isOwner a false		
-		Smartobject internalSmartObject = smartObjectService.selectSmartObjectByOrganizationAndSoType(tenantRequest.getIdOrganization(), Type.INTERNAL.id()); 
-		smartObjectService.insertNotManagerTenantSmartobject(tenant.getIdTenant(), internalSmartObject.getIdSmartObject(), new Timestamp(System.currentTimeMillis()));
-		
-		return ServiceResponse.build().object(new TenantResponse(tenant));
-	
-	}
-	
 // --------------------------------------------------------------------------------------------------------------------------------------------------
 //											PRIVATE METHODS
 // --------------------------------------------------------------------------------------------------------------------------------------------------	
 
-	/**
-	 * 
-	 * @param tenantRequest
-	 * @throws BadRequestException
-	 * @throws NotFoundException
-	 * @throws Exception
-	 */
-	private void validation(TenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception {
 
+	private void validation(TenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception {
+		
 		ServiceUtil.checkMandatoryParameter(tenantRequest,                     "tenantRequest");
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getIdTenantType(),   "idTenantType");
 		ServiceUtil.checkIdTenantType(tenantRequest.getIdTenantType());
@@ -232,17 +259,21 @@ public class TenantServiceImpl implements TenantService {
 		ServiceUtil.checkUserTypeAuth(tenantRequest.getUsertypeauth());
 		ServiceUtil.checkTenantTypeAndUserTypeAuth(tenantRequest.getUsertypeauth(), tenantRequest.getIdTenantType());
 		
-		if(TenantType.PERSONAL.id() != tenantRequest.getIdTenantType() && TenantType.TRIAL.id() != tenantRequest.getIdTenantType()){
-			ServiceUtil.checkMandatoryParameter(tenantRequest.getName(),           "name");
-			ServiceUtil.checkMandatoryParameter(tenantRequest.getDescription(),    "description");
-			ServiceUtil.checkMandatoryParameter(tenantRequest.getTenantcode(),     "tenantcode");
-			ServiceUtil.checkCode(tenantRequest.getTenantcode(),                   "tenantcode");
-			ServiceUtil.checkMandatoryParameter(tenantRequest.getIdOrganization(), "idOrganization");
-			ServiceUtil.checkIfFoundRecord(organizationMapper.selectOrganizationById(tenantRequest.getIdOrganization()), "Organization [ id: " + tenantRequest.getIdOrganization() + " ]");
+		if( tenantRequest instanceof PostTenantRequest && 
+				TenantType.PERSONAL.id() != tenantRequest.getIdTenantType() && TenantType.TRIAL.id() != tenantRequest.getIdTenantType()){
+			
+			ServiceUtil.checkMandatoryParameter(((PostTenantRequest)tenantRequest).getName(),           "name");
+			ServiceUtil.checkMandatoryParameter(((PostTenantRequest)tenantRequest).getDescription(),    "description");
+			ServiceUtil.checkMandatoryParameter(((PostTenantRequest)tenantRequest).getTenantcode(),     "tenantcode");
+			ServiceUtil.checkCode(((PostTenantRequest)tenantRequest).getTenantcode(),                   "tenantcode");
+			ServiceUtil.checkMandatoryParameter(((PostTenantRequest)tenantRequest).getIdOrganization(), "idOrganization");
+			ServiceUtil.checkIfFoundRecord(organizationMapper.selectOrganizationById(((PostTenantRequest)tenantRequest).getIdOrganization()), "Organization [ id: " + ((PostTenantRequest)tenantRequest).getIdOrganization() + " ]");
 			ServiceUtil.checkMandatoryParameter(tenantRequest.getIdEcosystem(),    "idEcosystem");
 			ServiceUtil.checkIfFoundRecord(ecosystemMapper.selectEcosystemById(tenantRequest.getIdEcosystem()), "Ecosystem [ id: " + tenantRequest.getIdEcosystem() + " ]");
 		}
 	}	
+	
+	
 	
 	/**
      * 
@@ -292,23 +323,39 @@ public class TenantServiceImpl implements TenantService {
 		
 		checkActiveTrialOrPersonalTenant(tenantRequest, tenantTypeDescription);
 		
-		// personal<progressivo>
-		tenantRequest.setTenantcode(tenantTypeDescription + getProgressivo(tenantRequest.getIdTenantType()));
-
-		// "personal tenant <codice>"
-		tenantRequest.setName(tenantTypeDescription + " tenant " + tenantRequest.getTenantcode());
-		
-		// descrizione --> "tral personal <codice> creato per user: <username>"
-		tenantRequest.setDescription(tenantRequest.getName() + " created for user " + tenantRequest.getUsername());
+		String code = tenantTypeDescription + getProgressivo(tenantRequest.getIdTenantType());
+		String tenantName = tenantTypeDescription + " tenant " + code;
+		String description = tenantName + " created for user " + tenantRequest.getUsername();
 		
 		// inserire un organizzazione con codice e descrizione uguali a quelle del tenant
 		Organization organization = new Organization();
-		organization.setOrganizationcode(tenantRequest.getTenantcode());		
-		organization.setDescription(tenantRequest.getDescription());
+		organization.setDatasolrcollectionname(collprefix + "_" + tenantTypeDescription + "_data");
+		organization.setMeasuresolrcollectionname(collprefix + "_" + tenantTypeDescription + "_measures");
+		organization.setSocialsolrcollectionname(collprefix + "_" + tenantTypeDescription + "_social");
+		organization.setMediasolrcollectionname(collprefix + "_" + tenantTypeDescription + "_media");
+		organization.setMediaphoenixschemaname(collprefix + "_" + tenantTypeDescription);
+		organization.setMediaphoenixtablename("media");
+		organization.setDataphoenixschemaname(collprefix + "_" + tenantTypeDescription);
+		organization.setDataphoenixtablename("data");
+		organization.setSocialphoenixschemaname(collprefix + "_" + tenantTypeDescription);
+		organization.setSocialphoenixtablename("social");
+		organization.setMeasuresphoenixschemaname(collprefix + "_" + tenantTypeDescription);
+		organization.setMeasuresphoenixtablename("measures");
+		organization.setOrganizationcode(code);		
+		organization.setDescription(description);
 		classificationService.insertOrganization(organization, Ecosystem.SDNET.id());
 
+		// personal<progressivo>
+		tenantRequest.setTenantcode(code);
+
+		// "personal tenant <codice>"
+		tenantRequest.setName(tenantName);
 		
-		tenantRequest.setIdOrganization(organization.getIdOrganization());		
+		// descrizione --> "tral personal <codice> creato per user: <username>"
+		tenantRequest.setDescription(description);
+		
+		tenantRequest.setIdOrganization(organization.getIdOrganization());
+		
 	}
 	
 	/**

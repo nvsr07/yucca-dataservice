@@ -259,7 +259,7 @@ public interface TenantMapper {
 	public static final String INSERT_TENANT = 
 		"INSERT INTO " + TENANT_TABLE +
 			" ( creationdate, expirationdate, activationdate, deactivationdate, id_share_type, " +
-			" tenantcode, name, description, clientkey, clientsecret, usagedaysnumber, " +
+			" tenantcode, name, description, clientkey, clientsecret, " +
 			" userfirstname, userlastname, useremail, usertypeauth, id_ecosystem, " +
 			" id_organization, id_tenant_type, id_tenant_status, datasolrcollectionname, " +
 			" measuresolrcollectionname, mediasolrcollectionname, socialsolrcollectionname, " +
@@ -267,7 +267,7 @@ public interface TenantMapper {
 			" measuresphoenixschemaname, mediaphoenixtablename, mediaphoenixschemaname, " +
 			" socialphoenixtablename, socialphoenixschemaname ) " +
 			" VALUES (	#{creationdate}, #{expirationdate}, #{activationdate}, #{deactivationdate}, #{idShareType}, " +
-			" #{tenantcode}, #{name}, #{description}, #{clientkey}, #{clientsecret}, #{usagedaysnumber}, " +
+			" #{tenantcode}, #{name}, #{description}, #{clientkey}, #{clientsecret}, " +
 			" #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
 			" #{idOrganization}, #{idTenantType}, #{idTenantStatus}, #{datasolrcollectionname}, " +
 			" #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, " +

@@ -10,6 +10,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_TENANT_INSTALLATION;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_TENANT_INSTALLATION_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
 
@@ -19,6 +21,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
@@ -53,6 +56,24 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;    
+	
+	
+	
+//	POST /1/management/tenants
+	@ApiOperation(value = M_TENANT_INSTALLATION, notes = M_TENANT_INSTALLATION_NOTES, response = DataTypeResponse.class)
+	@PostMapping("/tenants")
+	public ResponseEntity<Object> insertTenantSocial(
+			@RequestBody final PostTenantSocialRequest installationTenantRequest){
+		logger.info("tenantInstallation");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.insertTenantSocial(installationTenantRequest);
+			}
+		}, logger);		
+	}
+	
+	
 	
 	@ApiOperation(value = M_LOAD_SMART_OBJECT, notes = M_LOAD_SMART_OBJECT_NOTES, response = DettaglioSmartobjectResponse.class)
 	@GetMapping("/organizations/{organizationCode}/smartobjects/{socode}")

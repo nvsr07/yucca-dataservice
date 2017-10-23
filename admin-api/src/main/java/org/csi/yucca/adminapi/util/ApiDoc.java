@@ -2,6 +2,9 @@ package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
 
+	public static final String M_TENANT_INSTALLATION = "TENANT INSTALLATION";
+	public static final String M_TENANT_INSTALLATION_NOTES = "Installazione tenant da management (social e personal)";
+	
 	public static final String M_LOAD_SMART_OBJECTS = "LOAD SMARTOBJECTS";
 	public static final String M_LOAD_SMART_OBJECTS_NOTES = "Load all Smartobjects in the System.";
 
