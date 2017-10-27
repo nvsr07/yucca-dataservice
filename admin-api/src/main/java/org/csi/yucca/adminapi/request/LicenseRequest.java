@@ -5,7 +5,8 @@ public class LicenseRequest {
 	private Integer idLicense;
 	private String licensecode;
 	private String description;
-
+    private String disclaimer;
+	
 	public Integer getIdLicense() {
 		return idLicense;
 	}
@@ -15,6 +16,7 @@ public class LicenseRequest {
 	}
 
 	public String getLicensecode() {
+		if(idLicense != null)return null;
 		return licensecode;
 	}
 
@@ -23,11 +25,21 @@ public class LicenseRequest {
 	}
 
 	public String getDescription() {
+		if(idLicense != null)return null;
 		return description;
 	}
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getDisclaimer() {
+		if(idLicense != null)return null;
+		return disclaimer;
+	}
+
+	public void setDisclaimer(String disclaimer) {
+		this.disclaimer = disclaimer;
 	}
 
 }

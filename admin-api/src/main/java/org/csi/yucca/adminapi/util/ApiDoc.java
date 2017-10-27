@@ -2,8 +2,11 @@ package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
 
-	public static final String M_TENANT_INSTALLATION = "TENANT INSTALLATION";
-	public static final String M_TENANT_INSTALLATION_NOTES = "Installazione tenant da management (social e personal)";
+	public static final String M_CREATE_STREAM_DATASET = "CREATE STREAM DATASET";
+	public static final String M_CREATE_STREAM_DATASET_NOTES = "inserimento stream/dataset";
+	
+	public static final String M_CREATE_TENANT_SOCIAL = "CREATE TENANT SOCIAL";
+	public static final String M_CREATE_TENANT_SOCIAL_NOTES = "Create Tenant Social";
 	
 	public static final String M_LOAD_SMART_OBJECTS = "LOAD SMARTOBJECTS";
 	public static final String M_LOAD_SMART_OBJECTS_NOTES = "Load all Smartobjects in the System.";

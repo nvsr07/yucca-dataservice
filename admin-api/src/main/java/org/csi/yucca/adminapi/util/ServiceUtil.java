@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.Response;
@@ -22,6 +23,28 @@ public class ServiceUtil {
 	public static final String UUID_PATTERN         = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
+	public static final String COMPONENT_NAME_PATTERN =  "(.)*[\u00C0-\u00F6\u00F8-\u00FF\u0020]+(.)*|^[0-9]*$";
+	
+	
+	/**
+	 * 
+	 * @param authorizedUser
+	 * @return
+	 */
+	public static List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
+		
+		if(authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return null;
+		
+		List<String> tenantCodeList = new ArrayList<>();
+		for (String role : authorizedUser.getRoles()) {
+			if(role.contains("_subscriber")){
+				tenantCodeList.add(role.substring(0, role.lastIndexOf("_")));
+			}
+		}
+		
+		return tenantCodeList;
+	}
+
 	
 	/**
 	 * 
@@ -156,6 +179,10 @@ public class ServiceUtil {
 	public static boolean matchUUIDPattern(String s){
 	    return s.matches(UUID_PATTERN);
 	}
+
+//	public static boolean matchComponentNamePattern(String s){
+//	    return s.matches(COMPONENT_NAME_PATTERN);
+//	}
 	
 	/**
 	 * 
@@ -172,6 +199,12 @@ public class ServiceUtil {
 	 * @param fieldName
 	 * @throws BadRequestException
 	 */
+//	public static void checkComponentName(String s) throws BadRequestException{
+//		if (!matchComponentNamePattern(s)){
+//			throw new BadRequestException(Errors.INCORRECT_VALUE, "received component [ " + s + " ]");
+//		}
+//	}
+
 	public static void checkAphanumeric(String s, String fieldName) throws BadRequestException{
 		if (!isAlphaNumeric(s)){
 			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED, "received " + fieldName + " [ " + s + " ]");
@@ -339,18 +372,54 @@ public class ServiceUtil {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, parameterName);
 		}
 	}
+
+	public static void checkValue(String parameterName, String value, String...aspectedValues) throws BadRequestException {
+		for (String aspectedValue : aspectedValues) {
+			if(aspectedValue.equals(value))return;
+		}
+		
+		StringBuilder sAspectedValues = new StringBuilder();
+		String or = "";
+		for (String aspectedValue : aspectedValues) {
+			sAspectedValues.append(or).append(aspectedValue);
+			or = " or ";
+		}
+		
+		throw new BadRequestException(Errors.INCORRECT_VALUE, parameterName + " possible values are " + sAspectedValues);
+	}
+
+	public static void checkValue(String parameterName, Integer value, Integer...aspectedValues) throws BadRequestException {
+		for (Integer aspectedValue : aspectedValues) {
+			if(aspectedValue == value)return;
+		}
+		
+		StringBuilder sAspectedValues = new StringBuilder();
+		String or = "";
+		for (Integer aspectedValue : aspectedValues) {
+			sAspectedValues.append(or).append(aspectedValue);
+			or = " or ";
+		}
+		
+		throw new BadRequestException(Errors.INCORRECT_VALUE, parameterName + " possible values are " + sAspectedValues);
+	}
 	
 	/**
 	 * 
 	 * @param list
 	 * @throws NotFoundException
 	 */
-	public static void checkList(List<?> list) throws NotFoundException {
+	public static void checkList(List<?> list, String arg) throws NotFoundException {
 		if (list == null || list.isEmpty()) {
+			if(arg != null)throw new NotFoundException(Errors.RECORD_NOT_FOUND, arg);
 			throw new NotFoundException(Errors.RECORD_NOT_FOUND);
 		}
 	}
 
+	public static void checkList(List<?> list) throws NotFoundException {
+		checkList(list, null);
+	}
+
+	
 	/**
 	 * 
 	 * @param sort

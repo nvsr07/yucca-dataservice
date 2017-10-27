@@ -1,19 +1,6 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_TENANT_INSTALLATION;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_TENANT_INSTALLATION_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,13 +8,16 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
+import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
+import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -56,15 +46,37 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private TenantService tenantService;    
+
+	@Autowired
+	private StreamService streamService;     
+
+	@ApiOperation(value = M_CREATE_STREAM_DATASET, notes = M_CREATE_STREAM_DATASET_NOTES, response = DataTypeResponse.class)
+	@PostMapping("/organizations/{organizationCode}/smartobject/{soCode}/streams")
+	public ResponseEntity<Object> createStreamDataset(
+			@RequestBody final PostStreamRequest request,
+			@PathVariable final String organizationCode, 
+			@PathVariable final String soCode,
+			final HttpServletRequest httpRequest){
+		
+		logger.info("createStreamDataset");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.createStreamDataset(request, organizationCode, soCode, getAuthorizedUser(httpRequest));
+			}
+		}, logger);		
+	}
 	
-	
-	
-//	POST /1/management/tenants
-	@ApiOperation(value = M_TENANT_INSTALLATION, notes = M_TENANT_INSTALLATION_NOTES, response = DataTypeResponse.class)
+	/**
+	 * 
+	 * @param installationTenantRequest
+	 * @return
+	 */
+	@ApiOperation(value = M_CREATE_TENANT_SOCIAL, notes = M_CREATE_TENANT_SOCIAL_NOTES, response = TenantResponse.class)
 	@PostMapping("/tenants")
-	public ResponseEntity<Object> insertTenantSocial(
+	public ResponseEntity<Object> createTenantSocial(
 			@RequestBody final PostTenantSocialRequest installationTenantRequest){
-		logger.info("tenantInstallation");
+		logger.info("createTenantSocial");
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
@@ -72,9 +84,14 @@ public class ManagementController extends YuccaController{
 			}
 		}, logger);		
 	}
-	
-	
-	
+
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param socode
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = M_LOAD_SMART_OBJECT, notes = M_LOAD_SMART_OBJECT_NOTES, response = DettaglioSmartobjectResponse.class)
 	@GetMapping("/organizations/{organizationCode}/smartobjects/{socode}")
 	public ResponseEntity<Object> loadSmartobject(@PathVariable final String organizationCode, 

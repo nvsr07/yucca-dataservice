@@ -25,20 +25,19 @@ public interface TenantMapper {
 	
 	String TENANT_TABLE =           Constants.SCHEMA_DB + "yucca_tenant";
 	String R_TENANT_BUNDLES_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_bundles";
+	String R_TENANT_DATA_SOURCE_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_data_source";
 	String TENANT_STATUS_TABLE =    Constants.SCHEMA_DB + "yucca_d_tenant_status";
 	String TENANT_TYPE_TABLE =      Constants.SCHEMA_DB + "yucca_d_tenant_type";
 	String SHARE_TYPE_TABLE =       Constants.SCHEMA_DB + "yucca_d_share_type";
 	
 	public static final String SELECT_TENANT_COLUMNS = 	
-			" SELECT TENANT.id_tenant, tenantcode, name, description, clientkey, " + 
-			" clientsecret, activationdate, deactivationdate, usagedaysnumber, " + 
-			" userfirstname, userlastname, useremail, usertypeauth, creationdate, " + 
-			" expirationdate, id_ecosystem, TENANT.id_organization, id_tenant_type, " + 
-			" id_tenant_status, datasolrcollectionname, measuresolrcollectionname, " + 
-			" mediasolrcollectionname, socialsolrcollectionname, dataphoenixtablename, " + 
-			" dataphoenixschemaname, measuresphoenixtablename, measuresphoenixschemaname, " + 
-			" mediaphoenixtablename, mediaphoenixschemaname, socialphoenixtablename, " + 
-			" socialphoenixschemaname, id_share_type ";
+			" SELECT id_tenant, tenantcode, name, TENANT.description, clientkey, clientsecret, activationdate, deactivationdate, "
+			+ "usagedaysnumber, userfirstname, userlastname, useremail, usertypeauth, creationdate, expirationdate, id_ecosystem, "
+			+ "TENANT.id_organization, id_tenant_type, id_tenant_status,  TENANT.datasolrcollectionname, TENANT.measuresolrcollectionname, "
+			+ "TENANT.mediasolrcollectionname, TENANT.socialsolrcollectionname, TENANT.dataphoenixtablename, TENANT.dataphoenixschemaname, "
+			+ "TENANT.measuresphoenixtablename, TENANT.measuresphoenixschemaname, TENANT.mediaphoenixtablename, TENANT.mediaphoenixschemaname, "
+			+ "TENANT.socialphoenixtablename, TENANT.socialphoenixschemaname, id_share_type";
+			
 	
 	public static final String SELECT_TENANT_ORDER_BY =  
 			
@@ -190,6 +189,48 @@ public interface TenantMapper {
       })	
 	@Select(SELECT_TENANT_BY_TENANT_CODE) 
 	Tenant selectTenantByTenantCode(@Param("tenantCode") String tenantCode);
+	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT TENANT BY ID TENANT AND ORG COODE
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_TENANT_ID_AND_ORG_CODE =
+	SELECT_TENANT_COLUMNS + " FROM " + TENANT_TABLE + " TENANT, " + OrganizationMapper.ORGANIZATION_TABLE + " ORG  "
+			+ "WHERE id_tenant = #{idTenant} AND ORG.organizationcode = #{organizationCode} AND ORG.id_organization = TENANT.id_organization";
+	@Results({
+        @Result(property = "idTenant",       column = "id_tenant"),
+        @Result(property = "idEcosystem",    column = "id_ecosystem"),
+        @Result(property = "idOrganization", column = "id_organization"),
+        @Result(property = "idTenantType",   column = "id_tenant_type"),
+        @Result(property = "idTenantStatus", column = "id_tenant_status"),
+        @Result(property = "idShareType",    column = "id_share_type")
+      })	
+	@Select(SELECT_TENANT_ID_AND_ORG_CODE) 
+	Tenant selectTenantByIdAndOrgCodeCode(@Param("idTenant") Integer idTenant, 
+			@Param("organizationCode") String organizationCode);
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT TENANT BY ID TENANT
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_TENANT_BY_ID_TENANT =
+	SELECT_TENANT_COLUMNS + " FROM " + TENANT_TABLE + " TENANT " + 
+	" WHERE  id_tenant = #{idTenant}";
+	@Results({
+        @Result(property = "idTenant",       column = "id_tenant"),
+        @Result(property = "idEcosystem",    column = "id_ecosystem"),
+        @Result(property = "idOrganization", column = "id_organization"),
+        @Result(property = "idTenantType",   column = "id_tenant_type"),
+        @Result(property = "idTenantStatus", column = "id_tenant_status"),
+        @Result(property = "idShareType",    column = "id_share_type")
+      })	
+	@Select(SELECT_TENANT_BY_ID_TENANT) 
+	Tenant selectTenantByidTenant(@Param("idTenant") Integer idTenant);
 	
 	/*************************************************************************
 	 * 

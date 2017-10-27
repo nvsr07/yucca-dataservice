@@ -93,21 +93,6 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Autowired
 	private SoPositionMapper soPositionMapper;
 	
-
-	private List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
-		
-		if(authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return null;
-		
-		List<String> tenantCodeList = new ArrayList<>();
-		for (String role : authorizedUser.getRoles()) {
-			if(role.contains("_subscriber")){
-				tenantCodeList.add(role.substring(0, role.lastIndexOf("_")));
-			}
-		}
-		
-		return tenantCodeList;
-	}
-	
 	public List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(String socode, String organizationCode, List<String> tenantCodeList)throws NotFoundException{
 		List<DettaglioSmartobject> list = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(socode, organizationCode, tenantCodeList);
 		return list;
@@ -120,7 +105,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Override
 	public ServiceResponse selectSmartObject(String organizationCode, String socode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 	
-		List<String> userAuthorizedTenantCodeList = getTenantCodeListFromUser(authorizedUser);
+		List<String> userAuthorizedTenantCodeList = ServiceUtil.getTenantCodeListFromUser(authorizedUser);
 		
 		List<DettaglioSmartobject> list = selectSmartobjectByOrganizationAndTenant(socode, organizationCode, userAuthorizedTenantCodeList);
 		
@@ -135,7 +120,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	@Override
 	public ServiceResponse selectSmartObjects(String organizationCode, String tenantCode, JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 
-		List<String> userAuthorizedTenantCodeList = getTenantCodeListFromUser(authorizedUser);
+		List<String> userAuthorizedTenantCodeList = ServiceUtil.getTenantCodeListFromUser(authorizedUser);
 		
 		List<DettaglioSmartobject> list = null;
 		if(tenantCode != null){
