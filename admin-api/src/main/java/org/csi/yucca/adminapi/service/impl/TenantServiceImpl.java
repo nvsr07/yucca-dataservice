@@ -125,7 +125,6 @@ public class TenantServiceImpl implements TenantService {
 
 		// insert tenant
 		tenantMapper.insertTenant(tenant);
-		userMapper.insertTenantUser(tenant.getIdTenant(), user.getIdUser());
 
 		// inserimento tenant bundle
 	    tenantMapper.insertTenantBundles(tenant.getIdTenant(), bundles.getIdBundles());
