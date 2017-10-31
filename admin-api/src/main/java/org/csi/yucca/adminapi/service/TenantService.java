@@ -20,4 +20,6 @@ public interface TenantService {
 	ServiceResponse selectTenants(String sort) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse selectTenant(String tenantcode) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse selectTenantTypes() throws BadRequestException, NotFoundException, Exception;
 }
