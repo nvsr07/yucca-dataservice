@@ -28,7 +28,7 @@ public interface TenantTypeMapper {
 	 * 
 	 * ***********************************************************************/
 	@Results({
-        @Result(property = "idTenantType", column = " id_tenant_type"),
+        @Result(property = "idTenantType", column = "id_tenant_type"),
         @Result(property = "tenanttypecode", column = "tenanttypecode"),
         @Result(property = "description", column = "description")
       })
