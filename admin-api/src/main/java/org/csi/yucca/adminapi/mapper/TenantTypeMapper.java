@@ -19,7 +19,7 @@ public interface TenantTypeMapper {
 		
 	
 	public static final String SELECT_STAR_FROM_TENANTTYPE_TABLE = 
-			" SELECT idTenantType, tenanttypecode, description FROM " + TENANTTYPE_TABLE ;
+			" SELECT id_tenant_type,tenanttypecode,description  FROM " + TENANTTYPE_TABLE ;
 	
 	
 	/*************************************************************************
