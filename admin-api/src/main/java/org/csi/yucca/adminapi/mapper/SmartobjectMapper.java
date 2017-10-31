@@ -239,7 +239,7 @@ public interface SmartobjectMapper {
 	 * ***********************************************************************/
 	public static final String UPDATE_SMARTOBJECT = 
 			" UPDATE " + SMARTOBJECT_TABLE +
-			" SET name=#{name}, twttokensecret=#{twttokensecret},  "
+			" SET name=#{name}, twttokensecret=#{twttokensecret},  description=#{description},  "
 			+ " twtusername=#{twtusername},  twtmaxsearchnumber=#{twtmaxsearchnumber}, "
 			+ " twtmaxsearchinterval=#{twtmaxsearchinterval}, " 
 			+ " twtusertoken=#{twtusertoken}, twtname=#{twtname}, twtuserid=#{twtuserid}, "
