@@ -412,15 +412,15 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void validation(PostStreamRequest request, String organizationCode, Smartobject smartobject, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
+		Tenant tenant = checkTenant(request.getIdTenant(), organizationCode);
+		
+		checkAuthTenant(authorizedUser, tenant.getTenantcode());		
+		
 		checkMandatories(request);
 		
 		checkSubdomain(request.getIdSubdomain());
 		
 		checkOpendataupdatedate(request);		
-		
-		Tenant tenant = checkTenant(request.getIdTenant(), organizationCode);
-		
-		checkAuthTenant(authorizedUser, tenant.getTenantcode());		
 		
 		checkMaxNumStream(request.getIdTenant());
 		
@@ -703,7 +703,7 @@ public class StreamServiceImpl implements StreamService {
 	private Subdomain checkSubdomain(Integer idSubdomain) throws NotFoundException, BadRequestException{
 		ServiceUtil.checkMandatoryParameter(idSubdomain, "idSubdomain");
 		Subdomain subdomain = subdomainMapper.selectSubdomainByIdSubdomain(idSubdomain);
-		ServiceUtil.checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + subdomain + "] ");
+		ServiceUtil.checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + idSubdomain + "] ");
 		return subdomain;
 	}
 
