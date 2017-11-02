@@ -410,7 +410,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	private void validation(PostStreamRequest request, String organizationCode, Smartobject smartobject, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+	private void validation( PostStreamRequest request, String organizationCode, Smartobject smartobject, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
 		Tenant tenant = checkTenant(request.getIdTenant(), organizationCode);
 		
