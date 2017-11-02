@@ -15,16 +15,15 @@ import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.util.Constants;
 
-public interface SmartobjectMapper {
+public interface SmartobjectMapper{
 
-	String SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_smart_object";
+	public static final String SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_smart_object";
 	
-	String TENANT_SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_smart_object";
+	public static final String TENANT_SMARTOBJECT_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_smart_object";
 
-	String STATUS_TABLE = Constants.SCHEMA_DB + "yucca_d_status";
+	public static final String STATUS_TABLE = Constants.SCHEMA_DB + "yucca_d_status";
 	
-	String POSITION_TABLE = Constants.SCHEMA_DB + "yucca_so_position";
-	
+	public static final String POSITION_TABLE = Constants.SCHEMA_DB + "yucca_so_position";
 	
 	/*************************************************************************
 	 * 
@@ -270,7 +269,7 @@ public interface SmartobjectMapper {
 	 * ***********************************************************************/
 	public static final String UPDATE_SMARTOBJECT = 
 			" UPDATE " + SMARTOBJECT_TABLE +
-			" SET name=#{name}, twttokensecret=#{twttokensecret},  "
+			" SET name=#{name}, twttokensecret=#{twttokensecret}, description=#{description}, "
 			+ " twtusername=#{twtusername},  twtmaxsearchnumber=#{twtmaxsearchnumber}, "
 			+ " twtmaxsearchinterval=#{twtmaxsearchinterval}, " 
 			+ " twtusertoken=#{twtusertoken}, twtname=#{twtname}, twtuserid=#{twtuserid}, "
@@ -280,8 +279,6 @@ public interface SmartobjectMapper {
 			" WHERE socode=#{socode} and id_organization=#{idOrganization} ";
 	@Update(UPDATE_SMARTOBJECT)
 	int updateSmartobject(Smartobject smartobject);	
-	
-	
 	
 	
 	/*************************************************************************
@@ -341,8 +338,6 @@ public interface SmartobjectMapper {
 	@Insert(INSERT_SMARTOBJECT)
 	@Options(useGeneratedKeys=true, keyProperty="idSmartObject")
 	int insertSmartObject(Smartobject smartobject);
-
-	
 	
 	
 }

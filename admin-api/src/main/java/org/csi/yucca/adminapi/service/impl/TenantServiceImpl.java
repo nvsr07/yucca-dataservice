@@ -14,12 +14,14 @@ import org.csi.yucca.adminapi.mapper.FunctionMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
+import org.csi.yucca.adminapi.mapper.TenantTypeMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
 import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
+import org.csi.yucca.adminapi.model.TenantsType;
 import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
@@ -29,8 +31,10 @@ import org.csi.yucca.adminapi.request.PostTenantRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioTenantResponse;
+import org.csi.yucca.adminapi.response.PublicOrganizationResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
+import org.csi.yucca.adminapi.response.TenantTypeResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.TenantService;
@@ -62,6 +66,9 @@ public class TenantServiceImpl implements TenantService {
 	
 	@Autowired
 	private TenantMapper tenantMapper;
+	
+	@Autowired
+	private TenantTypeMapper tenantTypeMapper;
 	
 	@Autowired
 	private UserMapper userMapper;
@@ -125,7 +132,6 @@ public class TenantServiceImpl implements TenantService {
 
 		// insert tenant
 		tenantMapper.insertTenant(tenant);
-		userMapper.insertTenantUser(tenant.getIdTenant(), user.getIdUser());
 
 		// inserimento tenant bundle
 	    tenantMapper.insertTenantBundles(tenant.getIdTenant(), bundles.getIdBundles());
@@ -237,6 +243,27 @@ public class TenantServiceImpl implements TenantService {
 		}
 		
 		return ServiceResponse.build().NO_CONTENT();
+		
+	}
+	
+	/********************
+	 * SELECT TENANT TYPES
+	 ********************/
+	public ServiceResponse selectTenantTypes() throws BadRequestException, NotFoundException, Exception{
+		
+		
+		List<TenantsType> tenantTypeList = tenantTypeMapper.selectTenantTypes();
+		
+		ServiceUtil.checkList(tenantTypeList);
+		
+		List<TenantTypeResponse> responseList = new ArrayList<TenantTypeResponse>();
+		
+		for (TenantsType tenantsType : tenantTypeList) {
+			responseList.add(new TenantTypeResponse(tenantsType));
+		}
+		
+		return ServiceResponse.build().object(responseList);
+		
 		
 	}
 

@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class DcatRequest {
 	
-	private Integer idDcat; 
+	private Long idDcat; 
 	private Timestamp dcatdataupdate;		
 	private String dcatnomeorg;
 	private String dcatemailorg;	  
@@ -15,7 +15,7 @@ public class DcatRequest {
 	private String dcatrightsholdertype;			
 	private String dcatrightsholderid;
 	
-	public Integer getIdDcat() {
+	public Long getIdDcat() {
 		return idDcat;
 	}
 	public Timestamp getDcatdataupdate() {
@@ -54,8 +54,34 @@ public class DcatRequest {
 		if(idDcat != null)return null;
 		return dcatrightsholderid;
 	}
-
-	
-	
-	
+	public void setIdDcat(Long idDcat) {
+		this.idDcat = idDcat;
+	}
+	public void setDcatdataupdate(Timestamp dcatdataupdate) {
+		this.dcatdataupdate = dcatdataupdate;
+	}
+	public void setDcatnomeorg(String dcatnomeorg) {
+		this.dcatnomeorg = dcatnomeorg;
+	}
+	public void setDcatemailorg(String dcatemailorg) {
+		this.dcatemailorg = dcatemailorg;
+	}
+	public void setDcatcreatorname(String dcatcreatorname) {
+		this.dcatcreatorname = dcatcreatorname;
+	}
+	public void setDcatcreatortype(String dcatcreatortype) {
+		this.dcatcreatortype = dcatcreatortype;
+	}
+	public void setDcatcreatorid(String dcatcreatorid) {
+		this.dcatcreatorid = dcatcreatorid;
+	}
+	public void setDcatrightsholdername(String dcatrightsholdername) {
+		this.dcatrightsholdername = dcatrightsholdername;
+	}
+	public void setDcatrightsholdertype(String dcatrightsholdertype) {
+		this.dcatrightsholdertype = dcatrightsholdertype;
+	}
+	public void setDcatrightsholderid(String dcatrightsholderid) {
+		this.dcatrightsholderid = dcatrightsholderid;
+	}
 }

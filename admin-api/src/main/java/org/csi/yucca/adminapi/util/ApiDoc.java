@@ -46,7 +46,10 @@ public class ApiDoc {
 	
 	public static final String P_LOAD_DATASET_TYPES = "LOAD DATASET TYPES";
 	public static final String P_LOAD_DATASET_TYPES_NOTES = "Load all dataset types.";
-
+	
+	public static final String P_LOAD_TENANT_TYPES= "LOAD TENANT TYPES";
+	public static final String P_LOAD_TENANT_TYPES_NOTES = "Load all tenant types.";
+	
 	public static final String P_LOAD_DATASET_SUBTYPES = "LOAD DATASET SUBTYPES";
 	public static final String P_LOAD_DATASET_SUBTYPES_NOTES = "Load all dataset subtypes.";
 

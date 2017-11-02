@@ -53,6 +53,7 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.csi.yucca.adminapi.util.Status;
 import org.csi.yucca.adminapi.util.Type;
+import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.BeanUtils;
 //import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -271,7 +272,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	
 	public Smartobject insertSmartObject(SmartobjectRequest smartobjectRequest, Organization organization)throws BadRequestException{
 
-		Timestamp now = new Timestamp(System.currentTimeMillis());
+		Timestamp now = Util.getNow();
 		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization.getIdOrganization(), now, 1, Status.INSTALLED.id());
 		
 		insertManagerTenantSmartobject(smartobjectRequest.getIdTenant(), smartobject.getIdSmartObject(), now);

@@ -10,7 +10,7 @@ public class ComponentRequest {
 	private Integer idDataType;
 	private Integer idMeasureUnit;
 	private Boolean required;
-
+	
 	public String getName() {
 		return name;
 	}

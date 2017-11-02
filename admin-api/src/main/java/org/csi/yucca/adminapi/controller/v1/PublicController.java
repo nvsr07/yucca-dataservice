@@ -4,6 +4,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_SUBTYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_SUBTYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_TYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_TYPES_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TENANT_TYPES;
+import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TENANT_TYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATA_TYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATA_TYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DOMAINS;
@@ -53,10 +55,12 @@ import org.csi.yucca.adminapi.response.SoTypeResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.SupplyTypeResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
+import org.csi.yucca.adminapi.response.TenantTypeResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.TechnicalService;
+import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,6 +101,23 @@ public class PublicController extends YuccaController{
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return technicalService.selectDatasetType(sort);
+			}
+		}, logger);
+		
+	}	
+	
+	@Autowired
+	private TenantService tenantService;
+
+	@ApiOperation(value = P_LOAD_TENANT_TYPES, notes = P_LOAD_TENANT_TYPES_NOTES, response = TenantTypeResponse.class, responseContainer="List")
+	@GetMapping("/tenant_types")
+	public ResponseEntity<Object> loadTenantTypes() {
+
+		logger.info("loadTenantTypes");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.selectTenantTypes();
 			}
 		}, logger);
 		

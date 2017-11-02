@@ -1,15 +1,51 @@
 package org.csi.yucca.adminapi.mapper;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.csi.yucca.adminapi.model.Stream;
+import org.csi.yucca.adminapi.model.StreamInternal;
 import org.csi.yucca.adminapi.util.Constants;
 
 public interface StreamMapper {
 
 	String STREAM_TABLE = Constants.SCHEMA_DB + "yucca_stream";
+	String STREAM_INTERNAL_TABLE = Constants.SCHEMA_DB + "yucca_r_stream_internal";
+
+	/*************************************************************************
+	 * 
+	 * 					INSERT STREAM-INTERNAL
+	 * 
+	 * ***********************************************************************/
+	
+	public static final String INSERT_STREAM_INTERNAL = 
+	" INSERT INTO " + STREAM_INTERNAL_TABLE
+	+ "( id_data_sourceinternal, datasourceversioninternal, idstream,  stream_alias) "
+	+ "VALUES (#{idDataSourceinternal}, #{datasourceversioninternal}, #{idstream},  #{streamAlias})";
+	@Insert(INSERT_STREAM_INTERNAL)
+	int insertStreamInternal(StreamInternal streamInternal);
+	
+
+	
+	/*************************************************************************
+	 * 
+	 * 					INSERT STREAM
+	 * 
+	 * ***********************************************************************/
+	public static final String INSERT_STREAM = 
+	" INSERT INTO " + STREAM_TABLE + "( id_data_source, datasourceversion, streamcode, streamname, "
+	+ "publishstream, savedata, fps, internalquery, twtquery, twtgeoloclat, twtgeoloclon, twtgeolocradius, "
+	+ "twtgeolocunit, twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid,  id_smart_object) "
+	+ "VALUES (#{idDataSource},#{datasourceversion},#{streamcode},#{streamname},#{publishstream},#{savedata},#{fps},"
+	+ "#{internalquery},#{twtquery},#{twtgeoloclat},#{twtgeoloclon},#{twtgeolocradius},#{twtgeolocunit},#{twtlang},"
+	+ "#{twtlocale},#{twtcount},#{twtresulttype},#{twtuntil},#{twtratepercentage},#{twtlastsearchid},#{idSmartObject})";	
+	@Insert(INSERT_STREAM)
+	@Options(useGeneratedKeys=true, keyProperty="idstream")
+	int insertStream(Stream stream);
+	
 	
 	/*************************************************************************
 	 * 

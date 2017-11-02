@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Tenant;
+import org.csi.yucca.adminapi.model.TenantDataSource;
 import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.util.Constants;
@@ -291,12 +292,26 @@ public interface TenantMapper {
 		int updateTenantStatus(@Param("idTenantStatus") Integer idTenantStatus, @Param("tenantCode") String tenantCode);
 	
 	
+		/*************************************************************************
+		 * 
+		 * 					INSERT TENANT-DATASOURCE
+		 * 
+		 * ***********************************************************************/
+		public static final String INSERT_TENANT_DATA_SOURCE = 
+				" INSERT INTO int_yucca.yucca_r_tenant_data_source( id_data_source, datasourceversion, id_tenant, "
+				+ "isactive, ismanager, dataoptions, manageoptions, activationdate, deactivationdate, managerfrom, manageruntil) "
+				+ "VALUES (#{idDataSource}, #{datasourceversion}, #{idTenant},#{isactive}, "
+				+ "#{ismanager}, #{dataoptions}, #{manageoptions}, #{activationdate}, #{deactivationdate}, "
+				+ "#{managerfrom}, #{manageruntil})";
+		@Insert(INSERT_TENANT_DATA_SOURCE)
+		int insertTenantDataSource(TenantDataSource tenantDataSource);
+		
+		
 	/*************************************************************************
 	 * 
 	 * 					INSERT TENANT
 	 * 
 	 * ***********************************************************************/
-	
 	public static final String INSERT_TENANT = 
 		"INSERT INTO " + TENANT_TABLE +
 			" ( creationdate, expirationdate, activationdate, deactivationdate, id_share_type, " +

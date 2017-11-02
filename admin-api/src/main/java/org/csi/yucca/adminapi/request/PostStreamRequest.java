@@ -10,7 +10,7 @@ public class PostStreamRequest {
 	private String name;
 	private Boolean unpublished;
 	private Boolean savedata;
-	private Double precision;
+	private Double fps;
 	private String internalquery;
 	private String visibility;
 	private String copyright;
@@ -80,12 +80,12 @@ public class PostStreamRequest {
 		this.savedata = savedata;
 	}
 
-	public Double getPrecision() {
-		return precision;
+	public Double getFps() {
+		return fps;
 	}
 
-	public void setPrecision(Double precision) {
-		this.precision = precision;
+	public void setFps(Double fps) {
+		this.fps = fps;
 	}
 
 	public String getInternalquery() {
