@@ -79,7 +79,7 @@ public interface SmartobjectMapper{
 	 ************************************************************************************/
 	public static final String SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT =
 			" SELECT " +
-		    " lat, lon, elevation, room, building, floor, address, city, country, placegeometry, id_so_position, " +
+		    " lat, lon, elevation, room, building, floor, address, city, country, placegeometry, " +
 			" SMARTOBJECT.id_smart_object, socode, " +
 			" ORGANIZATION.organizationcode, ORGANIZATION.description AS description_organization, " +
 			" STATUS.statuscode, STATUS.description AS description_status, " +
