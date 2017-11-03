@@ -145,14 +145,12 @@ public class BackOfficeController extends YuccaController{
 	
 	/**
 	 * 
-	 * @param actionOnTenantRequest
-	 * @param tenantCode
+	 * @param actionOnTenantRequest 
 	 * @return
 	 */
 	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
-	@PatchMapping("/tenants/{tenantCode}")
-	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest, 
-			@PathVariable final String tenantCode){
+	@PatchMapping("/tenants")
+	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest){
 		logger.info("actionOnTenant");
 		
 		return run(new ApiCallable() {
