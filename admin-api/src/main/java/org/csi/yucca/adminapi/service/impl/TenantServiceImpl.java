@@ -204,7 +204,6 @@ public class TenantServiceImpl implements TenantService {
 		ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getAction(), "action");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getStartStep(), "StartStep");
-		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getEndStep(), "EndStep");	
 		//ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
 		
 		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantcode);
@@ -221,7 +220,7 @@ public class TenantServiceImpl implements TenantService {
 			steps +=":"+actionOnTenantRequest.getEndStep();
 		
 		// jms sender
-		String msg = actionOnTenantRequest.getAction()+"|"+tenant.toString()+"|"+tenantcode+"|"+steps;
+		String msg = actionOnTenantRequest.getAction()+"|tenant|"+tenantcode+"|"+steps;
 		messageSender.sendMessage(msg);
 		
 		// cambia lo stato del tenant:
