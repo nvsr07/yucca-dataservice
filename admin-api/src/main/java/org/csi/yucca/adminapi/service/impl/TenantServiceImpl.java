@@ -199,25 +199,33 @@ public class TenantServiceImpl implements TenantService {
 	//	VERIFICARE CHE LO STATUS DEL TENANT è SU RICHIESTA INSTALLAZIONE ALTRIMENTI DARE ERRORE
 	//
 	//	SE LA RICHIESTA VA A BUON FINE SETTARE LO STATO A : INSTALLAZIONE IN PROGRESS
-	public ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest, String tenantCode) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest) throws BadRequestException, NotFoundException, Exception{
 		
-		ServiceUtil.checkMandatoryParameter(tenantCode, "tenantCode");
-		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest, "actionOnTenantRequest");
-		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getCodeTenantStatus(), "CodeTenantStatus");
-		ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
+		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getTenantCode(), "tenantCode");
+		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getAction(), "action");
+		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getStartStep(), "StartStep");
+		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getEndStep(), "EndStep");	
+		//ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
 		
-		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(actionOnTenantRequest.getTenantCode());
 		ServiceUtil.checkIfFoundRecord(tenant);
+		
 		
 		if(Status.REQUEST_INSTALLATION.id()!= tenant.getIdTenantStatus()){
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
 		}
 		
+		//Valorizzazione steps
+		String steps = actionOnTenantRequest.getStartStep();
+		if(actionOnTenantRequest.getEndStep()!=null)
+			steps +=":"+actionOnTenantRequest.getEndStep();
+		
 		// jms sender
-		messageSender.sendMessage(tenantCode);
+		String msg = actionOnTenantRequest.getAction()+"|"+tenant.toString()+"|"+actionOnTenantRequest.getTenantCode()+"|"+steps;
+		messageSender.sendMessage(msg);
 		
 		// cambia lo stato del tenant:
-		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), tenantCode);
+		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), actionOnTenantRequest.getTenantCode());
 		
 		return ServiceResponse.build().NO_CONTENT();
 	}

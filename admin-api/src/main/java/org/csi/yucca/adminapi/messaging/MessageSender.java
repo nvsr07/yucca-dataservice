@@ -27,12 +27,12 @@ public class MessageSender {
 //                }
 //            });
 //    }
-    public void sendMessage(final String tenantCode) {
+    public void sendMessage(final String msg) {
     	 
         jmsTemplate.send(new MessageCreator(){
                 @Override
                 public Message createMessage(Session session) throws JMSException{
-                    ObjectMessage objectMessage = session.createObjectMessage(tenantCode);
+                    Message objectMessage = session.createTextMessage(msg);
                     return objectMessage;
                 }
             });

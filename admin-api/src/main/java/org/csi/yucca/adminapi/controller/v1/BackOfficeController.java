@@ -157,7 +157,7 @@ public class BackOfficeController extends YuccaController{
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.actionOnTenant(actionOnTenantRequest, tenantCode);
+				return tenantService.actionOnTenant(actionOnTenantRequest);
 			}
 		}, logger);		
 	}
