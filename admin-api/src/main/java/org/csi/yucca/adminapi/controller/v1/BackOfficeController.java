@@ -115,7 +115,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -149,13 +148,13 @@ public class BackOfficeController extends YuccaController{
 	 * @return
 	 */
 	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
-	@PatchMapping("/tenants")
-	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest){
+	@PutMapping("/tenants/{tenantcode}/action")
+	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest,@PathVariable final String tenantcode){
 		logger.info("actionOnTenant");
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.actionOnTenant(actionOnTenantRequest);
+				return tenantService.actionOnTenant(actionOnTenantRequest,tenantcode);
 			}
 		}, logger);		
 	}

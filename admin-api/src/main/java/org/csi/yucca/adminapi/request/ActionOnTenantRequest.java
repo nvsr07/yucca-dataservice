@@ -3,7 +3,6 @@ package org.csi.yucca.adminapi.request;
 public class ActionOnTenantRequest {
 
 	private String action;
-	private String tenantCode;
 	private String startStep;
 	private String endStep;
 	
@@ -12,12 +11,6 @@ public class ActionOnTenantRequest {
 	}
 	public void setAction(String action) {
 		this.action = action;
-	}
-	public String getTenantCode() {
-		return tenantCode;
-	}
-	public void setTenantCode(String tenantCode) {
-		this.tenantCode = tenantCode;
 	}
 	public String getStartStep() {
 		return startStep;

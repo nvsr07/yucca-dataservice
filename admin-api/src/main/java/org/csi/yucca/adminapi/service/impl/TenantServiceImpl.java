@@ -199,15 +199,15 @@ public class TenantServiceImpl implements TenantService {
 	//	VERIFICARE CHE LO STATUS DEL TENANT è SU RICHIESTA INSTALLAZIONE ALTRIMENTI DARE ERRORE
 	//
 	//	SE LA RICHIESTA VA A BUON FINE SETTARE LO STATO A : INSTALLAZIONE IN PROGRESS
-	public ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest) throws BadRequestException, NotFoundException, Exception{
+	public ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception{
 		
-		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getTenantCode(), "tenantCode");
+		ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getAction(), "action");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getStartStep(), "StartStep");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getEndStep(), "EndStep");	
 		//ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
 		
-		Tenant tenant = tenantMapper.selectTenantByTenantCode(actionOnTenantRequest.getTenantCode());
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantcode);
 		ServiceUtil.checkIfFoundRecord(tenant);
 		
 		
@@ -221,11 +221,11 @@ public class TenantServiceImpl implements TenantService {
 			steps +=":"+actionOnTenantRequest.getEndStep();
 		
 		// jms sender
-		String msg = actionOnTenantRequest.getAction()+"|"+tenant.toString()+"|"+actionOnTenantRequest.getTenantCode()+"|"+steps;
+		String msg = actionOnTenantRequest.getAction()+"|"+tenant.toString()+"|"+tenantcode+"|"+steps;
 		messageSender.sendMessage(msg);
 		
 		// cambia lo stato del tenant:
-		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), actionOnTenantRequest.getTenantCode());
+		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), tenantcode);
 		
 		return ServiceResponse.build().NO_CONTENT();
 	}
