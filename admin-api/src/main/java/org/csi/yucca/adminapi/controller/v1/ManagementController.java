@@ -14,6 +14,7 @@ import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.SmartObjectService;
@@ -49,8 +50,24 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private StreamService streamService;     
-
-	@ApiOperation(value = M_CREATE_STREAM_DATASET, notes = M_CREATE_STREAM_DATASET_NOTES, response = DataTypeResponse.class)
+	
+	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = DettaglioSmartobjectResponse.class, responseContainer="List")
+	@GetMapping("/organizations/{organizationCode}/streams")
+	public ResponseEntity<Object> loadStreams(
+			@PathVariable final String organizationCode,
+			@RequestParam(required=false) final String tenantCodeManager,
+			@RequestParam(required=false) final String sort,
+			final HttpServletRequest request) {
+		logger.info("loadStreams");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.selectStreams(organizationCode, tenantCodeManager, sort, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}
+	
+	@ApiOperation(value = M_CREATE_STREAM_DATASET, notes = M_CREATE_STREAM_DATASET_NOTES, response = PostStreamResponse.class)
 	@PostMapping("/organizations/{organizationCode}/smartobject/{soCode}/streams")
 	public ResponseEntity<Object> createStreamDataset(
 			@RequestBody final PostStreamRequest request,

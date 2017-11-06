@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
@@ -24,6 +25,24 @@ public class ServiceUtil {
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
 	public static final String COMPONENT_NAME_PATTERN =  "(.)*[\u00C0-\u00F6\u00F8-\u00FF\u0020]+(.)*|^[0-9]*$";
+	
+	public static ServiceResponse buildResponse(Object object){
+		return ServiceResponse.build().object(object);
+	}
+	
+	/**
+	 * 
+	 * @param authorizedUser
+	 * @param tenantCode
+	 * @throws UnauthorizedException
+	 */
+	public static void checkAuthTenant(JwtUser authorizedUser, String tenantCode) throws UnauthorizedException{
+		List<String> userAuthorizedTenantCodeList = ServiceUtil.getTenantCodeListFromUser(authorizedUser);
+		for (String authTenant : userAuthorizedTenantCodeList) {
+			if(authTenant.equals(tenantCode))return;
+		}
+		throw new UnauthorizedException(Errors.UNAUTHORIZED, "not authorized tenantCode [" + tenantCode + "]");
+	}
 	
 	
 	/**

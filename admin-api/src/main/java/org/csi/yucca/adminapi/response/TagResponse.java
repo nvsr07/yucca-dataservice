@@ -1,11 +1,13 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.Tag;
+import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.util.Errors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class TagResponse extends Response{
+	
 	private Integer idTag;
 	private String tagcode;
 	
@@ -15,6 +17,15 @@ public class TagResponse extends Response{
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langen;
 	private Integer idEcosystem;
+
+	public TagResponse(TagJson tag) {
+		super();
+		this.idTag = tag.getId_tag();
+		this.tagcode = tag.getTagcode();
+		this.langit = tag.getLangit();
+		this.langen = tag.getLangen();
+		this.idEcosystem = tag.getId_ecosystem();
+	}
 	
 	public TagResponse(Tag tag) {
 		super();

@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.IOrganization;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
@@ -9,7 +10,16 @@ public class OrganizationResponse extends Response{
 	private Integer idOrganization;
 	private String organizationcode;
 	private String description;
-	
+
+	public OrganizationResponse(IOrganization organizatioImpl) {
+		super();
+		if (organizatioImpl != null) {
+			this.idOrganization = organizatioImpl.getIdOrganization();
+			this.organizationcode = organizatioImpl.getOrganizationCode();
+			this.description = organizatioImpl.getOrganizationDescription();			
+		}
+	}
+
 	public OrganizationResponse(TenantManagement tenantManagement) {
 		super();
 		this.idOrganization = tenantManagement.getIdOrganization();

@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.ITenant;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.util.Errors;
 
@@ -17,6 +18,14 @@ public class TenantResponse extends Response{
 		super(errors, arg);
 	}
 
+	public TenantResponse(ITenant iTenantImpl ) {
+		if(iTenantImpl != null){
+			this.idTenant = iTenantImpl.getIdTenant();
+			this.tenantcode = iTenantImpl.getTenantCode();
+			this.description = iTenantImpl.getTenantDescription();			
+		}
+	}
+	
 	public TenantResponse(Tenant tenant) {
 		
 		this.idTenant = tenant.getIdTenant();

@@ -11,6 +11,9 @@ public class ApiDoc {
 	public static final String M_LOAD_SMART_OBJECTS = "LOAD SMARTOBJECTS";
 	public static final String M_LOAD_SMART_OBJECTS_NOTES = "Load all Smartobjects in the System.";
 
+	public static final String M_LOAD_STREAMS = "LOAD STREAMS";
+	public static final String M_LOAD_STREAMS_NOTES = "Load all Stream in the System.";
+
 	public static final String M_LOAD_SMART_OBJECT = "LOAD SMARTOBJECT+";
 	public static final String M_LOAD_SMART_OBJECT_NOTES = "Load Smartobject in the System.";
 	

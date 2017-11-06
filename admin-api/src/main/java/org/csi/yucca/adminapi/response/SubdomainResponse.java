@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.ISubdomain;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.util.Errors;
 
@@ -16,7 +17,19 @@ public class SubdomainResponse extends Response{
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String langEn;
 	private int deprecated;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer idDomain;
+
+	public SubdomainResponse(ISubdomain iSubdomain) {
+		super();
+		if (iSubdomain != null) {
+			this.idSubdomain = iSubdomain.getSubIdSubDomain();
+			this.subdomaincode = iSubdomain.getSubSubDomainCode();
+			this.langIt = iSubdomain.getSubLangIt();
+			this.langEn = iSubdomain.getSubLangEn();
+		}
+	}
 	
 	public SubdomainResponse(Subdomain subdomain ) {
 		super();

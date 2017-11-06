@@ -1,12 +1,22 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.ISoType;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class SoTypeResponse extends Response{
 
 	private Integer idSoType;
 	private String sotypecode;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String description;
+
+	public SoTypeResponse(ISoType iSoType) {
+		super();
+		this.idSoType = iSoType.getIdSoType();
+		this.sotypecode = iSoType.getSoTypeCode();
+	}
 	
 	public SoTypeResponse(DettaglioSmartobject smartobject) {
 		super();

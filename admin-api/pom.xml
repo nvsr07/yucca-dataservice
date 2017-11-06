@@ -75,29 +75,12 @@
 
 	<dependencies>
 
-		<!-- http://massimilianosciacco.com/spring-security-jwt-authentication -->
-		<!-- JWT -->
-<!-- 		<dependency> -->
-<!-- 		    <groupId>com.nimbusds</groupId> -->
-<!-- 		    <artifactId>nimbus-jose-jwt</artifactId> -->
-<!-- 		    <version>5.1</version> -->
-<!-- 		</dependency> -->
-<!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
-<!-- <dependency> -->
-<!--     <groupId>io.jsonwebtoken</groupId> -->
-<!--     <artifactId>jjwt</artifactId> -->
-<!--     <version>0.7.0</version> -->
-<!-- </dependency> -->
-
-<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
-<dependency>
-    <groupId>com.nimbusds</groupId>
-    <artifactId>nimbus-jose-jwt</artifactId>
-    <version>5.1</version>
-</dependency>
-
-
-
+		<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>5.1</version>
+		</dependency>
 
 		<!-- SPRING JMS DEPENDENCIES -->
 		<dependency>
@@ -141,7 +124,6 @@
 			<version>2.5.0</version>
 		</dependency>
 
-
 		<!-- PER TEST BEGIN -->
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -160,8 +142,6 @@
 			<artifactId>json</artifactId>
 			<version>20151123</version>
 		</dependency>
-		<!-- PER TEST END -->
-
 
 		<!-- PER MYBATIS BEGIN -->
 		<dependency>

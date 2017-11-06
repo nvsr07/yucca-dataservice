@@ -38,7 +38,9 @@ public class TechnicalServiceImpl implements TechnicalService{
 		
 //		return ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class);
 		
-		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class));
+//		return ServiceResponse.build().object(ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class));
+		
+		return ServiceUtil.buildResponse(ServiceUtil.getResponseList(modelList, DatasetTypeResponse.class));
 	}		
 	
 	public ServiceResponse selectDatasetSubtype(String datasetTypeCode, String sort) throws BadRequestException, NotFoundException, Exception{

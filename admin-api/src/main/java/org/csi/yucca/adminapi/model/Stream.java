@@ -1,7 +1,7 @@
 package org.csi.yucca.adminapi.model;
 
 public class Stream {
-
+	
 	private Integer idDataSource;
 	private Integer datasourceversion;
 	private Integer idstream;

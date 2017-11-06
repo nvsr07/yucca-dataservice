@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.Domain;
+import org.csi.yucca.adminapi.model.IDomain;
 import org.csi.yucca.adminapi.util.Errors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,6 +19,16 @@ public class DomainResponse extends Response{
 	public DomainResponse() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public DomainResponse(IDomain iDomainImpl) {
+		super();
+		if (iDomainImpl != null) {
+			this.langit = iDomainImpl.getDomLangIt();
+			this.langen = iDomainImpl.getDomLangEn();
+			this.idDomain = iDomainImpl.getDomIdDomain();
+			this.domaincode = iDomainImpl.getDomDomainCode();			
+		}
 	}
 
 	public DomainResponse(Domain domain) {

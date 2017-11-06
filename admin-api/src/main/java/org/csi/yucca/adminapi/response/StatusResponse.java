@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.IStatus;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
 public class StatusResponse extends Response{
@@ -10,6 +11,15 @@ public class StatusResponse extends Response{
 	
 	public StatusResponse() {
 		super();
+	}
+	
+	public StatusResponse(IStatus iStatusImpl) {
+		super();
+		if (iStatusImpl != null) {
+			this.idStatus = iStatusImpl.getIdStatus();
+			this.statuscode = iStatusImpl.getStatusCode();				
+			this.descriptionStatus = iStatusImpl.getStatusDescription();			
+		}
 	}
 	
 	public StatusResponse(DettaglioSmartobject smartobject) {
