@@ -333,8 +333,6 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	 */
 	private void checkTweet(SmartobjectRequest smartobjectRequest) throws BadRequestException {
 		boolean justOneTweetInfo = smartobjectRequest.getTwtusername() != null
-				|| smartobjectRequest.getTwtmaxsearchnumber() != null
-				|| smartobjectRequest.getTwtmaxsearchinterval() != null || smartobjectRequest.getTwtusertoken() != null
 				|| smartobjectRequest.getTwttokensecret() != null || smartobjectRequest.getTwtname() != null
 				|| smartobjectRequest.getTwtuserid() != null || smartobjectRequest.getTwtmaxstreams() != null;
 
@@ -347,12 +345,8 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 			checkMandatoryParameter(smartobjectRequest.getTwtusername(), "twtusername");
 			checkMandatoryParameter(smartobjectRequest.getTwtusertoken(), "twtusertoken");
 			checkMandatoryParameter(smartobjectRequest.getTwttokensecret(), "twttokensecret");			
-			// da verificare se devono essere mandatari BEGIN
-			checkMandatoryParameter(smartobjectRequest.getTwtmaxsearchnumber(), "twtmaxsearchnumber");
 			checkMandatoryParameter(smartobjectRequest.getTwtname(), "twtname");
-			checkMandatoryParameter(smartobjectRequest.getTwtmaxsearchinterval(), "twtmaxsearchinterval");
 			checkMandatoryParameter(smartobjectRequest.getTwtuserid(), "twtuserid");
-			// da verificare se devono essere mandatari END
 		}
 
 	}

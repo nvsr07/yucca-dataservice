@@ -17,8 +17,6 @@ public class DettaglioSmartobjectResponse extends Response {
 	private Integer deploymentversion;
 	private String creationdate;
 	private String twtusername;
-	private Long twtmaxsearchnumber;
-	private Long twtmaxsearchinterval;
 	private String twtusertoken;
 	private String twttokensecret;
 	private String twtname;
@@ -49,8 +47,6 @@ public class DettaglioSmartobjectResponse extends Response {
 		this.deploymentversion = smartobject.getDeploymentversion();
 		this.creationdate =  Util.dateString(smartobject.getCreationdate());
 		this.twtusername = smartobject.getTwtusername();
-		this.twtmaxsearchnumber = smartobject.getTwtmaxsearchnumber();
-		this.twtmaxsearchinterval = smartobject.getTwtmaxsearchinterval();
 		this.twtusertoken = smartobject.getTwtusertoken();
 		this.twttokensecret = smartobject.getTwttokensecret();
 		this.twtname = smartobject.getTwtname();
@@ -149,18 +145,6 @@ public class DettaglioSmartobjectResponse extends Response {
 	}
 	public void setTwtusername(String twtusername) {
 		this.twtusername = twtusername;
-	}
-	public Long getTwtmaxsearchnumber() {
-		return twtmaxsearchnumber;
-	}
-	public void setTwtmaxsearchnumber(Long twtmaxsearchnumber) {
-		this.twtmaxsearchnumber = twtmaxsearchnumber;
-	}
-	public Long getTwtmaxsearchinterval() {
-		return twtmaxsearchinterval;
-	}
-	public void setTwtmaxsearchinterval(Long twtmaxsearchinterval) {
-		this.twtmaxsearchinterval = twtmaxsearchinterval;
 	}
 	public String getTwtusertoken() {
 		return twtusertoken;

@@ -430,8 +430,6 @@ public class TestBase {
 				" \"model\" : \"model\", " +
 				" \"deploymentversion\" : 1, " +
 				" \"sostatus\" : \"sostatus\", " +
-				" \"twtmaxsearchnumber\" : 1, " +
-				" \"twtmaxsearchinterval\" : 1, " +
 				" \"twtusertoken\" : \"twtusertoken\", " +
 				" \"twttokensecret\" : \"twttokensecret\", " +
 				" \"twtname\" : \"twtname\", " +

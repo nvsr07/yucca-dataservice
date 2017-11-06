@@ -17,8 +17,6 @@ public class SmartobjectUpdateRequest {
 	private String sostatus;
 	private Timestamp creationdate;
 	private String twtusername;
-	private Long twtmaxsearchnumber;
-	private Long twtmaxsearchinterval;
 	private String twtusertoken;
 	private String twttokensecret;
 	private String twtname;
@@ -117,18 +115,6 @@ public class SmartobjectUpdateRequest {
 	}
 	public void setTwtusername(String twtusername) {
 		this.twtusername = twtusername;
-	}
-	public Long getTwtmaxsearchnumber() {
-		return twtmaxsearchnumber;
-	}
-	public void setTwtmaxsearchnumber(Long twtmaxsearchnumber) {
-		this.twtmaxsearchnumber = twtmaxsearchnumber;
-	}
-	public Long getTwtmaxsearchinterval() {
-		return twtmaxsearchinterval;
-	}
-	public void setTwtmaxsearchinterval(Long twtmaxsearchinterval) {
-		this.twtmaxsearchinterval = twtmaxsearchinterval;
 	}
 	public String getTwtusertoken() {
 		return twtusertoken;

@@ -89,8 +89,8 @@ public interface SmartobjectMapper{
 			" EXPOSURE_TYPE.exposuretype, EXPOSURE_TYPE.description AS description_exposuretype, " +
 			" LOCATION_TYPE.locationtype, LOCATION_TYPE.description AS description_locationtype, " +
 			" name, SMARTOBJECT.description, urladmin, " +
-			" fbcoperationfeedback, swclientversion, version, model, deploymentversion, sostatus, creationdate, twtusername, twtmaxsearchnumber, " + 
-			" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, slug, " +
+			" fbcoperationfeedback, swclientversion, version, model, deploymentversion, sostatus, creationdate, twtusername,  " + 
+			" twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, slug, " +
 			" SMARTOBJECT.id_location_type, " +
 			" SMARTOBJECT.id_exposure_type, " +
 			" SMARTOBJECT.id_supply_type, " +
@@ -166,8 +166,8 @@ public interface SmartobjectMapper{
 	public static final String SELECT_ID_SMARTOBJECT_BY_ORGANIZATION_AND_SO_TYPE
 		= " SELECT id_smart_object, socode, name, description, " + 
 				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
-				" deploymentversion, creationdate, twtusername, twtmaxsearchnumber, " + 
-				" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, " + 
+				" deploymentversion, creationdate, twtusername,  " + 
+				" twtusertoken, twttokensecret, twtname, " + 
 				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
 				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
 		  " FROM " + SMARTOBJECT_TABLE + 
@@ -194,7 +194,7 @@ public interface SmartobjectMapper{
 	public static final String SELECT_SMARTOBJECT_BY_SOCODE_AND_ORGCODE = 
 	" SELECT SO.id_organization, id_smart_object, socode, name, SO.description, urladmin, fbcoperationfeedback, " + 
 	" swclientversion, version, model, deploymentversion, sostatus, " + 
-	" creationdate, twtusername, twtmaxsearchnumber, twtmaxsearchinterval, " + 
+	" creationdate, twtusername,  " + 
 	" twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, " + 
 	" slug, id_location_type, id_exposure_type, id_supply_type, id_so_category, " + 
 	" id_so_type, id_status " +
@@ -225,8 +225,7 @@ public interface SmartobjectMapper{
 	public static final String SELECT_ID_SMARTOBJECT_SO_TYPE 
 		= " SELECT id_smart_object, socode, name, description, " + 
 				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
-				" deploymentversion, creationdate, twtusername, twtmaxsearchnumber, " + 
-				" twtmaxsearchinterval, twtusertoken, twttokensecret, twtname, " + 
+				" deploymentversion, creationdate, twtusername, twtusertoken, twttokensecret, twtname, " + 
 				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
 				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
 		  " FROM " + SMARTOBJECT_TABLE + 
@@ -270,8 +269,7 @@ public interface SmartobjectMapper{
 	public static final String UPDATE_SMARTOBJECT = 
 			" UPDATE " + SMARTOBJECT_TABLE +
 			" SET name=#{name}, twttokensecret=#{twttokensecret}, description=#{description}, "
-			+ " twtusername=#{twtusername},  twtmaxsearchnumber=#{twtmaxsearchnumber}, "
-			+ " twtmaxsearchinterval=#{twtmaxsearchinterval}, " 
+			+ " twtusername=#{twtusername},  " 
 			+ " twtusertoken=#{twtusertoken}, twtname=#{twtname}, twtuserid=#{twtuserid}, "
 	        + " twtmaxstreams=#{twtmaxstreams}, id_exposure_type=#{idExposureType}, "
 	        + " id_location_type=#{idLocationType}, " 
@@ -325,13 +323,13 @@ public interface SmartobjectMapper{
 	" INSERT INTO " + SMARTOBJECT_TABLE + " ( " +
 			" socode, name, description, urladmin, fbcoperationfeedback, " + 
 			" swclientversion, version, model, deploymentversion, " +
-			" creationdate, twtusername, twtmaxsearchnumber, twtmaxsearchinterval, " + 
+			" creationdate, twtusername, " + 
 			" twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, " +
 			" slug, id_location_type, id_exposure_type, id_supply_type, id_so_category, " + 
 			" id_so_type, id_status, id_organization) " +
 			" VALUES (#{socode}, #{name}, #{description}, #{urladmin}, #{fbcoperationfeedback}, " + 
 			"  #{swclientversion}, #{version}, #{model}, #{deploymentversion},  " +
-			" #{creationdate}, #{twtusername}, #{twtmaxsearchnumber}, #{twtmaxsearchinterval}, " +
+			" #{creationdate}, #{twtusername}, " +
 			" #{twtusertoken}, #{twttokensecret}, #{twtname}, #{twtuserid}, #{twtmaxstreams}, " +
 			" #{slug}, #{idLocationType}, #{idExposureType}, #{idSupplyType}, #{idSoCategory}, " +
 			" #{idSoType}, #{idStatus}, #{idOrganization}) ";

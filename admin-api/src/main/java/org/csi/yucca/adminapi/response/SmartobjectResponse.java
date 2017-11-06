@@ -31,12 +31,6 @@ public class SmartobjectResponse extends Response {
 	private String twtusername;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Long twtmaxsearchnumber;
-	
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Long twtmaxsearchinterval;
-	
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusertoken;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -80,8 +74,6 @@ public class SmartobjectResponse extends Response {
 //		this.sostatus = smartobject.getSostatus();
 		this.creationdate = smartobject.getCreationdate();
 		this.twtusername = smartobject.getTwtusername();
-		this.twtmaxsearchnumber = smartobject.getTwtmaxsearchnumber();
-		this.twtmaxsearchinterval = smartobject.getTwtmaxsearchinterval();
 		this.twtusertoken = smartobject.getTwtusertoken();
 		this.twttokensecret = smartobject.getTwttokensecret();
 		this.twtname = smartobject.getTwtname();
@@ -209,22 +201,6 @@ public class SmartobjectResponse extends Response {
 
 	public void setTwtusername(String twtusername) {
 		this.twtusername = twtusername;
-	}
-
-	public Long getTwtmaxsearchnumber() {
-		return twtmaxsearchnumber;
-	}
-
-	public void setTwtmaxsearchnumber(Long twtmaxsearchnumber) {
-		this.twtmaxsearchnumber = twtmaxsearchnumber;
-	}
-
-	public Long getTwtmaxsearchinterval() {
-		return twtmaxsearchinterval;
-	}
-
-	public void setTwtmaxsearchinterval(Long twtmaxsearchinterval) {
-		this.twtmaxsearchinterval = twtmaxsearchinterval;
 	}
 
 	public String getTwtusertoken() {
