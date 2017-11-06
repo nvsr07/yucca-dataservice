@@ -52,6 +52,32 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private StreamService streamService;     
 	
+
+//	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamResponse.class)
+//	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
+//	public ResponseEntity<Object> loadStream(
+//			@PathVariable final String organizationCode, 
+//			@PathVariable final Integer idstream, 
+//			final HttpServletRequest request) {
+//		
+//		logger.info("loadStream");
+//		
+//		return run(new ApiCallable() {
+//			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+//				return streamService.selectStream(organizationCode, socode, getAuthorizedUser(request));
+//			}
+//		}, logger);		
+//	}
+
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param tenantCodeManager
+	 * @param sort
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = DettaglioStreamResponse.class, responseContainer="List")
 	@GetMapping("/organizations/{organizationCode}/streams")
 	public ResponseEntity<Object> loadStreams(
@@ -68,6 +94,14 @@ public class ManagementController extends YuccaController{
 		}, logger);		
 	}
 	
+	/**
+	 * 
+	 * @param request
+	 * @param organizationCode
+	 * @param soCode
+	 * @param httpRequest
+	 * @return
+	 */
 	@ApiOperation(value = M_CREATE_STREAM_DATASET, notes = M_CREATE_STREAM_DATASET_NOTES, response = PostStreamResponse.class)
 	@PostMapping("/organizations/{organizationCode}/smartobject/{soCode}/streams")
 	public ResponseEntity<Object> createStreamDataset(
