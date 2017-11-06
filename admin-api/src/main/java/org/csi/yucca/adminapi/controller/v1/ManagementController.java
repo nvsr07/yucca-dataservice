@@ -13,6 +13,7 @@ import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
+import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
@@ -51,7 +52,7 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private StreamService streamService;     
 	
-	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = DettaglioSmartobjectResponse.class, responseContainer="List")
+	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = DettaglioStreamResponse.class, responseContainer="List")
 	@GetMapping("/organizations/{organizationCode}/streams")
 	public ResponseEntity<Object> loadStreams(
 			@PathVariable final String organizationCode,
