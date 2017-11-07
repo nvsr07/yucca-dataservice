@@ -26,6 +26,7 @@ import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
 import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
+import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
 import org.csi.yucca.adminapi.request.BundlesRequest;
 import org.csi.yucca.adminapi.request.PostTenantRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
@@ -205,14 +206,22 @@ public class TenantServiceImpl implements TenantService {
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getAction(), "action");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getStartStep(), "StartStep");
 		//ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
+		ServiceUtil.checkValue("action",actionOnTenantRequest.getAction() , "install", "migrate", "delete");
+
 		
 		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantcode);
 		ServiceUtil.checkIfFoundRecord(tenant);
 		
 		
-		if(Status.REQUEST_INSTALLATION.id()!= tenant.getIdTenantStatus()){
+
+		if(actionOnTenantRequest.getAction().equals("install") &&  Status.REQUEST_INSTALLATION.id()!= tenant.getIdTenantStatus()){
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
 		}
+
+		if(actionOnTenantRequest.getAction().equals("delete") &&  Status.REQUEST_UNINSTALLATION.id()!= tenant.getIdTenantStatus()){
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
+		}
+
 		
 		//Valorizzazione steps
 		String steps = actionOnTenantRequest.getStartStep();
@@ -229,7 +238,47 @@ public class TenantServiceImpl implements TenantService {
 		return ServiceResponse.build().NO_CONTENT();
 	}
 	
-	
+//	-- actionfeedbackOnTenant
+	//	management
+	//	patch
+	//	/management/tenants/{tenantCode}
+	//	in body: action:	string
+	//
+	//	VERIFICARE CHE LO STATUS DEL TENANT è SU RICHIESTA INSTALLAZIONE ALTRIMENTI DARE ERRORE
+	//
+	//	SE LA RICHIESTA VA A BUON FINE SETTARE LO STATO A : INSTALLAZIONE IN PROGRESS
+	public ServiceResponse actionfeedbackOnTenant(ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception{
+		
+		ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
+		ServiceUtil.checkMandatoryParameter(actionfeedbackOnTenantRequest.getStatus(), "status");
+		ServiceUtil.checkValue("status",actionfeedbackOnTenantRequest.getStatus().toLowerCase() , "ok", "ko");
+		
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantcode);
+		ServiceUtil.checkIfFoundRecord(tenant);
+		
+		if (Status.INSTALLATION_IN_PROGRESS.id()== tenant.getIdTenantStatus())
+		{
+			if (actionfeedbackOnTenantRequest.getStatus().equalsIgnoreCase("ok"))
+			{
+				tenantMapper.updateTenantStatus(Status.INSTALLED.id(), tenantcode);
+			} else {
+				tenantMapper.updateTenantStatus(Status.INSTALLATION_FAIL.id(), tenantcode);
+			}
+		}
+		else if (Status.UNINSTALLATION_IN_PROGRESS.id()== tenant.getIdTenantStatus())
+		{
+			if (actionfeedbackOnTenantRequest.getStatus().equalsIgnoreCase("ok"))
+			{
+				tenantMapper.updateTenantStatus(Status.UNINSTALLATION.id(), tenantcode);
+			} else {
+				tenantMapper.updateTenantStatus(Status.INSTALLATION_FAIL.id(), tenantcode);
+			}
+		}
+		else
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
+
+		return ServiceResponse.build().NO_CONTENT();
+	}
 	
 	/**
 	 * DELETE TENANT

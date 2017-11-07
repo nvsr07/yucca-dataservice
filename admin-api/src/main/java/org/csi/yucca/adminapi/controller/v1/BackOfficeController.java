@@ -87,6 +87,7 @@ import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
+import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
 import org.csi.yucca.adminapi.request.DataTypeRequest;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
@@ -156,6 +157,23 @@ public class BackOfficeController extends YuccaController{
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return tenantService.actionOnTenant(actionOnTenantRequest,tenantcode);
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * 
+	 * @param actionFeedbackOnTenantRequest 
+	 * @return
+	 */
+	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
+	@PutMapping("/tenants/{tenantcode}/actionfeedback")
+	public ResponseEntity<Object> actionfeedbackOnTenant(@RequestBody final ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest,@PathVariable final String tenantcode){
+		logger.info("actionfeedbackOnTenant");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.actionfeedbackOnTenant(actionfeedbackOnTenantRequest,tenantcode);
 			}
 		}, logger);		
 	}
