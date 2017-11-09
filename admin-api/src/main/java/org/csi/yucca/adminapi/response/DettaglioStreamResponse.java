@@ -3,198 +3,258 @@ package org.csi.yucca.adminapi.response;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.DettaglioStream;
-import org.csi.yucca.adminapi.model.TagJson;
-import org.csi.yucca.adminapi.util.Util;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class DettaglioStreamResponse extends Response {
-
-	private Integer idstream;
-
-	private Integer version;
-
-	private String streamcode;
-
-	private String streamname;
-
-	private String name;
-
-	private Integer unpublished;
-
-	private String visibility;
-
-	private String registrationdate;
-
-	private StatusResponse status;
-
-	private TenantResponse tenantManager;
-
-	private OrganizationResponse organization;
+public class DettaglioStreamResponse extends StreamResponse{
 	
-	private List<TagResponse> tags = new ArrayList<TagResponse>();
 
-	private DomainResponse domain;
-
-	private SubdomainResponse subdomain;
-
-	private DettaglioStreamSmartobjectResponse smartobject;
-
-	public DettaglioStreamResponse(DettaglioStream dettaglioStream) throws Exception {
-		super();
-		this.tenantManager = new TenantResponse(dettaglioStream);
-		this.organization = new OrganizationResponse(dettaglioStream);
-		this.idstream = dettaglioStream.getIdStream();
-		this.version = dettaglioStream.getDataSourceVersion();
-		this.streamcode = dettaglioStream.getStreamCode();
-		this.streamname = dettaglioStream.getStreamName();
-		this.name = dettaglioStream.getDataSourceName();
-		this.unpublished = dettaglioStream.getDataSourceUnpublished();
-		this.visibility = dettaglioStream.getDataSourceVisibility();
-		this.registrationdate = Util.dateString(dettaglioStream.getDataSourceRegistrationDate());
-		this.status = new StatusResponse(dettaglioStream);
-		this.domain = new DomainResponse(dettaglioStream);
-		this.subdomain = new SubdomainResponse(dettaglioStream);
-		this.smartobject = new DettaglioStreamSmartobjectResponse(dettaglioStream);
-		this.addTags(dettaglioStream.getTags());
+	private Long usedInInternalCount;	
+	private Long streamsCountBySO;
+	private String internalquery;
+	private String copyright;
+	private String requestername;
+	private String requestersurname;
+	private String requestermail;
+	private Integer privacyacceptance;
+	private TwitterInfoResponse twitterInfo;
+	private OpenDataResponse openData;
+	private LicenseResponse license;	
+	private DcatResponse dcat;
+	private List<ComponentResponse> components = new ArrayList<ComponentResponse>();	
+	private List<TenantResponse> sharingTenants = new ArrayList<TenantResponse>();
+	private List<DettaglioStreamResponse> internalStreams = new ArrayList<DettaglioStreamResponse>();
+	private DettaglioSmartobjectResponse smartobject;
+	
+	public DettaglioStreamResponse(DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
+			List<DettaglioStream> listInternalStream) throws Exception {
+		super(dettaglioStream);
+		
+		addInternalStreams(listInternalStream);
+		addSharingTenants(dettaglioStream.getSharingTenant() );
+		addComponents(dettaglioStream.getComponents());
+		this.dcat = new DcatResponse(dettaglioStream);
+		this.license = new LicenseResponse(dettaglioStream);
+		this.openData = new OpenDataResponse(dettaglioStream);
+		this.twitterInfo = new TwitterInfoResponse(dettaglioStream);
+		this.usedInInternalCount = dettaglioStream.getUsedInInternalCount();
+		this.streamsCountBySO = dettaglioStream.getStreamsCountBySO();
+		this.internalquery = dettaglioStream.getInternalquery();
+		this.copyright = dettaglioStream.getDataSourceCopyright();
+		this.requestername = dettaglioStream.getDataSourceRequesterName();
+		this.requestersurname = dettaglioStream.getDataSourceRequesterSurname();
+		this.requestermail = dettaglioStream.getDataSourceRequesterMail();
+		this.privacyacceptance = dettaglioStream.getDataSourcePrivacyAcceptance();
+		this.smartobject = new DettaglioSmartobjectResponse(dettaglioSmartobject);
 	}
 
-	private void addTags(String tags) throws Exception {
-		if (tags != null) {
+	public DettaglioStreamResponse(DettaglioStream dettaglioStream)throws Exception{
+		this.setTenantManager(new TenantResponse(dettaglioStream));
+		this.setOrganization(new OrganizationResponse(dettaglioStream));
+		this.setIdstream(dettaglioStream.getIdStream());
+		this.setVersion(dettaglioStream.getDataSourceVersion());
+		this.setStreamcode(dettaglioStream.getStreamCode());
+		this.setStreamname(dettaglioStream.getStreamName());
+		this.setName(dettaglioStream.getDataSourceName());
+		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
+		this.addComponents(dettaglioStream.getComponents());
+	}
+	
+	private void addInternalStreams(List<DettaglioStream> listInternalStream)throws Exception{
+		for (DettaglioStream dettaglioStream : listInternalStream) {
+			internalStreams.add(new DettaglioStreamResponse(dettaglioStream));
+		}
+	}
+	
+	private void addSharingTenants(String sharingTenants) throws Exception {
+		if (sharingTenants != null) {
+			
 			ObjectMapper mapper = new ObjectMapper();
-			List<TagJson> listTagJson = mapper.readValue(tags, new TypeReference<List<TagJson>>() {
-			});
-			for (TagJson tagJson : listTagJson) {
-				this.tags.add(new TagResponse(tagJson));
+			List<SharingTenantsJson> list = mapper.readValue(sharingTenants, new TypeReference<List<SharingTenantsJson>>() {});
+
+			for (SharingTenantsJson json : list) {
+				this.sharingTenants.add(new TenantResponse(json));
 			}
 		}
 	}
+	
+	private void addComponents(String components) throws Exception {
+		if (components != null) {
+			
+			ObjectMapper mapper = new ObjectMapper();
+			List<ComponentJson> listComponentJson = mapper.readValue(components, new TypeReference<List<ComponentJson>>() {});
 
+			for (ComponentJson componentJson : listComponentJson) {
+				this.components.add(new ComponentResponse(componentJson));
+			}
+		}
+	}
+	
 	public DettaglioStreamResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
-	public TenantResponse getTenantManager() {
-		return tenantManager;
+
+	public Long getUsedInInternalCount() {
+		return usedInInternalCount;
 	}
 
-	public void setTenantManager(TenantResponse tenantManager) {
-		this.tenantManager = tenantManager;
+
+	public void setUsedInInternalCount(Long usedInInternalCount) {
+		this.usedInInternalCount = usedInInternalCount;
 	}
 
-	public OrganizationResponse getOrganization() {
-		return organization;
+
+	public Long getStreamsCountBySO() {
+		return streamsCountBySO;
 	}
 
-	public void setOrganization(OrganizationResponse organization) {
-		this.organization = organization;
+
+	public void setStreamsCountBySO(Long streamsCountBySO) {
+		this.streamsCountBySO = streamsCountBySO;
 	}
 
-	public Integer getIdstream() {
-		return idstream;
+
+	public String getInternalquery() {
+		return internalquery;
 	}
 
-	public void setIdstream(Integer idstream) {
-		this.idstream = idstream;
+
+	public void setInternalquery(String internalquery) {
+		this.internalquery = internalquery;
 	}
 
-	public Integer getVersion() {
-		return version;
+
+	public List<DettaglioStreamResponse> getInternalStreams() {
+		return internalStreams;
 	}
 
-	public void setVersion(Integer version) {
-		this.version = version;
+
+	public void setInternalStreams(List<DettaglioStreamResponse> internalStreams) {
+		this.internalStreams = internalStreams;
 	}
 
-	public String getStreamcode() {
-		return streamcode;
+
+	public TwitterInfoResponse getTwitterInfo() {
+		return twitterInfo;
 	}
 
-	public void setStreamcode(String streamcode) {
-		this.streamcode = streamcode;
+
+	public void setTwitterInfo(TwitterInfoResponse twitterInfo) {
+		this.twitterInfo = twitterInfo;
 	}
 
-	public String getStreamname() {
-		return streamname;
+
+	public OpenDataResponse getOpenData() {
+		return openData;
 	}
 
-	public void setStreamname(String streamname) {
-		this.streamname = streamname;
+
+	public void setOpenData(OpenDataResponse openData) {
+		this.openData = openData;
 	}
 
-	public String getName() {
-		return name;
+
+	public LicenseResponse getLicense() {
+		return license;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+
+	public void setLicense(LicenseResponse license) {
+		this.license = license;
 	}
 
-	public Integer getUnpublished() {
-		return unpublished;
+
+	public String getCopyright() {
+		return copyright;
 	}
 
-	public void setUnpublished(Integer unpublished) {
-		this.unpublished = unpublished;
+
+	public void setCopyright(String copyright) {
+		this.copyright = copyright;
 	}
 
-	public String getVisibility() {
-		return visibility;
+
+	public String getRequestername() {
+		return requestername;
 	}
 
-	public void setVisibility(String visibility) {
-		this.visibility = visibility;
+
+	public void setRequestername(String requestername) {
+		this.requestername = requestername;
 	}
 
-	public String getRegistrationdate() {
-		return registrationdate;
+
+	public String getRequestersurname() {
+		return requestersurname;
 	}
 
-	public void setRegistrationdate(String registrationdate) {
-		this.registrationdate = registrationdate;
+
+	public void setRequestersurname(String requestersurname) {
+		this.requestersurname = requestersurname;
 	}
 
-	public StatusResponse getStatus() {
-		return status;
+
+	public String getRequestermail() {
+		return requestermail;
 	}
 
-	public void setStatus(StatusResponse status) {
-		this.status = status;
+
+	public void setRequestermail(String requestermail) {
+		this.requestermail = requestermail;
 	}
 
-	public List<TagResponse> getTags() {
-		return tags;
+
+	public Integer getPrivacyacceptance() {
+		return privacyacceptance;
 	}
 
-	public void setTags(List<TagResponse> tags) {
-		this.tags = tags;
+
+	public void setPrivacyacceptance(Integer privacyacceptance) {
+		this.privacyacceptance = privacyacceptance;
 	}
 
-	public DomainResponse getDomain() {
-		return domain;
+
+	public DcatResponse getDcat() {
+		return dcat;
 	}
 
-	public void setDomain(DomainResponse domain) {
-		this.domain = domain;
+
+	public void setDcat(DcatResponse dcat) {
+		this.dcat = dcat;
 	}
 
-	public SubdomainResponse getSubdomain() {
-		return subdomain;
-	}
 
-	public void setSubdomain(SubdomainResponse subdomain) {
-		this.subdomain = subdomain;
-	}
-
-	public DettaglioStreamSmartobjectResponse getSmartobject() {
+	public DettaglioSmartobjectResponse getSmartobject() {
 		return smartobject;
 	}
 
-	public void setSmartobject(DettaglioStreamSmartobjectResponse smartobject) {
+
+	public void setSmartobject(DettaglioSmartobjectResponse smartobject) {
 		this.smartobject = smartobject;
 	}
 
+
+	public List<ComponentResponse> getComponents() {
+		return components;
+	}
+
+
+	public void setComponents(List<ComponentResponse> components) {
+		this.components = components;
+	}
+
+	public List<TenantResponse> getSharingTenants() {
+		return sharingTenants;
+	}
+
+	public void setSharingTenants(List<TenantResponse> sharingTenants) {
+		this.sharingTenants = sharingTenants;
+	}
+	
 }

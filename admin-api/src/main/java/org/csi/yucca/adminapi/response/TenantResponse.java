@@ -1,14 +1,29 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.ITenant;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.util.Errors;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class TenantResponse extends Response{
 
 	private Integer idTenant;
+	
 	private String tenantcode;
+	
 	private String description;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private String name;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Integer dataoptions;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Integer manageoptions;
+	
 	
 	public TenantResponse() {
 		super();
@@ -18,6 +33,17 @@ public class TenantResponse extends Response{
 		super(errors, arg);
 	}
 
+	public TenantResponse(SharingTenantsJson sharingTenantsJson ) {
+		if(sharingTenantsJson != null){
+			this.idTenant = sharingTenantsJson.getId_tenant();
+			this.tenantcode = sharingTenantsJson.getTenantcode();
+			this.description = sharingTenantsJson.getDescription();			
+			this.name = sharingTenantsJson.getName();
+			this.dataoptions = sharingTenantsJson.getDataoptions();
+			this.manageoptions = sharingTenantsJson.getManageoptions();
+		}
+	}
+	
 	public TenantResponse(ITenant iTenantImpl ) {
 		if(iTenantImpl != null){
 			this.idTenant = iTenantImpl.getIdTenant();
@@ -57,5 +83,30 @@ public class TenantResponse extends Response{
 		this.description = description;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getDataoptions() {
+		return dataoptions;
+	}
+
+	public void setDataoptions(Integer dataoptions) {
+		this.dataoptions = dataoptions;
+	}
+
+	public Integer getManageoptions() {
+		return manageoptions;
+	}
+
+	public void setManageoptions(Integer manageoptions) {
+		this.manageoptions = manageoptions;
+	}
+
+	
 	
 }

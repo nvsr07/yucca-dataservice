@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.MeasureUnit;
 import org.csi.yucca.adminapi.util.Errors;
 
@@ -8,6 +9,15 @@ public class MeasureUnitResponse extends Response{
 	private Integer idMeasureUnit;
 	private String measureunit;
 	private String measureunitcategory;
+	
+	public MeasureUnitResponse(ComponentJson componentJson) {
+		super();
+		if (componentJson != null) {
+			this.idMeasureUnit = componentJson.getId_measure_unit();
+			this.measureunit = componentJson.getMeasureunit()!=null?String.valueOf(componentJson.getMeasureunit()):null;
+			this.measureunitcategory = componentJson.getMeasureunitcategory();			
+		}
+	}
 	
 	public MeasureUnitResponse(MeasureUnit measureUnit) {
 		super();

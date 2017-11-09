@@ -1,7 +1,10 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.util.Util;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class DettaglioSmartobjectResponse extends Response {
 	
@@ -9,30 +12,62 @@ public class DettaglioSmartobjectResponse extends Response {
 	private String socode;
 	private String name;
 	private String description;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String urladmin;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String fbcoperationfeedback;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String swclientversion;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer version;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String model;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer deploymentversion;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String creationdate;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusername;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtusertoken;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twttokensecret;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String twtname;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Long twtuserid;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer twtmaxstreams;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String slug;
-	// -----------------------------------------------------
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private OrganizationResponse organization;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private StatusResponse status;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private SoTypeResponse soType;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private SoCategoryResponse soCategory;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private SupplyTypeResponse supplyType;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private ExposureTypeResponse exposureType;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private LocationTypeResponse locationType;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private DettaglioSmartobjectPositionResponse position;
-	// -----------------------------------------------------
+	
+	public DettaglioSmartobjectResponse(DettaglioStream dettaglioStream){
+		this.setIdSmartObject(dettaglioStream.getIdSmartObject());
+		this.setSocode(dettaglioStream.getSmartObjectCode());
+		this.setName(dettaglioStream.getSmartObjectName());
+		this.setDescription(dettaglioStream.getSmartObjectDescription());
+		this.setSlug(dettaglioStream.getSmartObjectSlug());
+		this.setSoCategory(new SoCategoryResponse(dettaglioStream));
+		this.setSoType(new SoTypeResponse(dettaglioStream));
+	}
+	
 	public DettaglioSmartobjectResponse(DettaglioSmartobject smartobject) {
 		super();
 		this.idSmartObject = smartobject.getIdSmartObject();
@@ -65,9 +100,15 @@ public class DettaglioSmartobjectResponse extends Response {
 	}	
 	// -----------------------------------------------------
 	
+	public DettaglioSmartobjectResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}	
+	
 	public Integer getIdSmartObject() {
 		return idSmartObject;
 	}
+
 	public DettaglioSmartobjectPositionResponse getPosition() {
 		if(position != null && position.isEmpty()) return null;
 		return position;

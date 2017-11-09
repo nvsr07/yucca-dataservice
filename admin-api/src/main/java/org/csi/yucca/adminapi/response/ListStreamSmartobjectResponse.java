@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.DettaglioStream;
 
-public class DettaglioStreamSmartobjectResponse extends Response {
+public class ListStreamSmartobjectResponse extends Response {
 
 	private Integer idSmartObject;
 	private String socode;
@@ -12,7 +12,7 @@ public class DettaglioStreamSmartobjectResponse extends Response {
 	private SoCategoryResponse soCategory;
 	private SoTypeResponse soType;
 	
-	public DettaglioStreamSmartobjectResponse(DettaglioStream arg) {
+	public ListStreamSmartobjectResponse(DettaglioStream arg) {
 		super();
 		this.idSmartObject = arg.getIdSmartObject();
 		this.socode = arg.getSmartObjectCode();
@@ -23,7 +23,7 @@ public class DettaglioStreamSmartobjectResponse extends Response {
 		this.soType = new SoTypeResponse(arg);
 	}
 
-	public DettaglioStreamSmartobjectResponse() {
+	public ListStreamSmartobjectResponse() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

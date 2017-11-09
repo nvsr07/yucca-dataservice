@@ -4,11 +4,44 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
-import org.csi.yucca.adminapi.util.Constants;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Util {
 
+	
+
+	
+	public static <E> List<E> getListFromJsonString(String jsonString, Class<E> type){
+
+		if(jsonString == null) return null;
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			
+			return mapper.readValue(jsonString, new TypeReference<List<E>>(){});
+			
+		} catch (Exception e) {
+			return null;
+		}
+		
+	}
+	
+	public static <T> T getFromJsonString(String jsonString, Class<T> type){
+
+		if(jsonString == null) return null;
+		
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			return mapper.readValue(jsonString, type);
+		} catch (Exception e) {
+			return null;
+		}
+		
+	}
+	
 	public static String cleanStringCamelCase(String in) {
 		String out = "";
 		if (in != null) {

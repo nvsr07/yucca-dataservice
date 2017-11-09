@@ -15,6 +15,7 @@ import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
+import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
@@ -51,25 +52,25 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private StreamService streamService;     
-	
 
-//	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamResponse.class)
-//	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
-//	public ResponseEntity<Object> loadStream(
-//			@PathVariable final String organizationCode, 
-//			@PathVariable final Integer idstream, 
-//			final HttpServletRequest request) {
-//		
-//		logger.info("loadStream");
-//		
-//		return run(new ApiCallable() {
-//			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-//				return streamService.selectStream(organizationCode, socode, getAuthorizedUser(request));
-//			}
-//		}, logger);		
-//	}
+	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamResponse.class)
+	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
+	public ResponseEntity<Object> loadStream(
+			@PathVariable final String organizationCode, 
+			@PathVariable final Integer idstream, 
+			@RequestParam(required=false) final String tenantCodeManager,
+			final HttpServletRequest request) {
+		
+		logger.info("loadStream");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.selectStream(organizationCode, idstream, tenantCodeManager, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}
 
-	
+
 	/**
 	 * 
 	 * @param organizationCode
@@ -78,7 +79,7 @@ public class ManagementController extends YuccaController{
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = DettaglioStreamResponse.class, responseContainer="List")
+	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = ListStreamResponse.class, responseContainer="List")
 	@GetMapping("/organizations/{organizationCode}/streams")
 	public ResponseEntity<Object> loadStreams(
 			@PathVariable final String organizationCode,

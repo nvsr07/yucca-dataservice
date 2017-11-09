@@ -3,18 +3,49 @@ package org.csi.yucca.adminapi.model;
 import java.sql.Timestamp;
 
 public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain, ISubdomain, ISoCategory, ISoType{
-
+	
+	private Long usedInInternalCount;
+	private Long streamsCountBySO;
+	private String internalquery;		
+	private String twtquery;	
+	private Double twtgeoloclat;
+	private Double twtgeoloclon;	
+	private Double twtgeolocradius;
+	private String twtgeolocunit;	
+	private String twtlang;
+	private String twtlocale;	
+	private Integer twtcount;	
+	private String twtresulttype;	
+	private String twtuntil;	
+	private Integer twtratepercentage;		
+	private Long twtlastsearchid;	
+	private String dataSourceCopyright;
+	private Integer dataSourceIsopendata;	
+	private String dataSourceOpenDataExternalReference;		
+	private String dataSourceOpenDataAuthor;
+	private Timestamp dataSourceOpenDataUpdateDate;
+	private String dataSourceOpenDataLanguage;
+	private String dataSourceLastUpdate;
+	private String dataSourceDisclaimer;
+	private String dataSourceRequesterName;	
+	private String dataSourceRequesterSurname;			
+	private String dataSourceRequesterMail;
+	private Integer dataSourcePrivacyAcceptance; 			
+	private String dataSourceIcon;
+	private String dcat; // JSON
+	private String license; // JSON
+	private String components; // JSON
+	private String sharingTenant; // JSON
+	private String sotypecode;
 	private Integer idStream;
 	private Integer idDataSource;
 	private String streamCode;
 	private String streamName;
 	private Integer streamSaveData;
 	private Integer dataSourceVersion;
-
 	private String dataSourceVisibility;
 	private Integer dataSourceUnpublished;
 	private Timestamp dataSourceRegistrationDate;
-
 	private String statusCode;
 	private String statusDescription;
 	private Integer idStatus;
@@ -54,6 +85,272 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 	private String smartObjectTypeDescription;
 	private Integer idSoType;
 	private String tags;
+
+	
+	
+	public String getSotypecode() {
+		return sotypecode;
+	}
+
+	public void setSotypecode(String sotypecode) {
+		this.sotypecode = sotypecode;
+	}
+
+	public Long getUsedInInternalCount() {
+		return usedInInternalCount;
+	}
+
+	public void setUsedInInternalCount(Long usedInInternalCount) {
+		this.usedInInternalCount = usedInInternalCount;
+	}
+
+	public Long getStreamsCountBySO() {
+		return streamsCountBySO;
+	}
+
+	public void setStreamsCountBySO(Long streamsCountBySO) {
+		this.streamsCountBySO = streamsCountBySO;
+	}
+
+	public String getInternalquery() {
+		return internalquery;
+	}
+
+	public void setInternalquery(String internalquery) {
+		this.internalquery = internalquery;
+	}
+
+	public String getTwtquery() {
+		return twtquery;
+	}
+
+	public void setTwtquery(String twtquery) {
+		this.twtquery = twtquery;
+	}
+
+	public Double getTwtgeoloclat() {
+		return twtgeoloclat;
+	}
+
+	public void setTwtgeoloclat(Double twtgeoloclat) {
+		this.twtgeoloclat = twtgeoloclat;
+	}
+
+	public Double getTwtgeoloclon() {
+		return twtgeoloclon;
+	}
+
+	public void setTwtgeoloclon(Double twtgeoloclon) {
+		this.twtgeoloclon = twtgeoloclon;
+	}
+
+	public Double getTwtgeolocradius() {
+		return twtgeolocradius;
+	}
+
+	public void setTwtgeolocradius(Double twtgeolocradius) {
+		this.twtgeolocradius = twtgeolocradius;
+	}
+
+	public String getTwtgeolocunit() {
+		return twtgeolocunit;
+	}
+
+	public void setTwtgeolocunit(String twtgeolocunit) {
+		this.twtgeolocunit = twtgeolocunit;
+	}
+
+	public String getTwtlang() {
+		return twtlang;
+	}
+
+	public void setTwtlang(String twtlang) {
+		this.twtlang = twtlang;
+	}
+
+	public String getTwtlocale() {
+		return twtlocale;
+	}
+
+	public void setTwtlocale(String twtlocale) {
+		this.twtlocale = twtlocale;
+	}
+
+	public Integer getTwtcount() {
+		return twtcount;
+	}
+
+	public void setTwtcount(Integer twtcount) {
+		this.twtcount = twtcount;
+	}
+
+	public String getTwtresulttype() {
+		return twtresulttype;
+	}
+
+	public void setTwtresulttype(String twtresulttype) {
+		this.twtresulttype = twtresulttype;
+	}
+
+	public String getTwtuntil() {
+		return twtuntil;
+	}
+
+	public void setTwtuntil(String twtuntil) {
+		this.twtuntil = twtuntil;
+	}
+
+	public Integer getTwtratepercentage() {
+		return twtratepercentage;
+	}
+
+	public void setTwtratepercentage(Integer twtratepercentage) {
+		this.twtratepercentage = twtratepercentage;
+	}
+
+	public Long getTwtlastsearchid() {
+		return twtlastsearchid;
+	}
+
+	public void setTwtlastsearchid(Long twtlastsearchid) {
+		this.twtlastsearchid = twtlastsearchid;
+	}
+
+	public String getDataSourceCopyright() {
+		return dataSourceCopyright;
+	}
+
+	public void setDataSourceCopyright(String dataSourceCopyright) {
+		this.dataSourceCopyright = dataSourceCopyright;
+	}
+
+	public Integer getDataSourceIsopendata() {
+		return dataSourceIsopendata;
+	}
+
+	public void setDataSourceIsopendata(Integer dataSourceIsopendata) {
+		this.dataSourceIsopendata = dataSourceIsopendata;
+	}
+
+	public String getDataSourceOpenDataExternalReference() {
+		return dataSourceOpenDataExternalReference;
+	}
+
+	public void setDataSourceOpenDataExternalReference(String dataSourceOpenDataExternalReference) {
+		this.dataSourceOpenDataExternalReference = dataSourceOpenDataExternalReference;
+	}
+
+	public String getDataSourceOpenDataAuthor() {
+		return dataSourceOpenDataAuthor;
+	}
+
+	public void setDataSourceOpenDataAuthor(String dataSourceOpenDataAuthor) {
+		this.dataSourceOpenDataAuthor = dataSourceOpenDataAuthor;
+	}
+
+	public Timestamp getDataSourceOpenDataUpdateDate() {
+		return dataSourceOpenDataUpdateDate;
+	}
+
+	public void setDataSourceOpenDataUpdateDate(Timestamp dataSourceOpenDataUpdateDate) {
+		this.dataSourceOpenDataUpdateDate = dataSourceOpenDataUpdateDate;
+	}
+
+	public String getDataSourceOpenDataLanguage() {
+		return dataSourceOpenDataLanguage;
+	}
+
+	public void setDataSourceOpenDataLanguage(String dataSourceOpenDataLanguage) {
+		this.dataSourceOpenDataLanguage = dataSourceOpenDataLanguage;
+	}
+
+	public String getDataSourceLastUpdate() {
+		return dataSourceLastUpdate;
+	}
+
+	public void setDataSourceLastUpdate(String dataSourceLastUpdate) {
+		this.dataSourceLastUpdate = dataSourceLastUpdate;
+	}
+
+	public String getDataSourceDisclaimer() {
+		return dataSourceDisclaimer;
+	}
+
+	public void setDataSourceDisclaimer(String dataSourceDisclaimer) {
+		this.dataSourceDisclaimer = dataSourceDisclaimer;
+	}
+
+	public String getDataSourceRequesterName() {
+		return dataSourceRequesterName;
+	}
+
+	public void setDataSourceRequesterName(String dataSourceRequesterName) {
+		this.dataSourceRequesterName = dataSourceRequesterName;
+	}
+
+	public String getDataSourceRequesterSurname() {
+		return dataSourceRequesterSurname;
+	}
+
+	public void setDataSourceRequesterSurname(String dataSourceRequesterSurname) {
+		this.dataSourceRequesterSurname = dataSourceRequesterSurname;
+	}
+
+	public String getDataSourceRequesterMail() {
+		return dataSourceRequesterMail;
+	}
+
+	public void setDataSourceRequesterMail(String dataSourceRequesterMail) {
+		this.dataSourceRequesterMail = dataSourceRequesterMail;
+	}
+
+	public Integer getDataSourcePrivacyAcceptance() {
+		return dataSourcePrivacyAcceptance;
+	}
+
+	public void setDataSourcePrivacyAcceptance(Integer dataSourcePrivacyAcceptance) {
+		this.dataSourcePrivacyAcceptance = dataSourcePrivacyAcceptance;
+	}
+
+	public String getDataSourceIcon() {
+		return dataSourceIcon;
+	}
+
+	public void setDataSourceIcon(String dataSourceIcon) {
+		this.dataSourceIcon = dataSourceIcon;
+	}
+
+	public String getDcat() {
+		return dcat;
+	}
+
+	public void setDcat(String dcat) {
+		this.dcat = dcat;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public String getComponents() {
+		return components;
+	}
+
+	public void setComponents(String components) {
+		this.components = components;
+	}
+
+	public String getSharingTenant() {
+		return sharingTenant;
+	}
+
+	public void setSharingTenant(String sharingTenant) {
+		this.sharingTenant = sharingTenant;
+	}
 
 	public String getDataSourceName() {
 		return dataSourceName;

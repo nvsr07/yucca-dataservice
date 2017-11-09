@@ -14,6 +14,7 @@ public class DomainResponse extends Response{
 	private String langen;
 	private Integer idDomain;
 	private String domaincode;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer deprecated;
 	
 	public DomainResponse() {

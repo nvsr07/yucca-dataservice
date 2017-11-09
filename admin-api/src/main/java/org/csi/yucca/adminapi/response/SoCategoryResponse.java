@@ -1,6 +1,5 @@
 package org.csi.yucca.adminapi.response;
 
-import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.ISoCategory;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
@@ -16,9 +15,12 @@ public class SoCategoryResponse extends Response{
 
 	public SoCategoryResponse(ISoCategory iSoCategory) {
 		super();
-		this.idSoCategory = iSoCategory.getIdSoCategory();
-		this.socategorycode = iSoCategory.getSmartObjectCategoryCode();
-		this.description = iSoCategory.getSmartObjectCategoryDescription();
+		
+		if (iSoCategory != null) {
+			this.idSoCategory = iSoCategory.getIdSoCategory();
+			this.socategorycode = iSoCategory.getSmartObjectCategoryCode();
+			this.description = iSoCategory.getSmartObjectCategoryDescription();			
+		}
 	}
 	
 	public SoCategoryResponse(DettaglioSmartobject smartobject) {

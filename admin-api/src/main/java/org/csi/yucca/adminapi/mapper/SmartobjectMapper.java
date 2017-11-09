@@ -215,6 +215,33 @@ public interface SmartobjectMapper{
 	@Select(SELECT_SMARTOBJECT_BY_SOCODE_AND_ORGCODE)
 	Smartobject selectSmartobjectBySocodeAndOrgcode( @Param("socode") String socode, @Param("organizationcode") String organizationcode);	
 	
+
+	/*************************************************************************
+	 * 
+	 * 					SELECT SMARTOBJECT BY ID
+	 * 
+	 * ***********************************************************************/	
+	public static final String SELECT_SMARTOBJECT_BY_ID 
+		= " SELECT id_smart_object, socode, name, description, " + 
+				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
+				" deploymentversion, creationdate, twtusername, twtusertoken, twttokensecret, twtname, " + 
+				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
+				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
+		  " FROM " + SMARTOBJECT_TABLE + 
+		  " WHERE id_smart_object = #{idSmartObject}";
+	@Results({
+        @Result(property = "idSmartObject",  column = "id_smart_object"),
+        @Result(property = "idSoType",       column = "id_so_type"),
+        @Result(property = "idLocationType", column = "id_location_type"),
+        @Result(property = "idExposureType", column = "id_exposure_type"),
+        @Result(property = "idSupplyType",   column = "id_supply_type"),
+        @Result(property = "idSoCategory",   column = "id_so_category"),
+        @Result(property = "idStatus",       column = "id_status"),
+        @Result(property = "idOrganization", column = "id_organization")
+      })
+	@Select(SELECT_SMARTOBJECT_BY_ID)
+	Smartobject selectSmartobjectById( @Param("idSmartObject") Integer idSmartObject);	
+
 	
 	
 	/*************************************************************************

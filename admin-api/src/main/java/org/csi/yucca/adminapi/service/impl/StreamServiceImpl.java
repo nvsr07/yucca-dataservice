@@ -36,6 +36,7 @@ import org.csi.yucca.adminapi.model.StreamInternal;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.TenantDataSource;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DcatRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
@@ -43,6 +44,7 @@ import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
+import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.Constants;
@@ -117,28 +119,32 @@ public class StreamServiceImpl implements StreamService {
 	@Autowired
 	private ComponentMapper componentMapper;
 
-	private void checkAuthTenant(String tenantCodeManager, JwtUser authorizedUser) throws UnauthorizedException {
-		if (tenantCodeManager != null) {
-			ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
-		}
-
-	}
-
 	/**
 	 * 
-	 * @param list
-	 * @return
-	 * @throws Exception
 	 */
-	private List<DettaglioStreamResponse> buildSelectStreamsResponse(List<DettaglioStream> list) throws Exception{
-		List<DettaglioStreamResponse> responseList = new ArrayList<DettaglioStreamResponse>();
-		for (DettaglioStream dettaglioStream : list) {
-			responseList.add(new DettaglioStreamResponse(dettaglioStream));
-		}
-		return responseList;
+	@Override
+	public ServiceResponse selectStream(String organizationCode, Integer idStream, String tenantCodeManager, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, 
+				ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+
+		ServiceUtil.checkIfFoundRecord(dettaglioStream);
+
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
+				organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser)).get(0);
+		
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDataSourceVersion() );
+		   
+		DettaglioStreamResponse response = new DettaglioStreamResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
+		
+		return ServiceUtil.buildResponse(response);
 	}
+
 	
-	
+	/**
+	 * 
+	 */
 	@Override
 	public ServiceResponse selectStreams(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
@@ -176,6 +182,32 @@ public class StreamServiceImpl implements StreamService {
 				.streamcode(stream.getStreamcode()).streamname(stream.getStreamname()));
 	}
 
+	/**
+	 * 
+	 * @param tenantCodeManager
+	 * @param authorizedUser
+	 * @throws UnauthorizedException
+	 */
+	private void checkAuthTenant(String tenantCodeManager, JwtUser authorizedUser) throws UnauthorizedException {
+		if (tenantCodeManager != null) {
+			ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
+		}
+	}
+
+	/**
+	 * 
+	 * @param list
+	 * @return
+	 * @throws Exception
+	 */
+	private List<ListStreamResponse> buildSelectStreamsResponse(List<DettaglioStream> list) throws Exception{
+		List<ListStreamResponse> responseList = new ArrayList<ListStreamResponse>();
+		for (DettaglioStream dettaglioStream : list) {
+			responseList.add(new ListStreamResponse(dettaglioStream));
+		}
+		return responseList;
+	}
+	
 	/**
 	 * 
 	 * @param request
