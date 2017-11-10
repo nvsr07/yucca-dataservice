@@ -71,7 +71,7 @@ public class ManagementController extends YuccaController{
 	}
 
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
-	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
+	@GetMapping("/organizations/{organizationCode}/streams/{idstream}/icon")
 	public ResponseEntity<Object> loadStreamIcon(
 			@PathVariable final String organizationCode, 
 			@PathVariable final Integer idstream,
