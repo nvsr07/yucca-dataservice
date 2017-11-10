@@ -16,6 +16,7 @@ import org.csi.yucca.adminapi.util.ApiExecutable;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -31,8 +32,15 @@ public class YuccaController {
 	}
 	
 	public ResponseEntity<Object> buildResponse(ServiceResponse serviceResponse){
-		return new ResponseEntity<Object>(serviceResponse.getObject(), 
+		if (serviceResponse.isImage)
+		{
+			return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG)
+		            .body(serviceResponse.getObject());
+		}
+		else {
+			return new ResponseEntity<Object>(serviceResponse.getObject(), 
 				serviceResponse.getHttpStatus());
+		}
 	}
 
 	public ResponseEntity buildResponse(){

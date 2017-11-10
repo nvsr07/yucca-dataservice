@@ -140,8 +140,22 @@ public class StreamServiceImpl implements StreamService {
 		
 		return ServiceUtil.buildResponse(response);
 	}
-
 	
+	/**
+	 * 
+	 */
+	@Override
+	public ServiceResponse selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, 
+				ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+
+		ServiceUtil.checkIfFoundRecord(dettaglioStream);
+
+		return ServiceUtil.buildResponseImage(dettaglioStream.getDataSourceIcon());
+	}
+
 	/**
 	 * 
 	 */

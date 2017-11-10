@@ -19,7 +19,10 @@ public class ApiDoc {
 
 	public static final String M_LOAD_STREAM = "LOAD STREAM";
 	public static final String M_LOAD_STREAM_NOTES = "Load Stream in the System.";
-	
+
+	public static final String M_LOAD_STREAM_ICON = "LOAD ICON STREAM";
+	public static final String M_LOAD_STREAM_ICON_NOTES = "Load icon for a Stream in the System.";
+
 	public static final String M_LOAD_TENANT = "LOAD TENANT";
 	public static final String M_LOAD_TENANT_NOTES = "Load all Tenants in the System.";
 	

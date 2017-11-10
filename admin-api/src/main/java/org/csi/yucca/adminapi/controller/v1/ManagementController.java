@@ -70,7 +70,24 @@ public class ManagementController extends YuccaController{
 		}, logger);		
 	}
 
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
+	public ResponseEntity<Object> loadStreamIcon(
+			@PathVariable final String organizationCode, 
+			@PathVariable final Integer idstream,
+			final HttpServletRequest request) {
+		
+		logger.info("loadStream");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}
 
+	
+	
 	/**
 	 * 
 	 * @param organizationCode

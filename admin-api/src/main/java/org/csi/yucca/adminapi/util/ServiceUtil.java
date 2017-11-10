@@ -30,6 +30,10 @@ public class ServiceUtil {
 		return ServiceResponse.build().object(object);
 	}
 	
+	public static ServiceResponse buildResponseImage(String base64image) {
+		return ServiceResponse.build().image(base64image);
+	}
+	
 	/**
 	 * 
 	 * @param authorizedUser
@@ -533,5 +537,7 @@ public class ServiceUtil {
 		return null;
 		
 	}
+
+
 
 }
