@@ -2,7 +2,6 @@ package org.csi.yucca.adminapi.util;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +10,6 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.codec.binary.Base64;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.springframework.util.Base64Utils;
 
