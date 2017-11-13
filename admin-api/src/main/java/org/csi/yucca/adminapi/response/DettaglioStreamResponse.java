@@ -17,6 +17,7 @@ public class DettaglioStreamResponse extends StreamResponse{
 	private Long usedInInternalCount;	
 	private Long streamsCountBySO;
 	private String internalquery;
+	private String icon;
 	private String copyright;
 	private String requestername;
 	private String requestersurname;
@@ -51,6 +52,7 @@ public class DettaglioStreamResponse extends StreamResponse{
 		this.requestermail = dettaglioStream.getDataSourceRequesterMail();
 		this.privacyacceptance = dettaglioStream.getDataSourcePrivacyAcceptance();
 		this.smartobject = new DettaglioSmartobjectResponse(dettaglioSmartobject);
+		this.icon = dettaglioStream.getDataSourceIcon();
 	}
 
 	public DettaglioStreamResponse(DettaglioStream dettaglioStream)throws Exception{
@@ -255,6 +257,14 @@ public class DettaglioStreamResponse extends StreamResponse{
 
 	public void setSharingTenants(List<TenantResponse> sharingTenants) {
 		this.sharingTenants = sharingTenants;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
 	}
 	
 }
