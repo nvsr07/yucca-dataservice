@@ -1,10 +1,18 @@
 package org.csi.yucca.adminapi.util;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import org.apache.commons.codec.binary.Base64;
+import org.fusesource.hawtbuf.ByteArrayInputStream;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -128,4 +136,42 @@ public class Util {
 		return date != null;
 	}
 
+	
+	public static byte[] convertIconFromDBToByte(String imageBase64) {
+		BufferedImage imag = null;
+		try {
+
+			if (imageBase64 != null) {
+				String[] imageBase64Array = imageBase64.split(",");
+
+				String imageBase64Clean;
+				if (imageBase64Array.length > 1) {
+					imageBase64Clean = imageBase64Array[1];
+				} else {
+					imageBase64Clean = imageBase64Array[0];
+				}
+
+				byte[] bytearray = Base64.decodeBase64(imageBase64Clean
+						.getBytes());
+				imag = ImageIO.read(new ByteArrayInputStream(bytearray));
+			}
+			if (imageBase64 == null || imag == null) {
+				return null;
+				// imag =
+				// ImageIO.read(ImageProcessor.class.getClassLoader().getResourceAsStream(Constants.DEFAULT_IMAGE));
+			}
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(imag, "png", baos);
+			baos.flush();
+			byte[] iconBytes = baos.toByteArray();
+			baos.close();
+			return iconBytes;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 }

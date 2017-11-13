@@ -28,7 +28,7 @@ public class ServiceResponse {
 	}
 	
 	public ServiceResponse image(String base64image) {
-		this.object = base64image;
+		this.object = Util.convertIconFromDBToByte(base64image);
 		this.isImage = true;
 		return this;
 	}
