@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.codec.binary.Base64;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
+import org.springframework.util.Base64Utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -151,8 +152,7 @@ public class Util {
 					imageBase64Clean = imageBase64Array[0];
 				}
 
-				byte[] bytearray = Base64.decodeBase64(imageBase64Clean
-						.getBytes());
+				byte[] bytearray = Base64Utils.decodeFromString(imageBase64Clean);
 				imag = ImageIO.read(new ByteArrayInputStream(bytearray));
 			}
 			if (imageBase64 == null || imag == null) {
