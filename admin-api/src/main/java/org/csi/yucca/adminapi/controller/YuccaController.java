@@ -34,7 +34,7 @@ public class YuccaController {
 	public ResponseEntity<Object> buildResponse(ServiceResponse serviceResponse){
 		if (serviceResponse.isImage)
 		{
-			return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG)
+			return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG)
 		            .body(serviceResponse.getObject());
 		}
 		else {
