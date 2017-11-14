@@ -110,7 +110,7 @@ public interface StreamMapper {
 	
 	/*************************************************************************
 	 * 
-	 * 					SELECT STREAMs
+	 * 					SELECT STREAM
 	 * 
 	 * ***********************************************************************/
 	public static final String SELECT_STREAM = 
@@ -120,7 +120,8 @@ public interface StreamMapper {
 			+ "yucca_stream.streamcode, "
 			+ "yucca_stream.streamname, "
 			+ "yucca_stream.savedata stream_save_data, "
-			+ "yucca_stream.datasourceversion, " +
+			+ "yucca_stream.datasourceversion, " 
+			+ "yucca_stream.fps, " +
 
 			" (select count(*) from " + STREAM_INTERNAL_TABLE + " yucca_r_stream_internal, " + DataSourceMapper.DATA_SOURCE_TABLE + " d1  where " +
 			" yucca_r_stream_internal.idstream = yucca_stream.idstream " +
@@ -289,6 +290,7 @@ public interface StreamMapper {
         @Result(property = "streamName", column = "streamname"), 
         @Result(property = "streamSaveData", column = "stream_save_data"),
         @Result(property = "dataSourceVersion", column = "datasourceversion"), 
+        @Result(property = "fps", column = "fps"),
   	  
 		@Result(property = "dataSourceVisibility", column = "data_source_visibility"), 
 		@Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),  
