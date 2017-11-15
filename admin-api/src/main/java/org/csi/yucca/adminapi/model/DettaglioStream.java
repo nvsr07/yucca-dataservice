@@ -57,6 +57,7 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 	private String subSubDomainCode;
 	private String subLangIt;
 	private String subLangEn;
+	private Double fps;
 
 	private String organizationCode;
 	private String organizationDescription;
@@ -518,6 +519,14 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 
 	public void setSubLangEn(String subLangEn) {
 		this.subLangEn = subLangEn;
+	}
+
+	public Double getFps() {
+		return fps;
+	}
+
+	public void setFps(Double fps) {
+		this.fps = fps;
 	}
 
 	public String getOrganizationCode() {

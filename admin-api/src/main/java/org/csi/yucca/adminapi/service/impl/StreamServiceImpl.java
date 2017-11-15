@@ -145,7 +145,7 @@ public class StreamServiceImpl implements StreamService {
 	 * 
 	 */
 	@Override
-	public ServiceResponse selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) 
+	public byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) 
 			throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, 
@@ -153,7 +153,7 @@ public class StreamServiceImpl implements StreamService {
 
 		ServiceUtil.checkIfFoundRecord(dettaglioStream);
 
-		return ServiceUtil.buildResponseImage(dettaglioStream.getDataSourceIcon());
+		return Util.convertIconFromDBToByte(dettaglioStream.getDataSourceIcon());
 	}
 
 	/**
