@@ -174,7 +174,7 @@ public class BackOfficeController extends YuccaController {
 	 * @return
 	 */
 	@ApiOperation(value = BO_ADD_ADMIN_APPLICATION_TENANT, notes = BO_ADD_ADMIN_APPLICATION_TENANT_NOTES, response = ServiceResponse.class)
-	@PostMapping("/tenants/addAdminApplication")
+	@PostMapping("/tenant/addAdminApplication")
 	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantcode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
@@ -194,7 +194,7 @@ public class BackOfficeController extends YuccaController {
 	 * @return
 	 */
 	@ApiOperation(value = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT, notes = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES, response = ServiceResponse.class)
-	@PostMapping("/tenants/subscribeAdminApiInStore")
+	@PostMapping("/tenant/subscribeAdminApiInStore")
 	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantcode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("subscribeAdminApiInStore");
@@ -214,7 +214,7 @@ public class BackOfficeController extends YuccaController {
 	 * @return
 	 */
 	@ApiOperation(value = BO_GENERETATE_ADMIN_KEY_TENANT, notes = BO_GENERETATE_ADMIN_KEY_TENANT_NOTES, response = ServiceResponse.class)
-	@PostMapping("/tenants/generetateAdminKey")
+	@PostMapping("/tenant/generetateAdminKey")
 	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantcode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
