@@ -291,7 +291,16 @@ public interface TenantMapper {
 		@Update(UPDATE_TENANT_STATUS)
 		int updateTenantStatus(@Param("idTenantStatus") Integer idTenantStatus, @Param("tenantCode") String tenantCode);
 	
-	
+		/*************************************************************************
+		 * 
+		 * 					UPDATE TENANT CLIENT CREDENTIAL
+		 * 
+		 * ***********************************************************************/	
+		public static final String UPDATE_TENANT_CREDENTIAL_ = 
+				"UPDATE " + TENANT_TABLE + " set clientkey = #{clientkey},clientsecret=#{clientsecret}  where tenantcode = #{tenantCode}";
+			@Update(UPDATE_TENANT_STATUS)
+			int updateTenantClientCredential(@Param("clientkey") String clientkey, @Param("clientsecret") String clientsecret, @Param("tenantCode") String tenantCode);
+		
 		/*************************************************************************
 		 * 
 		 * 					INSERT TENANT-DATASOURCE

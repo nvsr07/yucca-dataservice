@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -25,16 +24,14 @@ import org.springframework.web.servlet.view.JstlView;
 //import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-//@EnableSwagger2
+// @EnableSwagger2
 @EnableTransactionManagement
 @EnableWebMvc
 @ComponentScan(basePackages = "org.csi.yucca.adminapi")
-
-//@ComponentScan(basePackages={"org.csi.yucca.adminapi"},
-//excludeFilters={
-//        @ComponentScan.Filter(type= FilterType.ANNOTATION, value=EnableWebMvc.class)
-//})
-
+// @ComponentScan(basePackages={"org.csi.yucca.adminapi"},
+// excludeFilters={
+// @ComponentScan.Filter(type= FilterType.ANNOTATION, value=EnableWebMvc.class)
+// })
 @MapperScan("org.csi.yucca.adminapi.mapper")
 @PropertySource(value = { "classpath:datasource.properties" })
 public class AppConfig extends WebMvcConfigurerAdapter {
@@ -57,30 +54,37 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Value("${max.active}")
 	private int maxActive;
 
-	
+	@Value("${store.url}")
+	private String storeUrl;
+
+	@Value("${store.username}")
+	private String storeUsername;
+
+	@Value("${store.password}")
+	private String storePassword;
+
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-	    registry.addResourceHandler("swagger-ui.html")
-	      .addResourceLocations("classpath:/META-INF/resources/");
-	 
-	    registry.addResourceHandler("/webjars/**")
-	      .addResourceLocations("classpath:/META-INF/resources/webjars/");
+		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+
+		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
 	}
-	
-//	@Override
-//	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//	    registry.addResourceHandler("swagger-ui.html")
-//	      .addResourceLocations("classpath:/META-INF/resources/");
-//	 
-//	    registry.addResourceHandler("/webjars/**")
-//	      .addResourceLocations("classpath:/META-INF/resources/webjars/");
-//	}
-//	
-//	@Bean
-//	public Docket api() {
-//		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
-//				.paths(PathSelectors.any()).build();
-//	}
+
+	// @Override
+	// public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	// registry.addResourceHandler("swagger-ui.html")
+	// .addResourceLocations("classpath:/META-INF/resources/");
+	//
+	// registry.addResourceHandler("/webjars/**")
+	// .addResourceLocations("classpath:/META-INF/resources/webjars/");
+	// }
+	//
+	// @Bean
+	// public Docket api() {
+	// return new
+	// Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
+	// .paths(PathSelectors.any()).build();
+	// }
 
 	@Bean
 	public DataSource getDataSource() {
@@ -120,6 +124,11 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
+	}
+
+	@Bean
+	public StoreConfig getStoreConfig() {
+		return new StoreConfig(storeUrl, storeUsername, storePassword);
 	}
 
 }
