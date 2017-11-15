@@ -2,7 +2,9 @@ package org.csi.yucca.adminapi.controller.v1;
 
 import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -72,18 +74,34 @@ public class ManagementController extends YuccaController{
 
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/organizations/{organizationCode}/streams/{idstream}/icon")
-	public ResponseEntity<Object> loadStreamIcon(
+	public void loadStreamIcon(
 			@PathVariable final String organizationCode, 
 			@PathVariable final Integer idstream,
-			final HttpServletRequest request) {
+			final HttpServletRequest request,
+			final HttpServletResponse response) {
 		
-		logger.info("loadStream");
+		logger.info("loadStreamIcon");
+	    
+
+	    byte[] imgByte;
+		try {
+			imgByte = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
+		    response.setHeader("Cache-Control", "no-store");
+		    response.setHeader("Pragma", "no-cache");
+		    response.setDateHeader("Expires", 0);
+		    response.setContentType("image/png");
+		    ServletOutputStream responseOutputStream = response.getOutputStream();
+		    responseOutputStream.write(imgByte);
+		    responseOutputStream.flush();
+		    responseOutputStream.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
-			}
-		}, logger);		
+		
+		
 	}
 
 	
