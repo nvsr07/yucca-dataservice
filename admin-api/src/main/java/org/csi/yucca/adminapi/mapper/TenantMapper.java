@@ -32,7 +32,7 @@ public interface TenantMapper {
 	String SHARE_TYPE_TABLE =       Constants.SCHEMA_DB + "yucca_d_share_type";
 	
 	public static final String SELECT_TENANT_COLUMNS = 	
-			" SELECT id_tenant, tenantcode, name, TENANT.description, clientkey, clientsecret, activationdate, deactivationdate, "
+			" SELECT TENANT.id_tenant, TENANT.tenantcode, TENANT.name, TENANT.description, clientkey, clientsecret, activationdate, deactivationdate, "
 			+ "usagedaysnumber, userfirstname, userlastname, useremail, usertypeauth, creationdate, expirationdate, id_ecosystem, "
 			+ "TENANT.id_organization, id_tenant_type, id_tenant_status,  TENANT.datasolrcollectionname, TENANT.measuresolrcollectionname, "
 			+ "TENANT.mediasolrcollectionname, TENANT.socialsolrcollectionname, TENANT.dataphoenixtablename, TENANT.dataphoenixschemaname, "
