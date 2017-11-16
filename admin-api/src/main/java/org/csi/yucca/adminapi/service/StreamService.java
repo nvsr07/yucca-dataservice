@@ -14,11 +14,8 @@ public interface StreamService {
 
 	ServiceResponse selectStream(String organizationCode, Integer idStream, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
-<<<<<<< HEAD
 	ServiceResponse updateStream(String organizationCode, String soCode, Integer idStream, StreamRequest streamRequest, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
-=======
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice.git
 	byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
 }
