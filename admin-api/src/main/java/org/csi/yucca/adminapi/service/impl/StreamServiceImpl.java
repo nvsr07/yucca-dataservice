@@ -1083,7 +1083,7 @@ public class StreamServiceImpl implements StreamService {
 	private void updateValidation(Smartobject smartObject, StreamToUpdate streamToUpdate, StreamRequest streamRequest)throws BadRequestException, NotFoundException, Exception {
 		
 		// checdkDraftStatus
-		if(Status.DRAFT.id() == streamToUpdate.getIdStatus()){
+		if(Status.DRAFT.id() != streamToUpdate.getIdStatus()){
 			throw new NotAcceptableException(Errors.NOT_ACCEPTABLE, "Only Stream in DRAFT version can be updated.");
 		}
 			
