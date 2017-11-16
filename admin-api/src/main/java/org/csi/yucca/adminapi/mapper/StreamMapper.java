@@ -239,7 +239,7 @@ public interface StreamMapper {
 	
 	/*************************************************************************
 	 * 
-	 * 					SELECT STREAMs
+	 * 					SELECT STREAM
 	 * 
 	 * ***********************************************************************/
 	public static final String SELECT_STREAM = 
@@ -419,6 +419,7 @@ public interface StreamMapper {
         @Result(property = "streamName", column = "streamname"), 
         @Result(property = "streamSaveData", column = "stream_save_data"),
         @Result(property = "dataSourceVersion", column = "datasourceversion"), 
+        @Result(property = "fps", column = "fps"),
   	  
 		@Result(property = "dataSourceVisibility", column = "data_source_visibility"), 
 		@Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),  

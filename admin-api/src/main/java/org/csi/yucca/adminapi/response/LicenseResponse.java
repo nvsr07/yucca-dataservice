@@ -15,8 +15,7 @@ public class LicenseResponse extends Response{
 	
 	private String licensecode;
 	private String description;
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String disclaimer;
+
 
 	public LicenseResponse() {
 		super();
@@ -65,12 +64,6 @@ public class LicenseResponse extends Response{
 	public void setIdLicense(Integer idLicense) {
 		this.idLicense = idLicense;
 	}
-	public String getDisclaimer() {
-		return disclaimer;
-	}
 
-	public void setDisclaimer(String disclaimer) {
-		this.disclaimer = disclaimer;
-	}
 	
 }

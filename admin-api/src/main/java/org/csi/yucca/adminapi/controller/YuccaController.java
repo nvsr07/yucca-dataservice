@@ -15,7 +15,9 @@ import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ApiExecutable;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ServiceResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -40,6 +42,7 @@ public class YuccaController {
 		else {
 			return new ResponseEntity<Object>(serviceResponse.getObject(), 
 				serviceResponse.getHttpStatus());
+		}
 	}
 
 	public ResponseEntity buildResponse(){

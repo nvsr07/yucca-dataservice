@@ -24,6 +24,7 @@ public class StreamResponse extends Response {
 	private String name;
 	private Integer unpublished;
 	private String visibility;
+	private String disclaimer;
 	private String registrationdate;
 	private StatusResponse status;
 	private List<TagResponse> tags = new ArrayList<TagResponse>();
@@ -41,6 +42,7 @@ public class StreamResponse extends Response {
 		this.name = dettaglioStream.getDataSourceName();
 		this.unpublished = dettaglioStream.getDataSourceUnpublished();
 		this.visibility = dettaglioStream.getDataSourceVisibility();
+		this.disclaimer = dettaglioStream.getDataSourceDisclaimer();
 		this.registrationdate = Util.dateString(dettaglioStream.getDataSourceRegistrationDate());
 		this.status = new StatusResponse(dettaglioStream);
 		this.domain = new DomainResponse(dettaglioStream);
@@ -137,6 +139,15 @@ public class StreamResponse extends Response {
 
 	public void setVisibility(String visibility) {
 		this.visibility = visibility;
+	}
+	
+
+	public String getDisclaimer() {
+		return disclaimer;
+	}
+
+	public void setDisclaimer(String disclaimer) {
+		this.disclaimer = disclaimer;
 	}
 
 	public String getRegistrationdate() {

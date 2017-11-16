@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.util;
 
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_ADD_ADMIN_APPLICATION_TENANT;
+
 public class ApiDoc {
 
 	public static final String M_CREATE_STREAM_DATASET = "CREATE STREAM DATASET";
@@ -19,7 +21,10 @@ public class ApiDoc {
 
 	public static final String M_LOAD_STREAM = "LOAD STREAM";
 	public static final String M_LOAD_STREAM_NOTES = "Load Stream in the System.";
-	
+
+	public static final String M_LOAD_STREAM_ICON = "LOAD ICON STREAM";
+	public static final String M_LOAD_STREAM_ICON_NOTES = "Load icon for a Stream in the System.";
+
 	public static final String M_LOAD_TENANT = "LOAD TENANT";
 	public static final String M_LOAD_TENANT_NOTES = "Load all Tenants in the System.";
 	
@@ -88,7 +93,16 @@ public class ApiDoc {
 
 	public static final String BO_ACTIONFEEDBACK_ON_TENANT = "FEEDBACK FOR AN ACTION ON TENANT";
 	public static final String BO_ACTIONFEEDBACK_ON_TENANT_NOTES = "Feedback for an action on Tenant.";
+	
+	public static final String BO_ADD_ADMIN_APPLICATION_TENANT = "ADD ADMIN APPLICATION ON TENANT";
+	public static final String BO_ADD_ADMIN_APPLICATION_TENANT_NOTES = "Add admin applicatio on tenant.";
 
+	public static final String BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT = "SUBSCRIBE ADMIN API IN STORE FOR TENANT";
+	public static final String BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES = "subscribe admin api in store for tenant";
+
+	public static final String BO_GENERETATE_ADMIN_KEY_TENANT = " GENERETATE ADMIN KEY TENANT";
+	public static final String BO_GENERETATE_ADMIN_KEY_TENANT_NOTES = "Generate admin key for tenant.";
+	
 	public static final String BO_LOAD_TENANTS = "LOAD TENANTS";
 	public static final String BO_LOAD_TENANTS_NOTES = "Load all Tenants in the System.";
 

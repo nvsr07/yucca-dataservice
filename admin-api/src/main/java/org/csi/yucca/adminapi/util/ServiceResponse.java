@@ -7,6 +7,8 @@ public class ServiceResponse {
 	public Object object;
 	
 	public HttpStatus httpStatus = HttpStatus.OK;
+	
+	public boolean isImage = false;
 
 	public ServiceResponse OK(){
 		this.httpStatus = HttpStatus.OK;
@@ -21,8 +23,16 @@ public class ServiceResponse {
 	
 	public ServiceResponse object(Object object){
 		this.object = object;
+		this.isImage = false;
 		return this;
 	}
+	
+	public ServiceResponse image(String base64image) {
+		this.object = Util.convertIconFromDBToByte(base64image);
+		this.isImage = true;
+		return this;
+	}
+	
 	
 	public static ServiceResponse build(){
 		return new ServiceResponse();
@@ -45,6 +55,13 @@ public class ServiceResponse {
 	public void setHttpStatus(HttpStatus httpStatus) {
 		this.httpStatus = httpStatus;
 	}
-	
+
+	public boolean getIsImage() {
+		return isImage;
+	}
+	public void setIsImage(Boolean isImage) {
+		this.isImage = isImage;
+	}
+
 	
 }

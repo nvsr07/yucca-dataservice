@@ -184,8 +184,22 @@ public class StreamServiceImpl implements StreamService {
 
 		return Util.convertIconFromDBToByte(dettaglioStream.getDataSourceIcon());
 	}
-
 	
+	/**
+	 * 
+	 */
+	@Override
+	public byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, 
+				ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+
+		ServiceUtil.checkIfFoundRecord(dettaglioStream);
+
+		return Util.convertIconFromDBToByte(dettaglioStream.getDataSourceIcon());
+	}
+
 	/**
 	 * 
 	 */
