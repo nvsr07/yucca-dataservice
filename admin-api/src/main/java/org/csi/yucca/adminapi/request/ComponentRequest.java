@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.request;
 
 public class ComponentRequest {
 
+	private Integer idComponent;
 	private String name;
 	private String alias;
 	private Integer inorder;
@@ -11,6 +12,15 @@ public class ComponentRequest {
 	private Integer idMeasureUnit;
 	private Boolean required;
 	
+	
+	public Integer getIdComponent() {
+		return idComponent;
+	}
+
+	public void setIdComponent(Integer idComponent) {
+		this.idComponent = idComponent;
+	}
+
 	public String getName() {
 		return name;
 	}

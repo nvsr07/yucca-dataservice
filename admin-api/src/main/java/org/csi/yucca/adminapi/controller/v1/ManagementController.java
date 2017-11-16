@@ -2,7 +2,9 @@ package org.csi.yucca.adminapi.controller.v1;
 
 import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -11,6 +13,7 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
+import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
@@ -53,6 +56,33 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private StreamService streamService;     
 
+	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
+	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams/{idStream}")
+	public ResponseEntity<Object> updateStream(
+			@RequestParam(required=false) final String tenantCodeManager,
+			@RequestBody final StreamRequest streamRequest,
+			@PathVariable final String organizationCode,
+			@PathVariable final String soCode,
+			@PathVariable final Integer idStream,
+			final HttpServletRequest request ){
+		logger.info("updateDraftStream");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.updateStream(organizationCode, soCode, idStream, streamRequest, tenantCodeManager, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}	
+	
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param tenantCodeManager
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamResponse.class)
 	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
 	public ResponseEntity<Object> loadStream(
@@ -70,7 +100,40 @@ public class ManagementController extends YuccaController{
 		}, logger);		
 	}
 
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/organizations/{organizationCode}/streams/{idstream}/icon")
+	public void loadStreamIcon(
+			@PathVariable final String organizationCode, 
+			@PathVariable final Integer idstream,
+			final HttpServletRequest request,
+			final HttpServletResponse response) {
+		
+		logger.info("loadStreamIcon");
+	    
 
+	    byte[] imgByte;
+		try {
+			imgByte = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
+		    response.setHeader("Cache-Control", "no-store");
+		    response.setHeader("Pragma", "no-cache");
+		    response.setDateHeader("Expires", 0);
+		    response.setContentType("image/png");
+		    ServletOutputStream responseOutputStream = response.getOutputStream();
+		    responseOutputStream.write(imgByte);
+		    responseOutputStream.flush();
+		    responseOutputStream.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		
+		
+	}
+
+	
+	
 	/**
 	 * 
 	 * @param organizationCode

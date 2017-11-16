@@ -72,6 +72,16 @@ public interface TenantMapper {
             "</if>";	
 
 	
+	/*************************************************************************
+	 * 
+	 * 					DELETE NOT MANAGER TENANT DATASOURCE
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_NOT_MANAGER_TENANT_DATA_SOURCE = 
+	" DELETE from " + R_TENANT_DATA_SOURCE_TABLE + " WHERE  id_data_source = #{idDataSource} and datasourceversion = #{dataSourceVersion} and ismanager = 0";
+	@Delete(DELETE_NOT_MANAGER_TENANT_DATA_SOURCE)
+	int deleteNotManagerTenantDataSource(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
+	
 	
 	/*************************************************************************
 	 * 

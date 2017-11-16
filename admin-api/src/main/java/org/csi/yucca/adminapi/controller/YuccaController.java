@@ -31,7 +31,14 @@ public class YuccaController {
 	}
 	
 	public ResponseEntity<Object> buildResponse(ServiceResponse serviceResponse){
-		return new ResponseEntity<Object>(serviceResponse.getObject(), 
+		if (serviceResponse.isImage)
+		{
+			final HttpHeaders headers = new HttpHeaders();
+		    headers.setContentType(MediaType.IMAGE_PNG);
+			return new ResponseEntity(serviceResponse.getObject(), headers, HttpStatus.CREATED); 
+		}
+		else {
+			return new ResponseEntity<Object>(serviceResponse.getObject(), 
 				serviceResponse.getHttpStatus());
 	}
 

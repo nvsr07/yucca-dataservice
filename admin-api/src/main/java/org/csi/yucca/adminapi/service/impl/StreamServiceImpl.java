@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
+import org.csi.yucca.adminapi.exception.NotAcceptableException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
@@ -33,6 +34,7 @@ import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.StreamInternal;
+import org.csi.yucca.adminapi.model.StreamToUpdate;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.TenantDataSource;
@@ -41,8 +43,11 @@ import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DcatRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
 import org.csi.yucca.adminapi.request.LicenseRequest;
+import org.csi.yucca.adminapi.request.OpenDataRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
+import org.csi.yucca.adminapi.request.StreamRequest;
+import org.csi.yucca.adminapi.request.TwitterInfoRequest;
 import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
@@ -118,9 +123,33 @@ public class StreamServiceImpl implements StreamService {
 
 	@Autowired
 	private ComponentMapper componentMapper;
+	
+    /**
+     * update stream
+     */
+	@Override
+	public ServiceResponse updateStream(String organizationCode, String soCode, Integer idStream, StreamRequest streamRequest, 
+			String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+		
+		// streamToUpdate
+		StreamToUpdate streamToUpdate =	streamMapper.selectStreamToUpdate(tenantCodeManager, idStream, organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+		ServiceUtil.checkIfFoundRecord(streamToUpdate);
 
+		// smartobject
+		Smartobject smartObject = smartobjectMapper.selectSmartobjectBySocodeAndOrgcode(soCode, organizationCode);
+		ServiceUtil.checkIfFoundRecord(smartObject,"smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
+
+		// validation
+		updateValidation(smartObject, streamToUpdate, streamRequest);
+		
+		// update
+		updateStreamTransaction(streamRequest, streamToUpdate, smartObject);
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+	
 	/**
-	 * 
+	 * select stream
 	 */
 	@Override
 	public ServiceResponse selectStream(String organizationCode, Integer idStream, String tenantCodeManager, JwtUser authorizedUser) 
@@ -139,6 +168,21 @@ public class StreamServiceImpl implements StreamService {
 		DettaglioStreamResponse response = new DettaglioStreamResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
 		
 		return ServiceUtil.buildResponse(response);
+	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, 
+				ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+
+		ServiceUtil.checkIfFoundRecord(dettaglioStream);
+
+		return Util.convertIconFromDBToByte(dettaglioStream.getDataSourceIcon());
 	}
 
 	
@@ -176,12 +220,31 @@ public class StreamServiceImpl implements StreamService {
 
 		validation(request, organizationCode, smartobject, authorizedUser);
 
-		Stream stream = streamTransaction(request, organization, smartobject);
+		Stream stream = insertStreamTransaction(request, organization, smartobject);
 
 		return ServiceResponse.build().object(PostStreamResponse.build(stream.getIdstream())
 				.streamcode(stream.getStreamcode()).streamname(stream.getStreamname()));
 	}
 
+	/**
+	 * 
+	 * @param idDataSource
+	 * @param version
+	 * @return
+	 */
+	private List<Component> getAlreadyPresentComponentsPreviousVersion(Integer idDataSource, Integer version){
+		
+		if(idDataSource == null || version == null){
+			return null;
+		}
+		
+		if(version > 1){
+			return componentMapper.selectComponentByDataSourceAndVersion(idDataSource,  (version-1) );
+		}
+		
+		return null;
+	}	
+	
 	/**
 	 * 
 	 * @param tenantCodeManager
@@ -259,7 +322,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @param organization
 	 * @param smartobject
 	 */
-	private Stream streamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) {
+	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) {
 
 		Timestamp now = Util.getNow();
 
@@ -283,9 +346,9 @@ public class StreamServiceImpl implements StreamService {
 
 		insertStreamInternal(request, idDataSource);
 
-		Dataset dataset = insertDataset(request, idDataSource, smartobject.getIdSoType());
+		Dataset dataset = insertDataset(request, idDataSource, smartobject.getIdSoType(), DATASOURCE_VERSION, request.getStreamcode());
 
-		insertApi(request, smartobject, dataset, idDataSource);
+		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), DATASOURCE_VERSION);
 
 		return stream;
 
@@ -298,32 +361,37 @@ public class StreamServiceImpl implements StreamService {
 	 * @param dataset
 	 * @param idDataSource
 	 */
-	private void insertApi(PostStreamRequest request, Smartobject smartobject, Dataset dataset, Integer idDataSource) {
-		apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION)
-				.apicode(API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + request.getStreamcode())
+	private void insertApi(StreamRequest request, Smartobject smartobject, Dataset dataset, Integer idDataSource, String streamCode, Integer dataSourceVersion) {
+		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
+				.apicode(API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
 				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
 
-		apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION)
-				.apicode(API_CODE_PREFIX_MQTT + smartobject.getSocode() + request.getStreamcode())
+		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
+				.apicode(API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
 				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_MQTT).idDataSource(idDataSource));
 
 		if (request.getSavedata() && dataset != null) {
-			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
+			apiMapper.insertApi(Api.buildOutput(dataSourceVersion).apicode(dataset.getDatasetcode())
 					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA).idDataSource(idDataSource));
 		}
 	}
-
+	
 	/**
-	 * 
-	 * SOLO SE savedata == true allora aggiungo una riga su yucca_dataset
-	 * yucca_dataset
 	 * 
 	 * @param request
 	 * @param idDataSource
 	 * @param idSoType
+	 * @param dataSourceVersion
+	 * @param streamCode
 	 * @return
 	 */
-	private Dataset insertDataset(PostStreamRequest request, Integer idDataSource, Integer idSoType) {
+	private Dataset insertDataset(StreamRequest request, Integer idDataSource, Integer idSoType, Integer dataSourceVersion, String streamCode) {
+		
+		Dataset checkDataSet = datasetMapper.selectDataSet(idDataSource, dataSourceVersion);
+		if (checkDataSet != null) {
+			return checkDataSet;
+		}
+		
 		if (request.getSavedata()) {
 			Integer iddataset = sequenceMapper.selectDatasetSequence();
 
@@ -331,10 +399,10 @@ public class StreamServiceImpl implements StreamService {
 
 			dataset.setIddataset(iddataset);
 			dataset.setIdDataSource(idDataSource);
-			dataset.setDatasourceversion(DATASOURCE_VERSION);
-			dataset.setDatasetname(request.getStreamcode());
-			dataset.setDatasetcode(generateStreamDatasetCode(iddataset, request.getStreamcode()));
-			dataset.setDescription("Dataset " + request.getStreamcode());
+			dataset.setDatasourceversion(dataSourceVersion);
+			dataset.setDatasetname(streamCode);
+			dataset.setDatasetcode(generateStreamDatasetCode(iddataset, streamCode));
+			dataset.setDescription("Dataset " + streamCode);
 			dataset.setIdDatasetType(DatasetType.DATASET.id());
 			if (Type.FEED_TWEET.id() == idSoType) {
 				dataset.setIdDatasetSubtype(DatasetSubtype.SOCIAL.id());
@@ -348,9 +416,11 @@ public class StreamServiceImpl implements StreamService {
 
 			return dataset;
 		}
+		
 		return null;
 	}
 
+	
 	/**
 	 * 
 	 * @param iddataset
@@ -499,11 +569,11 @@ public class StreamServiceImpl implements StreamService {
 		checkStreamCode(request.getStreamcode(), smartobject.getIdSmartObject());
 
 		checkInternalSmartObject(request, smartobject.getIdSoType());
-
+		
 		checkFeedTweetSmartobject(request, smartobject.getIdSoType());
 
 		checkComponents(request, smartobject.getIdSoType());
-
+		
 		checkVisibility(request);
 	}
 
@@ -525,7 +595,7 @@ public class StreamServiceImpl implements StreamService {
 		dataSource.setVisibility(request.getVisibility());
 		dataSource.setCopyright(request.getVisibility()); // potrebbe essere
 															// nullo
-		dataSource.setDisclaimer(request.getLicense() != null ? request.getLicense().getDisclaimer() : null);
+		dataSource.setDisclaimer(request.getDisclaimer());
 		dataSource.setRegistrationdate(Util.getNow());
 		dataSource.setRequestername(request.getRequestername());
 		dataSource.setRequestersurname(request.getRequestersurname());
@@ -611,22 +681,30 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws BadRequestException
 	 * @throws NotFoundException
 	 */
-	private void checkInternalSmartObject(PostStreamRequest request, Integer idSoType)
-			throws BadRequestException, NotFoundException {
+	private void checkInternalSmartObject(StreamRequest request, Integer idSoType) throws BadRequestException, NotFoundException {
+		checkInternalSmartObject(request.getInternalquery(), request.getInternalStreams(), idSoType);
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param idSoType
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	private void checkInternalSmartObject(String internalQuery, List<InternalStreamRequest> internalStreams, Integer idSoType) throws BadRequestException, NotFoundException {
 		// INTERNAL SO TYPE
 		if (Type.INTERNAL.id() == idSoType) {
-			ServiceUtil.checkMandatoryParameter(request.getInternalquery(),
-					"internalquery mandatory (only for internal smartobject)");
-			ServiceUtil.checkList(request.getInternalStreams(),
-					"InternalStreams mandatory (only for internal smartobject)");
-			for (InternalStreamRequest internalStream : request.getInternalStreams()) {
+			ServiceUtil.checkMandatoryParameter(internalQuery, "internalquery mandatory (only for internal smartobject)");
+			ServiceUtil.checkList(internalStreams, "InternalStreams mandatory (only for internal smartobject)");
+			for (InternalStreamRequest internalStream : internalStreams) {
 				ServiceUtil.checkMandatoryParameter(internalStream.getIdStream(), "internalStream => idStream");
 				ServiceUtil.checkMandatoryParameter(internalStream.getStreamAlias(), "internalStream => streamAlias");
 			}
 		}
 
 		// NOT INTERNAL SO TYPE
-		if (Type.INTERNAL.id() != idSoType && request.getInternalquery() != null) {
+		if (Type.INTERNAL.id() != idSoType && internalQuery != null) {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "internalquery: is not internal smartobject.");
 		}
 	}
@@ -647,20 +725,50 @@ public class StreamServiceImpl implements StreamService {
 		ServiceUtil.checkMandatoryParameter(request.getRequestermail(), "requestermail");
 		ServiceUtil.checkMandatoryParameter(request.getUnpublished(), "unpublished");
 		ServiceUtil.checkList(request.getTags(), "tags");
+		
+		checkDcat(request);
 
-		if (request.getDcat() != null && request.getDcat().getIdDcat() == null) {
+		checkLicense(request.getLicense());
+		
+	}
+
+	/**
+	 * 
+	 * @param dcatRequest
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	private void checkDcat(StreamRequest request) throws BadRequestException, NotFoundException {
+		if (request.getDcat()!= null && request.getDcat().getIdDcat() == null) {
 			ServiceUtil.checkMandatoryParameter(request.getDcat().getDcatnomeorg(), "dcatnomeorg");
 			ServiceUtil.checkMandatoryParameter(request.getDcat().getDcatemailorg(), "dcatemailorg");
 			ServiceUtil.checkMandatoryParameter(request.getDcat().getDcatrightsholdername(), "dcatrightsholdername");
 		}
-
-		if (request.getLicense() != null && request.getLicense().getIdLicense() == null) {
-			ServiceUtil.checkMandatoryParameter(request.getLicense().getLicensecode(), "licensecode");
-			ServiceUtil.checkMandatoryParameter(request.getLicense().getDescription(), "license => description");
-		}
-
 	}
-
+	
+	/**
+	 * 
+	 * @param request
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	private void checkLicense(StreamRequest request) throws BadRequestException, NotFoundException{
+		checkLicense(request.getLicense());
+	}
+	
+	/**
+	 * 
+	 * @param licenseRequest
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	private void checkLicense(LicenseRequest licenseRequest) throws BadRequestException, NotFoundException{
+		if (licenseRequest != null && licenseRequest.getIdLicense() == null) {
+			ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode");
+			ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "license => description");
+		}
+	}
+	
 	/**
 	 * 
 	 * @param request
@@ -668,21 +776,28 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws BadRequestException
 	 * @throws NotFoundException
 	 */
-	private void checkFeedTweetSmartobject(PostStreamRequest request, Integer idSoType)
-			throws BadRequestException, NotFoundException {
+	private void checkFeedTweetSmartobject(StreamRequest request, Integer idSoType) throws BadRequestException, NotFoundException {
+		checkFeedTweetSmartobject(request.getTwitterInfoRequest(), request.getComponents(), idSoType);		
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param idSoType
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	private void checkFeedTweetSmartobject(TwitterInfoRequest twitterInfoRequest, List<ComponentRequest> components, Integer idSoType) throws BadRequestException, NotFoundException {
 
 		if (Type.FEED_TWEET.id() == idSoType) {
-			ServiceUtil.checkMandatoryParameter(request.getTwitterInfoRequest(),
-					"twitterInfo mandatory (only for Feed Tweet smartobject)");
-			ServiceUtil.checkMandatoryParameter(request.getTwitterInfoRequest().getTwtquery(),
-					"twitterInfo => Twtquery");
-			if (request.getComponents() != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE,
-						"Component not allowed for Feed Tweet smartobject!");
+			ServiceUtil.checkMandatoryParameter(twitterInfoRequest, "twitterInfo mandatory (only for Feed Tweet smartobject)");
+			ServiceUtil.checkMandatoryParameter(twitterInfoRequest.getTwtquery(), "twitterInfo => Twtquery");
+			if (components != null) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "Component not allowed for Feed Tweet smartobject!");
 			}
 		}
 
-		if (Type.FEED_TWEET.id() != idSoType && request.getTwitterInfoRequest() != null) {
+		if (Type.FEED_TWEET.id() != idSoType && twitterInfoRequest != null) {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "TwitterInfo: is not feed tweet smartobject.");
 		}
 	}
@@ -694,47 +809,170 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 * @throws BadRequestException
 	 */
-	private void checkComponents(PostStreamRequest request, Integer idSoType)
-			throws NotFoundException, BadRequestException {
+	private void checkComponents(StreamRequest request, Integer idSoType) throws NotFoundException, BadRequestException {
+		checkComponents(request, idSoType, null, null);
+	}
+	
+	/**
+	 * 
+	 * @param listToCheck
+	 * @param component
+	 * @return
+	 */
+	private boolean doesNotContainComponent(List<Component> listToCheck, Integer idComponent){
+		for (Component component : listToCheck) {
+			if (component.getIdComponent() == idComponent) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private boolean doesNotContainComponent(List<ComponentRequest> listToCheck, String name){
+		for (ComponentRequest component : listToCheck) {
+			if (component.getIdComponent() != null && component.getName().equals(name)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @return
+	 */
+	private List<Component> selectAlreadyPresentComponents(Integer idDataSource, Integer dataSourceVersion){
+		
+		if(idDataSource == null || dataSourceVersion == null){
+			return null;
+		}
+		
+		return componentMapper.selectComponentByDataSourceAndVersion(idDataSource, dataSourceVersion);
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param idSoType
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	private void checkComponents(StreamRequest request, Integer idSoType, 
+			Integer idDataSource, Integer dataSourceVersion) throws NotFoundException, BadRequestException {
+			
+		
+		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersion);
+		
 		if (Type.FEED_TWEET.id() != idSoType) {
+			
 			ServiceUtil.checkList(request.getComponents());
+			
+			List<Component> alreadyPresentComponents = selectAlreadyPresentComponents(idDataSource, dataSourceVersion);
+			
 			for (ComponentRequest component : request.getComponents()) {
-				ServiceUtil.checkMandatoryParameter(component.getName(), "name");
-				ServiceUtil.checkAphanumeric(component.getName(), "component name");
-				ServiceUtil.checkMandatoryParameter(component.getAlias(), "alias");
-				ServiceUtil.checkMandatoryParameter(component.getInorder(), "inorder");
-				ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
-				ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
-				ServiceUtil.checkMandatoryParameter(component.getIdDataType(), "idDataType");
-				ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
-				ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
+
+				/**
+				 * ALREADY_PRESENT
+				 *  Verificare che tutti gli idComponent siano compresi tra quelli ritornati dalla query. 
+				 *  In caso contrario RITORNARE: Errore: Some idComponent is incorrect
+				 */
+				if(component.getIdComponent() != null && doesNotContainComponent(alreadyPresentComponents, component.getIdComponent())){
+					throw new BadRequestException(Errors.NOT_ACCEPTABLE, "Some idComponent is incorrect: " + component.getIdComponent());
+				}
+
+				/**
+				 * NEW
+				 */
+				if (component.getIdComponent() == null) {
+					checkUnicComponentName(request.getComponents(), component.getName());					
+					ServiceUtil.checkMandatoryParameter(component.getName(), "name");
+					ServiceUtil.checkAphanumeric(component.getName(), "component name");
+					ServiceUtil.checkMandatoryParameter(component.getAlias(), "alias");
+					ServiceUtil.checkMandatoryParameter(component.getInorder(), "inorder");
+					ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
+					ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
+					ServiceUtil.checkMandatoryParameter(component.getIdDataType(), "idDataType");
+					ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
+					ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
+				}
+				
+			}
+		}
+		
+	    /**
+	     * ALREADY_PRESENT
+		*  Verificare che tutti i campi name estratti dalla query siano presenti nei campi name degli ALREADY_PRESENT_req. 
+		*  In caso contrario RITORNARE: Errore: You can't remove components from previous version.
+		*/
+		if(alreadyPresentComponentsPreviousVersion != null){
+			for (Component prevcomponent : alreadyPresentComponentsPreviousVersion) {
+				if (doesNotContainComponent(request.getComponents(), prevcomponent.getName())) {
+					throw new BadRequestException(Errors.NOT_ACCEPTABLE, " You can't remove components from previous version.");
+				}
 			}
 		}
 	}
 
 	/**
 	 * 
+	 * @param listComponentRequest
+	 * @param name
+	 * @throws BadRequestException
+	 */
+	private void checkUnicComponentName(List<ComponentRequest> listComponentRequest, String name) throws BadRequestException{
+		int count = 0;
+		for (ComponentRequest component : listComponentRequest) {
+			
+			if(component.getName().equals(name)){
+				count++;
+			}
+
+			if (count > 1) {
+				throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The name field must be unique.");
+			}
+		}
+	}
+	
+	
+	/**
+	 * 
 	 * @param request
 	 * @throws BadRequestException
 	 * @throws NotFoundException
 	 */
-	private void checkVisibility(PostStreamRequest request) throws BadRequestException, NotFoundException {
+	private void checkVisibility(StreamRequest request) throws BadRequestException, NotFoundException {
+		checkVisibility(request.getVisibility(), request.getLicense(), request.getOpenData(), 
+				request.getSharingTenants(), request.getCopyright());
+	}
 
-		ServiceUtil.checkValue("visibility", request.getVisibility(), StreamVisibility.PRIVATE.code(),
+	/**
+	 * 
+	 * @param visibility
+	 * @param license
+	 * @param openData
+	 * @param sharingTenants
+	 * @param copyright
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 */
+	private void checkVisibility(String visibility, LicenseRequest license, OpenDataRequest openData, 
+			List<SharingTenantRequest> sharingTenants, String copyright) throws BadRequestException, NotFoundException {
+
+		ServiceUtil.checkValue("visibility", visibility, StreamVisibility.PRIVATE.code(),
 				StreamVisibility.PUBLIC.code());
 
 		// PRIVATE
-		if (StreamVisibility.PRIVATE.code().equals(request.getVisibility())) {
-			if (request.getLicense() != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE,
-						"License only for public visibility, provided: " + request.getVisibility());
+		if (StreamVisibility.PRIVATE.code().equals(visibility)) {
+			if (license != null) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "License only for public visibility, provided: " + visibility);
 			}
-			if (request.getOpenData() != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE,
-						"Opendata only for public visibility, provided: " + request.getVisibility());
+			if (openData != null) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "Opendata only for public visibility, provided: " + visibility);
 			}
-			if (request.getSharingTenants() != null) {
-				for (SharingTenantRequest sharingTenant : request.getSharingTenants()) {
+			if (sharingTenants != null) {
+				for (SharingTenantRequest sharingTenant : sharingTenants) {
 					ServiceUtil.checkMandatoryParameter(sharingTenant.getIdTenant(), "sharingTenant => idTenant");
 					ServiceUtil.checkValue("dataOptions", sharingTenant.getDataOptions(), DataOption.READ.id(),
 							DataOption.READ_AND_SUBSCRIBE.id(), DataOption.READ_AND_USE.id(), DataOption.WRITE.id());
@@ -749,15 +987,13 @@ public class StreamServiceImpl implements StreamService {
 		}
 
 		// PUBLIC
-		if (StreamVisibility.PUBLIC.code().equals(request.getVisibility())) {
+		if (StreamVisibility.PUBLIC.code().equals(visibility)) {
 
-			if (request.getSharingTenants() != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE,
-						"Sharing Tenants permitted only for private visibility!");
+			if (sharingTenants != null) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "Sharing Tenants permitted only for private visibility!");
 			}
-			if (request.getCopyright() != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE,
-						"Copyright permitted only for private visibility!");
+			if (copyright != null) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE, "Copyright permitted only for private visibility!");
 			}
 		}
 	}
@@ -836,5 +1072,336 @@ public class StreamServiceImpl implements StreamService {
 					+ streamcode + " ] and idSmartObject [ " + idSmartobject + " ]");
 		}
 	}
+	
+	/**
+	 * 
+	 * @param smartObject
+	 * @param streamRequest
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	private void updateValidation(Smartobject smartObject, StreamToUpdate streamToUpdate, StreamRequest streamRequest)throws BadRequestException, NotFoundException, Exception {
+		
+		// checdkDraftStatus
+		if(Status.DRAFT.id() == streamToUpdate.getIdStatus()){
+			throw new NotAcceptableException(Errors.NOT_ACCEPTABLE, "Only Stream in DRAFT version can be updated.");
+		}
+			
+		checkComponents(streamRequest, smartObject.getIdSoType(), streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		
+		checkInternalSmartObject(streamRequest, smartObject.getIdSoType());
+		
+		checkFeedTweetSmartobject(streamRequest, smartObject.getIdSoType());
+		
+		checkLicense(streamRequest);
+		
+		checkVisibility(streamRequest);
+		
+		checkDcat(streamRequest);
+		
+		ServiceUtil.checkList(streamRequest.getTags(), "tags");
+		
+		ServiceUtil.checkMandatoryParameter(streamRequest.getStreamname(), "streamName");
+		ServiceUtil.checkMandatoryParameter(streamRequest.getName(), "name");
+		ServiceUtil.checkMandatoryParameter(streamRequest.getSavedata(), "saveData");
+	}
+
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @return
+	 * @throws Exception
+	 */
+	private int deleteComponents(StreamRequest streamRequest, StreamToUpdate streamToUpdate) throws Exception{
+		List<Integer> alreadyPresentIdList =  new ArrayList<Integer>();
+		for (ComponentRequest component : streamRequest.getComponents()) {
+			if (component.getIdComponent() != null) {
+				alreadyPresentIdList.add(component.getIdComponent());
+			}
+		}
+		return componentMapper.deleteComponents(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), alreadyPresentIdList);
+	}
+
+	/**
+	 * 
+	 * @param streamRequest
+	 * @throws Exception
+	 */
+	private void updateComponent(StreamRequest streamRequest) throws Exception{
+		for (ComponentRequest componentRequest : streamRequest.getComponents()) {
+			if (componentRequest.getIdComponent() != null) {
+				Component component = new Component();
+				component.setIdComponent(componentRequest.getIdComponent());
+				component.setAlias(componentRequest.getAlias());
+				component.setInorder(componentRequest.getInorder());
+				component.setTolerance(componentRequest.getTolerance());
+				component.setIdPhenomenon(componentRequest.getIdPhenomenon());
+				component.setIdMeasureUnit(componentRequest.getIdMeasureUnit());
+				componentMapper.updateComponent(component);
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @throws Exception
+	 */
+	private void insertComponent(StreamRequest streamRequest, StreamToUpdate streamToUpdate) throws Exception{
+		for (ComponentRequest componentRequest : streamRequest.getComponents()) {
+
+			if(componentRequest.getIdComponent() == null){
+				Component component = new Component();
+				component.setIdDataSource(streamToUpdate.getIdDataSource());
+				component.setDatasourceversion(streamToUpdate.getDataSourceVersion());
+				component.setName(componentRequest.getName());
+				component.setAlias(componentRequest.getAlias());
+				component.setInorder(componentRequest.getInorder());
+				component.setTolerance(componentRequest.getTolerance());
+				component.setSinceVersion(streamToUpdate.getDataSourceVersion());
+				component.setIdPhenomenon(componentRequest.getIdPhenomenon());
+				component.setIdDataType(componentRequest.getIdDataType());
+				component.setIdMeasureUnit(componentRequest.getIdMeasureUnit());
+				component.setRequired(Util.booleanToInt(true));
+				component.setIskey(Util.booleanToInt(false));
+				componentMapper.insertComponent(component);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @throws Exception
+	 */
+	private void updateComponentTransaction(StreamRequest streamRequest, StreamToUpdate streamToUpdate) throws Exception{
+		
+		if (streamRequest.getComponents() != null) {
+			
+			// delete 
+			deleteComponents(streamRequest, streamToUpdate);
+			
+			// update
+			updateComponent(streamRequest);
+			
+			// 3) inserisco i component NEW
+			insertComponent(streamRequest, streamToUpdate);			
+		}			
+		
+	}
+
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @throws Exception
+	 */
+	private void updateSharingTenantTransaction(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Timestamp now) throws Exception{
+		
+		if(streamRequest.getSharingTenants() != null && !streamRequest.getSharingTenants().isEmpty()){
+			tenantMapper.deleteNotManagerTenantDataSource(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+			
+			for (SharingTenantRequest sharingTenantRequest : streamRequest.getSharingTenants()) {
+
+				TenantDataSource tenantDataSource = new TenantDataSource();
+				
+				tenantDataSource.setIdDataSource(streamToUpdate.getIdDataSource());        
+				tenantDataSource.setDatasourceversion(streamToUpdate.getDataSourceVersion());
+				tenantDataSource.setIdTenant(sharingTenantRequest.getIdTenant());
+				tenantDataSource.setIsactive(Util.booleanToInt(true));
+				tenantDataSource.setIsmanager(Util.booleanToInt(false));
+				tenantDataSource.setActivationdate(now);    
+				tenantDataSource.setManagerfrom(now);    
+				tenantDataSource.setDataoptions(DataOption.READ_AND_USE.id());
+				tenantDataSource.setManageoptions( ManageOption.NO_RIGHT.id());
+
+				tenantMapper.insertTenantDataSource(tenantDataSource);
+			}
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @param now
+	 * @throws Exception
+	 */
+	private void updateInternalStreamsTransaction(StreamRequest streamRequest, StreamToUpdate streamToUpdate) throws Exception{
+		if(streamRequest.getInternalStreams() != null && !streamRequest.getInternalStreams().isEmpty()){
+			
+			streamMapper.deleteStreamInternal(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+
+			for (InternalStreamRequest internalStreamRequest : streamRequest.getInternalStreams()) {
+				
+				StreamInternal streamInternal = new StreamInternal();
+				
+				streamInternal.setIdDataSourceinternal(streamToUpdate.getIdDataSource());
+				streamInternal.setDatasourceversioninternal(streamToUpdate.getDataSourceVersion());
+				streamInternal.setIdstream(internalStreamRequest.getIdStream());
+				streamInternal.setStreamAlias(internalStreamRequest.getStreamAlias());
+				
+				streamMapper.insertStreamInternal(streamInternal);
+			}
+			
+		}
+	}
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @param smartObject
+	 * @throws Exception
+	 */
+	private Dataset updateDataSet(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject ) throws Exception{
+		
+		if (!streamRequest.getSavedata()) {
+			datasetMapper.deleteDataSet(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		}
+		
+		return insertDataset(streamRequest, streamToUpdate.getIdDataSource(), smartObject.getIdSoType(), streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode());
+	}
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @param smartObject
+	 * @throws Exception
+	 */
+	private void updateStreamTransaction(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject )throws  Exception{
+	
+		Timestamp now = Util.getNow();
+		
+		Long idDcat = insertDcat(streamRequest.getDcat());
+		Integer idLicense = insertLicense(streamRequest.getLicense());
+
+		updateDataSource(streamRequest, idDcat, idLicense, streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		
+		updateStream(streamRequest, streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		
+		updateTagDataSource(streamRequest, streamToUpdate);		
+
+		updateComponentTransaction(streamRequest, streamToUpdate);
+
+		updateSharingTenantTransaction(streamRequest, streamToUpdate, now);		
+
+		updateInternalStreamsTransaction(streamRequest, streamToUpdate);		
+
+		Dataset dataset = updateDataSet(streamRequest, streamToUpdate, smartObject);		
+		
+		updateApi(streamRequest, streamToUpdate, smartObject, dataset);
+		
+	}
+
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @param smartObject
+	 * @param dataset
+	 * @throws Exception
+	 */
+	private void updateApi(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject , Dataset dataset) throws Exception{
+		apiMapper.deleteApi(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		insertApi(streamRequest, smartObject, dataset, streamToUpdate.getIdDataSource(), streamToUpdate.getStreamCode(), streamToUpdate.getDataSourceVersion());
+	}
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param streamToUpdate
+	 * @throws Exception
+	 */
+	private void updateTagDataSource(StreamRequest streamRequest, StreamToUpdate streamToUpdate)throws Exception{
+
+		dataSourceMapper.deleteTagDataSource(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+
+		for (Integer idTag : streamRequest.getTags()) {
+			dataSourceMapper.insertTagDataSource(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), idTag);
+		}
+
+	}
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param idDcat
+	 * @param idLicense
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @return
+	 * @throws Exception
+	 */
+	private int updateStream(StreamRequest streamRequest, Integer idDataSource, Integer dataSourceVersion) throws Exception{
+
+		Stream stream = new Stream();
+		stream.setIdDataSource(idDataSource);
+		stream.setDatasourceversion(dataSourceVersion);
+		stream.setStreamname(streamRequest.getStreamname());
+		stream.setPublishstream(Util.booleanToInt(true));    
+		stream.setSavedata( Util.booleanToInt(streamRequest.getSavedata()));
+		stream.setFps(streamRequest.getFps());
+		stream.setInternalquery(streamRequest.getInternalquery());
+		
+		if(streamRequest.getTwitterInfoRequest() != null){
+			stream.setTwtquery(streamRequest.getTwitterInfoRequest().getTwtquery());
+			stream.setTwtgeoloclat(streamRequest.getTwitterInfoRequest().getTwtgeoloclat());
+			stream.setTwtgeoloclon(streamRequest.getTwitterInfoRequest().getTwtgeoloclon());
+			stream.setTwtgeolocradius(streamRequest.getTwitterInfoRequest().getTwtgeolocradius());
+			stream.setTwtgeolocunit(streamRequest.getTwitterInfoRequest().getTwtgeolocunit());
+			stream.setTwtlang(streamRequest.getTwitterInfoRequest().getTwtlang());
+			stream.setTwtlocale(streamRequest.getTwitterInfoRequest().getTwtlocale());
+			stream.setTwtcount(streamRequest.getTwitterInfoRequest().getTwtcount());
+			stream.setTwtresulttype(streamRequest.getTwitterInfoRequest().getTwtresulttype());
+			stream.setTwtuntil(streamRequest.getTwitterInfoRequest().getTwtuntil());
+			stream.setTwtratepercentage(streamRequest.getTwitterInfoRequest().getTwtratepercentage());     
+			stream.setTwtlastsearchid(streamRequest.getTwitterInfoRequest().getTwtlastsearchid());			
+		}
+
+		return streamMapper.updateStream(stream);
+		
+	}
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param idDcat
+	 * @param idLicense
+	 * @return
+	 * @throws Exception
+	 */
+	private int updateDataSource(StreamRequest streamRequest, Long idDcat, Integer idLicense, Integer idDataSource, Integer dataSourceVersion) throws Exception{
+		
+		DataSource dataSource = new DataSource();
+		dataSource.setIdDataSource(idDataSource);
+		dataSource.setDatasourceversion(dataSourceVersion);
+		
+		dataSource.setUnpublished( Util.booleanToInt(streamRequest.getUnpublished()) );
+		dataSource.setName(streamRequest.getName());
+		dataSource.setVisibility(streamRequest.getVisibility());
+		dataSource.setCopyright(streamRequest.getCopyright());
+        dataSource.setDisclaimer(streamRequest.getDisclaimer());
+        dataSource.setIcon(streamRequest.getIcon());
+        dataSource.setIsopendata(streamRequest.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
+        if(streamRequest.getOpenData() != null){
+            dataSource.setOpendataexternalreference(streamRequest.getOpenData().getOpendataexternalreference());    
+            dataSource.setOpendataauthor(streamRequest.getOpenData().getOpendataauthor());
+            dataSource.setOpendataupdatedate(Util.dateStringToTimestamp(streamRequest.getOpenData().getOpendataupdatedate()));
+            dataSource.setOpendatalanguage(streamRequest.getOpenData().getOpendatalanguage());
+            dataSource.setLastupdate(streamRequest.getOpenData().getLastupdate());
+        }
+        dataSource.setIdDcat(idDcat); 
+        dataSource.setIdLicense(idLicense);
+        
+        return dataSourceMapper.updateDataSource(dataSource);
+	}
+	
 
 }

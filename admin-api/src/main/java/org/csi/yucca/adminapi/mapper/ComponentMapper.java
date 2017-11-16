@@ -1,7 +1,15 @@
 package org.csi.yucca.adminapi.mapper;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.util.Constants;
 
@@ -15,7 +23,54 @@ public interface ComponentMapper {
 	public static final String COMPONENT_TABLE = Constants.SCHEMA_DB + "yucca_component";
 
 	/*************************************************************************
-	 * 					INSERT DATA SOURCE
+	 * 					UPDATE COMPONENT
+	 * ***********************************************************************/	
+	public static final String UPDATE_STREAM = 
+		"UPDATE " + COMPONENT_TABLE + 
+		" SET alias=#{alias}, inorder=#{inorder}, tolerance=#{tolerance},id_phenomenon=#{idPhenomenon},id_measure_unit=#{idMeasureUnit} " + 
+		" WHERE id_component=#{idComponent} ";
+	@Update(UPDATE_STREAM)
+	int updateComponent(Component component);
+
+	
+	/*************************************************************************
+	 * 					DELETE COMPONENTS BY ID_DATA_SOURCE AND VERSION
+	 * ***********************************************************************/
+	public static final String DELETE_COMPONENT_BY_DATA_SOURCE_AND_VERSION =
+	" DELETE FROM " + COMPONENT_TABLE + " WHERE id_data_source = #{idDataSource} and datasourceversion = #{dataSourceVersion} " +
+	" AND id_component not in (" +
+		"<foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"alreadyPresentIdList\">" +
+			"#{propName}" +
+		"</foreach>" +
+	 ") " ; 
+	@Delete(DELETE_COMPONENT_BY_DATA_SOURCE_AND_VERSION)
+	int deleteComponents(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion,
+			@Param("alreadyPresentIdList") List<Integer> alreadyPresentIdList);
+	
+	
+	/*************************************************************************
+	 * 					SELECT COMPONENT BY DATA SOURCE AND VERSION
+	 * ***********************************************************************/
+	public static final String SELECT_COMPONENT_BY_DATA_SOURCE_AND_VERSION =
+			"SELECT id_component, name, alias, inorder, tolerance, since_version, "
+			+ "id_phenomenon, id_data_type, id_measure_unit, id_data_source, "
+			+ "datasourceversion, iskey, sourcecolumn, sourcecolumnname, required "
+			+ "from " + COMPONENT_TABLE + "  where id_data_source  = #{idDataSource} and "
+					+ "datasourceversion =#{dataSourceVersion}";
+	@Results({
+		@Result(property = "idComponent",   column = "id_component"),
+		@Result(property = "sinceVersion",  column = "since_version"),
+		@Result(property = "idPhenomenon",  column = "id_phenomenon"),
+		@Result(property = "idDataType",    column = "id_data_type"),
+		@Result(property = "idMeasureUnit", column = "id_measure_unit"),
+		@Result(property = "idDataSource",  column = "id_data_source")
+      })	
+	@Select(SELECT_COMPONENT_BY_DATA_SOURCE_AND_VERSION) 
+	List<Component> selectComponentByDataSourceAndVersion( 
+			@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
+	
+	/*************************************************************************
+	 * 					INSERT COMPONENT
 	 * ***********************************************************************/
 	public static final String INSERT_COMPONENT = 
 	" INSERT INTO " + COMPONENT_TABLE + "( name, alias, inorder, tolerance, since_version, "

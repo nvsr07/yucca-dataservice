@@ -15,8 +15,8 @@ public enum Errors {
     NOT_CONSISTENT_DATA         ("E11", "Not consistent data"),
     INCORRECT_VALUE             ("E12", "Incorrect value"),
     ALPHANUMERIC_VALUE_REQUIRED ("E13", "Alphanumeric value required"),
-    UNAUTHORIZED                ("E14", "Unauthorized")
-    
+    UNAUTHORIZED                ("E14", "Unauthorized"),
+    NOT_ACCEPTABLE              ("E15", "Not Acceptable");
     ;
 	
 	private String errorName;

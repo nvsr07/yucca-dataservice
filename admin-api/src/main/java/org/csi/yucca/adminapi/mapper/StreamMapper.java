@@ -2,21 +2,150 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.StreamInternal;
+import org.csi.yucca.adminapi.model.StreamToUpdate;
 import org.csi.yucca.adminapi.util.Constants;
 
 public interface StreamMapper {
 
 	String STREAM_TABLE = Constants.SCHEMA_DB + "yucca_stream";
 	String STREAM_INTERNAL_TABLE = Constants.SCHEMA_DB + "yucca_r_stream_internal";
+
+	
+	/*************************************************************************
+	 * 
+	 * 					DELETE STREAM INTERNAL
+	 * 
+	 * ***********************************************************************/
+	public static final String DELETE_STREAM_INTERNAL =
+			"DELETE from " + STREAM_INTERNAL_TABLE + " WHERE id_data_source = #{idDataSource} and datasourceversion =#{dataSourceVersion}";
+	@Delete(DELETE_STREAM_INTERNAL)
+	int deleteStreamInternal(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					UPDATE STREAM
+	 * 
+	 * ***********************************************************************/
+	public static final String UPDATE_STREAM =
+    " UPDATE " + STREAM_TABLE +
+			" SET streamname=#{streamname}, " +
+			" publishstream=#{publishstream}, " +    
+			" savedata=#{savedata}, " +
+			" fps=#{fps}, " +
+			" internalquery=#{internalquery}, " +
+			" twtquery=#{twtquery}, " +
+			" twtgeoloclat=#{twtgeoloclat}, " +
+			" twtgeoloclon=#{twtgeoloclon}, " +
+			" twtgeolocradius=#{twtgeolocradius}, " +
+			" twtgeolocunit=#{twtgeolocunit}, " +
+			" twtlang=#{twtlang}, " +
+			" twtlocale=#{twtlocale}, " +
+			" twtcount=#{twtcount}, " +
+			" twtresulttype=#{twtresulttype}, " +
+			" twtuntil=#{twtuntil}, " +
+			" twtratepercentage=#{twtratepercentage}, " +     
+			" twtlastsearchid=#{twtlastsearchid} " +
+			" WHERE id_datasource=#{idDataSource} and datasourceversion=#{datasourceversion} ";
+	@Update(UPDATE_STREAM)
+	int updateStream(Stream stream);
+
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT STREAM TO UPDATE
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_STREAM_TO_UPDATE =
+			" SELECT " + 
+			" yucca_stream.idstream, " + 
+			" yucca_stream.id_data_source, " +
+			" yucca_stream.streamcode, " + 
+			" yucca_stream.streamname, " + 
+			" yucca_stream.datasourceversion, " + 
+			" yucca_d_status.statuscode, " + 
+			" yucca_d_status.description statusDescription, " + 
+			" yucca_d_status.id_status, " + 
+			" yucca_organization.organizationcode, " + 
+			" yucca_organization.description organizationDescription, " + 
+			" yucca_organization.id_organization, " + 
+			" yucca_r_tenant_data_source.isactive, " + 
+			" yucca_r_tenant_data_source.ismanager, " + 
+			" yucca_tenant.tenantcode, " + 
+			" yucca_tenant.name, " + 
+			" yucca_tenant.description tenantDescription, " + 
+			" yucca_tenant.id_tenant, " + 
+			" yucca_smart_object.id_smart_object, " +
+			" yucca_smart_object.soCode " +
+			" FROM " +  STREAM_TABLE + " yucca_stream " + 
+			" INNER JOIN " + DataSourceMapper.DATA_SOURCE_TABLE  + " yucca_data_source ON yucca_stream.id_data_source = yucca_data_source.id_data_source AND yucca_stream.datasourceversion = yucca_data_source.datasourceversion " +
+			" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " yucca_organization ON  yucca_data_source.id_organization = yucca_organization.id_organization " +
+			" INNER JOIN " + SmartobjectMapper.STATUS_TABLE + " yucca_d_status ON yucca_data_source.id_status = yucca_d_status.id_status " + 
+			" INNER JOIN " + SmartobjectMapper.SMARTOBJECT_TABLE + " yucca_smart_object ON yucca_stream.id_smart_object = yucca_smart_object.id_smart_object " +
+			" LEFT JOIN " + TenantMapper.R_TENANT_DATA_SOURCE_TABLE  + " yucca_r_tenant_data_source ON yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
+			"                     yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
+			"                     yucca_r_tenant_data_source.isactive = 1 AND yucca_r_tenant_data_source.ismanager = 1 " +
+			" LEFT JOIN " + TenantMapper.TENANT_TABLE + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " +
+			" WHERE (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " +
+			
+			"    (select id_data_source, max(datasourceversion) from " + DataSourceMapper.DATA_SOURCE_TABLE + " where id_data_source = yucca_stream.id_data_source group by id_data_source) " +
+
+			"  AND yucca_organization.organizationcode = #{organizationCode} " +
+			
+			"<if test=\"tenantCodeManager != null\">" +
+			" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
+			"</if>" +
+			
+			"  AND (yucca_data_source.visibility = 'public' OR " +
+			"   EXISTS ( " +
+			"   SELECT yucca_tenant.tenantcode " + 
+			"   FROM " +  TenantMapper.TENANT_TABLE  + " yucca_tenant, " + TenantMapper.R_TENANT_DATA_SOURCE_TABLE + " yucca_r_tenant_data_source " +
+			"   WHERE yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " + 
+			"   AND yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
+			"       yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
+			"       yucca_r_tenant_data_source.isactive = 1 AND tenantcode IN ("
+			
+			+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
+			+ "#{authorizedTenantCode}"
+			+ " </foreach>"
+			
+			+ ") " + 
+			"   ) " +
+			"   ) " +
+			" AND yucca_stream.idstream = #{idStream} ";			
+	@Results({
+		@Result(property = "idTenant", column = "id_tenant"),
+		@Result(property = "idStream", column = "idstream"),
+		@Result(property = "idDataSource", column = "id_data_source"),
+		@Result(property = "streamCode", column = "streamcode"),
+		@Result(property = "streamName", column = "streamname"),
+		@Result(property = "dataSourceVersion", column = "datasourceversion"),
+		@Result(property = "statusCode", column = "statuscode"),
+		@Result(property = "statusDescription", column = "statusDescription"),
+		@Result(property = "idStatus", column = "id_status"),
+		@Result(property = "organizationCode", column = "organizationcode"),
+		@Result(property = "idOrganization", column = "id_organization"),
+		@Result(property = "dataSourceIsActive", column = "isactive"),
+		@Result(property = "dataSourceIsManager", column = "ismanager"),
+		@Result(property = "tenantCode", column = "tenantcode"),
+		@Result(property = "tenantName", column = "name"),
+		@Result(property = "idSmartObject", column = "id_smart_object"),
+		@Result(property = "smartObjectCode", column = "soCode")
+      })	
+	@Select({"<script>", SELECT_STREAM_TO_UPDATE, "</script>"}) 
+	StreamToUpdate selectStreamToUpdate(@Param("tenantCodeManager") String tenantCodeManager,@Param("idStream") Integer idStream,
+		      @Param("organizationCode") String organizationCode, @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
 	
 	
 	/*************************************************************************
@@ -120,7 +249,8 @@ public interface StreamMapper {
 			+ "yucca_stream.streamcode, "
 			+ "yucca_stream.streamname, "
 			+ "yucca_stream.savedata stream_save_data, "
-			+ "yucca_stream.datasourceversion, " +
+			+ "yucca_stream.datasourceversion, " 
+			+ "yucca_stream.fps, " +
 
 			" (select count(*) from " + STREAM_INTERNAL_TABLE + " yucca_r_stream_internal, " + DataSourceMapper.DATA_SOURCE_TABLE + " d1  where " +
 			" yucca_r_stream_internal.idstream = yucca_stream.idstream " +
