@@ -54,8 +54,18 @@ public class ManagementController extends YuccaController{
 	private TenantService tenantService;    
 
 	@Autowired
-	private StreamService streamService;     
-
+	private StreamService streamService;
+	
+	/**
+	 * 
+	 * @param tenantCodeManager
+	 * @param streamRequest
+	 * @param organizationCode
+	 * @param soCode
+	 * @param idStream
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams/{idStream}")
 	public ResponseEntity<Object> updateStream(
@@ -73,7 +83,6 @@ public class ManagementController extends YuccaController{
 			}
 		}, logger);		
 	}	
-	
 	
 	/**
 	 * 
@@ -99,7 +108,14 @@ public class ManagementController extends YuccaController{
 			}
 		}, logger);		
 	}
-
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param request
+	 * @param response
+	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/organizations/{organizationCode}/streams/{idstream}/icon")
 	public void loadStreamIcon(
@@ -126,13 +142,7 @@ public class ManagementController extends YuccaController{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
-		
-		
 	}
-
-	
 	
 	/**
 	 * 
@@ -241,7 +251,6 @@ public class ManagementController extends YuccaController{
 		}, logger);		
 	}
 	
-	
 	/**
 	 * LOAD TENANT
 	 * 
@@ -337,6 +346,4 @@ public class ManagementController extends YuccaController{
 			}
 		}, logger);		
 	}
-	
-	
 }
