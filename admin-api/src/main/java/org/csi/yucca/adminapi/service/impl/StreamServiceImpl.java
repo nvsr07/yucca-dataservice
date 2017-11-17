@@ -192,7 +192,7 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse selectStreams(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 		
-		checkAuthTenant(tenantCodeManager, authorizedUser);
+		ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, DettaglioStream.class);
 		
@@ -244,18 +244,7 @@ public class StreamServiceImpl implements StreamService {
 		return null;
 	}	
 	
-	/**
-	 * 
-	 * @param tenantCodeManager
-	 * @param authorizedUser
-	 * @throws UnauthorizedException
-	 */
-	private void checkAuthTenant(String tenantCodeManager, JwtUser authorizedUser) throws UnauthorizedException {
-		if (tenantCodeManager != null) {
-			ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
-		}
-	}
-
+	
 	/**
 	 * 
 	 * @param list

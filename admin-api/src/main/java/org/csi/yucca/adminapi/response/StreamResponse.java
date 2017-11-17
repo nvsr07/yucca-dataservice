@@ -12,9 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class StreamResponse extends Response {
 
-	// .-------------------------
-	// in entrambi
-	// .-------------------------
 	private TenantResponse tenantManager;
 	private OrganizationResponse organization;
 	private Integer idstream;

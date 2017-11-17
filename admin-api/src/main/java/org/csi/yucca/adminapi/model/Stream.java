@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.model;
 
-public class Stream {
+public class Stream extends Dettaglio{
 	
 	private Integer idDataSource;
 	private Integer datasourceversion;

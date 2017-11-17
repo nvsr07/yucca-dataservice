@@ -1,6 +1,29 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.*;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +38,7 @@ import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
+import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
@@ -22,6 +46,7 @@ import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
+import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
@@ -55,6 +80,27 @@ public class ManagementController extends YuccaController{
 
 	@Autowired
 	private StreamService streamService;
+	
+	@Autowired
+	private DatasetService datasetService;
+	
+	@ApiOperation(value = M_LOAD_DATA_SETS, notes = M_LOAD_DATA_SETS_NOTES, response = DatasetResponse.class, responseContainer="List")
+	@GetMapping("/organizations/{organizationCode}/datasets")
+	public ResponseEntity<Object> loadDataSets(
+			@PathVariable final String organizationCode,
+			@RequestParam(required=false) final String tenantCodeManager,
+			@RequestParam(required=false) final String sort,
+			final HttpServletRequest request) {
+		
+		logger.info("loadDataSets");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.selectDatasets(organizationCode, tenantCodeManager, sort, getAuthorizedUser(request));
+			}
+		}, logger);
+		
+	}
 	
 	/**
 	 * 

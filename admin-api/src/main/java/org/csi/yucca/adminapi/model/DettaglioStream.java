@@ -2,35 +2,23 @@ package org.csi.yucca.adminapi.model;
 
 import java.sql.Timestamp;
 
-public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain, ISubdomain, ISoCategory, ISoType{
-	
+public class DettaglioStream extends Stream
+		implements IOrganization, ITenant, IStatus, IDomain, ISubdomain, ISoCategory, ISoType {
+
 	private Long usedInInternalCount;
 	private Long streamsCountBySO;
-	private String internalquery;		
-	private String twtquery;	
-	private Double twtgeoloclat;
-	private Double twtgeoloclon;	
-	private Double twtgeolocradius;
-	private String twtgeolocunit;	
-	private String twtlang;
-	private String twtlocale;	
-	private Integer twtcount;	
-	private String twtresulttype;	
-	private String twtuntil;	
-	private Integer twtratepercentage;		
-	private Long twtlastsearchid;	
 	private String dataSourceCopyright;
-	private Integer dataSourceIsopendata;	
-	private String dataSourceOpenDataExternalReference;		
+	private Integer dataSourceIsopendata;
+	private String dataSourceOpenDataExternalReference;
 	private String dataSourceOpenDataAuthor;
 	private Timestamp dataSourceOpenDataUpdateDate;
 	private String dataSourceOpenDataLanguage;
 	private String dataSourceLastUpdate;
 	private String dataSourceDisclaimer;
-	private String dataSourceRequesterName;	
-	private String dataSourceRequesterSurname;			
+	private String dataSourceRequesterName;
+	private String dataSourceRequesterSurname;
 	private String dataSourceRequesterMail;
-	private Integer dataSourcePrivacyAcceptance; 			
+	private Integer dataSourcePrivacyAcceptance;
 	private String dataSourceIcon;
 	private String dcat; // JSON
 	private String license; // JSON
@@ -38,43 +26,14 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 	private String sharingTenant; // JSON
 	private String sotypecode;
 	private Integer idStream;
-	private Integer idDataSource;
 	private String streamCode;
 	private String streamName;
 	private Integer streamSaveData;
 	private Integer dataSourceVersion;
-	private String dataSourceVisibility;
-	private Integer dataSourceUnpublished;
-	private Timestamp dataSourceRegistrationDate;
-	private String statusCode;
-	private String statusDescription;
-	private Integer idStatus;
-	private Integer domIdDomain;
-	private String domLangEn;
-	private String domLangIt;
-	private String domDomainCode;
-	private Integer subIdSubDomain;
-	private String subSubDomainCode;
-	private String subLangIt;
-	private String subLangEn;
-	private Double fps;
-
-	private String organizationCode;
-	private String organizationDescription;
-	private Integer idOrganization;
-
-	private Integer dataSourceIsActive;
-	private Integer dataSourceIsManager;
 	private String dataSourceName;
-	
-	private String tenantCode;
-	private String tenantName;
-	private String tenantDescription;
-	private Integer idTenant;
 
 	private String smartObjectCode;
 	private String smartObjectName;
-	private Integer idSmartObject;
 	private String smartObjectDescription;
 	private String smartObjectSlug;
 
@@ -85,17 +44,6 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 	private String soTypeCode;
 	private String smartObjectTypeDescription;
 	private Integer idSoType;
-	private String tags;
-
-	
-	
-	public String getSotypecode() {
-		return sotypecode;
-	}
-
-	public void setSotypecode(String sotypecode) {
-		this.sotypecode = sotypecode;
-	}
 
 	public Long getUsedInInternalCount() {
 		return usedInInternalCount;
@@ -111,110 +59,6 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 
 	public void setStreamsCountBySO(Long streamsCountBySO) {
 		this.streamsCountBySO = streamsCountBySO;
-	}
-
-	public String getInternalquery() {
-		return internalquery;
-	}
-
-	public void setInternalquery(String internalquery) {
-		this.internalquery = internalquery;
-	}
-
-	public String getTwtquery() {
-		return twtquery;
-	}
-
-	public void setTwtquery(String twtquery) {
-		this.twtquery = twtquery;
-	}
-
-	public Double getTwtgeoloclat() {
-		return twtgeoloclat;
-	}
-
-	public void setTwtgeoloclat(Double twtgeoloclat) {
-		this.twtgeoloclat = twtgeoloclat;
-	}
-
-	public Double getTwtgeoloclon() {
-		return twtgeoloclon;
-	}
-
-	public void setTwtgeoloclon(Double twtgeoloclon) {
-		this.twtgeoloclon = twtgeoloclon;
-	}
-
-	public Double getTwtgeolocradius() {
-		return twtgeolocradius;
-	}
-
-	public void setTwtgeolocradius(Double twtgeolocradius) {
-		this.twtgeolocradius = twtgeolocradius;
-	}
-
-	public String getTwtgeolocunit() {
-		return twtgeolocunit;
-	}
-
-	public void setTwtgeolocunit(String twtgeolocunit) {
-		this.twtgeolocunit = twtgeolocunit;
-	}
-
-	public String getTwtlang() {
-		return twtlang;
-	}
-
-	public void setTwtlang(String twtlang) {
-		this.twtlang = twtlang;
-	}
-
-	public String getTwtlocale() {
-		return twtlocale;
-	}
-
-	public void setTwtlocale(String twtlocale) {
-		this.twtlocale = twtlocale;
-	}
-
-	public Integer getTwtcount() {
-		return twtcount;
-	}
-
-	public void setTwtcount(Integer twtcount) {
-		this.twtcount = twtcount;
-	}
-
-	public String getTwtresulttype() {
-		return twtresulttype;
-	}
-
-	public void setTwtresulttype(String twtresulttype) {
-		this.twtresulttype = twtresulttype;
-	}
-
-	public String getTwtuntil() {
-		return twtuntil;
-	}
-
-	public void setTwtuntil(String twtuntil) {
-		this.twtuntil = twtuntil;
-	}
-
-	public Integer getTwtratepercentage() {
-		return twtratepercentage;
-	}
-
-	public void setTwtratepercentage(Integer twtratepercentage) {
-		this.twtratepercentage = twtratepercentage;
-	}
-
-	public Long getTwtlastsearchid() {
-		return twtlastsearchid;
-	}
-
-	public void setTwtlastsearchid(Long twtlastsearchid) {
-		this.twtlastsearchid = twtlastsearchid;
 	}
 
 	public String getDataSourceCopyright() {
@@ -353,12 +197,12 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 		this.sharingTenant = sharingTenant;
 	}
 
-	public String getDataSourceName() {
-		return dataSourceName;
+	public String getSotypecode() {
+		return sotypecode;
 	}
 
-	public void setDataSourceName(String dataSourceName) {
-		this.dataSourceName = dataSourceName;
+	public void setSotypecode(String sotypecode) {
+		this.sotypecode = sotypecode;
 	}
 
 	public Integer getIdStream() {
@@ -367,14 +211,6 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 
 	public void setIdStream(Integer idStream) {
 		this.idStream = idStream;
-	}
-
-	public Integer getIdDataSource() {
-		return idDataSource;
-	}
-
-	public void setIdDataSource(Integer idDataSource) {
-		this.idDataSource = idDataSource;
 	}
 
 	public String getStreamCode() {
@@ -409,196 +245,12 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 		this.dataSourceVersion = dataSourceVersion;
 	}
 
-	public String getDataSourceVisibility() {
-		return dataSourceVisibility;
+	public String getDataSourceName() {
+		return dataSourceName;
 	}
 
-	public void setDataSourceVisibility(String dataSourceVisibility) {
-		this.dataSourceVisibility = dataSourceVisibility;
-	}
-
-	public Integer getDataSourceUnpublished() {
-		return dataSourceUnpublished;
-	}
-
-	public void setDataSourceUnpublished(Integer dataSourceUnpublished) {
-		this.dataSourceUnpublished = dataSourceUnpublished;
-	}
-
-	public Timestamp getDataSourceRegistrationDate() {
-		return dataSourceRegistrationDate;
-	}
-
-	public void setDataSourceRegistrationDate(Timestamp dataSourceRegistrationDate) {
-		this.dataSourceRegistrationDate = dataSourceRegistrationDate;
-	}
-
-	public String getStatusCode() {
-		return statusCode;
-	}
-
-	public void setStatusCode(String statusCode) {
-		this.statusCode = statusCode;
-	}
-
-	public String getStatusDescription() {
-		return statusDescription;
-	}
-
-	public void setStatusDescription(String statusDescription) {
-		this.statusDescription = statusDescription;
-	}
-
-	public Integer getIdStatus() {
-		return idStatus;
-	}
-
-	public void setIdStatus(Integer idStatus) {
-		this.idStatus = idStatus;
-	}
-
-	public Integer getDomIdDomain() {
-		return domIdDomain;
-	}
-
-	public void setDomIdDomain(Integer domIdDomain) {
-		this.domIdDomain = domIdDomain;
-	}
-
-	public String getDomLangEn() {
-		return domLangEn;
-	}
-
-	public void setDomLangEn(String domLangEn) {
-		this.domLangEn = domLangEn;
-	}
-
-	public String getDomLangIt() {
-		return domLangIt;
-	}
-
-	public void setDomLangIt(String domLangIt) {
-		this.domLangIt = domLangIt;
-	}
-
-	public String getDomDomainCode() {
-		return domDomainCode;
-	}
-
-	public void setDomDomainCode(String domDomainCode) {
-		this.domDomainCode = domDomainCode;
-	}
-
-	public Integer getSubIdSubDomain() {
-		return subIdSubDomain;
-	}
-
-	public void setSubIdSubDomain(Integer subIdSubDomain) {
-		this.subIdSubDomain = subIdSubDomain;
-	}
-
-	public String getSubSubDomainCode() {
-		return subSubDomainCode;
-	}
-
-	public void setSubSubDomainCode(String subSubDomainCode) {
-		this.subSubDomainCode = subSubDomainCode;
-	}
-
-	public String getSubLangIt() {
-		return subLangIt;
-	}
-
-	public void setSubLangIt(String subLangIt) {
-		this.subLangIt = subLangIt;
-	}
-
-	public String getSubLangEn() {
-		return subLangEn;
-	}
-
-	public void setSubLangEn(String subLangEn) {
-		this.subLangEn = subLangEn;
-	}
-
-	public Double getFps() {
-		return fps;
-	}
-
-	public void setFps(Double fps) {
-		this.fps = fps;
-	}
-
-	public String getOrganizationCode() {
-		return organizationCode;
-	}
-
-	public void setOrganizationCode(String organizationCode) {
-		this.organizationCode = organizationCode;
-	}
-
-	public String getOrganizationDescription() {
-		return organizationDescription;
-	}
-
-	public void setOrganizationDescription(String organizationDescription) {
-		this.organizationDescription = organizationDescription;
-	}
-
-	public Integer getIdOrganization() {
-		return idOrganization;
-	}
-
-	public void setIdOrganization(Integer idOrganization) {
-		this.idOrganization = idOrganization;
-	}
-
-	public Integer getDataSourceIsActive() {
-		return dataSourceIsActive;
-	}
-
-	public void setDataSourceIsActive(Integer dataSourceIsActive) {
-		this.dataSourceIsActive = dataSourceIsActive;
-	}
-
-	public Integer getDataSourceIsManager() {
-		return dataSourceIsManager;
-	}
-
-	public void setDataSourceIsManager(Integer dataSourceIsManager) {
-		this.dataSourceIsManager = dataSourceIsManager;
-	}
-
-	public String getTenantCode() {
-		return tenantCode;
-	}
-
-	public void setTenantCode(String tenantCode) {
-		this.tenantCode = tenantCode;
-	}
-
-	public String getTenantName() {
-		return tenantName;
-	}
-
-	public void setTenantName(String tenantName) {
-		this.tenantName = tenantName;
-	}
-
-	public String getTenantDescription() {
-		return tenantDescription;
-	}
-
-	public void setTenantDescription(String tenantDescription) {
-		this.tenantDescription = tenantDescription;
-	}
-
-	public Integer getIdTenant() {
-		return idTenant;
-	}
-
-	public void setIdTenant(Integer idTenant) {
-		this.idTenant = idTenant;
+	public void setDataSourceName(String dataSourceName) {
+		this.dataSourceName = dataSourceName;
 	}
 
 	public String getSmartObjectCode() {
@@ -615,14 +267,6 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 
 	public void setSmartObjectName(String smartObjectName) {
 		this.smartObjectName = smartObjectName;
-	}
-
-	public Integer getIdSmartObject() {
-		return idSmartObject;
-	}
-
-	public void setIdSmartObject(Integer idSmartObject) {
-		this.idSmartObject = idSmartObject;
 	}
 
 	public String getSmartObjectDescription() {
@@ -687,14 +331,6 @@ public class DettaglioStream implements IOrganization, ITenant, IStatus, IDomain
 
 	public void setIdSoType(Integer idSoType) {
 		this.idSoType = idSoType;
-	}
-
-	public String getTags() {
-		return tags;
-	}
-
-	public void setTags(String tags) {
-		this.tags = tags;
 	}
 
 }

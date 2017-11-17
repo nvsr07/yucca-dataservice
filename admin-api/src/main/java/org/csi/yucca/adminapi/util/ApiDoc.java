@@ -1,9 +1,10 @@
 package org.csi.yucca.adminapi.util;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_ADD_ADMIN_APPLICATION_TENANT;
-
 public class ApiDoc {
 
+	public static final String M_LOAD_DATA_SETS = "LOAD DATASETS";
+	public static final String M_LOAD_DATA_SETS_NOTES = "Load all Dataset in the System.";
+	
 	public static final String M_CREATE_STREAM_DATASET = "CREATE STREAM DATASET";
 	public static final String M_CREATE_STREAM_DATASET_NOTES = "inserimento stream/dataset";
 	

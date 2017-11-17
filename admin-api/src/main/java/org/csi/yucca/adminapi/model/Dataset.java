@@ -2,14 +2,15 @@ package org.csi.yucca.adminapi.model;
 
 import java.sql.Timestamp;
 
-public class Dataset {
-
+public class Dataset extends Dettaglio implements IOrganization, IStatus, IDomain, ISubdomain{
+	
 	private Integer idDataSource;
 	private Integer datasourceversion;
 	private Integer iddataset;
 	private String datasetcode;
 	private String datasetname;
 	private String description;
+
 	private Timestamp startingestiondate;
 	private Timestamp endingestiondate;
 	private String importfiletype;

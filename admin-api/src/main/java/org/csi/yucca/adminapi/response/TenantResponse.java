@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.ITenant;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.Tenant;
@@ -41,6 +42,15 @@ public class TenantResponse extends Response{
 			this.name = sharingTenantsJson.getName();
 			this.dataoptions = sharingTenantsJson.getDataoptions();
 			this.manageoptions = sharingTenantsJson.getManageoptions();
+		}
+	}
+	
+	public TenantResponse(Dataset dataset ) {
+		if(dataset != null){
+			this.idTenant = dataset.getIdTenant();
+			this.tenantcode = dataset.getTenantCode();
+			this.description = dataset.getDescription();			
+			this.name = dataset.getTenantName();
 		}
 	}
 	

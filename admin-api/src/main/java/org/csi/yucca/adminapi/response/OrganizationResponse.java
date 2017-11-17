@@ -19,7 +19,7 @@ public class OrganizationResponse extends Response{
 			this.description = organizatioImpl.getOrganizationDescription();			
 		}
 	}
-
+	
 	public OrganizationResponse(TenantManagement tenantManagement) {
 		super();
 		this.idOrganization = tenantManagement.getIdOrganization();

@@ -41,10 +41,15 @@ public class ServiceUtil {
 	 * @throws UnauthorizedException
 	 */
 	public static void checkAuthTenant(JwtUser authorizedUser, String tenantCode) throws UnauthorizedException{
+		
+		if (tenantCode == null) return;
+		
 		List<String> userAuthorizedTenantCodeList = ServiceUtil.getTenantCodeListFromUser(authorizedUser);
+		
 		for (String authTenant : userAuthorizedTenantCodeList) {
 			if(authTenant.equals(tenantCode))return;
 		}
+		
 		throw new UnauthorizedException(Errors.UNAUTHORIZED, "not authorized tenantCode [" + tenantCode + "]");
 	}
 	
