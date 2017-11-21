@@ -1,7 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.DcatJson;
-import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.util.Util;
 
 public class DcatResponse extends Response {
@@ -16,11 +15,12 @@ public class DcatResponse extends Response {
 	private String dcatrightsholdername;
 	private String dcatrightsholdertype;
 	private String dcatrightsholderid;
-
-	public DcatResponse(DettaglioStream dettaglioStream) {
+	
+	public DcatResponse(String dcatJsonString) {
+		
 		super();
 		
-		DcatJson dcatJson = Util.getFromJsonString(dettaglioStream.getDcat(), DcatJson.class);
+		DcatJson dcatJson = Util.getFromJsonString(dcatJsonString, DcatJson.class);
 		
 		if (dcatJson != null) {
 			this.idDcat = dcatJson.getId_dcat();

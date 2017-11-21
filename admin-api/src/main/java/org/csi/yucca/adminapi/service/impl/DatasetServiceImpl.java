@@ -9,7 +9,9 @@ import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.mapper.DatasetMapper;
 import org.csi.yucca.adminapi.model.Dataset;
+import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.response.DatasetResponse;
+import org.csi.yucca.adminapi.response.DettaglioDatasetResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
@@ -24,7 +26,17 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	private DatasetMapper datasetMapper;
+	
+	@Override
+	public ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+		
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset, organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser));
 
+		ServiceUtil.checkIfFoundRecord(dettaglioDataset);
+
+		return ServiceUtil.buildResponse(new DettaglioDatasetResponse(dettaglioDataset));
+	}
 	
 	@Override
 	public ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
@@ -46,8 +58,5 @@ public class DatasetServiceImpl implements DatasetService {
 		return ServiceUtil.buildResponse(listResponse);
 
 	}
-
-	
-	
 
 }

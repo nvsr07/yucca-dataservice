@@ -1,29 +1,6 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -84,6 +61,39 @@ public class ManagementController extends YuccaController{
 	@Autowired
 	private DatasetService datasetService;
 	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idDataset
+	 * @param tenantCodeManager
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value = M_LOAD_DATASET, notes = M_LOAD_DATASET_NOTES, response = DettaglioStreamResponse.class)
+	@GetMapping("/organizations/{organizationCode}/datasets/{idDataset}")
+	public ResponseEntity<Object> loadDataset(
+			@PathVariable final String organizationCode, 
+			@PathVariable final Integer idDataset, 
+			@RequestParam(required=false) final String tenantCodeManager,
+			final HttpServletRequest request) {
+		
+		logger.info("loadDataset");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.selectDataset(organizationCode, idDataset, tenantCodeManager, getAuthorizedUser(request));
+			}
+		}, logger);		
+	}
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param tenantCodeManager
+	 * @param sort
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = M_LOAD_DATA_SETS, notes = M_LOAD_DATA_SETS_NOTES, response = DatasetResponse.class, responseContainer="List")
 	@GetMapping("/organizations/{organizationCode}/datasets")
 	public ResponseEntity<Object> loadDataSets(

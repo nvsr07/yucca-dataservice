@@ -3,13 +3,9 @@ package org.csi.yucca.adminapi.response;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.DettaglioStream;
-import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.csi.yucca.adminapi.util.Util;
 
 public class DettaglioStreamResponse extends StreamResponse{
 	
@@ -38,10 +34,10 @@ public class DettaglioStreamResponse extends StreamResponse{
 		super(dettaglioStream);
 		
 		addInternalStreams(listInternalStream);
-		addSharingTenants(dettaglioStream.getSharingTenant() );
-		addComponents(dettaglioStream.getComponents());
-		this.dcat = new DcatResponse(dettaglioStream);
-		this.license = new LicenseResponse(dettaglioStream);
+		Util.addSharingTenants(dettaglioStream.getSharingTenant(), this.sharingTenants);
+		Util.addComponents(dettaglioStream.getComponents(), this.components);
+		this.dcat = new DcatResponse(dettaglioStream.getDcat());
+		this.license = new LicenseResponse(dettaglioStream.getLicense());
 		this.openData = new OpenDataResponse(dettaglioStream);
 		this.twitterInfo = new TwitterInfoResponse(dettaglioStream);
 		this.usedInInternalCount = dettaglioStream.getUsedInInternalCount();
@@ -67,7 +63,7 @@ public class DettaglioStreamResponse extends StreamResponse{
 		this.setStreamname(dettaglioStream.getStreamName());
 		this.setName(dettaglioStream.getDataSourceName());
 		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
-		this.addComponents(dettaglioStream.getComponents());
+		Util.addComponents(dettaglioStream.getComponents(), this.components);
 	}
 	
 	private void addInternalStreams(List<DettaglioStream> listInternalStream)throws Exception{
@@ -76,29 +72,29 @@ public class DettaglioStreamResponse extends StreamResponse{
 		}
 	}
 	
-	private void addSharingTenants(String sharingTenants) throws Exception {
-		if (sharingTenants != null) {
-			
-			ObjectMapper mapper = new ObjectMapper();
-			List<SharingTenantsJson> list = mapper.readValue(sharingTenants, new TypeReference<List<SharingTenantsJson>>() {});
-
-			for (SharingTenantsJson json : list) {
-				this.sharingTenants.add(new TenantResponse(json));
-			}
-		}
-	}
+//	private void addSharingTenants(String sharingTenants) throws Exception {
+//		if (sharingTenants != null) {
+//			
+//			ObjectMapper mapper = new ObjectMapper();
+//			List<SharingTenantsJson> list = mapper.readValue(sharingTenants, new TypeReference<List<SharingTenantsJson>>() {});
+//
+//			for (SharingTenantsJson json : list) {
+//				this.sharingTenants.add(new TenantResponse(json));
+//			}
+//		}
+//	}
 	
-	private void addComponents(String components) throws Exception {
-		if (components != null) {
-			
-			ObjectMapper mapper = new ObjectMapper();
-			List<ComponentJson> listComponentJson = mapper.readValue(components, new TypeReference<List<ComponentJson>>() {});
-
-			for (ComponentJson componentJson : listComponentJson) {
-				this.components.add(new ComponentResponse(componentJson));
-			}
-		}
-	}
+//	private void addComponents(String components) throws Exception {
+//		if (components != null) {
+//			
+//			ObjectMapper mapper = new ObjectMapper();
+//			List<ComponentJson> listComponentJson = mapper.readValue(components, new TypeReference<List<ComponentJson>>() {});
+//
+//			for (ComponentJson componentJson : listComponentJson) {
+//				this.components.add(new ComponentResponse(componentJson));
+//			}
+//		}
+//	}
 	
 	public DettaglioStreamResponse() {
 		super();

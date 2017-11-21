@@ -49,7 +49,7 @@ public class TenantResponse extends Response{
 		if(dataset != null){
 			this.idTenant = dataset.getIdTenant();
 			this.tenantcode = dataset.getTenantCode();
-			this.description = dataset.getDescription();			
+			this.description = dataset.getTenantDescription();			
 			this.name = dataset.getTenantName();
 		}
 	}

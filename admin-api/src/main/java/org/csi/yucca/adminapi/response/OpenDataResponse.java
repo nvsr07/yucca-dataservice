@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.response;
 
 import java.sql.Timestamp;
 
+import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 
 public class OpenDataResponse extends Response {
@@ -19,6 +20,15 @@ public class OpenDataResponse extends Response {
 		this.opendataupdatedate = dettaglioStream.getDataSourceOpenDataUpdateDate();
 		this.opendatalanguage = dettaglioStream.getDataSourceOpenDataLanguage();
 		this.lastupdate = dettaglioStream.getDataSourceLastUpdate();
+	}
+
+	public OpenDataResponse(DettaglioDataset dettaglioDataset) {
+		super();
+		this.opendataexternalreference = dettaglioDataset.getDataSourceOpendataExternalReference();
+		this.opendataauthor = dettaglioDataset.getDataSourceOpenDataAuthor();
+		this.opendataupdatedate = dettaglioDataset.getDataSourceOpenDataUpdateDate();
+		this.opendatalanguage = dettaglioDataset.getDataSourceOpenDataLanguage();
+		this.lastupdate = dettaglioDataset.getDataSourceLastUpdate();
 	}
 
 	public OpenDataResponse() {

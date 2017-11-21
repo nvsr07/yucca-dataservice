@@ -11,10 +11,12 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.csi.yucca.adminapi.model.ComponentJson;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
+import org.csi.yucca.adminapi.response.ComponentResponse;
+import org.csi.yucca.adminapi.response.TenantResponse;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.springframework.util.Base64Utils;
-
-import ch.qos.logback.core.util.FileUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +25,29 @@ import com.google.common.io.Files;
 public class Util {
 
 	
+	public static void addSharingTenants(String sharingTenants, List<TenantResponse> listTenantResponses) throws Exception {
+		if (sharingTenants != null) {
+			
+			ObjectMapper mapper = new ObjectMapper();
+			List<SharingTenantsJson> list = mapper.readValue(sharingTenants, new TypeReference<List<SharingTenantsJson>>() {});
 
+			for (SharingTenantsJson json : list) {
+				listTenantResponses.add(new TenantResponse(json));
+			}
+		}
+	}
+	
+	public static void addComponents(String sComponents, List<ComponentResponse> components) throws Exception {
+		if (sComponents != null) {
+			
+			ObjectMapper mapper = new ObjectMapper();
+			List<ComponentJson> listComponentJson = mapper.readValue(sComponents, new TypeReference<List<ComponentJson>>() {});
+
+			for (ComponentJson componentJson : listComponentJson) {
+				components.add(new ComponentResponse(componentJson));
+			}
+		}
+	}
 	
 	public static <E> List<E> getListFromJsonString(String jsonString, Class<E> type){
 

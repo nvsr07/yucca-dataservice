@@ -1,6 +1,5 @@
 package org.csi.yucca.adminapi.response;
 
-import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.model.LicenseJson;
 import org.csi.yucca.adminapi.util.Errors;
@@ -21,10 +20,10 @@ public class LicenseResponse extends Response{
 		super();
 	}
 
-	public LicenseResponse(DettaglioStream dettaglioStream) {
+	public LicenseResponse(String licenseJsonString) {
 		super(); 
 		
-		LicenseJson licenseJson = Util.getFromJsonString(dettaglioStream.getLicense(), LicenseJson.class);
+		LicenseJson licenseJson = Util.getFromJsonString(licenseJsonString, LicenseJson.class);
 
 		if(licenseJson != null){
 			this.idLicense = licenseJson.getId_license();
