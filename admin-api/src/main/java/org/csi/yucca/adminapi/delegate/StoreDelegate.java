@@ -42,7 +42,7 @@ public class StoreDelegate {
 	}
 
 	private String loginOnStore(CloseableHttpClient httpclient, String username, String password) throws HttpException, IOException {
-		logger.debug("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
+		logger.info("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
 
 		List<NameValuePair> loginParams = new LinkedList<NameValuePair>();
 		loginParams.add(new BasicNameValuePair("action", "login"));

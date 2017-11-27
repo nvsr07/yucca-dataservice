@@ -520,8 +520,8 @@ public class TenantServiceImpl implements TenantService {
 	public ServiceResponse addAdminApplication(String tenantcode, String username, String password) {
 		try {
 			ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
-			ServiceUtil.checkMandatoryParameter(username, "tenantCode");
-			ServiceUtil.checkMandatoryParameter(password, "tenantCode");
+			ServiceUtil.checkMandatoryParameter(username, "username");
+			ServiceUtil.checkMandatoryParameter(password, "password");
 
 			CloseableHttpClient c = StoreDelegate.build().registerToStoreInit(username, password);
 			StoreDelegate.build().addApplication(c, "userportal_" + tenantcode);
@@ -540,8 +540,8 @@ public class TenantServiceImpl implements TenantService {
 
 		try {
 			ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
-			ServiceUtil.checkMandatoryParameter(username, "tenantCode");
-			ServiceUtil.checkMandatoryParameter(password, "tenantCode");
+			ServiceUtil.checkMandatoryParameter(username, "username");
+			ServiceUtil.checkMandatoryParameter(password, "password");
 
 			CloseableHttpClient c = StoreDelegate.build().registerToStoreInit(username, password);
 			StoreDelegate.build().subscribeApi(c, "admin_api", "userportal_" + tenantcode);
@@ -558,8 +558,8 @@ public class TenantServiceImpl implements TenantService {
 	public ServiceResponse generetateAdminKey(String tenantcode, String username, String password) {
 		try {
 			ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
-			ServiceUtil.checkMandatoryParameter(username, "tenantCode");
-			ServiceUtil.checkMandatoryParameter(password, "tenantCode");
+			ServiceUtil.checkMandatoryParameter(username, "username");
+			ServiceUtil.checkMandatoryParameter(password, "password");
 
 			CloseableHttpClient c = StoreDelegate.build().registerToStoreInit(username, password);
 			GeneralResponse generetateKeyResponse = StoreDelegate.build().generateKey(c, "userportal_" + tenantcode);
