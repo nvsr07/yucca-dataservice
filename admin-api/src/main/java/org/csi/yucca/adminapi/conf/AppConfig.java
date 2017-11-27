@@ -56,7 +56,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
 	@Value("${store.url}")
 	private String storeUrl;
-
+	
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -123,7 +123,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 
 	@Bean
 	public StoreConfig getStoreConfig() {
-		return new StoreConfig(storeUrl);
+		return new StoreConfig(this.storeUrl);
 	}
 
 }

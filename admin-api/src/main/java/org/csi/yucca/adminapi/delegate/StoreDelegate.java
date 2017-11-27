@@ -10,19 +10,21 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
-import org.csi.yucca.adminapi.conf.StoreConfig;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@PropertySource(value = { "classpath:datasource.properties" })
 public class StoreDelegate {
 
 	private static final Logger logger = Logger.getLogger(StoreDelegate.class);
 
 	private static StoreDelegate storeDelegate;
-	@Autowired
-	StoreConfig storeConfig;
+
+	@Value("${store.url}")
+	private String storeUrl;
 
 	public static StoreDelegate build() {
 		if (storeDelegate == null)
@@ -40,14 +42,14 @@ public class StoreDelegate {
 	}
 
 	private String loginOnStore(CloseableHttpClient httpclient, String username, String password) throws HttpException, IOException {
-		logger.debug("[StoreDelegate::loginOnStore] username " + username);
+		logger.debug("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
 
 		List<NameValuePair> loginParams = new LinkedList<NameValuePair>();
 		loginParams.add(new BasicNameValuePair("action", "login"));
 		loginParams.add(new BasicNameValuePair("username", username));
 		loginParams.add(new BasicNameValuePair("password", password));
 
-		String url = storeConfig.getStoreUrl() + "site/blocks/user/login/ajax/login.jag";
+		String url = storeUrl + "site/blocks/user/login/ajax/login.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, loginParams);
 		logger.debug("[StoreDelegate::loginOnStore] response " + response);
 		return response;
@@ -63,7 +65,7 @@ public class StoreDelegate {
 		addApplicationParams.add(new BasicNameValuePair("description", ""));
 		addApplicationParams.add(new BasicNameValuePair("callbackUrl", ""));
 
-		String url = storeConfig.getStoreUrl() + "site/blocks/application/application-add/ajax/application-add.jag";
+		String url = storeUrl + "site/blocks/application/application-add/ajax/application-add.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, addApplicationParams);
 		logger.debug("[StoreDelegate::addApplication] response " + response);
 		return response;
@@ -86,7 +88,7 @@ public class StoreDelegate {
 		generetateKeyParams.add(new BasicNameValuePair("validityTime", "999999999"));
 
 		GeneralResponse generalResponse = null;
-		String url = storeConfig.getStoreUrl() + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
+		String url = storeUrl + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, generetateKeyParams);
 		ObjectMapper mapper = new ObjectMapper();
 		if (response != null)
@@ -115,7 +117,7 @@ public class StoreDelegate {
 		subscribeAdminApiParams.add(new BasicNameValuePair("authorizedDomains", ""));
 		subscribeAdminApiParams.add(new BasicNameValuePair("validityTime", ""));
 
-		String url = storeConfig.getStoreUrl() + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
+		String url = storeUrl + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, subscribeAdminApiParams);
 		logger.debug("[StoreDelegate::subscribeApi] response " + response);
 		return response;
@@ -130,7 +132,7 @@ public class StoreDelegate {
 		logoutParams.add(new BasicNameValuePair("username", username));
 		logoutParams.add(new BasicNameValuePair("password", password));
 
-		String url = storeConfig.getStoreUrl() + "site/blocks/user/login/ajax/login.jag";
+		String url = storeUrl + "site/blocks/user/login/ajax/login.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, logoutParams);
 		logger.debug("[StoreDelegate::loginOnStore] response " + response);
 		return response;
