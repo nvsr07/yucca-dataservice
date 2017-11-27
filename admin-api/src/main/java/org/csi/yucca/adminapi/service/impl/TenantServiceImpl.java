@@ -131,7 +131,7 @@ public class TenantServiceImpl implements TenantService {
 		Bundles bundles = insertBundles(bundlesRequest, request.getIdTenantType());
 
 		// insert user
-		User user = insertUser(request.getUsername(), request.getIdOrganization());
+		User user = insertUser(tenant.getTenantcode(), request.getIdOrganization());
 
 		// insert tenant
 		tenantMapper.insertTenant(tenant);
