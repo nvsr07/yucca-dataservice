@@ -393,7 +393,7 @@ public interface TenantMapper {
 	 * ***********************************************************************/	
 	public static final String UPDATE_TENANT_CREDENTIAL_ = 
 			"UPDATE " + TENANT_TABLE + " set clientkey = #{clientkey},clientsecret=#{clientsecret}  where tenantcode = #{tenantCode}";
-		@Update(UPDATE_TENANT_STATUS)
+		@Update(UPDATE_TENANT_CREDENTIAL_)
 		int updateTenantClientCredential(@Param("clientkey") String clientkey, @Param("clientsecret") String clientsecret, @Param("tenantCode") String tenantCode);
 
 	
