@@ -43,6 +43,7 @@ public class StoreDelegate {
 
 	private String loginOnStore(CloseableHttpClient httpclient, String username, String password) throws HttpException, IOException {
 		logger.info("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
+		System.out.println("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
 
 		List<NameValuePair> loginParams = new LinkedList<NameValuePair>();
 		loginParams.add(new BasicNameValuePair("action", "login"));
@@ -52,6 +53,8 @@ public class StoreDelegate {
 		String url = storeUrl + "site/blocks/user/login/ajax/login.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, loginParams);
 		logger.debug("[StoreDelegate::loginOnStore] response " + response);
+		System.out.println("[StoreDelegate::loginOnStore] response " + response);
+
 		return response;
 
 	}

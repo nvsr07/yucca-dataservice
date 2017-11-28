@@ -519,6 +519,7 @@ public class TenantServiceImpl implements TenantService {
 	@Override
 	public ServiceResponse addAdminApplication(String tenantcode, String username, String password) {
 		try {
+			System.out.println("----addAdminApplication"+ tenantcode+ "," + username);
 			ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
 			ServiceUtil.checkMandatoryParameter(username, "username");
 			ServiceUtil.checkMandatoryParameter(password, "password");
