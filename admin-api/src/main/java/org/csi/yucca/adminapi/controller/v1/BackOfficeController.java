@@ -194,7 +194,7 @@ public class BackOfficeController extends YuccaController {
 	 * @return
 	 */
 	@ApiOperation(value = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT, notes = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES, response = ServiceResponse.class)
-	@PostMapping("/tenant/subscribeAdminApiInStore")
+	@PostMapping("/tenant/subscribeAdminApi")
 	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("subscribeAdminApiInStore");
