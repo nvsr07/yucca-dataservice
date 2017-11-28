@@ -1,8 +1,33 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.*;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import io.swagger.annotations.ApiOperation;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,6 +55,9 @@ import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,8 +68,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("1/management")
@@ -173,8 +199,8 @@ public class ManagementController extends YuccaController{
 	 * @param response
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
-	@GetMapping(value = "/organizations/{organizationCode}/streams/{idstream}/icon", produces = "image/png")
-	public void loadStreamIcon(
+	@GetMapping(value = "/organizations/{organizationCode}/streams/{idstream}/icon")
+	public HttpEntity<byte[]>  loadStreamIcon(
 			@PathVariable final String organizationCode, 
 			@PathVariable final Integer idstream,
 			final HttpServletRequest request,
@@ -183,24 +209,49 @@ public class ManagementController extends YuccaController{
 		logger.info("loadStreamIcon");
 	    
 
-	    byte[] imgByte;
+	    byte[] imageBytes;
 		try {
-			imgByte = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
-		    response.setHeader("Cache-Control", "no-store");
-		    response.setHeader("Pragma", "no-cache");
-		    response.setDateHeader("Expires", 0);
-		    response.setContentType("image/png");
-		    response.setCharacterEncoding(null);
-		    ServletOutputStream responseOutputStream = response.getOutputStream();
-		    responseOutputStream.write(imgByte);
-		    responseOutputStream.flush();
-		    responseOutputStream.close();
+			imageBytes = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.IMAGE_PNG);
+			headers.setContentLength(imageBytes.length);
+
+			
+			return new HttpEntity<byte[]>(imageBytes, headers);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
 	}
-	
+//	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+//	@GetMapping(value = "/organizations/{organizationCode}/streams/{idstream}/icon")
+//	public void loadStreamIcon(
+//			@PathVariable final String organizationCode, 
+//			@PathVariable final Integer idstream,
+//			final HttpServletRequest request,
+//			final HttpServletResponse response) {
+//		
+//		logger.info("loadStreamIcon");
+//	    
+//
+//	    byte[] imgByte;
+//		try {
+//			imgByte = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
+//		    response.setHeader("Cache-Control", "no-store");
+//		    response.setHeader("Pragma", "no-cache");
+//		    response.setDateHeader("Expires", 0);
+//		    response.setContentType("image/png");
+//		    response.setCharacterEncoding(null);
+//		    ServletOutputStream responseOutputStream = response.getOutputStream();
+//		    responseOutputStream.write(imgByte);
+//		    responseOutputStream.flush();
+//		    responseOutputStream.close();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 	/**
 	 * 
 	 * @param organizationCode
