@@ -175,13 +175,13 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ADD_ADMIN_APPLICATION_TENANT, notes = BO_ADD_ADMIN_APPLICATION_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/addAdminApplication")
-	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantcode, @RequestParam(required = true) final String username,
+	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.addAdminApplication(tenantcode, username, password);
+				return tenantService.addAdminApplication(tenantCode, username, password);
 			}
 		}, logger);
 	}
@@ -195,13 +195,13 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT, notes = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/subscribeAdminApiInStore")
-	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantcode, @RequestParam(required = true) final String username,
+	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("subscribeAdminApiInStore");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.subscribeAdminApiInStore(tenantcode, username, password);
+				return tenantService.subscribeAdminApiInStore(tenantCode, username, password);
 			}
 		}, logger);
 	}
@@ -215,13 +215,13 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_GENERETATE_ADMIN_KEY_TENANT, notes = BO_GENERETATE_ADMIN_KEY_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/generetateAdminKey")
-	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantcode, @RequestParam(required = true) final String username,
+	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return tenantService.generetateAdminKey(tenantcode, username, password);
+				return tenantService.generetateAdminKey(tenantCode, username, password);
 			}
 		}, logger);
 	}

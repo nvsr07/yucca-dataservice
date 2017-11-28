@@ -54,10 +54,6 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Value("${max.active}")
 	private int maxActive;
 
-	@Value("${store.url}")
-	private String storeUrl;
-	
-
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
@@ -119,11 +115,6 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
-	}
-
-	@Bean
-	public StoreConfig getStoreConfig() {
-		return new StoreConfig(this.storeUrl);
 	}
 
 }
