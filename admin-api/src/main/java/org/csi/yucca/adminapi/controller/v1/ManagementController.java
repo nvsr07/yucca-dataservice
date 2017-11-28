@@ -173,7 +173,7 @@ public class ManagementController extends YuccaController{
 	 * @param response
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
-	@GetMapping("/organizations/{organizationCode}/streams/{idstream}/icon")
+	@GetMapping(value = "/organizations/{organizationCode}/streams/{idstream}/icon", produces = "image/png")
 	public void loadStreamIcon(
 			@PathVariable final String organizationCode, 
 			@PathVariable final Integer idstream,
@@ -190,6 +190,7 @@ public class ManagementController extends YuccaController{
 		    response.setHeader("Pragma", "no-cache");
 		    response.setDateHeader("Expires", 0);
 		    response.setContentType("image/png");
+		    response.setCharacterEncoding(null);
 		    ServletOutputStream responseOutputStream = response.getOutputStream();
 		    responseOutputStream.write(imgByte);
 		    responseOutputStream.flush();
