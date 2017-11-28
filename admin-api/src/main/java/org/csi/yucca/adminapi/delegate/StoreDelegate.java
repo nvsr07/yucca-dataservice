@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -25,6 +26,14 @@ public class StoreDelegate {
 
 	@Value("${store.url}")
 	private String storeUrl;
+	
+	
+
+	public StoreDelegate() {
+		super();
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+		logger.info("[StoreDelegate::StoreDelegate]  store url " + storeUrl);
+	}
 
 	public static StoreDelegate build() {
 		if (storeDelegate == null)
@@ -43,7 +52,6 @@ public class StoreDelegate {
 
 	private String loginOnStore(CloseableHttpClient httpclient, String username, String password) throws HttpException, IOException {
 		logger.info("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
-		System.out.println("[StoreDelegate::loginOnStore] username " + username + " - store url " + storeUrl);
 
 		List<NameValuePair> loginParams = new LinkedList<NameValuePair>();
 		loginParams.add(new BasicNameValuePair("action", "login"));
@@ -53,7 +61,6 @@ public class StoreDelegate {
 		String url = storeUrl + "site/blocks/user/login/ajax/login.jag";
 		String response = HttpDelegate.makeHttpPost(httpclient, url, loginParams);
 		logger.debug("[StoreDelegate::loginOnStore] response " + response);
-		System.out.println("[StoreDelegate::loginOnStore] response " + response);
 
 		return response;
 
