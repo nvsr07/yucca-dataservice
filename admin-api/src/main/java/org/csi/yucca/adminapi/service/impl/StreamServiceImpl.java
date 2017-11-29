@@ -809,7 +809,7 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private boolean doesNotContainComponent(List<Component> listToCheck, Integer idComponent){
 		for (Component component : listToCheck) {
-			if (component.getIdComponent() == idComponent) {
+			if (component.getIdComponent().equals(idComponent)) {
 				return false;
 			}
 		}

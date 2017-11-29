@@ -49,6 +49,7 @@
 					<suiteXmlFiles>
 						<suiteXmlFile>testng.xml</suiteXmlFile>
 					</suiteXmlFiles>
+					<skipTests>${skipTests}</skipTests>
 				</configuration>
 			</plugin>
 			<plugin>
