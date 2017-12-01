@@ -30,6 +30,42 @@ public class Dataset extends Dettaglio implements IOrganization, IStatus, IDomai
 	private String jdbcdbname;
 	private String jdbcdbtype;
 	private String jdbctablename;
+	private String datasetTypeDescription;
+	private String datasetType;
+	private String datasetSubtype;
+	private String datasetSubtypeDescription;
+	
+	public String getDatasetTypeDescription() {
+		return datasetTypeDescription;
+	}
+
+	public void setDatasetTypeDescription(String datasetTypeDescription) {
+		this.datasetTypeDescription = datasetTypeDescription;
+	}
+
+	public String getDatasetType() {
+		return datasetType;
+	}
+
+	public void setDatasetType(String datasetType) {
+		this.datasetType = datasetType;
+	}
+
+	public String getDatasetSubtype() {
+		return datasetSubtype;
+	}
+
+	public void setDatasetSubtype(String datasetSubtype) {
+		this.datasetSubtype = datasetSubtype;
+	}
+
+	public String getDatasetSubtypeDescription() {
+		return datasetSubtypeDescription;
+	}
+
+	public void setDatasetSubtypeDescription(String datasetSubtypeDescription) {
+		this.datasetSubtypeDescription = datasetSubtypeDescription;
+	}
 
 	public Integer getIdDataSource() {
 		return idDataSource;

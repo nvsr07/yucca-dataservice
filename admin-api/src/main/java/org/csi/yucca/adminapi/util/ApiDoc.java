@@ -26,6 +26,9 @@ public class ApiDoc {
 	public static final String M_LOAD_DATASET = "LOAD DATASET";
 	public static final String M_LOAD_DATASET_NOTES = "Load Dataset in the System.";
 
+	public static final String M_INSERT_DATASET = "INSERT DATASET";
+	public static final String M_INSERT_DATASET_NOTES = "Insert Dataset in the System.";
+
 	public static final String M_LOAD_STREAM_ICON = "LOAD ICON STREAM";
 	public static final String M_LOAD_STREAM_ICON_NOTES = "Load icon for a Stream in the System.";
 

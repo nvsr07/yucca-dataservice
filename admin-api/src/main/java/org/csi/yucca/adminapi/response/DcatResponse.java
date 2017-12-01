@@ -20,7 +20,13 @@ public class DcatResponse extends Response {
 		
 		super();
 		
-		DcatJson dcatJson = Util.getFromJsonString(dcatJsonString, DcatJson.class);
+		DcatJson dcatJson =  null;
+		
+		try {
+			dcatJson = Util.getFromJsonString(dcatJsonString, DcatJson.class);	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 		
 		if (dcatJson != null) {
 			this.idDcat = dcatJson.getId_dcat();

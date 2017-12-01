@@ -1,13 +1,13 @@
 package org.csi.yucca.adminapi.request;
 
-public class PostStreamRequest extends StreamRequest{
+public class PostStreamRequest extends StreamRequest implements IDataSourceRequest{
 
 	private Integer idTenant;
 	private String streamcode;
 	private String requestername;
 	private String requestersurname;
 	private String requestermail;
-	private Integer privacyacceptance;
+	private Boolean privacyacceptance;
 	private Integer idSubdomain;
 
 	public Integer getIdTenant() {
@@ -50,11 +50,11 @@ public class PostStreamRequest extends StreamRequest{
 		this.requestermail = requestermail;
 	}
 
-	public Integer getPrivacyacceptance() {
+	public Boolean getPrivacyacceptance() {
 		return privacyacceptance;
 	}
 
-	public void setPrivacyacceptance(Integer privacyacceptance) {
+	public void setPrivacyacceptance(Boolean privacyacceptance) {
 		this.privacyacceptance = privacyacceptance;
 	}
 

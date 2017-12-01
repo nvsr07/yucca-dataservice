@@ -1,11 +1,10 @@
 package org.csi.yucca.adminapi.request;
 
-import java.sql.Timestamp;
-
 public class DcatRequest {
 	
 	private Long idDcat; 
-	private Timestamp dcatdataupdate;		
+//	private Timestamp dcatdataupdate;
+	private String dcatdataupdate;
 	private String dcatnomeorg;
 	private String dcatemailorg;	  
 	private String dcatcreatorname;	
@@ -18,7 +17,7 @@ public class DcatRequest {
 	public Long getIdDcat() {
 		return idDcat;
 	}
-	public Timestamp getDcatdataupdate() {
+	public String getDcatdataupdate() {
 		if(idDcat != null)return null;
 		return dcatdataupdate;
 	}
@@ -57,7 +56,7 @@ public class DcatRequest {
 	public void setIdDcat(Long idDcat) {
 		this.idDcat = idDcat;
 	}
-	public void setDcatdataupdate(Timestamp dcatdataupdate) {
+	public void setDcatdataupdate(String dcatdataupdate) {
 		this.dcatdataupdate = dcatdataupdate;
 	}
 	public void setDcatnomeorg(String dcatnomeorg) {

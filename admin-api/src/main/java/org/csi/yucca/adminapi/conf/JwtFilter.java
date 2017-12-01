@@ -41,7 +41,7 @@ public class JwtFilter implements Filter {
 	@Override
 	public void destroy() {
 	}
-
+	
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -49,7 +49,7 @@ public class JwtFilter implements Filter {
 		final HttpServletRequest httpRequest = (HttpServletRequest) request;
 		final HttpServletResponse httpResponse = (HttpServletResponse) response;
 		final String authHeaderVal = httpRequest.getHeader(authHeader);
-
+		
 		if (null == authHeaderVal) {
 			httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			return;

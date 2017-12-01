@@ -23,8 +23,13 @@ public class LicenseResponse extends Response{
 	public LicenseResponse(String licenseJsonString) {
 		super(); 
 		
-		LicenseJson licenseJson = Util.getFromJsonString(licenseJsonString, LicenseJson.class);
-
+		LicenseJson licenseJson =  null;
+		try {
+			licenseJson = Util.getFromJsonString(licenseJsonString, LicenseJson.class);	
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		if(licenseJson != null){
 			this.idLicense = licenseJson.getId_license();
 			this.licensecode = licenseJson.getLicensecode();

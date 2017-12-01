@@ -49,32 +49,20 @@ public class Util {
 		}
 	}
 	
-	public static <E> List<E> getListFromJsonString(String jsonString, Class<E> type){
+	public static <E> List<E> getListFromJsonString(String jsonString, Class<E> type)throws Exception{
 
 		if(jsonString == null) return null;
+
+		ObjectMapper mapper = new ObjectMapper();
 		
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			
-			return mapper.readValue(jsonString, new TypeReference<List<E>>(){});
-			
-		} catch (Exception e) {
-			return null;
-		}
-		
+		return mapper.readValue(jsonString, new TypeReference<List<E>>(){});
 	}
 	
-	public static <T> T getFromJsonString(String jsonString, Class<T> type){
+	public static <T> T getFromJsonString(String jsonString, Class<T> type) throws Exception {
+		if (jsonString == null) return null;
 
-		if(jsonString == null) return null;
-		
-		try {
-			ObjectMapper mapper = new ObjectMapper();
-			return mapper.readValue(jsonString, type);
-		} catch (Exception e) {
-			return null;
-		}
-		
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.readValue(jsonString, type);
 	}
 	
 	public static String cleanStringCamelCase(String in) {
@@ -125,10 +113,8 @@ public class Util {
 	}
 
 	public static Integer booleanToInt(Boolean booleanValue) {
-		if (booleanValue) {
-			return 1;
-		}
-		return 0;
+		if(booleanValue == null || booleanValue==false) return 0;
+		return 1;
 	}
 
 	public static Timestamp getNow() {

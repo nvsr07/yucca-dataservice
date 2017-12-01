@@ -31,6 +31,11 @@ public class JwtUser {
 	private String subscriber;
 	private String enduser;
 	
+	public JwtUser() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public JwtUser(JSONObject object ) {
 		super();
 		this.applicationName = object.getAsString(KEY_APPLICATION_NAME);

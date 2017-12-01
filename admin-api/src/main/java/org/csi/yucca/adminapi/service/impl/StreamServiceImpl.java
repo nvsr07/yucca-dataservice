@@ -27,9 +27,7 @@ import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.DataSource;
 import org.csi.yucca.adminapi.model.Dataset;
-import org.csi.yucca.adminapi.model.Dcat;
 import org.csi.yucca.adminapi.model.DettaglioStream;
-import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Stream;
@@ -40,10 +38,7 @@ import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.TenantDataSource;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ComponentRequest;
-import org.csi.yucca.adminapi.request.DcatRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
-import org.csi.yucca.adminapi.request.LicenseRequest;
-import org.csi.yucca.adminapi.request.OpenDataRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
@@ -54,17 +49,13 @@ import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
-import org.csi.yucca.adminapi.util.DatasetSubtype;
-import org.csi.yucca.adminapi.util.DatasetType;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ManageOption;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.csi.yucca.adminapi.util.Status;
-import org.csi.yucca.adminapi.util.StreamVisibility;
 import org.csi.yucca.adminapi.util.Type;
 import org.csi.yucca.adminapi.util.Util;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -73,17 +64,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StreamServiceImpl implements StreamService {
-
-	public static final Integer DATASOURCE_VERSION = 1;
-	public static final Integer SINCE_VERSION = 1;
-	public static final Integer TENANT_DATA_SERVICE_DATA_OPTIONS = 3;
-	public static final Integer TENANT_DATA_SERVICE_MANAGE_OPTIONS = 2;
-	public static final String STREAM_DATASET_PREFIX_CODE = "ds_";
-	public static final String API_SUBTYPE_WEBSOCKET = "websocket";
-	public static final String API_SUBTYPE_MQTT = "mqtt";
-	public static final String API_SUBTYPE_ODATA = "odata";
-	public static final String API_CODE_PREFIX_WEBSOCKET = "ws_";
-	public static final String API_CODE_PREFIX_MQTT = "mqtt_";
 
 	@Autowired
 	private SequenceMapper sequenceMapper;
@@ -275,22 +255,12 @@ public class StreamServiceImpl implements StreamService {
 	 * @param request
 	 * @param smartobject
 	 */
-	private void insertComponents(PostStreamRequest request, Smartobject smartobject, Integer idDataSource) {
-
+	private void insertComponents(PostStreamRequest request, Smartobject smartobject, Integer idDataSource) throws Exception {
 		if (Type.FEED_TWEET.id() != smartobject.getIdSoType()) {
-
-			for (ComponentRequest componentRequest : request.getComponents()) {
-				Component component = new Component();
-				BeanUtils.copyProperties(componentRequest, component);
-				component.setIdDataSource(idDataSource);
-				component.setDatasourceversion(DATASOURCE_VERSION);
-				component.setSinceVersion(SINCE_VERSION);
-				component.setIskey(Util.booleanToInt(false));
-				componentMapper.insertComponent(component);
-			}
+			ServiceUtil.insertComponents(request.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, ServiceUtil.SINCE_VERSION, Util.booleanToInt(false), componentMapper);
 		}
 	}
-
+	
 	/**
 	 * 
 	 * @param request
@@ -310,15 +280,15 @@ public class StreamServiceImpl implements StreamService {
 	 * @param organization
 	 * @param smartobject
 	 */
-	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) {
+	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) throws Exception{
 
 		Timestamp now = Util.getNow();
 
-		Long idDcat = insertDcat(request.getDcat());
+		Long idDcat = ServiceUtil.insertDcat(request.getDcat(), dcatMapper);
 
-		Integer idLicense = insertLicense(request.getLicense());
+		Integer idLicense = ServiceUtil.insertLicense(request.getLicense(), licenseMapper);
 
-		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense);
+		Integer idDataSource = ServiceUtil.insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 
 		Stream stream = insertStream(request, idDataSource, smartobject.getIdSmartObject());
 
@@ -328,15 +298,15 @@ public class StreamServiceImpl implements StreamService {
 
 		insertTweetComponents(request, smartobject);
 
-		insertTenantDataSource(request, idDataSource, now);
+		ServiceUtil.insertTenantDataSource(request.getIdTenant(), idDataSource, now, tenantMapper);
 
 		insertSharingTenants(request, idDataSource, now);
 
 		insertStreamInternal(request, idDataSource);
+		Dataset dataset = ServiceUtil.insertDataset(request.getSavedata(), idDataSource, smartobject.getIdSoType(), ServiceUtil.DATASOURCE_VERSION, 
+				request.getStreamcode(), datasetMapper, sequenceMapper);
 
-		Dataset dataset = insertDataset(request, idDataSource, smartobject.getIdSoType(), DATASOURCE_VERSION, request.getStreamcode());
-
-		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), DATASOURCE_VERSION);
+		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), ServiceUtil.DATASOURCE_VERSION);
 
 		return stream;
 
@@ -351,16 +321,16 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void insertApi(StreamRequest request, Smartobject smartobject, Dataset dataset, Integer idDataSource, String streamCode, Integer dataSourceVersion) {
 		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
-				.apicode(API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
-				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
+				.apicode(ServiceUtil.API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
+				.apiname(request.getStreamname()).apisubtype(ServiceUtil.API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
 
 		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
-				.apicode(API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
-				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_MQTT).idDataSource(idDataSource));
+				.apicode(ServiceUtil.API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
+				.apiname(request.getStreamname()).apisubtype(ServiceUtil.API_SUBTYPE_MQTT).idDataSource(idDataSource));
 
 		if (request.getSavedata() && dataset != null) {
 			apiMapper.insertApi(Api.buildOutput(dataSourceVersion).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA).idDataSource(idDataSource));
+					.apiname(dataset.getDatasetname()).apisubtype(ServiceUtil.API_SUBTYPE_ODATA).idDataSource(idDataSource));
 		}
 	}
 	
@@ -373,41 +343,112 @@ public class StreamServiceImpl implements StreamService {
 	 * @param streamCode
 	 * @return
 	 */
-	private Dataset insertDataset(StreamRequest request, Integer idDataSource, Integer idSoType, Integer dataSourceVersion, String streamCode) {
-		
-		Dataset checkDataSet = datasetMapper.selectDataSet(idDataSource, dataSourceVersion);
-		if (checkDataSet != null) {
-			return checkDataSet;
-		}
-		
-		if (request.getSavedata()) {
-			Integer iddataset = sequenceMapper.selectDatasetSequence();
+//	private Dataset insertDataset(StreamRequest request, Integer idDataSource, Integer idSoType, Integer dataSourceVersion, String streamCode) {
+//		
+//		Dataset checkDataSet = datasetMapper.selectDataSet(idDataSource, dataSourceVersion);
+//		if (checkDataSet != null) {
+//			return checkDataSet;
+//		}
+//		
+//		if (request.getSavedata()) { // no
+//			Integer iddataset = sequenceMapper.selectDatasetSequence();
+//
+//			Dataset dataset = new Dataset();
+//
+//			dataset.setIddataset(iddataset);
+//			dataset.setIdDataSource(idDataSource);
+//			dataset.setDatasourceversion(dataSourceVersion);
+//			dataset.setDatasetname(streamCode); // datasetName
+//			dataset.setDatasetcode(generateStreamDatasetCode(iddataset, streamCode));
+//			dataset.setDescription("Dataset " + streamCode);
+//			dataset.setIdDatasetType(DatasetType.DATASET.id());
+//			
+//			// BULK o binary
+//			if (Type.FEED_TWEET.id() == idSoType) {
+//				dataset.setIdDatasetSubtype(DatasetSubtype.SOCIAL.id());
+//			} else {
+//				dataset.setIdDatasetSubtype(DatasetSubtype.STREAM.id());
+//			}
+//			dataset.setAvailablespeed(Util.booleanToInt(true));
+//			dataset.setIstransformed(Util.booleanToInt(false));
+//
+//			datasetMapper.insertDataset(dataset);
+//
+//			return dataset;
+//		}
+//		
+//		return null;
+//	}
 
-			Dataset dataset = new Dataset();
 
-			dataset.setIddataset(iddataset);
-			dataset.setIdDataSource(idDataSource);
-			dataset.setDatasourceversion(dataSourceVersion);
-			dataset.setDatasetname(streamCode);
-			dataset.setDatasetcode(generateStreamDatasetCode(iddataset, streamCode));
-			dataset.setDescription("Dataset " + streamCode);
-			dataset.setIdDatasetType(DatasetType.DATASET.id());
-			if (Type.FEED_TWEET.id() == idSoType) {
-				dataset.setIdDatasetSubtype(DatasetSubtype.SOCIAL.id());
-			} else {
-				dataset.setIdDatasetSubtype(DatasetSubtype.STREAM.id());
-			}
-			dataset.setAvailablespeed(Util.booleanToInt(true));
-			dataset.setIstransformed(Util.booleanToInt(false));
+	
 
-			datasetMapper.insertDataset(dataset);
-
-			return dataset;
-		}
-		
-		return null;
-	}
-
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * 
@@ -415,9 +456,9 @@ public class StreamServiceImpl implements StreamService {
 	 * @param streamcode
 	 * @return
 	 */
-	private String generateStreamDatasetCode(Integer iddataset, String streamcode) {
-		return STREAM_DATASET_PREFIX_CODE + Util.cleanStringCamelCase(streamcode) + "_" + iddataset;
-	}
+//	private String generateStreamDatasetCode(Integer iddataset, String streamcode) {
+//		return ServiceUtil.STREAM_DATASET_PREFIX_CODE + Util.cleanStringCamelCase(streamcode) + "_" + iddataset;
+//	}
 
 	/**
 	 * 
@@ -428,7 +469,7 @@ public class StreamServiceImpl implements StreamService {
 		if (request.getInternalStreams() != null) {
 			for (InternalStreamRequest internalStreamRequest : request.getInternalStreams()) {
 				StreamInternal streamInternal = new StreamInternal();
-				streamInternal.setDatasourceversioninternal(DATASOURCE_VERSION);
+				streamInternal.setDatasourceversioninternal(ServiceUtil.DATASOURCE_VERSION);
 				streamInternal.setIdDataSourceinternal(idDataSource);
 				streamInternal.setIdstream(internalStreamRequest.getIdStream());
 				streamInternal.setStreamAlias(internalStreamRequest.getStreamAlias());
@@ -443,44 +484,12 @@ public class StreamServiceImpl implements StreamService {
 	 * @param idDataSource
 	 * @param now
 	 */
-	private void insertSharingTenants(PostStreamRequest request, Integer idDataSource, Timestamp now) {
+	private void insertSharingTenants(PostStreamRequest request, Integer idDataSource, Timestamp now) throws Exception{
 		if (request.getSharingTenants() != null) {
-			for (SharingTenantRequest sharingTenantRequest : request.getSharingTenants()) {
-				TenantDataSource tenantDataSource = new TenantDataSource();
-				tenantDataSource.setIdDataSource(idDataSource);
-				tenantDataSource.setDatasourceversion(DATASOURCE_VERSION);
-				tenantDataSource.setIdTenant(sharingTenantRequest.getIdTenant());
-				tenantDataSource.setIsactive(Util.booleanToInt(true));
-				tenantDataSource.setIsmanager(Util.booleanToInt(false));
-				tenantDataSource.setActivationdate(now);
-				tenantDataSource.setManagerfrom(now);
-				tenantDataSource.setDataoptions(sharingTenantRequest.getDataOptions());
-				tenantDataSource.setManageoptions(sharingTenantRequest.getManageOptions());
-				tenantMapper.insertTenantDataSource(tenantDataSource);
-			}
+			ServiceUtil.insertSharingTenants(request.getSharingTenants(), idDataSource, now, tenantMapper);
 		}
 	}
-
-	/**
-	 * 
-	 * @param request
-	 * @param idDataSource
-	 * @param now
-	 */
-	private void insertTenantDataSource(PostStreamRequest request, Integer idDataSource, Timestamp now) {
-		TenantDataSource tenantDataSource = new TenantDataSource();
-		tenantDataSource.setIdDataSource(idDataSource);
-		tenantDataSource.setDatasourceversion(DATASOURCE_VERSION);
-		tenantDataSource.setIdTenant(request.getIdTenant());
-		tenantDataSource.setIsactive(Util.booleanToInt(true));
-		tenantDataSource.setIsmanager(Util.booleanToInt(true));
-		tenantDataSource.setActivationdate(now);
-		tenantDataSource.setManagerfrom(now);
-		tenantDataSource.setDataoptions(TENANT_DATA_SERVICE_DATA_OPTIONS);
-		tenantDataSource.setManageoptions(TENANT_DATA_SERVICE_MANAGE_OPTIONS);
-		tenantMapper.insertTenantDataSource(tenantDataSource);
-	}
-
+	
 	/**
 	 * 
 	 * @param request
@@ -542,7 +551,7 @@ public class StreamServiceImpl implements StreamService {
 	private void validation(PostStreamRequest request, String organizationCode, Smartobject smartobject,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		Tenant tenant = checkTenant(request.getIdTenant(), organizationCode);
+		Tenant tenant = ServiceUtil.checkTenant(request.getIdTenant(), organizationCode, tenantMapper);
 
 		ServiceUtil.checkAuthTenant(authorizedUser, tenant.getTenantcode());
 
@@ -562,104 +571,7 @@ public class StreamServiceImpl implements StreamService {
 
 		checkComponents(request, smartobject.getIdSoType());
 		
-		checkVisibility(request);
-	}
-
-	/**
-	 * 
-	 * @param request
-	 * @param idOrganization
-	 * @param idDcat
-	 * @param idLicense
-	 * @return
-	 */
-	private Integer insertDataSource(PostStreamRequest request, Integer idOrganization, Long idDcat,
-			Integer idLicense) {
-		DataSource dataSource = new DataSource();
-		dataSource.setDatasourceversion(1);
-		dataSource.setIscurrent(1);
-		dataSource.setUnpublished(Util.booleanToInt(request.getUnpublished()));
-		dataSource.setName(request.getName());
-		dataSource.setVisibility(request.getVisibility());
-		dataSource.setCopyright(request.getVisibility()); // potrebbe essere
-															// nullo
-		dataSource.setDisclaimer(request.getDisclaimer());
-		dataSource.setRegistrationdate(Util.getNow());
-		dataSource.setRequestername(request.getRequestername());
-		dataSource.setRequestersurname(request.getRequestersurname());
-		dataSource.setRequestermail(request.getRequestermail());
-		dataSource.setPrivacyacceptance(Util.booleanToInt(true));
-		dataSource.setIcon(request.getIcon()); // potrebbe essere nullo
-		dataSource.setIsopendata(request.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
-		dataSource.setOpendataexternalreference(
-				request.getOpenData() != null ? request.getOpenData().getOpendataexternalreference() : null);
-		dataSource.setOpendataauthor(request.getOpenData() != null ? request.getOpenData().getOpendataauthor() : null);
-		dataSource.setOpendataupdatedate(request.getOpenData() != null
-				? Util.dateStringToTimestamp(request.getOpenData().getOpendataupdatedate()) : null);
-		dataSource.setOpendatalanguage(
-				request.getOpenData() != null ? request.getOpenData().getOpendatalanguage() : null);
-		dataSource.setLastupdate(request.getOpenData() != null ? request.getOpenData().getLastupdate() : null);
-		dataSource.setIdOrganization(idOrganization);
-		dataSource.setIdSubdomain(request.getIdSubdomain());
-		dataSource.setIdDcat(idDcat);
-		dataSource.setIdLicense(idLicense);
-		dataSource.setIdStatus(Status.DRAFT.id());
-		dataSourceMapper.insertDataSource(dataSource);
-		return dataSource.getIdDataSource();
-	}
-
-	/**
-	 * 
-	 * @param dcatRequest
-	 * @return
-	 */
-	private Long insertDcat(DcatRequest dcatRequest) {
-
-		if (dcatRequest == null)
-			return null;
-
-		// ----------------------------------------------------------------------------------
-		// INSERT DCAT
-		// yucca_dcat --> inserimento record solo se non è stato indicato il
-		// campo dcat.idDcat.
-		// Bisogna inserire i campi nei nomi corrispondenti.
-		// ----------------------------------------------------------------------------------
-		if (dcatRequest.getIdDcat() == null) {
-			Dcat dcat = new Dcat();
-			BeanUtils.copyProperties(dcatRequest, dcat);
-			dcatMapper.insertDcat(dcat);
-			return dcat.getIdDcat();
-		}
-
-		return dcatRequest.getIdDcat();
-	}
-
-	/**
-	 * 
-	 * @param licenseRequest
-	 * @return
-	 */
-	private Integer insertLicense(LicenseRequest licenseRequest) {
-
-		if (licenseRequest == null) {
-			return null;
-		}
-
-		// ----------------------------------------------------------------------------------
-		// INSERT LICENSE
-		// yucca_d_license --> inserimento record solo se non è stato indicato
-		// il campo license.idLicense
-		// Bisogna inserire i campi nei nomi corrispondenti.
-		// ----------------------------------------------------------------------------------
-		if (licenseRequest != null && licenseRequest.getIdLicense() == null) {
-			License license = new License();
-			BeanUtils.copyProperties(licenseRequest, license);
-			licenseMapper.insertLicense(license);
-			return license.getIdLicense();
-		}
-
-		return licenseRequest.getIdLicense();
-
+		ServiceUtil.checkVisibility(request, tenantMapper);
 	}
 
 	/**
@@ -716,7 +628,7 @@ public class StreamServiceImpl implements StreamService {
 		
 		checkDcat(request);
 
-		checkLicense(request.getLicense());
+		ServiceUtil.checkLicense(request.getLicense());
 		
 	}
 
@@ -741,20 +653,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 */
 	private void checkLicense(StreamRequest request) throws BadRequestException, NotFoundException{
-		checkLicense(request.getLicense());
-	}
-	
-	/**
-	 * 
-	 * @param licenseRequest
-	 * @throws BadRequestException
-	 * @throws NotFoundException
-	 */
-	private void checkLicense(LicenseRequest licenseRequest) throws BadRequestException, NotFoundException{
-		if (licenseRequest != null && licenseRequest.getIdLicense() == null) {
-			ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode");
-			ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "license => description");
-		}
+		ServiceUtil.checkLicense(request.getLicense());
 	}
 	
 	/**
@@ -922,69 +821,6 @@ public class StreamServiceImpl implements StreamService {
 			}
 		}
 	}
-	
-	
-	/**
-	 * 
-	 * @param request
-	 * @throws BadRequestException
-	 * @throws NotFoundException
-	 */
-	private void checkVisibility(StreamRequest request) throws BadRequestException, NotFoundException {
-		checkVisibility(request.getVisibility(), request.getLicense(), request.getOpenData(), 
-				request.getSharingTenants(), request.getCopyright());
-	}
-
-	/**
-	 * 
-	 * @param visibility
-	 * @param license
-	 * @param openData
-	 * @param sharingTenants
-	 * @param copyright
-	 * @throws BadRequestException
-	 * @throws NotFoundException
-	 */
-	private void checkVisibility(String visibility, LicenseRequest license, OpenDataRequest openData, 
-			List<SharingTenantRequest> sharingTenants, String copyright) throws BadRequestException, NotFoundException {
-
-		ServiceUtil.checkValue("visibility", visibility, StreamVisibility.PRIVATE.code(),
-				StreamVisibility.PUBLIC.code());
-
-		// PRIVATE
-		if (StreamVisibility.PRIVATE.code().equals(visibility)) {
-			if (license != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE, "License only for public visibility, provided: " + visibility);
-			}
-			if (openData != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE, "Opendata only for public visibility, provided: " + visibility);
-			}
-			if (sharingTenants != null) {
-				for (SharingTenantRequest sharingTenant : sharingTenants) {
-					ServiceUtil.checkMandatoryParameter(sharingTenant.getIdTenant(), "sharingTenant => idTenant");
-					ServiceUtil.checkValue("dataOptions", sharingTenant.getDataOptions(), DataOption.READ.id(),
-							DataOption.READ_AND_SUBSCRIBE.id(), DataOption.READ_AND_USE.id(), DataOption.WRITE.id());
-					ServiceUtil.checkValue("manageOptions", sharingTenant.getManageOptions(),
-							ManageOption.EDIT_METADATA.id(), ManageOption.LIFE_CYCLE_HANDLING.id(),
-							ManageOption.NO_RIGHT.id());
-					Tenant selectedTenant = tenantMapper.selectTenantByidTenant(sharingTenant.getIdTenant());
-					ServiceUtil.checkIfFoundRecord(selectedTenant,
-							"Sharing Tenant with [ " + sharingTenant.getIdTenant() + " ] not found!");
-				}
-			}
-		}
-
-		// PUBLIC
-		if (StreamVisibility.PUBLIC.code().equals(visibility)) {
-
-			if (sharingTenants != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE, "Sharing Tenants permitted only for private visibility!");
-			}
-			if (copyright != null) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE, "Copyright permitted only for private visibility!");
-			}
-		}
-	}
 
 	/**
 	 * 
@@ -1013,7 +849,8 @@ public class StreamServiceImpl implements StreamService {
 		ServiceUtil.checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + idSubdomain + "] ");
 		return subdomain;
 	}
-
+	
+	
 	/**
 	 * 
 	 * @param idTenant
@@ -1022,14 +859,16 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 * @throws BadRequestException
 	 */
-	private Tenant checkTenant(Integer idTenant, String organizationCode)
-			throws NotFoundException, BadRequestException {
-		ServiceUtil.checkMandatoryParameter(idTenant, "idTenant");
-		Tenant tenant = tenantMapper.selectTenantByIdAndOrgCodeCode(idTenant, organizationCode);
-		ServiceUtil.checkIfFoundRecord(tenant,
-				"tenant not found idTenant [" + idTenant + "], organizationcode [" + organizationCode + "] ");
-		return tenant;
-	}
+//	private Tenant checkTenant(Integer idTenant, String organizationCode) throws NotFoundException, BadRequestException {
+//		
+//		ServiceUtil.checkMandatoryParameter(idTenant, "idTenant");
+//		
+//		Tenant tenant = tenantMapper.selectTenantByIdAndOrgCodeCode(idTenant, organizationCode);
+//		
+//		ServiceUtil.checkIfFoundRecord(tenant, "tenant not found idTenant [" + idTenant + "], organizationcode [" + organizationCode + "] ");
+//		
+//		return tenant;
+//	}
 
 	/**
 	 * 
@@ -1084,7 +923,7 @@ public class StreamServiceImpl implements StreamService {
 		
 		checkLicense(streamRequest);
 		
-		checkVisibility(streamRequest);
+		ServiceUtil.checkVisibility(streamRequest, tenantMapper);
 		
 		checkDcat(streamRequest);
 		
@@ -1253,7 +1092,8 @@ public class StreamServiceImpl implements StreamService {
 			datasetMapper.deleteDataSet(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
 		}
 		
-		return insertDataset(streamRequest, streamToUpdate.getIdDataSource(), smartObject.getIdSoType(), streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode());
+		return ServiceUtil.insertDataset(streamRequest.getSavedata(), streamToUpdate.getIdDataSource(), smartObject.getIdSoType(), 
+				streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode(), datasetMapper, sequenceMapper);
 	}
 	
 	/**
@@ -1267,8 +1107,8 @@ public class StreamServiceImpl implements StreamService {
 	
 		Timestamp now = Util.getNow();
 		
-		Long idDcat = insertDcat(streamRequest.getDcat());
-		Integer idLicense = insertLicense(streamRequest.getLicense());
+		Long idDcat = ServiceUtil.insertDcat(streamRequest.getDcat(), dcatMapper);
+		Integer idLicense = ServiceUtil.insertLicense(streamRequest.getLicense(), licenseMapper);
 
 		updateDataSource(streamRequest, idDcat, idLicense, streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
 		

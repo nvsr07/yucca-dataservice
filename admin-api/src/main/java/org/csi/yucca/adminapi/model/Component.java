@@ -17,7 +17,7 @@ public class Component {
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
 	private Integer required;
-
+	
 	public Integer getIdComponent() {
 		return idComponent;
 	}

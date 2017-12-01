@@ -1,7 +1,7 @@
 package org.csi.yucca.adminapi.request;
 
 public class ComponentRequest {
-
+	
 	private Integer idComponent;
 	private String name;
 	private String alias;
@@ -11,8 +11,43 @@ public class ComponentRequest {
 	private Integer idDataType;
 	private Integer idMeasureUnit;
 	private Boolean required;
+	private Boolean iskey;
+	private String datetimeformat;
+	private Integer sourcecolumn;
+	private String sourcecolumnname;
 	
-	
+	public Integer getSourcecolumn() {
+		return sourcecolumn;
+	}
+
+	public void setSourcecolumn(Integer sourcecolumn) {
+		this.sourcecolumn = sourcecolumn;
+	}
+
+	public String getSourcecolumnname() {
+		return sourcecolumnname;
+	}
+
+	public void setSourcecolumnname(String sourcecolumnname) {
+		this.sourcecolumnname = sourcecolumnname;
+	}
+
+	public String getDatetimeformat() {
+		return datetimeformat;
+	}
+
+	public void setDatetimeformat(String datetimeformat) {
+		this.datetimeformat = datetimeformat;
+	}
+
+	public Boolean getIskey() {
+		return iskey;
+	}
+
+	public void setIskey(Boolean iskey) {
+		this.iskey = iskey;
+	}
+
 	public Integer getIdComponent() {
 		return idComponent;
 	}

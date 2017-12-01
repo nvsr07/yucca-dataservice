@@ -16,12 +16,16 @@ public class DatasetResponse extends Response {
 	private String datasetcode;
 	private String datasetname;
 	private String description;
-
+	private Integer idDataSourceBinary;  
+	private Integer datasourceversionBinary;
 	private TenantResponse tenantManager;
 	private OrganizationResponse organization;
 	private StatusResponse status;
 	private DomainResponse domain;
 	private SubdomainResponse subdomain;
+	private DatasetTypeResponse datasetType;
+	private DatasetSubtypeResponse datasetSubtype;
+	
 	private Integer version;
 	private Integer unpublished;
 	private String visibility;
@@ -30,7 +34,8 @@ public class DatasetResponse extends Response {
 	
 	public DatasetResponse(Dataset dataset) throws Exception {
 		super();
-		
+		this.idDataSourceBinary = dataset.getIdDataSourceBinary();  
+		this.datasourceversionBinary = dataset.getDatasourceversionBinary();
 		this.iddataset = dataset.getIddataset();
 		this.datasetcode = dataset.getDatasetcode();
 		this.datasetname = dataset.getDatasetname();
@@ -38,7 +43,7 @@ public class DatasetResponse extends Response {
 		
 		this.tenantManager = new TenantResponse(dataset);
 		this.organization = new OrganizationResponse(dataset);
-		this.version = dataset.getDatasourceversion();
+		this.version = dataset.getDatasourceversion(); // ????
 		this.unpublished = dataset.getDataSourceUnpublished();
 		this.visibility = dataset.getDataSourceVisibility();
 		this.registrationdate = Util.dateString(dataset.getDataSourceRegistrationDate());
@@ -46,6 +51,8 @@ public class DatasetResponse extends Response {
 		this.domain = new DomainResponse(dataset);
 		this.subdomain = new SubdomainResponse(dataset);
 		this.addTags(dataset.getTags());
+		this.datasetType = new DatasetTypeResponse(dataset);
+		this.datasetSubtype = new DatasetSubtypeResponse(dataset);
 	}
 
 	private void addTags(String tags) throws Exception {
@@ -60,6 +67,39 @@ public class DatasetResponse extends Response {
 			}
 		}
 
+	}
+
+	
+	public Integer getIdDataSourceBinary() {
+		return idDataSourceBinary;
+	}
+
+	public void setIdDataSourceBinary(Integer idDataSourceBinary) {
+		this.idDataSourceBinary = idDataSourceBinary;
+	}
+
+	public Integer getDatasourceversionBinary() {
+		return datasourceversionBinary;
+	}
+
+	public void setDatasourceversionBinary(Integer datasourceversionBinary) {
+		this.datasourceversionBinary = datasourceversionBinary;
+	}
+
+	public DatasetTypeResponse getDatasetType() {
+		return datasetType;
+	}
+
+	public void setDatasetType(DatasetTypeResponse datasetType) {
+		this.datasetType = datasetType;
+	}
+
+	public DatasetSubtypeResponse getDatasetSubtype() {
+		return datasetSubtype;
+	}
+
+	public void setDatasetSubtype(DatasetSubtypeResponse datasetSubtype) {
+		this.datasetSubtype = datasetSubtype;
 	}
 
 	public DatasetResponse() {

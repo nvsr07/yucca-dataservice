@@ -216,10 +216,22 @@ public interface DatasetMapper {
 			" yucca_dataset.datasetcode, " + 
 			" yucca_dataset.datasetname, " + 
 			" yucca_dataset.description, " + 
+			" yucca_dataset.id_data_source_binary, " + 
+			" yucca_dataset.datasourceversion_binary, " + 
 			
 			" yucca_data_source.visibility data_source_visibility, " + 
 			" yucca_data_source.unpublished data_source_unpublished, " + 
 			" yucca_data_source.registrationdate data_source_registration_date, " + 
+
+// DATA SET TYPE
+			" yucca_d_dataset_type.description dataset_type_description, " + 
+			" yucca_d_dataset_type.dataset_type, " + 
+			" yucca_d_dataset_type.id_dataset_type, " +
+
+// DATA SET SUB TYPE
+			" yucca_d_dataset_subtype.id_dataset_subtype, " + 
+			" yucca_d_dataset_subtype.dataset_subtype, " + 
+			" yucca_d_dataset_subtype.description dataset_subtype_description, " +
 			
 			" yucca_d_status.statuscode, " + 
 			" yucca_d_status.description status_description, " + 
@@ -255,7 +267,9 @@ public interface DatasetMapper {
 			" INNER JOIN " + DataSourceMapper.DATA_SOURCE_TABLE  + " yucca_data_source ON yucca_dataset.id_data_source = yucca_data_source.id_data_source AND yucca_dataset.datasourceversion = yucca_data_source.datasourceversion " +
 			" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " yucca_organization ON  yucca_data_source.id_organization = yucca_organization.id_organization " +
 			" INNER JOIN " + SmartobjectMapper.STATUS_TABLE  + " yucca_d_status ON yucca_data_source.id_status = yucca_d_status.id_status " +
-
+			" INNER JOIN " + DatasetTypeMapper.DATASET_TYPE_TABLE  + " yucca_d_dataset_type ON yucca_dataset.id_dataset_type = yucca_d_dataset_type.id_dataset_type " +
+			" INNER JOIN " + DatasetSubtypeMapper.DATASET_SUBTYPE_TABLE  + " yucca_d_dataset_subtype ON yucca_dataset.id_dataset_subtype = yucca_d_dataset_subtype.id_dataset_subtype " +
+			
 			" INNER JOIN (select " +
 			"       yucca_d_domain.id_domain dom_id_domain, yucca_d_domain.langen dom_langen, " + 
 			"       yucca_d_domain.langit dom_langit, yucca_d_domain.domaincode dom_domaincode, " +
@@ -309,6 +323,15 @@ public interface DatasetMapper {
             "	</foreach>" +
             "</if>";			
 	@Results({
+		
+		@Result(property = "idDataSourceBinary", column = "id_data_source_binary"), 
+		@Result(property = "datasourceversionBinary", column = "datasourceversion_binary"), 
+		@Result(property = "datasetTypeDescription", column = "dataset_type_description"), 
+		@Result(property = "datasetType", column = "dataset_type"),
+		@Result(property = "idDatasetType", column = "id_dataset_type"),
+		@Result(property = "idDatasetSubtype", column = "id_dataset_subtype"), 
+		@Result(property = "datasetSubtype", column = "dataset_subtype"),
+		@Result(property = "datasetSubtypeDescription", column = "dataset_subtype_description"),
 		
 		@Result(property = "idDataSource", column = "id_data_source"),
 		@Result(property = "dataSourceVisibility", column = "data_source_visibility"),

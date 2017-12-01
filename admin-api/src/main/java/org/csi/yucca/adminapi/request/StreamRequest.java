@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.request;
 
 import java.util.List;
 
-public class StreamRequest{
+public class StreamRequest implements IVisibility{
 
 	private String streamname;
 	private String name;

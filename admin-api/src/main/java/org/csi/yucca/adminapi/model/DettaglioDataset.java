@@ -4,10 +4,6 @@ import java.sql.Timestamp;
 
 public class DettaglioDataset extends Dataset {
 
-	private String datasetType;
-	private String datasetTypeDescription;
-	private String datasetSubtype;
-	private String datasetSubtypeDescription;
 	private String dataSourceCopyright;
 	private Integer dataSourceIsOpendata;
 	private String dataSourceOpendataExternalReference;
@@ -25,31 +21,6 @@ public class DettaglioDataset extends Dataset {
 	private String license;
 	private String components;
 	private String sharingTenant;
-	
-	public String getDatasetType() {
-		return datasetType;
-	}
-	public void setDatasetType(String datasetType) {
-		this.datasetType = datasetType;
-	}
-	public String getDatasetTypeDescription() {
-		return datasetTypeDescription;
-	}
-	public void setDatasetTypeDescription(String datasetTypeDescription) {
-		this.datasetTypeDescription = datasetTypeDescription;
-	}
-	public String getDatasetSubtype() {
-		return datasetSubtype;
-	}
-	public void setDataset_subtype(String datasetSubtype) {
-		this.datasetSubtype = datasetSubtype;
-	}
-	public String getDatasetSubtypeDescription() {
-		return datasetSubtypeDescription;
-	}
-	public void setDatasetSubtypeDescription(String datasetSubtypeDescription) {
-		this.datasetSubtypeDescription = datasetSubtypeDescription;
-	}
 	public String getDataSourceCopyright() {
 		return dataSourceCopyright;
 	}
@@ -152,5 +123,7 @@ public class DettaglioDataset extends Dataset {
 	public void setSharingTenant(String sharingTenant) {
 		this.sharingTenant = sharingTenant;
 	}
+
+	
 	
 }
