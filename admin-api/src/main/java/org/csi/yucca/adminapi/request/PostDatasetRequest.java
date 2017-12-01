@@ -27,6 +27,7 @@ public class PostDatasetRequest implements IVisibility, IDataSourceRequest{
 	private List<ComponentRequest> components;
 	private List<Integer> tags;
 	private String disclaimer;
+	private String multiSubdomain;
 	
 	public PostDatasetRequest datasetname(String datasetname){
 		setDatasetname(datasetname);
@@ -38,6 +39,14 @@ public class PostDatasetRequest implements IVisibility, IDataSourceRequest{
 		return this;
 	}
 	
+	public String getMultiSubdomain() {
+		return multiSubdomain;
+	}
+
+	public void setMultiSubdomain(String multiSubdomain) {
+		this.multiSubdomain = multiSubdomain;
+	}
+
 	public String getDisclaimer() {
 		return disclaimer;
 	}

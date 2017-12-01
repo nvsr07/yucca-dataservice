@@ -15,11 +15,13 @@ import org.csi.yucca.adminapi.mapper.DcatMapper;
 import org.csi.yucca.adminapi.mapper.LicenseMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
+import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.Organization;
+import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.PostDatasetRequest;
 import org.csi.yucca.adminapi.response.DatasetResponse;
@@ -29,6 +31,7 @@ import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
 import org.csi.yucca.adminapi.util.DataType;
 import org.csi.yucca.adminapi.util.DatasetSubtype;
+import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ManageOption;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
@@ -69,6 +72,9 @@ public class DatasetServiceImpl implements DatasetService {
 	
 	@Autowired
 	private ApiMapper apiMapper;
+
+	@Autowired
+	private SubdomainMapper subdomainMapper;
 
 	/**
 	 * 
@@ -148,6 +154,22 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @throws Exception
 	 */
 	private void insertDatasetValidation(PostDatasetRequest postDatasetRequest, JwtUser authorizedUser, String organizationCode, Organization organization) throws Exception{
+		
+		// verifica che sia presente idSubdomain o multisubdomanin
+		if (postDatasetRequest.getIdSubdomain() == null && postDatasetRequest.getMultiSubdomain() == null) {
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER, "Mandatory idSubdomanin or multiSubdomain");
+		}
+		
+		// verifica il multisubdomain
+		if (postDatasetRequest.getMultiSubdomain() != null && !postDatasetRequest.getMultiSubdomain().matches(ServiceUtil.MULTI_SUBDOMAIN_PATTERN)) {
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "Incorrect pattern for multisubdomain. Must be [ " + ServiceUtil.MULTI_SUBDOMAIN_PATTERN + " ]");
+		}
+		
+		//Se id_subdomain è nullo verificare che "unpublished " sia true
+		if (postDatasetRequest.getIdSubdomain() == null && (postDatasetRequest.getUnpublished() == null || postDatasetRequest.getUnpublished() == false)) {
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "If idSubdomain is null unpublished must be true.");			
+		}
+		
 		ServiceUtil.checkIfFoundRecord(organization, "Not found organization code: " + organizationCode );
 		ServiceUtil.checkList(postDatasetRequest.getTags(), "tags");
 		ServiceUtil.checkTenant(postDatasetRequest.getIdTenant(), organizationCode, tenantMapper);
@@ -164,13 +186,13 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private Integer insertBinary(PostDatasetRequest postDatasetRequest, Organization organization)throws Exception{
+	private Integer insertBinary(PostDatasetRequest postDatasetRequest, Organization organization, Integer idSubdomain)throws Exception{
 		Integer idBinaryDataSource = null;
 		if(isBinaryDataset(postDatasetRequest.getComponents())){
 
 			// BINARY DATASOURCE
 			idBinaryDataSource = ServiceUtil.insertDataSource(
-					new PostDatasetRequest().datasetname(postDatasetRequest.getDatasetname()).idSubdomain(postDatasetRequest.getIdSubdomain()), 
+					new PostDatasetRequest().datasetname(postDatasetRequest.getDatasetname()).idSubdomain(idSubdomain), 
 					organization.getIdOrganization(), 
 					Status.INSTALLED.id(), dataSourceMapper);
 			
@@ -187,6 +209,28 @@ public class DatasetServiceImpl implements DatasetService {
 	/**
 	 * 
 	 * @param postDatasetRequest
+	 * @return
+	 */
+	private Integer insertSubdomain(PostDatasetRequest postDatasetRequest){
+		
+		if (postDatasetRequest.getIdSubdomain() != null) {
+			return postDatasetRequest.getIdSubdomain();
+		}
+		
+		Subdomain subdomain = new Subdomain()
+				.idDomain(ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN)
+				.langEn(ServiceUtil.MULTI_SUBDOMAIN_LANG_EN)
+				.langIt(ServiceUtil.MULTI_SUBDOMAIN_LANG_IT)
+				.subdomaincode(postDatasetRequest.getMultiSubdomain());
+		
+		subdomainMapper.insertSubdomain(subdomain);
+		
+		return subdomain.getIdSubdomain();
+	}
+	
+	/**
+	 * 
+	 * @param postDatasetRequest
 	 * @param authorizedUser
 	 * @param organization
 	 * @return
@@ -194,8 +238,11 @@ public class DatasetServiceImpl implements DatasetService {
 	 */
 	private Dataset insertDatasetTransaction(PostDatasetRequest postDatasetRequest, JwtUser authorizedUser, Organization organization)throws Exception{
 		
+		// insert subdomain
+		Integer idSubdomain = insertSubdomain(postDatasetRequest);
+		
 		// BINARY
-		Integer idBinaryDataSource = insertBinary(postDatasetRequest, organization);
+		Integer idBinaryDataSource = insertBinary(postDatasetRequest, organization, idSubdomain);
 		
 		// INSERT LICENSE:
 		Integer idLicense = ServiceUtil.insertLicense(postDatasetRequest.getLicense(), licenseMapper);
@@ -204,7 +251,7 @@ public class DatasetServiceImpl implements DatasetService {
 		Long idDcat = ServiceUtil.insertDcat(postDatasetRequest.getDcat(), dcatMapper);
 		
 		// INSERT DATA SOURCE:
-		Integer idDataSource = ServiceUtil.insertDataSource(postDatasetRequest, organization.getIdOrganization(), 
+		Integer idDataSource = ServiceUtil.insertDataSource(postDatasetRequest.idSubdomain(idSubdomain), organization.getIdOrganization(), 
 				idDcat, idLicense, Status.INSTALLED.id(), dataSourceMapper);
 
 		// INSERT DATASET

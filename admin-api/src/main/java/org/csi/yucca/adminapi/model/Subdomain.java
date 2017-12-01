@@ -9,6 +9,23 @@ public class Subdomain {
 	private int deprecated;
 	private Integer idDomain;
 
+	public Subdomain subdomaincode(String subdomaincode){
+		setSubdomaincode(subdomaincode);
+		return this;
+	}
+	public Subdomain langIt(String langIt){
+		setLangIt(langIt);
+		return this;
+	}
+	public Subdomain langEn(String langEn){
+		setLangEn(langEn);
+		return this;
+	}
+	public Subdomain idDomain(Integer idDomain){
+		setIdDomain(idDomain);
+		return this;
+	}
+	
 	public Integer getIdSubdomain() {
 		return idSubdomain;
 	}
