@@ -47,6 +47,7 @@ public class ServiceUtil {
 	public static final String UUID_PATTERN         = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
+	public static final String ALPHANUMERICOrUnderscore_PATTERN = "^[a-zA-Z0-9_]*$";
 	public static final String COMPONENT_NAME_PATTERN =  "(.)*[\u00C0-\u00F6\u00F8-\u00FF\u0020]+(.)*|^[0-9]*$";
 	
 	public static final String MULTI_SUBDOMAIN_LANG_EN = "";
@@ -803,6 +804,16 @@ public class ServiceUtil {
 	 * @param s
 	 * @return
 	 */
+	public static boolean isAlphaNumericOrUnderscore(String s){
+	    return s.matches(ALPHANUMERICOrUnderscore_PATTERN);
+	}
+
+	
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean matchUUIDPattern(String s){
 	    return s.matches(UUID_PATTERN);
 	}
@@ -838,6 +849,14 @@ public class ServiceUtil {
 		}
 
 	}
+	
+	private static void checkAphanumericAndUnderscore(String s,
+			String fieldName) throws BadRequestException {
+		if (!isAlphaNumeric(s)){
+			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED, "received " + fieldName + " [ " + s + " ]");
+		}
+	}
+
 	
 	/**
 	 * 
@@ -951,7 +970,21 @@ public class ServiceUtil {
 		checkWhitespace(s, parameterName);
 		checkAphanumeric(s, parameterName);
 	}
+
+	/**
+	 * 
+	 * @param s
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
+	public static void checkTenantCode(String s, String parameterName) throws BadRequestException {
+		checkMandatoryParameter(s, parameterName);
+		checkWhitespace(s, parameterName);
+		checkAphanumericAndUnderscore(s, parameterName);
+	}
+
 	
+
 	/**
 	 * 
 	 * @param s

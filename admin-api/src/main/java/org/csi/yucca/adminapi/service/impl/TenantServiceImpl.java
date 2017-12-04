@@ -336,7 +336,7 @@ public class TenantServiceImpl implements TenantService {
 			ServiceUtil.checkMandatoryParameter(((PostTenantRequest) tenantRequest).getName(), "name");
 			ServiceUtil.checkMandatoryParameter(((PostTenantRequest) tenantRequest).getDescription(), "description");
 			ServiceUtil.checkMandatoryParameter(((PostTenantRequest) tenantRequest).getTenantcode(), "tenantcode");
-			ServiceUtil.checkCode(((PostTenantRequest) tenantRequest).getTenantcode(), "tenantcode");
+			ServiceUtil.checkTenantCode(((PostTenantRequest) tenantRequest).getTenantcode(), "tenantcode");
 			ServiceUtil.checkMandatoryParameter(((PostTenantRequest) tenantRequest).getIdOrganization(), "idOrganization");
 			ServiceUtil.checkIfFoundRecord(organizationMapper.selectOrganizationById(((PostTenantRequest) tenantRequest).getIdOrganization()), "Organization [ id: "
 					+ ((PostTenantRequest) tenantRequest).getIdOrganization() + " ]");
