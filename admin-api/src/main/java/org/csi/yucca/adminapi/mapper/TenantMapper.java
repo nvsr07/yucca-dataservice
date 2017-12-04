@@ -332,7 +332,7 @@ public interface TenantMapper {
 			" socialphoenixtablename, socialphoenixschemaname ) " +
 			" VALUES (	#{creationdate}, #{expirationdate}, #{activationdate}, #{deactivationdate}, #{idShareType}, " +
 			" #{tenantcode}, #{name}, #{description}, #{clientkey}, #{clientsecret}, " +
-			" #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
+			" #{username}, #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
 			" #{idOrganization}, #{idTenantType}, #{idTenantStatus}, #{datasolrcollectionname}, " +
 			" #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, " +
 			" #{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, " +
