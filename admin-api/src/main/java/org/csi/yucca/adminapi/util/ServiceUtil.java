@@ -852,7 +852,7 @@ public class ServiceUtil {
 	
 	private static void checkAphanumericAndUnderscore(String s,
 			String fieldName) throws BadRequestException {
-		if (!isAlphaNumeric(s)){
+		if (!isAlphaNumericOrUnderscore(s)){
 			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED, "received " + fieldName + " [ " + s + " ]");
 		}
 	}
