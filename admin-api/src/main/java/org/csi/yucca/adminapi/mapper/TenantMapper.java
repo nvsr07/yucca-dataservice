@@ -252,8 +252,8 @@ public interface TenantMapper {
 	SELECT_TENANT_COLUMNS +
 	" FROM " + TENANT_TABLE + " TENANT " + 
 	" WHERE TENANT.id_tenant_type = #{idTenantType} AND " +
-	" TENANT.activationdate <= current_timestamp AND " +
-	" (TENANT.deactivationdate > current_timestamp or TENANT.deactivationdate is null) AND " +
+	" ( (TENANT.activationdate is null)  OR " +
+	" (TENANT.deactivationdate > current_timestamp or TENANT.deactivationdate is null) ) AND"+
 	" TENANT.username = #{username}";
 	@Results({
         @Result(property = "idTenant",       column = "id_tenant"),
