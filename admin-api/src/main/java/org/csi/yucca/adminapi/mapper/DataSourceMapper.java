@@ -72,7 +72,7 @@ public interface DataSourceMapper {
 			" lastupdate=#{lastupdate}, " +
 			" id_dcat=#{idDcat}, " +
 			" id_license=#{idLicense} " +
-			" WHERE id_datasource = #{idDatasource} and datasourceversion=#{datasourceversion} ";
+			" WHERE id_data_source = #{idDataSource} and datasourceversion=#{datasourceversion} ";
 	@Update(UPDATE_DATA_SOURCE)
 	int updateDataSource(DataSource dataSource);
 

@@ -43,7 +43,7 @@ public interface ComponentMapper {
 			"#{propName}" +
 		"</foreach>" +
 	 ") " ; 
-	@Delete(DELETE_COMPONENT_BY_DATA_SOURCE_AND_VERSION)
+	@Delete({"<script>",DELETE_COMPONENT_BY_DATA_SOURCE_AND_VERSION, "</script>"})
 	int deleteComponents(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion,
 			@Param("alreadyPresentIdList") List<Integer> alreadyPresentIdList);
 	

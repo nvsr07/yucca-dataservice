@@ -57,7 +57,7 @@ public interface StreamMapper {
 			" twtuntil=#{twtuntil}, " +
 			" twtratepercentage=#{twtratepercentage}, " +     
 			" twtlastsearchid=#{twtlastsearchid} " +
-			" WHERE id_datasource=#{idDataSource} and datasourceversion=#{datasourceversion} ";
+			" WHERE id_data_source=#{idDataSource} and datasourceversion=#{datasourceversion} ";
 	@Update(UPDATE_STREAM)
 	int updateStream(Stream stream);
 
@@ -248,7 +248,7 @@ public interface StreamMapper {
 			+ "yucca_stream.id_data_source, "
 			+ "yucca_stream.streamcode, "
 			+ "yucca_stream.streamname, "
-			+ "yucca_stream.savedata stream_save_data, "
+			+ "yucca_stream.savedata, "
 			+ "yucca_stream.datasourceversion, " 
 			+ "yucca_stream.fps, " +
 
@@ -413,12 +413,12 @@ public interface StreamMapper {
         @Result(property = "idDataSource", column = "id_data_source"),
         @Result(property = "idSmartObject", column = "id_smart_object"),
         
-        @Result(property = "idStream", column = "idstream"), 
-        @Result(property = "idDataSource", column = "id_data_source"),
-        @Result(property = "streamCode", column = "streamcode"), 
-        @Result(property = "streamName", column = "streamname"), 
-        @Result(property = "streamSaveData", column = "stream_save_data"),
-        @Result(property = "dataSourceVersion", column = "datasourceversion"), 
+        //@Result(property = "idStream", column = "idstream"), 
+        //@Result(property = "idDataSource", column = "id_data_source"),
+        //@Result(property = "streamCode", column = "streamcode"), 
+        //@Result(property = "streamName", column = "streamname"), 
+        //@Result(property = "streamSaveData", column = "savedata"),
+        //@Result(property = "dataSourceVersion", column = "datasourceversion"), 
         @Result(property = "fps", column = "fps"),
   	  
 		@Result(property = "dataSourceVisibility", column = "data_source_visibility"), 
@@ -586,12 +586,12 @@ public interface StreamMapper {
         @Result(property = "idDataSource", column = "id_data_source"),
         @Result(property = "idSmartObject", column = "id_smart_object"),
         
-        @Result(property = "idStream", column = "idstream"), 
+        //@Result(property = "idStream", column = "idstream"), 
         @Result(property = "idDataSource", column = "id_data_source"),
-        @Result(property = "streamCode", column = "streamcode"), 
-        @Result(property = "streamName", column = "streamname"), 
-        @Result(property = "streamSaveData", column = "stream_save_data"),
-        @Result(property = "dataSourceVersion", column = "datasourceversion"), 
+        //@Result(property = "streamCode", column = "streamcode"), 
+        //@Result(property = "streamName", column = "streamname"), 
+        //@Result(property = "streamSaveData", column = "stream_save_data"),
+        //@Result(property = "dataSourceVersion", column = "datasourceversion"), 
   	  
 		@Result(property = "dataSourceVisibility", column = "data_source_visibility"), 
 		@Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),  

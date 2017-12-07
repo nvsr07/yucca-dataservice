@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 public class DettaglioStream extends Stream
 		implements IOrganization, ITenant, IStatus, IDomain, ISubdomain, ISoCategory, ISoType {
 
+	
 	private Long usedInInternalCount;
 	private Long streamsCountBySO;
 	private String dataSourceCopyright;
@@ -25,11 +26,6 @@ public class DettaglioStream extends Stream
 	private String components; // JSON
 	private String sharingTenant; // JSON
 	private String sotypecode;
-	private Integer idStream;
-	private String streamCode;
-	private String streamName;
-	private Integer streamSaveData;
-	private Integer dataSourceVersion;
 	private String dataSourceName;
 
 	private String smartObjectCode;
@@ -205,45 +201,45 @@ public class DettaglioStream extends Stream
 		this.sotypecode = sotypecode;
 	}
 
-	public Integer getIdStream() {
-		return idStream;
-	}
-
-	public void setIdStream(Integer idStream) {
-		this.idStream = idStream;
-	}
-
-	public String getStreamCode() {
-		return streamCode;
-	}
-
-	public void setStreamCode(String streamCode) {
-		this.streamCode = streamCode;
-	}
-
-	public String getStreamName() {
-		return streamName;
-	}
-
-	public void setStreamName(String streamName) {
-		this.streamName = streamName;
-	}
-
-	public Integer getStreamSaveData() {
-		return streamSaveData;
-	}
-
-	public void setStreamSaveData(Integer streamSaveData) {
-		this.streamSaveData = streamSaveData;
-	}
-
-	public Integer getDataSourceVersion() {
-		return dataSourceVersion;
-	}
-
-	public void setDataSourceVersion(Integer dataSourceVersion) {
-		this.dataSourceVersion = dataSourceVersion;
-	}
+//	public Integer getIdStream() {
+//		return idStream;
+//	}
+//
+//	public void setIdStream(Integer idStream) {
+//		this.idStream = idStream;
+//	}
+//
+//	public String getStreamCode() {
+//		return streamCode;
+//	}
+//
+//	public void setStreamCode(String streamCode) {
+//		this.streamCode = streamCode;
+//	}
+//
+//	public String getStreamName() {
+//		return streamName;
+//	}
+//
+//	public void setStreamName(String streamName) {
+//		this.streamName = streamName;
+//	}
+//
+//	public Integer getStreamSaveData() {
+//		return streamSaveData;
+//	}
+//
+//	public void setStreamSaveData(Integer streamSaveData) {
+//		this.streamSaveData = streamSaveData;
+//	}
+//
+//	public Integer getDataSourceVersion() {
+//		return dataSourceVersion;
+//	}
+//
+//	public void setDataSourceVersion(Integer dataSourceVersion) {
+//		this.dataSourceVersion = dataSourceVersion;
+//	}
 
 	public String getDataSourceName() {
 		return dataSourceName;
