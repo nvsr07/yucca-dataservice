@@ -143,7 +143,7 @@ public class StreamServiceImpl implements StreamService {
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
 				organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser)).get(0);
 		
-		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDataSourceVersion() );
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 		   
 		DettaglioStreamResponse response = new DettaglioStreamResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
 		
