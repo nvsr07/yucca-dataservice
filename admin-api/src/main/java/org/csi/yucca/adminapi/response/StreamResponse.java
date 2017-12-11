@@ -27,15 +27,17 @@ public class StreamResponse extends Response {
 	private List<TagResponse> tags = new ArrayList<TagResponse>();
 	private DomainResponse domain;
 	private SubdomainResponse subdomain;
+	private Integer savedata;
+	
 
 	public StreamResponse(DettaglioStream dettaglioStream) throws Exception {
 		super();
 		this.tenantManager = new TenantResponse(dettaglioStream);
 		this.organization = new OrganizationResponse(dettaglioStream);
-		this.idstream = dettaglioStream.getIdStream();
-		this.version = dettaglioStream.getDataSourceVersion();
-		this.streamcode = dettaglioStream.getStreamCode();
-		this.streamname = dettaglioStream.getStreamName();
+		this.idstream = dettaglioStream.getIdstream();
+		this.version = dettaglioStream.getDatasourceversion();
+		this.streamcode = dettaglioStream.getStreamcode();
+		this.streamname = dettaglioStream.getStreamname();
 		this.name = dettaglioStream.getDataSourceName();
 		this.unpublished = dettaglioStream.getDataSourceUnpublished();
 		this.visibility = dettaglioStream.getDataSourceVisibility();
@@ -45,6 +47,7 @@ public class StreamResponse extends Response {
 		this.domain = new DomainResponse(dettaglioStream);
 		this.subdomain = new SubdomainResponse(dettaglioStream);
 		this.addTags(dettaglioStream.getTags());
+		setSavedata(dettaglioStream.getSavedata());
 	}
 
 	private void addTags(String tags) throws Exception {
@@ -185,6 +188,14 @@ public class StreamResponse extends Response {
 
 	public void setSubdomain(SubdomainResponse subdomain) {
 		this.subdomain = subdomain;
+	}
+
+	public Integer getSavedata() {
+		return savedata;
+	}
+
+	public void setSavedata(Integer savedata) {
+		this.savedata = savedata;
 	}
 
 }

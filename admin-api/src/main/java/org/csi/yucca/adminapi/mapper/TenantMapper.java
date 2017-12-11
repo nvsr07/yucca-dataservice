@@ -33,7 +33,7 @@ public interface TenantMapper {
 	
 	public static final String SELECT_TENANT_COLUMNS = 	
 			" SELECT TENANT.id_tenant, TENANT.tenantcode, TENANT.name, TENANT.description, clientkey, clientsecret, activationdate, deactivationdate, "
-			+ "usagedaysnumber, userfirstname, userlastname, useremail, usertypeauth, creationdate, expirationdate, id_ecosystem, "
+			+ "usagedaysnumber, TENANT.username, userfirstname, userlastname, useremail, usertypeauth, creationdate, expirationdate, id_ecosystem, "
 			+ "TENANT.id_organization, id_tenant_type, id_tenant_status,  TENANT.datasolrcollectionname, TENANT.measuresolrcollectionname, "
 			+ "TENANT.mediasolrcollectionname, TENANT.socialsolrcollectionname, TENANT.dataphoenixtablename, TENANT.dataphoenixschemaname, "
 			+ "TENANT.measuresphoenixtablename, TENANT.measuresphoenixschemaname, TENANT.mediaphoenixtablename, TENANT.mediaphoenixschemaname, "
@@ -90,7 +90,7 @@ public interface TenantMapper {
 	 * ***********************************************************************/
 	public static final String SELECT_DETTAGLIO_TENANT =
 			" SELECT USERS.password,tenantcode, TENANT.id_tenant, TENANT.description, name, usagedaysnumber, useremail, "+ 
-			" userfirstname, userlastname, usertypeauth, USERS.username, BUNDLES.id_bundles, BUNDLES.maxdatasetnum, "+ 
+			" userfirstname, userlastname, usertypeauth, TENANT.username, BUNDLES.id_bundles, BUNDLES.maxdatasetnum, "+ 
 			" BUNDLES.maxstreamsnum, BUNDLES.hasstage, BUNDLES.max_odata_resultperpage, BUNDLES.zeppelin, "+
 			" TENANT.id_ecosystem, ECOSYSTEM.ecosystemcode, ECOSYSTEM.description ecosystemdescription, "+
 			" TENANT.id_organization, ORGANIZATION.organizationcode, ORGANIZATION.description as organizationdescription, "+
@@ -141,7 +141,7 @@ public interface TenantMapper {
 	 * ***********************************************************************/
 	public static final String SELECT_ALL_TENANTS_JOIN = 	
 			
-	" SELECT USERS.username, " +
+	" SELECT TENANT.username, " +
 	
 	" BUNDLES.id_bundles, BUNDLES.maxdatasetnum, BUNDLES.maxstreamsnum, BUNDLES.hasstage, BUNDLES.max_odata_resultperpage, BUNDLES.zeppelin, " +
 	
@@ -250,13 +250,11 @@ public interface TenantMapper {
 	 * ***********************************************************************/
 	public static final String SELECT_ACTIVE_TENANT_BY_USERNAME_AND_ID_TENANT_TYPE =
 	SELECT_TENANT_COLUMNS +
-	" FROM " + TENANT_TABLE + " TENANT, " + UserMapper.USER_TABLE + " USERS, " + UserMapper.R_TENANT_USERS_TABLE + " TENANT_USERS " + 
+	" FROM " + TENANT_TABLE + " TENANT " + 
 	" WHERE TENANT.id_tenant_type = #{idTenantType} AND " +
-	" TENANT.activationdate <= current_timestamp AND " +
-	" (TENANT.deactivationdate > current_timestamp or TENANT.deactivationdate is null) AND " +
-	" USERS.username = #{username} AND " +
-	" USERS.id_user = TENANT_USERS.id_user AND " +
-	" TENANT.id_tenant = TENANT_USERS.id_tenant ";
+	" ( (TENANT.activationdate is null)  OR " +
+	" (TENANT.deactivationdate > current_timestamp or TENANT.deactivationdate is null) ) AND"+
+	" TENANT.username = #{username}";
 	@Results({
         @Result(property = "idTenant",       column = "id_tenant"),
         @Result(property = "idEcosystem",    column = "id_ecosystem"),
@@ -325,7 +323,7 @@ public interface TenantMapper {
 	public static final String INSERT_TENANT = 
 		"INSERT INTO " + TENANT_TABLE +
 			" ( creationdate, expirationdate, activationdate, deactivationdate, id_share_type, " +
-			" tenantcode, name, description, clientkey, clientsecret, " +
+			" tenantcode, name, description, clientkey, clientsecret, username, " +
 			" userfirstname, userlastname, useremail, usertypeauth, id_ecosystem, " +
 			" id_organization, id_tenant_type, id_tenant_status, datasolrcollectionname, " +
 			" measuresolrcollectionname, mediasolrcollectionname, socialsolrcollectionname, " +
@@ -334,7 +332,7 @@ public interface TenantMapper {
 			" socialphoenixtablename, socialphoenixschemaname ) " +
 			" VALUES (	#{creationdate}, #{expirationdate}, #{activationdate}, #{deactivationdate}, #{idShareType}, " +
 			" #{tenantcode}, #{name}, #{description}, #{clientkey}, #{clientsecret}, " +
-			" #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
+			" #{username}, #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
 			" #{idOrganization}, #{idTenantType}, #{idTenantStatus}, #{datasolrcollectionname}, " +
 			" #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, " +
 			" #{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, " +

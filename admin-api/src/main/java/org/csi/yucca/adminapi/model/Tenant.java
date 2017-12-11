@@ -19,6 +19,7 @@ public class Tenant implements Serializable{
 	private String clientkey;
 	private String clientsecret;
 	private Integer usagedaysnumber=-1;
+	private String username;
 	private String userfirstname;
 	private String userlastname;
 	private String useremail;
@@ -230,6 +231,12 @@ public class Tenant implements Serializable{
 	}
 	public void setSocialphoenixschemaname(String socialphoenixschemaname) {
 		this.socialphoenixschemaname = socialphoenixschemaname;
+	}
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	

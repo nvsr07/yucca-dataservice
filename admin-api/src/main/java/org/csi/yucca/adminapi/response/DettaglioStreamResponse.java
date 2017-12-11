@@ -57,10 +57,10 @@ public class DettaglioStreamResponse extends StreamResponse{
 	public DettaglioStreamResponse(DettaglioStream dettaglioStream)throws Exception{
 		this.setTenantManager(new TenantResponse(dettaglioStream));
 		this.setOrganization(new OrganizationResponse(dettaglioStream));
-		this.setIdstream(dettaglioStream.getIdStream());
-		this.setVersion(dettaglioStream.getDataSourceVersion());
-		this.setStreamcode(dettaglioStream.getStreamCode());
-		this.setStreamname(dettaglioStream.getStreamName());
+		this.setIdstream(dettaglioStream.getIdstream());
+		this.setVersion(dettaglioStream.getDatasourceversion());
+		this.setStreamcode(dettaglioStream.getStreamcode());
+		this.setStreamname(dettaglioStream.getStreamname());
 		this.setName(dettaglioStream.getDataSourceName());
 		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
 		Util.addComponents(dettaglioStream.getComponents(), this.components);
