@@ -1,5 +1,32 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
+import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
+import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
+import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_LANG_EN;
+import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_LANG_IT;
+import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_PATTERN;
+import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkAuthTenant;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkComponents;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkIfFoundRecord;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkLicense;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkVisibility;
+import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
+import static org.csi.yucca.adminapi.util.ServiceUtil.getTenantCodeListFromUser;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertBinaryComponents;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertComponents;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertDcat;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertSharingTenants;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +50,7 @@ import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.request.ComponentRequest;
-import org.csi.yucca.adminapi.request.PostDatasetRequest;
+import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
@@ -54,80 +81,222 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	private OrganizationMapper organizationMapper;
-	
+
 	@Autowired
 	private DataSourceMapper dataSourceMapper;
 
 	@Autowired
 	private LicenseMapper licenseMapper;
-	
+
 	@Autowired
 	private DcatMapper dcatMapper;
-	
+
 	@Autowired
 	private SequenceMapper sequenceMapper;
-	
+
 	@Autowired
 	private ComponentMapper componentMapper;
-	
+
 	@Autowired
 	private ApiMapper apiMapper;
 
 	@Autowired
 	private SubdomainMapper subdomainMapper;
 
+	private void updateDatasetComponent(DatasetRequest datasetRequest) throws Exception{
+
+		// COMPONENT already present
+		List<Integer> listIdComponent = new ArrayList<Integer>(); 
+		for (ComponentRequest component : datasetRequest.getComponents()) {
+			if(component.getIdComponent() != null){
+				listIdComponent.add(component.getIdComponent());
+			}
+		}
+		componentMapper.cloneComponent(datasetRequest.getNewDataSourceVersion(), listIdComponent);
+		
+		for (ComponentRequest component : datasetRequest.getComponents()) {
+			if(component.getIdComponent() != null){
+				componentMapper.updateClonedComponent(
+						component.getName(), 
+						component.getAlias(), 
+						component.getInorder(), 
+						component.getIdMeasureUnit(), 
+						datasetRequest.getNewDataSourceVersion(), 
+						datasetRequest.getIdDataSource());
+			}
+		}
+		
+		// new component
+		ServiceUtil.insertComponents(datasetRequest.getComponents(), datasetRequest.getIdDataSource(), datasetRequest.getNewDataSourceVersion(), datasetRequest.getNewDataSourceVersion(), componentMapper);
+	}
+	
+	/**
+	 * 
+	 * @param datasetRequest
+	 * @throws Exception
+	 */
+	private void updateSharingTenants(DatasetRequest datasetRequest) throws Exception{
+		if (datasetRequest.getSharingTenants() != null && !datasetRequest.getSharingTenants().isEmpty()) {
+			tenantMapper.deleteNotManagerTenantDataSource(datasetRequest.getIdDataSource(), datasetRequest.getCurrentDataSourceVersion());
+			
+			ServiceUtil.insertSharingTenants(datasetRequest.getSharingTenants(), datasetRequest.getIdDataSource(),
+					Util.getNow(),  DataOption.READ_AND_USE.id() , ManageOption.NO_RIGHT.id(), datasetRequest.getNewDataSourceVersion(), tenantMapper);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param datasetRequest
+	 * @throws Exception
+	 */
+	private void updateDatasetTransaction(DatasetRequest datasetRequest) throws Exception {
+		
+		// dcat
+		Long idDcat = insertDcat(datasetRequest.getDcat(), dcatMapper);
+		
+		// license
+		Integer idLicense = insertLicense(datasetRequest.getLicense(), licenseMapper);
+
+		// data source
+		dataSourceMapper.cloneDataSource( datasetRequest.getNewDataSourceVersion(), datasetRequest.getCurrentDataSourceVersion(), datasetRequest.getIdDataSource());
+		updateDataSource(datasetRequest, idDcat, idLicense, datasetRequest.getIdDataSource(), datasetRequest.getNewDataSourceVersion(), dataSourceMapper);
+		
+		// data set
+		datasetMapper.cloneDataset(datasetRequest.getNewDataSourceVersion(), datasetRequest.getCurrentDataSourceVersion(), datasetRequest.getIdDataSource());
+		datasetMapper.updateDataset(datasetRequest.getDatasetname(), datasetRequest.getDescription(), datasetRequest.getIdDataSource(), datasetRequest.getNewDataSourceVersion());
+
+		// tags
+		insertTags(datasetRequest.getTags(), datasetRequest.getIdDataSource(), datasetRequest.getNewDataSourceVersion(), dataSourceMapper);
+
+		// components
+		updateDatasetComponent(datasetRequest);
+		
+		// sharing tenants		
+		updateSharingTenants(datasetRequest);
+		
+	}
+
 	/**
 	 * 
 	 */
-	@Override
-	public ServiceResponse insertDataset(String organizationCode, PostDatasetRequest postDatasetRequest, JwtUser authorizedUser)
-				throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse updateDataset(String organizationCode, Integer idDataset, DatasetRequest datasetRequest,  String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode); 
-
-		insertDatasetValidation(postDatasetRequest, authorizedUser, organizationCode, organization);
+		updateDatasetValidation(datasetRequest, authorizedUser, organizationCode, idDataset, tenantCodeManager);
 		
-		Dataset dataset = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization);
+		updateDatasetTransaction(datasetRequest);
 		
-		return ServiceResponse.build().object(PostDatasetResponse.build(dataset.getIddataset())
-				.datasetcode(dataset.getDatasetcode()).datasetname(dataset.getDatasetname()));
+		return ServiceResponse.build().object(PostDatasetResponse.build(idDataset)
+				.datasetcode(datasetRequest.getDatasetcode()).datasetname(datasetRequest.getDatasetname()));
+	
 	}
+
+	/**
+	 * 
+	 * @param datasetRequest
+	 * @param authorizedUser
+	 * @param organizationCode
+	 * @param organization
+	 * @param idDataset
+	 * @param tenantCodeManager
+	 * @throws Exception
+	 */
+	private void updateDatasetValidation(DatasetRequest datasetRequest, JwtUser authorizedUser,
+			String organizationCode, Integer idDataset, String tenantCodeManager) throws Exception {
+
+		checkAuthTenant(authorizedUser, datasetRequest.getIdTenant(), tenantMapper);
+		
+		// check organization code:
+		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
+		checkIfFoundRecord(organization, "Not found organization code: " + organizationCode);
+
+		// check tag list:
+		checkList(datasetRequest.getTags(), "tags");
+
+		// datasetname
+		checkMandatoryParameter(datasetRequest.getDatasetname(), "datasetname");
+
+		// license
+		checkLicense(datasetRequest.getLicense());
+		
+		// visibility
+		checkVisibility(datasetRequest, tenantMapper);
+
+		// dataset
+		Dataset dataset = datasetMapper.selectDatasetForUpdate(tenantCodeManager, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
+		checkIfFoundRecord(dataset);
+		
+		if(Status.UNINSTALLATION.id().equals(dataset.getIdStatus())){
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "Status: " + Status.UNINSTALLATION.description());
+		}
+		
+		if(dataset.getDomIdDomain().equals(-1) && datasetRequest.getUnpublished() == false){
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "Multi domain must be unpublished.");
+		}
+		
+		checkComponents(datasetRequest.getComponents(), dataset.getIdDataSource(), dataset.getDatasourceversion(), componentMapper);
+		
+		datasetRequest.setNewDataSourceVersion(dataset.getDatasourceversion() + 1);
+		datasetRequest.setCurrentDataSourceVersion(dataset.getDatasourceversion());
+		datasetRequest.setIdDataSource(dataset.getIdDataSource());
+		datasetRequest.setDatasetcode(dataset.getDatasetcode());
+	}
+
+	
 	
 	/**
 	 * 
 	 */
 	@Override
-	public ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser) 
-			throws BadRequestException, NotFoundException, Exception {
-		
-		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset, organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+	public ServiceResponse insertDataset(String organizationCode, DatasetRequest postDatasetRequest,
+			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		ServiceUtil.checkIfFoundRecord(dettaglioDataset);
+		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
 
-		return ServiceUtil.buildResponse(new DettaglioDatasetResponse(dettaglioDataset));
+		insertDatasetValidation(postDatasetRequest, authorizedUser, organizationCode, organization);
+
+		Dataset dataset = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization);
+
+		return ServiceResponse.build().object(PostDatasetResponse.build(dataset.getIddataset())
+				.datasetcode(dataset.getDatasetcode()).datasetname(dataset.getDatasetname()));
 	}
 
 	/**
 	 * 
 	 */
 	@Override
-	public ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
-			throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
-		
-		ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
-		
-		List<String> sortList = ServiceUtil.getSortList(sort, Dataset.class);
+	public ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager,
+			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		List<Dataset> dataSetList = datasetMapper.selectDataSets(tenantCodeManager, organizationCode, sortList, ServiceUtil.getTenantCodeListFromUser(authorizedUser));
-		
-		ServiceUtil.checkList(dataSetList);
-		
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset,
+				organizationCode, getTenantCodeListFromUser(authorizedUser));
+
+		checkIfFoundRecord(dettaglioDataset);
+
+		return buildResponse(new DettaglioDatasetResponse(dettaglioDataset));
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort,
+			JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
+
+		checkAuthTenant(authorizedUser, tenantCodeManager);
+
+		List<String> sortList = getSortList(sort, Dataset.class);
+
+		List<Dataset> dataSetList = datasetMapper.selectDataSets(tenantCodeManager, organizationCode, sortList,
+				getTenantCodeListFromUser(authorizedUser));
+
+		checkList(dataSetList);
+
 		List<DatasetResponse> listResponse = new ArrayList<DatasetResponse>();
 		for (Dataset dataset : dataSetList) {
 			listResponse.add(new DatasetResponse(dataset));
 		}
-		
-		return ServiceUtil.buildResponse(listResponse);
+
+		return buildResponse(listResponse);
 
 	}
 
@@ -136,9 +305,9 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @param components
 	 * @return
 	 */
-	private boolean isBinaryDataset(List<ComponentRequest> components){
+	private boolean isBinaryDataset(List<ComponentRequest> components) {
 		for (ComponentRequest component : components) {
-			if(DataType.BINARY.id() == component.getIdDataType()){
+			if (DataType.BINARY.id() == component.getIdDataType()) {
 				return true;
 			}
 		}
@@ -153,32 +322,35 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @param organization
 	 * @throws Exception
 	 */
-	private void insertDatasetValidation(PostDatasetRequest postDatasetRequest, JwtUser authorizedUser, String organizationCode, Organization organization) throws Exception{
-		
+	private void insertDatasetValidation(DatasetRequest datasetRequest, JwtUser authorizedUser,
+			String organizationCode, Organization organization) throws Exception {
+
 		// verifica che sia presente idSubdomain o multisubdomanin
-		if (postDatasetRequest.getIdSubdomain() == null && postDatasetRequest.getMultiSubdomain() == null) {
+		if (datasetRequest.getIdSubdomain() == null && datasetRequest.getMultiSubdomain() == null) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, "Mandatory idSubdomanin or multiSubdomain");
 		}
-		
+
 		// verifica il multisubdomain
-		if (postDatasetRequest.getMultiSubdomain() != null && !postDatasetRequest.getMultiSubdomain().matches(ServiceUtil.MULTI_SUBDOMAIN_PATTERN)) {
-			throw new BadRequestException(Errors.INCORRECT_VALUE, "Incorrect pattern for multisubdomain. Must be [ " + ServiceUtil.MULTI_SUBDOMAIN_PATTERN + " ]");
+		if (datasetRequest.getMultiSubdomain() != null
+				&& !datasetRequest.getMultiSubdomain().matches(MULTI_SUBDOMAIN_PATTERN)) {
+			throw new BadRequestException(Errors.INCORRECT_VALUE,
+					"Incorrect pattern for multisubdomain. Must be [ " + MULTI_SUBDOMAIN_PATTERN + " ]");
 		}
-		
-		//Se id_subdomain è nullo verificare che "unpublished " sia true
-		if (postDatasetRequest.getIdSubdomain() == null && (postDatasetRequest.getUnpublished() == null || postDatasetRequest.getUnpublished() == false)) {
-			throw new BadRequestException(Errors.INCORRECT_VALUE, "If idSubdomain is null unpublished must be true.");			
+
+		// Se id_subdomain è nullo verificare che "unpublished " sia true
+		if (datasetRequest.getIdSubdomain() == null && datasetRequest.getUnpublished() == false) {
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "If idSubdomain is null unpublished must be true.");
 		}
-		
-		ServiceUtil.checkIfFoundRecord(organization, "Not found organization code: " + organizationCode );
-		ServiceUtil.checkList(postDatasetRequest.getTags(), "tags");
-		ServiceUtil.checkTenant(postDatasetRequest.getIdTenant(), organizationCode, tenantMapper);
-		ServiceUtil.checkAuthTenant(authorizedUser, postDatasetRequest.getIdTenant(), tenantMapper);
-		ServiceUtil.checkMandatoryParameter(postDatasetRequest.getDatasetname(), "datasetname");
-		ServiceUtil.checkLicense(postDatasetRequest.getLicense());
-		ServiceUtil.checkVisibility(postDatasetRequest, tenantMapper);
+
+		checkIfFoundRecord(organization, "Not found organization code: " + organizationCode);
+		checkList(datasetRequest.getTags(), "tags");
+		checkTenant(datasetRequest.getIdTenant(), organizationCode, tenantMapper);
+		checkAuthTenant(authorizedUser, datasetRequest.getIdTenant(), tenantMapper);
+		checkMandatoryParameter(datasetRequest.getDatasetname(), "datasetname");
+		checkLicense(datasetRequest.getLicense());
+		checkVisibility(datasetRequest, tenantMapper);
 	}
-	
+
 	/**
 	 * 
 	 * @param postDatasetRequest
@@ -186,48 +358,46 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private Integer insertBinary(PostDatasetRequest postDatasetRequest, Organization organization, Integer idSubdomain)throws Exception{
+	private Integer insertBinary(DatasetRequest postDatasetRequest, Organization organization, Integer idSubdomain)
+			throws Exception {
 		Integer idBinaryDataSource = null;
-		if(isBinaryDataset(postDatasetRequest.getComponents())){
+		if (isBinaryDataset(postDatasetRequest.getComponents())) {
 
 			// BINARY DATASOURCE
-			idBinaryDataSource = ServiceUtil.insertDataSource(
-					new PostDatasetRequest().datasetname(postDatasetRequest.getDatasetname()).idSubdomain(idSubdomain), 
-					organization.getIdOrganization(), 
-					Status.INSTALLED.id(), dataSourceMapper);
-			
+			idBinaryDataSource = insertDataSource(
+					new DatasetRequest().datasetname(postDatasetRequest.getDatasetname()).idSubdomain(idSubdomain),
+					organization.getIdOrganization(), Status.INSTALLED.id(), dataSourceMapper);
+
 			// INSERT DATASET
-			ServiceUtil.insertDataset(idBinaryDataSource, ServiceUtil.DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), 
-					DatasetSubtype.BINARY.id(), datasetMapper, sequenceMapper);
-			
+			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION,
+					postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), datasetMapper, sequenceMapper);
+
 			// BINARY COMPONENT
-			ServiceUtil.insertBinaryComponents(idBinaryDataSource, componentMapper);
+			insertBinaryComponents(idBinaryDataSource, componentMapper);
 		}
 		return idBinaryDataSource;
 	}
-	
+
 	/**
 	 * 
 	 * @param postDatasetRequest
 	 * @return
 	 */
-	private Integer insertSubdomain(PostDatasetRequest postDatasetRequest){
-		
+	private Integer insertSubdomain(DatasetRequest postDatasetRequest) {
+
 		if (postDatasetRequest.getIdSubdomain() != null) {
 			return postDatasetRequest.getIdSubdomain();
 		}
-		
-		Subdomain subdomain = new Subdomain()
-				.idDomain(ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN)
-				.langEn(ServiceUtil.MULTI_SUBDOMAIN_LANG_EN)
-				.langIt(ServiceUtil.MULTI_SUBDOMAIN_LANG_IT)
+
+		Subdomain subdomain = new Subdomain().idDomain(MULTI_SUBDOMAIN_ID_DOMAIN)
+				.langEn(MULTI_SUBDOMAIN_LANG_EN).langIt(MULTI_SUBDOMAIN_LANG_IT)
 				.subdomaincode(postDatasetRequest.getMultiSubdomain());
-		
+
 		subdomainMapper.insertSubdomain(subdomain);
-		
+
 		return subdomain.getIdSubdomain();
 	}
-	
+
 	/**
 	 * 
 	 * @param postDatasetRequest
@@ -236,50 +406,54 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private Dataset insertDatasetTransaction(PostDatasetRequest postDatasetRequest, JwtUser authorizedUser, Organization organization)throws Exception{
-		
+	private Dataset insertDatasetTransaction(DatasetRequest postDatasetRequest, JwtUser authorizedUser,
+			Organization organization) throws Exception {
+
 		// insert subdomain
 		Integer idSubdomain = insertSubdomain(postDatasetRequest);
-		
+
 		// BINARY
 		Integer idBinaryDataSource = insertBinary(postDatasetRequest, organization, idSubdomain);
-		
+
 		// INSERT LICENSE:
-		Integer idLicense = ServiceUtil.insertLicense(postDatasetRequest.getLicense(), licenseMapper);
-		
+		Integer idLicense = insertLicense(postDatasetRequest.getLicense(), licenseMapper);
+
 		// INSERT DCAT:
-		Long idDcat = ServiceUtil.insertDcat(postDatasetRequest.getDcat(), dcatMapper);
-		
+		Long idDcat = insertDcat(postDatasetRequest.getDcat(), dcatMapper);
+
 		// INSERT DATA SOURCE:
-		Integer idDataSource = ServiceUtil.insertDataSource(postDatasetRequest.idSubdomain(idSubdomain), organization.getIdOrganization(), 
-				idDcat, idLicense, Status.INSTALLED.id(), dataSourceMapper);
+		Integer idDataSource = insertDataSource(postDatasetRequest.idSubdomain(idSubdomain),
+				organization.getIdOrganization(), idDcat, idLicense, Status.INSTALLED.id(), dataSourceMapper);
 
 		// INSERT DATASET
-		Dataset dataset = ServiceUtil.insertDataset(
-				idDataSource, ServiceUtil.DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), 
-				DatasetSubtype.BULK.id(), postDatasetRequest.getImportfiletype(), ServiceUtil.DATASOURCE_VERSION, 
-				idBinaryDataSource, postDatasetRequest.getJdbcdburl(),postDatasetRequest.getJdbcdbname(),
-				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), datasetMapper, sequenceMapper);
-		
+		Dataset dataset = ServiceUtil.insertDataset(idDataSource, DATASOURCE_VERSION,
+				postDatasetRequest.getDatasetname(), DatasetSubtype.BULK.id(), postDatasetRequest.getImportfiletype(),
+				DATASOURCE_VERSION, idBinaryDataSource, postDatasetRequest.getJdbcdburl(),
+				postDatasetRequest.getJdbcdbname(), postDatasetRequest.getJdbcdbtype(),
+				postDatasetRequest.getJdbctablename(), datasetMapper, sequenceMapper);
+
 		// TAGS
 		for (Integer idTag : postDatasetRequest.getTags()) {
-			dataSourceMapper.insertTagDataSource(idDataSource, ServiceUtil.DATASOURCE_VERSION, idTag);
+			dataSourceMapper.insertTagDataSource(idDataSource, DATASOURCE_VERSION, idTag);
 		}
-		
+
 		// COMPONENT
-		ServiceUtil.insertComponents(postDatasetRequest.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, Util.booleanToInt(true), componentMapper);
-		
+		insertComponents(postDatasetRequest.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION,
+				Util.booleanToInt(true), componentMapper);
+
 		// TENANT-DATASOURCE
-		ServiceUtil.insertTenantDataSource(postDatasetRequest.getIdTenant(), idDataSource, Util.getNow(), tenantMapper);		
-		
+		insertTenantDataSource(postDatasetRequest.getIdTenant(), idDataSource, Util.getNow(), tenantMapper);
+
 		// SHARING TENANT
-	    ServiceUtil.insertSharingTenants(postDatasetRequest.getSharingTenants(), idDataSource, Util.getNow(), DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);
-		
-	    // API
-		apiMapper.insertApi(Api.buildOutput(ServiceUtil.DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
-				.apiname(dataset.getDatasetname()).apisubtype(ServiceUtil.API_SUBTYPE_ODATA).idDataSource(idDataSource));
+		insertSharingTenants(postDatasetRequest.getSharingTenants(), idDataSource, Util.getNow(),
+				DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);
+
+		// API
+		apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
+				.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+				.idDataSource(idDataSource));
 		
 		return dataset;
 	}
-	
+
 }

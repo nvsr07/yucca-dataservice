@@ -1,13 +1,13 @@
 package org.csi.yucca.adminapi.util;
 
-public enum StreamVisibility {
+public enum Visibility {
 	
 	PRIVATE ("private"),
 	PUBLIC  ("public");
 	
 	private String code;
 	
-	StreamVisibility(String code){
+	Visibility(String code){
 		this.code = code;
 	}
 

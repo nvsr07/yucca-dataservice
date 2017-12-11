@@ -1,33 +1,6 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
-import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +10,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
-import org.csi.yucca.adminapi.request.PostDatasetRequest;
+import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
@@ -89,6 +62,31 @@ public class ManagementController extends YuccaController {
 
 	@Autowired
 	private DatasetService datasetService;
+
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idDataset
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
+	@PutMapping("/organizations/{organizationCode}/datasets/{idDataset}")
+	public ResponseEntity<Object> updateDataset(
+			@PathVariable final String organizationCode,
+			@PathVariable final Integer idDataset,
+			@RequestBody final DatasetRequest datasetRequest,
+			@RequestParam(required = false) final String tenantCodeManager,
+			final HttpServletRequest request) {
+		
+		logger.info("updateDataset");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.updateDataset(organizationCode, idDataset, datasetRequest, tenantCodeManager, getAuthorizedUser(request));
+			}
+		}, logger);
+	}
 	
 	/**
 	 * 
@@ -107,7 +105,7 @@ public class ManagementController extends YuccaController {
 	@PostMapping("/organizations/{organizationCode}/datasets")
 	public ResponseEntity<Object> addDataSet(
 			@PathVariable final String organizationCode,
-			@RequestBody final PostDatasetRequest postDatasetRequest ,
+			@RequestBody final DatasetRequest postDatasetRequest ,
 			final HttpServletRequest request
 			) {
 		logger.info("addDataSet");

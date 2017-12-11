@@ -12,7 +12,7 @@ public enum Status {
 	INSTALLATION_FAIL          (8, "inst_fail",   "Installation failed"),
 	REJECT                     (9, "reject",      "reject");
 	
-	private int id;
+	private Integer id;
 	private String code;
 	private String description;
 	
@@ -22,7 +22,7 @@ public enum Status {
 		this.description = description;
 	}
 
-	public int id() {
+	public Integer id() {
 		return id;
 	}
 

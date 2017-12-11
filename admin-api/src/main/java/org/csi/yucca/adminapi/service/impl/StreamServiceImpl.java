@@ -25,7 +25,6 @@ import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
-import org.csi.yucca.adminapi.model.DataSource;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
@@ -60,6 +59,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import static org.csi.yucca.adminapi.util.ServiceUtil.*;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -112,12 +112,12 @@ public class StreamServiceImpl implements StreamService {
 			String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 		
 		// streamToUpdate
-		StreamToUpdate streamToUpdate =	streamMapper.selectStreamToUpdate(tenantCodeManager, idStream, organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser));
-		ServiceUtil.checkIfFoundRecord(streamToUpdate);
+		StreamToUpdate streamToUpdate =	streamMapper.selectStreamToUpdate(tenantCodeManager, idStream, organizationCode, getTenantCodeListFromUser(authorizedUser));
+		checkIfFoundRecord(streamToUpdate);
 
 		// smartobject
 		Smartobject smartObject = smartobjectMapper.selectSmartobjectBySocodeAndOrgcode(soCode, organizationCode);
-		ServiceUtil.checkIfFoundRecord(smartObject,"smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
+		checkIfFoundRecord(smartObject,"smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
 
 		// validation
 		updateValidation(smartObject, streamToUpdate, streamRequest);
@@ -136,18 +136,18 @@ public class StreamServiceImpl implements StreamService {
 			throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, 
-				ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+				getTenantCodeListFromUser(authorizedUser));
 
-		ServiceUtil.checkIfFoundRecord(dettaglioStream);
+		checkIfFoundRecord(dettaglioStream);
 
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-				organizationCode, ServiceUtil.getTenantCodeListFromUser(authorizedUser)).get(0);
+				organizationCode, getTenantCodeListFromUser(authorizedUser)).get(0);
 		
-		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDataSourceVersion() );
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 		   
 		DettaglioStreamResponse response = new DettaglioStreamResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
 		
-		return ServiceUtil.buildResponse(response);
+		return buildResponse(response);
 	}
 	
 	/**
@@ -158,9 +158,9 @@ public class StreamServiceImpl implements StreamService {
 			throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, 
-				ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+				getTenantCodeListFromUser(authorizedUser));
 
-		ServiceUtil.checkIfFoundRecord(dettaglioStream);
+		checkIfFoundRecord(dettaglioStream);
 
 		return Util.convertIconFromDBToByte(dettaglioStream.getDataSourceIcon());
 	}
@@ -172,15 +172,15 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse selectStreams(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 		
-		ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
+		checkAuthTenant(authorizedUser, tenantCodeManager);
 		
-		List<String> sortList = ServiceUtil.getSortList(sort, DettaglioStream.class);
+		List<String> sortList = getSortList(sort, DettaglioStream.class);
 		
-		List<DettaglioStream> list = streamMapper.selectStreams(tenantCodeManager, organizationCode, sortList, ServiceUtil.getTenantCodeListFromUser(authorizedUser));
+		List<DettaglioStream> list = streamMapper.selectStreams(tenantCodeManager, organizationCode, sortList, getTenantCodeListFromUser(authorizedUser));
 		
-		ServiceUtil.checkList(list);
+		checkList(list);
 		
-		return ServiceUtil.buildResponse(buildSelectStreamsResponse(list));
+		return buildResponse(buildSelectStreamsResponse(list));
 	}
 
 	/**
@@ -191,10 +191,10 @@ public class StreamServiceImpl implements StreamService {
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 
 		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
-		ServiceUtil.checkIfFoundRecord(organization);
+		checkIfFoundRecord(organization);
 
 		Smartobject smartobject = smartobjectMapper.selectSmartobjectBySocodeAndOrgcode(soCode, organizationCode);
-		ServiceUtil.checkIfFoundRecord(smartobject,
+		checkIfFoundRecord(smartobject,
 				"smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
 
 		validation(request, organizationCode, smartobject, authorizedUser);
@@ -211,18 +211,18 @@ public class StreamServiceImpl implements StreamService {
 	 * @param version
 	 * @return
 	 */
-	private List<Component> getAlreadyPresentComponentsPreviousVersion(Integer idDataSource, Integer version){
-		
-		if(idDataSource == null || version == null){
-			return null;
-		}
-		
-		if(version > 1){
-			return componentMapper.selectComponentByDataSourceAndVersion(idDataSource,  (version-1) );
-		}
-		
-		return null;
-	}	
+//	private List<Component> getAlreadyPresentComponentsPreviousVersion(Integer idDataSource, Integer version){
+//		
+//		if(idDataSource == null || version == null){
+//			return null;
+//		}
+//		
+//		if(version > 1){
+//			return componentMapper.selectComponentByDataSourceAndVersion(idDataSource,  (version-1) );
+//		}
+//		
+//		return null;
+//	}	
 	
 	
 	/**
@@ -238,17 +238,6 @@ public class StreamServiceImpl implements StreamService {
 		}
 		return responseList;
 	}
-	
-	/**
-	 * 
-	 * @param request
-	 * @param idDataSource
-	 */
-	private void insertTags(PostStreamRequest request, Integer idDataSource) {
-		for (Integer idTag : request.getTags()) {
-			dataSourceMapper.insertTagDataSource(idDataSource, 1, idTag);
-		}
-	}
 
 	/**
 	 * 
@@ -257,7 +246,7 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void insertComponents(PostStreamRequest request, Smartobject smartobject, Integer idDataSource) throws Exception {
 		if (Type.FEED_TWEET.id() != smartobject.getIdSoType()) {
-			ServiceUtil.insertComponents(request.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, ServiceUtil.SINCE_VERSION, Util.booleanToInt(false), componentMapper);
+			ServiceUtil.insertComponents(request.getComponents(), idDataSource, DATASOURCE_VERSION, SINCE_VERSION, Util.booleanToInt(false), componentMapper);
 		}
 	}
 	
@@ -284,29 +273,29 @@ public class StreamServiceImpl implements StreamService {
 
 		Timestamp now = Util.getNow();
 
-		Long idDcat = ServiceUtil.insertDcat(request.getDcat(), dcatMapper);
+		Long idDcat = insertDcat(request.getDcat(), dcatMapper);
 
-		Integer idLicense = ServiceUtil.insertLicense(request.getLicense(), licenseMapper);
+		Integer idLicense = insertLicense(request.getLicense(), licenseMapper);
 
-		Integer idDataSource = ServiceUtil.insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
+		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 
 		Stream stream = insertStream(request, idDataSource, smartobject.getIdSmartObject());
 
-		insertTags(request, idDataSource);
+		insertTags(request.getTags(), idDataSource, DATASOURCE_VERSION, dataSourceMapper);
 
 		insertComponents(request, smartobject, idDataSource);
 
 		insertTweetComponents(request, smartobject);
 
-		ServiceUtil.insertTenantDataSource(request.getIdTenant(), idDataSource, now, tenantMapper);
+		insertTenantDataSource(request.getIdTenant(), idDataSource, now, tenantMapper);
 
 		insertSharingTenants(request, idDataSource, now);
 
 		insertStreamInternal(request, idDataSource);
-		Dataset dataset = ServiceUtil.insertDataset(request.getSavedata(), idDataSource, smartobject.getIdSoType(), ServiceUtil.DATASOURCE_VERSION, 
+		Dataset dataset = insertDataset(request.getSavedata(), idDataSource, smartobject.getIdSoType(), DATASOURCE_VERSION, 
 				request.getStreamcode(), datasetMapper, sequenceMapper);
 
-		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), ServiceUtil.DATASOURCE_VERSION);
+		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), DATASOURCE_VERSION);
 
 		return stream;
 
@@ -321,16 +310,16 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void insertApi(StreamRequest request, Smartobject smartobject, Dataset dataset, Integer idDataSource, String streamCode, Integer dataSourceVersion) {
 		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
-				.apicode(ServiceUtil.API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
-				.apiname(request.getStreamname()).apisubtype(ServiceUtil.API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
+				.apicode(API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
+				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
 
 		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
-				.apicode(ServiceUtil.API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
-				.apiname(request.getStreamname()).apisubtype(ServiceUtil.API_SUBTYPE_MQTT).idDataSource(idDataSource));
+				.apicode(API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
+				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_MQTT).idDataSource(idDataSource));
 
 		if (request.getSavedata() && dataset != null) {
 			apiMapper.insertApi(Api.buildOutput(dataSourceVersion).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(ServiceUtil.API_SUBTYPE_ODATA).idDataSource(idDataSource));
+					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA).idDataSource(idDataSource));
 		}
 	}
 	
@@ -457,7 +446,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @return
 	 */
 //	private String generateStreamDatasetCode(Integer iddataset, String streamcode) {
-//		return ServiceUtil.STREAM_DATASET_PREFIX_CODE + Util.cleanStringCamelCase(streamcode) + "_" + iddataset;
+//		return STREAM_DATASET_PREFIX_CODE + Util.cleanStringCamelCase(streamcode) + "_" + iddataset;
 //	}
 
 	/**
@@ -469,7 +458,7 @@ public class StreamServiceImpl implements StreamService {
 		if (request.getInternalStreams() != null) {
 			for (InternalStreamRequest internalStreamRequest : request.getInternalStreams()) {
 				StreamInternal streamInternal = new StreamInternal();
-				streamInternal.setDatasourceversioninternal(ServiceUtil.DATASOURCE_VERSION);
+				streamInternal.setDatasourceversioninternal(DATASOURCE_VERSION);
 				streamInternal.setIdDataSourceinternal(idDataSource);
 				streamInternal.setIdstream(internalStreamRequest.getIdStream());
 				streamInternal.setStreamAlias(internalStreamRequest.getStreamAlias());
@@ -551,9 +540,9 @@ public class StreamServiceImpl implements StreamService {
 	private void validation(PostStreamRequest request, String organizationCode, Smartobject smartobject,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		Tenant tenant = ServiceUtil.checkTenant(request.getIdTenant(), organizationCode, tenantMapper);
+		Tenant tenant = checkTenant(request.getIdTenant(), organizationCode, tenantMapper);
 
-		ServiceUtil.checkAuthTenant(authorizedUser, tenant.getTenantcode());
+		checkAuthTenant(authorizedUser, tenant.getTenantcode());
 
 		checkMandatories(request);
 
@@ -569,9 +558,9 @@ public class StreamServiceImpl implements StreamService {
 		
 		checkFeedTweetSmartobject(request, smartobject.getIdSoType());
 
-		checkComponents(request, smartobject.getIdSoType());
+		checkComponents(request.getComponents(), smartobject.getIdSoType(), componentMapper);
 		
-		ServiceUtil.checkVisibility(request, tenantMapper);
+		checkVisibility(request, tenantMapper);
 	}
 
 	/**
@@ -595,11 +584,11 @@ public class StreamServiceImpl implements StreamService {
 	private void checkInternalSmartObject(String internalQuery, List<InternalStreamRequest> internalStreams, Integer idSoType) throws BadRequestException, NotFoundException {
 		// INTERNAL SO TYPE
 		if (Type.INTERNAL.id() == idSoType) {
-			ServiceUtil.checkMandatoryParameter(internalQuery, "internalquery mandatory (only for internal smartobject)");
-			ServiceUtil.checkList(internalStreams, "InternalStreams mandatory (only for internal smartobject)");
+			checkMandatoryParameter(internalQuery, "internalquery mandatory (only for internal smartobject)");
+			checkList(internalStreams, "InternalStreams mandatory (only for internal smartobject)");
 			for (InternalStreamRequest internalStream : internalStreams) {
-				ServiceUtil.checkMandatoryParameter(internalStream.getIdStream(), "internalStream => idStream");
-				ServiceUtil.checkMandatoryParameter(internalStream.getStreamAlias(), "internalStream => streamAlias");
+				checkMandatoryParameter(internalStream.getIdStream(), "internalStream => idStream");
+				checkMandatoryParameter(internalStream.getStreamAlias(), "internalStream => streamAlias");
 			}
 		}
 
@@ -616,15 +605,15 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 */
 	private void checkMandatories(PostStreamRequest request) throws BadRequestException, NotFoundException {
-		ServiceUtil.checkMandatoryParameter(request.getStreamname(), "streamname");
-		ServiceUtil.checkMandatoryParameter(request.getName(), "name");
-		ServiceUtil.checkMandatoryParameter(request.getSavedata(), "savedata");
-		ServiceUtil.checkMandatoryParameter(request.getVisibility(), "visibility");
-		ServiceUtil.checkMandatoryParameter(request.getRequestername(), "requestername");
-		ServiceUtil.checkMandatoryParameter(request.getRequestersurname(), "requestersurname");
-		ServiceUtil.checkMandatoryParameter(request.getRequestermail(), "requestermail");
-		ServiceUtil.checkMandatoryParameter(request.getUnpublished(), "unpublished");
-		ServiceUtil.checkList(request.getTags(), "tags");
+		checkMandatoryParameter(request.getStreamname(), "streamname");
+		checkMandatoryParameter(request.getName(), "name");
+		checkMandatoryParameter(request.getSavedata(), "savedata");
+		checkMandatoryParameter(request.getVisibility(), "visibility");
+		checkMandatoryParameter(request.getRequestername(), "requestername");
+		checkMandatoryParameter(request.getRequestersurname(), "requestersurname");
+		checkMandatoryParameter(request.getRequestermail(), "requestermail");
+		checkMandatoryParameter(request.getUnpublished(), "unpublished");
+		checkList(request.getTags(), "tags");
 		
 		checkDcat(request);
 
@@ -640,9 +629,9 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void checkDcat(StreamRequest request) throws BadRequestException, NotFoundException {
 		if (request.getDcat()!= null && request.getDcat().getIdDcat() == null) {
-			ServiceUtil.checkMandatoryParameter(request.getDcat().getDcatnomeorg(), "dcatnomeorg");
-			ServiceUtil.checkMandatoryParameter(request.getDcat().getDcatemailorg(), "dcatemailorg");
-			ServiceUtil.checkMandatoryParameter(request.getDcat().getDcatrightsholdername(), "dcatrightsholdername");
+			checkMandatoryParameter(request.getDcat().getDcatnomeorg(), "dcatnomeorg");
+			checkMandatoryParameter(request.getDcat().getDcatemailorg(), "dcatemailorg");
+			checkMandatoryParameter(request.getDcat().getDcatrightsholdername(), "dcatrightsholdername");
 		}
 	}
 	
@@ -677,8 +666,8 @@ public class StreamServiceImpl implements StreamService {
 	private void checkFeedTweetSmartobject(TwitterInfoRequest twitterInfoRequest, List<ComponentRequest> components, Integer idSoType) throws BadRequestException, NotFoundException {
 
 		if (Type.FEED_TWEET.id() == idSoType) {
-			ServiceUtil.checkMandatoryParameter(twitterInfoRequest, "twitterInfo mandatory (only for Feed Tweet smartobject)");
-			ServiceUtil.checkMandatoryParameter(twitterInfoRequest.getTwtquery(), "twitterInfo => Twtquery");
+			checkMandatoryParameter(twitterInfoRequest, "twitterInfo mandatory (only for Feed Tweet smartobject)");
+			checkMandatoryParameter(twitterInfoRequest.getTwtquery(), "twitterInfo => Twtquery");
 			if (components != null) {
 				throw new BadRequestException(Errors.INCORRECT_VALUE, "Component not allowed for Feed Tweet smartobject!");
 			}
@@ -689,138 +678,143 @@ public class StreamServiceImpl implements StreamService {
 		}
 	}
 
-	/**
-	 * 
-	 * @param request
-	 * @param idSoType
-	 * @throws NotFoundException
-	 * @throws BadRequestException
-	 */
-	private void checkComponents(StreamRequest request, Integer idSoType) throws NotFoundException, BadRequestException {
-		checkComponents(request, idSoType, null, null);
-	}
+//	/**
+//	 * 
+//	 * @param request
+//	 * @param idSoType
+//	 * @throws NotFoundException
+//	 * @throws BadRequestException
+//	 */
+//	private void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType) throws NotFoundException, BadRequestException {
+//		checkComponents(listComponentRequest, idSoType, null, null);
+//	}
 	
-	/**
-	 * 
-	 * @param listToCheck
-	 * @param component
-	 * @return
-	 */
-	private boolean doesNotContainComponent(List<Component> listToCheck, Integer idComponent){
-		for (Component component : listToCheck) {
-			if (component.getIdComponent().equals(idComponent)) {
-				return false;
-			}
-		}
-		return true;
-	}
+//	/**
+//	 * 
+//	 * @param listToCheck
+//	 * @param component
+//	 * @return
+//	 */
+//	private boolean doesNotContainComponent(List<Component> listToCheck, Integer idComponent){
+//		for (Component component : listToCheck) {
+//			if (component.getIdComponent().equals(idComponent)) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 	
-	private boolean doesNotContainComponent(List<ComponentRequest> listToCheck, String name){
-		for (ComponentRequest component : listToCheck) {
-			if (component.getIdComponent() != null && component.getName().equals(name)) {
-				return false;
-			}
-		}
-		return true;
-	}
+//	private boolean doesNotContainComponent(List<ComponentRequest> listToCheck, String name){
+//		for (ComponentRequest component : listToCheck) {
+//			if (component.getIdComponent() != null && component.getName().equals(name)) {
+//				return false;
+//			}
+//		}
+//		return true;
+//	}
 
-	/**
-	 * 
-	 * @param idDataSource
-	 * @param dataSourceVersion
-	 * @return
-	 */
-	private List<Component> selectAlreadyPresentComponents(Integer idDataSource, Integer dataSourceVersion){
-		
-		if(idDataSource == null || dataSourceVersion == null){
-			return null;
-		}
-		
-		return componentMapper.selectComponentByDataSourceAndVersion(idDataSource, dataSourceVersion);
-	}
+//	/**
+//	 * 
+//	 * @param idDataSource
+//	 * @param dataSourceVersion
+//	 * @return
+//	 */
+//	private List<Component> selectAlreadyPresentComponents(Integer idDataSource, Integer dataSourceVersion){
+//		
+//		if(idDataSource == null || dataSourceVersion == null){
+//			return null;
+//		}
+//		
+//		return componentMapper.selectComponentByDataSourceAndVersion(idDataSource, dataSourceVersion);
+//	}
+
+//	public void checkComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, Integer dataSourceVersion) throws NotFoundException, BadRequestException {
+//		checkComponents(listComponentRequest, null, idDataSource, dataSourceVersion);
+//	}
+
 	
-	/**
-	 * 
-	 * @param request
-	 * @param idSoType
-	 * @throws NotFoundException
-	 * @throws BadRequestException
-	 */
-	private void checkComponents(StreamRequest request, Integer idSoType, 
-			Integer idDataSource, Integer dataSourceVersion) throws NotFoundException, BadRequestException {
-			
-		
-		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersion);
-		
-		if (Type.FEED_TWEET.id() != idSoType) {
-			
-			ServiceUtil.checkList(request.getComponents());
-			
-			List<Component> alreadyPresentComponents = selectAlreadyPresentComponents(idDataSource, dataSourceVersion);
-			
-			for (ComponentRequest component : request.getComponents()) {
+//	/**
+//	 * 
+//	 * @param request
+//	 * @param idSoType
+//	 * @throws NotFoundException
+//	 * @throws BadRequestException
+//	 */
+//	private void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
+//			Integer idDataSource, Integer dataSourceVersion) throws NotFoundException, BadRequestException {
+//			
+//		
+//		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersion);
+//		
+//		if (idSoType == null || Type.FEED_TWEET.id() != idSoType) {
+//			
+//			checkList(listComponentRequest);
+//			
+//			List<Component> alreadyPresentComponents = selectAlreadyPresentComponents(idDataSource, dataSourceVersion);
+//			
+//			for (ComponentRequest component : listComponentRequest) {
+//
+//				/**
+//				 * ALREADY_PRESENT
+//				 *  Verificare che tutti gli idComponent siano compresi tra quelli ritornati dalla query. 
+//				 *  In caso contrario RITORNARE: Errore: Some idComponent is incorrect
+//				 */
+//				if(component.getIdComponent() != null && doesNotContainComponent(alreadyPresentComponents, component.getIdComponent())){
+//					throw new BadRequestException(Errors.NOT_ACCEPTABLE, "Some idComponent is incorrect: " + component.getIdComponent());
+//				}
+//
+//				/**
+//				 * NEW
+//				 */
+//				if (component.getIdComponent() == null) {
+//					checkUnicComponentName(listComponentRequest, component.getName());					
+//					checkMandatoryParameter(component.getName(), "name");
+//					checkAphanumeric(component.getName(), "component name");
+//					checkMandatoryParameter(component.getAlias(), "alias");
+//					checkMandatoryParameter(component.getInorder(), "inorder");
+//					checkMandatoryParameter(component.getTolerance(), "tolerance");
+//					checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
+//					checkMandatoryParameter(component.getIdDataType(), "idDataType");
+//					checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
+//					checkMandatoryParameter(component.getRequired(), "required");
+//				}
+//				
+//			}
+//		}
+//		
+//	    /**
+//	     * ALREADY_PRESENT
+//		*  Verificare che tutti i campi name estratti dalla query siano presenti nei campi name degli ALREADY_PRESENT_req. 
+//		*  In caso contrario RITORNARE: Errore: You can't remove components from previous version.
+//		*/
+//		if(alreadyPresentComponentsPreviousVersion != null){
+//			for (Component prevcomponent : alreadyPresentComponentsPreviousVersion) {
+//				if (doesNotContainComponent(listComponentRequest, prevcomponent.getName())) {
+//					throw new BadRequestException(Errors.NOT_ACCEPTABLE, " You can't remove components from previous version.");
+//				}
+//			}
+//		}
+//	}
 
-				/**
-				 * ALREADY_PRESENT
-				 *  Verificare che tutti gli idComponent siano compresi tra quelli ritornati dalla query. 
-				 *  In caso contrario RITORNARE: Errore: Some idComponent is incorrect
-				 */
-				if(component.getIdComponent() != null && doesNotContainComponent(alreadyPresentComponents, component.getIdComponent())){
-					throw new BadRequestException(Errors.NOT_ACCEPTABLE, "Some idComponent is incorrect: " + component.getIdComponent());
-				}
-
-				/**
-				 * NEW
-				 */
-				if (component.getIdComponent() == null) {
-					checkUnicComponentName(request.getComponents(), component.getName());					
-					ServiceUtil.checkMandatoryParameter(component.getName(), "name");
-					ServiceUtil.checkAphanumeric(component.getName(), "component name");
-					ServiceUtil.checkMandatoryParameter(component.getAlias(), "alias");
-					ServiceUtil.checkMandatoryParameter(component.getInorder(), "inorder");
-					ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
-					ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
-					ServiceUtil.checkMandatoryParameter(component.getIdDataType(), "idDataType");
-					ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
-					ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
-				}
-				
-			}
-		}
-		
-	    /**
-	     * ALREADY_PRESENT
-		*  Verificare che tutti i campi name estratti dalla query siano presenti nei campi name degli ALREADY_PRESENT_req. 
-		*  In caso contrario RITORNARE: Errore: You can't remove components from previous version.
-		*/
-		if(alreadyPresentComponentsPreviousVersion != null){
-			for (Component prevcomponent : alreadyPresentComponentsPreviousVersion) {
-				if (doesNotContainComponent(request.getComponents(), prevcomponent.getName())) {
-					throw new BadRequestException(Errors.NOT_ACCEPTABLE, " You can't remove components from previous version.");
-				}
-			}
-		}
-	}
-
-	/**
-	 * 
-	 * @param listComponentRequest
-	 * @param name
-	 * @throws BadRequestException
-	 */
-	private void checkUnicComponentName(List<ComponentRequest> listComponentRequest, String name) throws BadRequestException{
-		int count = 0;
-		for (ComponentRequest component : listComponentRequest) {
-			
-			if(component.getName().equals(name)){
-				count++;
-			}
-
-			if (count > 1) {
-				throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The name field must be unique.");
-			}
-		}
-	}
+//	/**
+//	 * 
+//	 * @param listComponentRequest
+//	 * @param name
+//	 * @throws BadRequestException
+//	 */
+//	private void checkUnicComponentName(List<ComponentRequest> listComponentRequest, String name) throws BadRequestException{
+//		int count = 0;
+//		for (ComponentRequest component : listComponentRequest) {
+//			
+//			if(component.getName().equals(name)){
+//				count++;
+//			}
+//
+//			if (count > 1) {
+//				throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The name field must be unique.");
+//			}
+//		}
+//	}
 
 	/**
 	 * 
@@ -844,9 +838,9 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws BadRequestException
 	 */
 	private Subdomain checkSubdomain(Integer idSubdomain) throws NotFoundException, BadRequestException {
-		ServiceUtil.checkMandatoryParameter(idSubdomain, "idSubdomain");
+		checkMandatoryParameter(idSubdomain, "idSubdomain");
 		Subdomain subdomain = subdomainMapper.selectSubdomainByIdSubdomain(idSubdomain);
-		ServiceUtil.checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + idSubdomain + "] ");
+		checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + idSubdomain + "] ");
 		return subdomain;
 	}
 	
@@ -861,11 +855,11 @@ public class StreamServiceImpl implements StreamService {
 	 */
 //	private Tenant checkTenant(Integer idTenant, String organizationCode) throws NotFoundException, BadRequestException {
 //		
-//		ServiceUtil.checkMandatoryParameter(idTenant, "idTenant");
+//		checkMandatoryParameter(idTenant, "idTenant");
 //		
 //		Tenant tenant = tenantMapper.selectTenantByIdAndOrgCodeCode(idTenant, organizationCode);
 //		
-//		ServiceUtil.checkIfFoundRecord(tenant, "tenant not found idTenant [" + idTenant + "], organizationcode [" + organizationCode + "] ");
+//		checkIfFoundRecord(tenant, "tenant not found idTenant [" + idTenant + "], organizationcode [" + organizationCode + "] ");
 //		
 //		return tenant;
 //	}
@@ -892,7 +886,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws BadRequestException
 	 */
 	private void checkStreamCode(String streamcode, Integer idSmartobject) throws BadRequestException {
-		ServiceUtil.checkCode(streamcode, "streamcode");
+		checkCode(streamcode, "streamcode");
 		Stream stream = streamMapper.selectStreamByStreamcodeAndIdSmartObject(streamcode, idSmartobject);
 		if (stream != null) {
 			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, "There is another stream with streamcode [ "
@@ -915,7 +909,7 @@ public class StreamServiceImpl implements StreamService {
 			throw new NotAcceptableException(Errors.NOT_ACCEPTABLE, "Only Stream in DRAFT version can be updated.");
 		}
 			
-		checkComponents(streamRequest, smartObject.getIdSoType(), streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		checkComponents(streamRequest.getComponents(), smartObject.getIdSoType(), streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), componentMapper);
 		
 		checkInternalSmartObject(streamRequest, smartObject.getIdSoType());
 		
@@ -923,15 +917,15 @@ public class StreamServiceImpl implements StreamService {
 		
 		checkLicense(streamRequest);
 		
-		ServiceUtil.checkVisibility(streamRequest, tenantMapper);
+		checkVisibility(streamRequest, tenantMapper);
 		
 		checkDcat(streamRequest);
 		
-		ServiceUtil.checkList(streamRequest.getTags(), "tags");
+		checkList(streamRequest.getTags(), "tags");
 		
-		ServiceUtil.checkMandatoryParameter(streamRequest.getStreamname(), "streamName");
-		ServiceUtil.checkMandatoryParameter(streamRequest.getName(), "name");
-		ServiceUtil.checkMandatoryParameter(streamRequest.getSavedata(), "saveData");
+		checkMandatoryParameter(streamRequest.getStreamname(), "streamName");
+		checkMandatoryParameter(streamRequest.getName(), "name");
+		checkMandatoryParameter(streamRequest.getSavedata(), "saveData");
 	}
 
 	/**
@@ -1092,7 +1086,7 @@ public class StreamServiceImpl implements StreamService {
 			datasetMapper.deleteDataSet(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
 		}
 		
-		return ServiceUtil.insertDataset(streamRequest.getSavedata(), streamToUpdate.getIdDataSource(), smartObject.getIdSoType(), 
+		return insertDataset(streamRequest.getSavedata(), streamToUpdate.getIdDataSource(), smartObject.getIdSoType(), 
 				streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode(), datasetMapper, sequenceMapper);
 	}
 	
@@ -1107,15 +1101,15 @@ public class StreamServiceImpl implements StreamService {
 	
 		Timestamp now = Util.getNow();
 		
-		Long idDcat = ServiceUtil.insertDcat(streamRequest.getDcat(), dcatMapper);
-		Integer idLicense = ServiceUtil.insertLicense(streamRequest.getLicense(), licenseMapper);
+		Long idDcat = insertDcat(streamRequest.getDcat(), dcatMapper);
+		Integer idLicense = insertLicense(streamRequest.getLicense(), licenseMapper);
 
-		updateDataSource(streamRequest, idDcat, idLicense, streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
+		updateDataSource(streamRequest, idDcat, idLicense, streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), dataSourceMapper);
 		
 		updateStream(streamRequest, streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
 		
-		updateTagDataSource(streamRequest, streamToUpdate);		
-
+		updateTagDataSource(streamRequest.getTags(), streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), dataSourceMapper);		
+		
 		updateComponentTransaction(streamRequest, streamToUpdate);
 
 		updateSharingTenantTransaction(streamRequest, streamToUpdate, now);		
@@ -1139,22 +1133,6 @@ public class StreamServiceImpl implements StreamService {
 	private void updateApi(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject , Dataset dataset) throws Exception{
 		apiMapper.deleteApi(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
 		insertApi(streamRequest, smartObject, dataset, streamToUpdate.getIdDataSource(), streamToUpdate.getStreamCode(), streamToUpdate.getDataSourceVersion());
-	}
-	
-	/**
-	 * 
-	 * @param streamRequest
-	 * @param streamToUpdate
-	 * @throws Exception
-	 */
-	private void updateTagDataSource(StreamRequest streamRequest, StreamToUpdate streamToUpdate)throws Exception{
-
-		dataSourceMapper.deleteTagDataSource(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
-
-		for (Integer idTag : streamRequest.getTags()) {
-			dataSourceMapper.insertTagDataSource(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), idTag);
-		}
-
 	}
 	
 	/**
@@ -1196,40 +1174,5 @@ public class StreamServiceImpl implements StreamService {
 		return streamMapper.updateStream(stream);
 		
 	}
-	
-	/**
-	 * 
-	 * @param streamRequest
-	 * @param idDcat
-	 * @param idLicense
-	 * @return
-	 * @throws Exception
-	 */
-	private int updateDataSource(StreamRequest streamRequest, Long idDcat, Integer idLicense, Integer idDataSource, Integer dataSourceVersion) throws Exception{
-		
-		DataSource dataSource = new DataSource();
-		dataSource.setIdDataSource(idDataSource);
-		dataSource.setDatasourceversion(dataSourceVersion);
-		
-		dataSource.setUnpublished( Util.booleanToInt(streamRequest.getUnpublished()) );
-		dataSource.setName(streamRequest.getName());
-		dataSource.setVisibility(streamRequest.getVisibility());
-		dataSource.setCopyright(streamRequest.getCopyright());
-        dataSource.setDisclaimer(streamRequest.getDisclaimer());
-        dataSource.setIcon(streamRequest.getIcon());
-        dataSource.setIsopendata(streamRequest.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
-        if(streamRequest.getOpenData() != null){
-            dataSource.setOpendataexternalreference(streamRequest.getOpenData().getOpendataexternalreference());    
-            dataSource.setOpendataauthor(streamRequest.getOpenData().getOpendataauthor());
-            dataSource.setOpendataupdatedate(Util.dateStringToTimestamp(streamRequest.getOpenData().getOpendataupdatedate()));
-            dataSource.setOpendatalanguage(streamRequest.getOpenData().getOpendatalanguage());
-            dataSource.setLastupdate(streamRequest.getOpenData().getLastupdate());
-        }
-        dataSource.setIdDcat(idDcat); 
-        dataSource.setIdLicense(idLicense);
-        
-        return dataSourceMapper.updateDataSource(dataSource);
-	}
-	
 
 }

@@ -23,13 +23,50 @@ public interface ComponentMapper {
 	public static final String COMPONENT_TABLE = Constants.SCHEMA_DB + "yucca_component";
 
 	/*************************************************************************
+	 * 					CLONE COMPONENT
+	 * ***********************************************************************/
+	public static final String CLONE_COMPONENT = 
+			" INSERT INTO " + COMPONENT_TABLE + "( " +
+				" name, alias, inorder, tolerance, since_version, " + 
+				" id_phenomenon, id_data_type, id_measure_unit, id_data_source, " + 
+				" datasourceversion, iskey, sourcecolumn, sourcecolumnname, required) " +
+			" SELECT name, alias, inorder, tolerance, since_version, " + 
+				" id_phenomenon, id_data_type, id_measure_unit, id_data_source, " + 
+				" #{newDataSourceVersion}, iskey, sourcecolumn, sourcecolumnname, required " +
+			" FROM " + COMPONENT_TABLE + " WHERE id_component in ( " +
+				"<foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"listIdComponent\">" +
+					"#{propName}" +
+				"</foreach>" +
+					 " ) ";
+	@Insert(CLONE_COMPONENT)
+	int cloneComponent( @Param("newDataSourceVersion") Integer newDataSourceVersion, 
+						@Param("listIdComponent") List<Integer> listIdComponent );
+
+	/*************************************************************************
 	 * 					UPDATE COMPONENT
 	 * ***********************************************************************/	
-	public static final String UPDATE_STREAM = 
+	public static final String UPDATE_CLONED_COMPONENT = 
+		"UPDATE " + COMPONENT_TABLE + 
+		" SET alias=#{alias}, inorder=#{inorder}, id_measure_unit=#{idMeasureUnit} " + 
+		" WHERE name=#{name} and datasourceversion=#{dataSourceVersion} and id_data_source=#{idDataSource}";
+	@Update(UPDATE_CLONED_COMPONENT)
+	int updateClonedComponent(
+			@Param("name") String name,
+			@Param("alias") String alias,
+			@Param("inorder") Integer inorder,
+			@Param("idMeasureUnit") Integer idMeasureUnit,
+			@Param("dataSourceVersion") Integer dataSourceVersion,
+			@Param("idDataSource") Integer idDataSource );
+
+	
+	/*************************************************************************
+	 * 					UPDATE COMPONENT
+	 * ***********************************************************************/	
+	public static final String UPDATE_COMPONENT = 
 		"UPDATE " + COMPONENT_TABLE + 
 		" SET alias=#{alias}, inorder=#{inorder}, tolerance=#{tolerance},id_phenomenon=#{idPhenomenon},id_measure_unit=#{idMeasureUnit} " + 
-		" WHERE id_component=#{idComponent} ";
-	@Update(UPDATE_STREAM)
+		" WHERE id_component=#{idComponent}";
+	@Update(UPDATE_COMPONENT)
 	int updateComponent(Component component);
 
 	
@@ -43,7 +80,7 @@ public interface ComponentMapper {
 			"#{propName}" +
 		"</foreach>" +
 	 ") " ; 
-	@Delete(DELETE_COMPONENT_BY_DATA_SOURCE_AND_VERSION)
+	@Delete({"<script>",DELETE_COMPONENT_BY_DATA_SOURCE_AND_VERSION, "</script>"})
 	int deleteComponents(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion,
 			@Param("alreadyPresentIdList") List<Integer> alreadyPresentIdList);
 	

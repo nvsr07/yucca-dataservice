@@ -2,8 +2,9 @@ package org.csi.yucca.adminapi.request;
 
 import java.util.List;
 
-public class PostDatasetRequest implements IVisibility, IDataSourceRequest{
-
+public class DatasetRequest implements IVisibility, IDataSourceRequest{
+	
+	
 	private Integer idTenant;
 	private String datasetname;
 	private boolean unpublished;
@@ -28,17 +29,63 @@ public class PostDatasetRequest implements IVisibility, IDataSourceRequest{
 	private List<Integer> tags;
 	private String disclaimer;
 	private String multiSubdomain;
+	private String description;
+	private Integer newDataSourceVersion;
+	private Integer currentDataSourceVersion;
+	private Integer idDataSource;
+	private String datasetcode;
 	
-	public PostDatasetRequest datasetname(String datasetname){
+	
+	public String getDatasetcode() {
+		return datasetcode;
+	}
+
+	public void setDatasetcode(String datasetcode) {
+		this.datasetcode = datasetcode;
+	}
+
+	public Integer getNewDataSourceVersion() {
+		return newDataSourceVersion;
+	}
+
+	public void setNewDataSourceVersion(Integer newDataSourceVersion) {
+		this.newDataSourceVersion = newDataSourceVersion;
+	}
+
+	public Integer getCurrentDataSourceVersion() {
+		return currentDataSourceVersion;
+	}
+
+	public void setCurrentDataSourceVersion(Integer currentDataSourceVersion) {
+		this.currentDataSourceVersion = currentDataSourceVersion;
+	}
+
+	public Integer getIdDataSource() {
+		return idDataSource;
+	}
+
+	public void setIdDataSource(Integer idDataSource) {
+		this.idDataSource = idDataSource;
+	}
+
+	public DatasetRequest datasetname(String datasetname){
 		setDatasetname(datasetname);
 		return this;
 	}
 
-	public PostDatasetRequest idSubdomain(Integer idSubdomain){
+	public DatasetRequest idSubdomain(Integer idSubdomain){
 		setIdSubdomain(idSubdomain);
 		return this;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public String getMultiSubdomain() {
 		return multiSubdomain;
 	}
@@ -95,7 +142,7 @@ public class PostDatasetRequest implements IVisibility, IDataSourceRequest{
 	public void setDatasetname(String datasetname) {
 		this.datasetname = datasetname;
 	}
-	public Boolean getUnpublished() {
+	public boolean getUnpublished() {
 		return unpublished;
 	}
 	public void setUnpublished(Boolean unpublished) {

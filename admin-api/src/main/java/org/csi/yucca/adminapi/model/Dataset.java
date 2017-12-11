@@ -4,6 +4,10 @@ import java.sql.Timestamp;
 
 public class Dataset extends Dettaglio implements IOrganization, IStatus, IDomain, ISubdomain{
 	
+
+
+	private Integer isactive; 
+	private Integer ismanager; 
 	private Integer idDataSource;
 	private Integer datasourceversion;
 	private Integer iddataset;
@@ -34,7 +38,25 @@ public class Dataset extends Dettaglio implements IOrganization, IStatus, IDomai
 	private String datasetType;
 	private String datasetSubtype;
 	private String datasetSubtypeDescription;
+
 	
+	
+	public Integer getIsactive() {
+		return isactive;
+	}
+
+	public void setIsactive(Integer isactive) {
+		this.isactive = isactive;
+	}
+
+	public Integer getIsmanager() {
+		return ismanager;
+	}
+
+	public void setIsmanager(Integer ismanager) {
+		this.ismanager = ismanager;
+	}
+
 	public String getDatasetTypeDescription() {
 		return datasetTypeDescription;
 	}

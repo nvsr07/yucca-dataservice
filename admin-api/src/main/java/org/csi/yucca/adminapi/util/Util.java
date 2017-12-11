@@ -25,6 +25,16 @@ import com.google.common.io.Files;
 public class Util {
 
 	
+	public static <E> boolean notEqual(E value1, E value2){
+
+		if (value1==null && value2==null || value1 != null && value1.equals(value2)) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	
 	public static void addSharingTenants(String sharingTenants, List<TenantResponse> listTenantResponses) throws Exception {
 		if (sharingTenants != null) {
 			

@@ -7,11 +7,12 @@ public interface IDataSourceRequest {
 	String getName();
 	Integer getIdSubdomain();
 	String getVisibility();
-	Boolean getUnpublished();
+	boolean getUnpublished();
 	String getRequestername();
 	String getRequestersurname();
 	String getRequestermail();
 	Boolean getPrivacyacceptance();
 	String getIcon();
 	OpenDataRequest getOpenData();
+	String getCopyright();
 }

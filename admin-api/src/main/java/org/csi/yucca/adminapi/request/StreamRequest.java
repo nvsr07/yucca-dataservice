@@ -2,11 +2,11 @@ package org.csi.yucca.adminapi.request;
 
 import java.util.List;
 
-public class StreamRequest implements IVisibility{
+public class StreamRequest implements IVisibility, IDataSourceRequest{
 
 	private String streamname;
 	private String name;
-	private Boolean unpublished = false;
+	private boolean unpublished;
 	private Boolean savedata;
 	private Double fps;
 	private String internalquery;
@@ -22,7 +22,46 @@ public class StreamRequest implements IVisibility{
 	private List<ComponentRequest> components;
 	private List<Integer> tags;
 	private String disclaimer;
+	private Boolean privacyacceptance;
+	private Integer idSubdomain;
+	private String requestermail;;
+	private String requestername;
+	private String requestersurname;
+
 	
+	public String getRequestername() {
+		return requestername;
+	}
+	public void setRequestername(String requestername) {
+		this.requestername = requestername;
+	}
+	public String getRequestersurname() {
+		return requestersurname;
+	}
+	public void setRequestersurname(String requestersurname) {
+		this.requestersurname = requestersurname;
+	}
+	public String getRequestermail() {
+		return requestermail;
+	}
+	public void setRequestermail(String requestermail) {
+		this.requestermail = requestermail;
+	}
+	public Integer getIdSubdomain() {
+		return idSubdomain;
+	}
+	public void setIdSubdomain(Integer idSubdomain) {
+		this.idSubdomain = idSubdomain;
+	}
+	public Boolean getPrivacyacceptance() {
+		return privacyacceptance;
+	}
+	public void setPrivacyacceptance(Boolean privacyacceptance) {
+		this.privacyacceptance = privacyacceptance;
+	}
+	public void setUnpublished(boolean unpublished) {
+		this.unpublished = unpublished;
+	}
 	public String getDisclaimer() {
 		return disclaimer;
 	}
@@ -41,7 +80,7 @@ public class StreamRequest implements IVisibility{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Boolean getUnpublished() {
+	public boolean getUnpublished() {
 		return unpublished;
 	}
 	public void setUnpublished(Boolean unpublished) {

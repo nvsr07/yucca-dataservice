@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.csi.yucca.adminapi.util.Util.*;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -47,6 +48,7 @@ public class ServiceUtil {
 	public static final String UUID_PATTERN         = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
 	public static final String NOT_DEVICE_PATTERN   = "^[a-zA-Z0-9-]{5,100}$";
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
+	public static final String ALPHANUMERICOrUnderscore_PATTERN = "^[a-zA-Z0-9_]*$";
 	public static final String COMPONENT_NAME_PATTERN =  "(.)*[\u00C0-\u00F6\u00F8-\u00FF\u0020]+(.)*|^[0-9]*$";
 	
 	public static final String MULTI_SUBDOMAIN_LANG_EN = "";
@@ -63,8 +65,270 @@ public class ServiceUtil {
 	public static final String API_SUBTYPE_ODATA = "odata";
 	public static final String API_CODE_PREFIX_WEBSOCKET = "ws_";
 	public static final String API_CODE_PREFIX_MQTT = "mqtt_";
+
+	/**
+	 * 
+	 * @param idTagList
+	 * @param idDataSource
+	 * @param dataSourceMapper
+	 */
+	public static void insertTags(List<Integer> idTagList, Integer idDataSource, Integer dataSourceVersion, DataSourceMapper dataSourceMapper) {
+		for (Integer idTag : idTagList) {
+			dataSourceMapper.insertTagDataSource(idDataSource, dataSourceVersion, idTag);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param listTags
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @param dataSourceMapper
+	 * @throws Exception
+	 */
+	public static void updateTagDataSource(List<Integer> listTags, Integer idDataSource, 
+			Integer dataSourceVersion, DataSourceMapper dataSourceMapper)throws Exception{
+
+		dataSourceMapper.deleteTagDataSource(idDataSource, dataSourceVersion);
+
+		for (Integer idTag : listTags) {
+			dataSourceMapper.insertTagDataSource(idDataSource, dataSourceVersion, idTag);
+		}
+	}
+
+	
+	/**
+	 * 
+	 * @param streamRequest
+	 * @param idDcat
+	 * @param idLicense
+	 * @return
+	 * @throws Exception
+	 */
+	public static int updateDataSource(IDataSourceRequest streamRequest, Long idDcat, 
+			Integer idLicense, Integer idDataSource, Integer dataSourceVersion, DataSourceMapper dataSourceMapper) throws Exception{
+		
+		DataSource dataSource = new DataSource();
+		dataSource.setIdDataSource(idDataSource);
+		dataSource.setDatasourceversion(dataSourceVersion);
+
+		dataSource.setUnpublished( Util.booleanToInt(streamRequest.getUnpublished()) );
+		dataSource.setName(streamRequest.getName());
+		dataSource.setVisibility(streamRequest.getVisibility());
+		dataSource.setCopyright(streamRequest.getCopyright());
+        dataSource.setDisclaimer(streamRequest.getDisclaimer());
+        dataSource.setIcon(streamRequest.getIcon());
+        dataSource.setIsopendata(streamRequest.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
+        if(streamRequest.getOpenData() != null){
+            dataSource.setOpendataexternalreference(streamRequest.getOpenData().getOpendataexternalreference());    
+            dataSource.setOpendataauthor(streamRequest.getOpenData().getOpendataauthor());
+            dataSource.setOpendataupdatedate(Util.dateStringToTimestamp(streamRequest.getOpenData().getOpendataupdatedate()));
+            dataSource.setOpendatalanguage(streamRequest.getOpenData().getOpendatalanguage());
+            dataSource.setLastupdate(streamRequest.getOpenData().getLastupdate());
+        }
+        dataSource.setIdDcat(idDcat); 
+        dataSource.setIdLicense(idLicense);
+        
+        return dataSourceMapper.updateDataSource(dataSource);
+	}
+	
+	/**
+	 * 
+	 * @param listComponentRequest
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @param componentMapper
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+		checkComponents(listComponentRequest, null, idDataSource, dataSourceVersion, componentMapper);
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param idSoType
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+		checkComponents(listComponentRequest, idSoType, null, null, componentMapper);
+	}
+	
+	/**
+	 * 
+	 * @param listComponentRequest
+	 * @param name
+	 * @throws BadRequestException
+	 */
+	private static void checkUnicComponentName(List<ComponentRequest> listComponentRequest, String name) throws BadRequestException{
+		int count = 0;
+		for (ComponentRequest component : listComponentRequest) {
+			
+			if(component.getName().equals(name)){
+				count++;
+			}
+
+			if (count > 1) {
+				throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The name field must be unique.");
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param listToCheck
+	 * @param name
+	 * @return
+	 */
+	private static boolean doesNotContainComponent(List<ComponentRequest> listToCheck, String name){
+		for (ComponentRequest component : listToCheck) {
+			if (component.getIdComponent() != null && component.getName().equals(name)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * 
+	 * @param listToCheck
+	 * @param component
+	 * @return
+	 */
+	private static boolean doesNotContainComponent(List<Component> listToCheck, Integer idComponent){
+		for (Component component : listToCheck) {
+			if (component.getIdComponent().equals(idComponent)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	
+	/**
+	 * 
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @return
+	 */
+	private static List<Component> selectAlreadyPresentComponents(Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper){
+		
+		if(idDataSource == null || dataSourceVersion == null){
+			return null;
+		}
+		
+		return componentMapper.selectComponentByDataSourceAndVersion(idDataSource, dataSourceVersion);
+	}
 	
 	
+	/**
+	 * 
+	 * @param request
+	 * @param idSoType
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
+			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+			
+		
+		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersion, componentMapper);
+		
+		if (idSoType == null || Type.FEED_TWEET.id() != idSoType) {
+			
+			ServiceUtil.checkList(listComponentRequest);
+			
+			List<Component> alreadyPresentComponents = selectAlreadyPresentComponents(idDataSource, dataSourceVersion, componentMapper);
+			
+			for (ComponentRequest component : listComponentRequest) {
+
+				ServiceUtil.checkMandatoryParameter(component.getName(), "component name");
+				
+				/**
+				 * ALREADY_PRESENT
+				 *  Verificare che tutti gli idComponent siano compresi tra quelli ritornati dalla query. 
+				 *  In caso contrario RITORNARE: Errore: Some idComponent is incorrect
+				 */
+				if(component.getIdComponent() != null && doesNotContainComponent(alreadyPresentComponents, component.getIdComponent())){
+					throw new BadRequestException(Errors.NOT_ACCEPTABLE, "Some idComponent is incorrect: " + component.getIdComponent());
+				}
+
+				// sono stati inseriti campi non modificabili
+				if(component.getIdComponent() != null){
+					for (Component cmp : alreadyPresentComponents) {
+						if(component.getIdComponent().equals(cmp.getIdComponent())  &&
+								notEqual(component.getName(), cmp.getName()) &&
+								notEqual(component.getTolerance(), cmp.getTolerance()) &&
+								notEqual(component.getIdPhenomenon(), cmp.getIdPhenomenon()) &&
+								notEqual(component.getIdDataType(), cmp.getIdDataType()) &&
+								notEqual(component.getIskey(), cmp.getIskey()) &&
+								notEqual(component.getSourcecolumn(), cmp.getSourcecolumn()) &&
+								notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname()) &&
+								notEqual(component.getRequired(), cmp.getRequired())){
+							throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The only field you can mofify are: alias, inorder and idMeasureUnit");
+						}
+					}
+				}
+				
+				/**
+				 * NEW
+				 */
+				if (component.getIdComponent() == null) {
+					checkUnicComponentName(listComponentRequest, component.getName());					
+					ServiceUtil.checkAphanumeric(component.getName(), "component name");
+					ServiceUtil.checkMandatoryParameter(component.getAlias(), "alias");
+					ServiceUtil.checkMandatoryParameter(component.getInorder(), "inorder");
+					ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
+					ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
+					ServiceUtil.checkMandatoryParameter(component.getIdDataType(), "idDataType");
+					ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
+					ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
+				}
+				
+			}
+		}
+		
+	    /**
+	     * ALREADY_PRESENT
+		*  Verificare che tutti i campi name estratti dalla query siano presenti nei campi name degli ALREADY_PRESENT_req. 
+		*  In caso contrario RITORNARE: Errore: You can't remove components from previous version.
+		*/
+		if(alreadyPresentComponentsPreviousVersion != null){
+			for (Component prevcomponent : alreadyPresentComponentsPreviousVersion) {
+				if (doesNotContainComponent(listComponentRequest, prevcomponent.getName())) {
+					throw new BadRequestException(Errors.NOT_ACCEPTABLE, " You can't remove components from previous version.");
+				}
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
+	/**
+	 * 
+	 * @param idDataSource
+	 * @param version
+	 * @param componentMapper
+	 * @return
+	 */
+	private static List<Component> getAlreadyPresentComponentsPreviousVersion(Integer idDataSource, Integer version, ComponentMapper componentMapper){
+		
+		if(idDataSource == null || version == null){
+			return null;
+		}
+		
+		if(version > 1){
+			return componentMapper.selectComponentByDataSourceAndVersion(idDataSource,  (version-1) );
+		}
+		
+		return null;
+	}	
+
 	/**
 	 * 
 	 * @param listSharingTenantRequest
@@ -77,11 +341,27 @@ public class ServiceUtil {
 	 */
 	public static void insertSharingTenants(List<SharingTenantRequest> listSharingTenantRequest, Integer idDataSource,
 			Timestamp now, Integer dataOptions, Integer manageOptions, TenantMapper tenantMapper) throws Exception{
+		insertSharingTenants(listSharingTenantRequest, idDataSource, now, dataOptions, manageOptions, null, tenantMapper);
+	}
 
+	
+	/**
+	 * 
+	 * @param listSharingTenantRequest
+	 * @param idDataSource
+	 * @param now
+	 * @param dataOptions
+	 * @param manageOptions
+	 * @param tenantMapper
+	 * @throws Exception
+	 */
+	public static void insertSharingTenants(List<SharingTenantRequest> listSharingTenantRequest, Integer idDataSource,
+			Timestamp now, Integer dataOptions, Integer manageOptions, Integer dataSourceVersion, TenantMapper tenantMapper) throws Exception{
+		
 		for (SharingTenantRequest sharingTenantRequest : listSharingTenantRequest) {
 			TenantDataSource tenantDataSource = new TenantDataSource();
 			tenantDataSource.setIdDataSource(idDataSource);
-			tenantDataSource.setDatasourceversion(ServiceUtil.DATASOURCE_VERSION);
+			tenantDataSource.setDatasourceversion(dataSourceVersion==null?ServiceUtil.DATASOURCE_VERSION:dataSourceVersion);
 			tenantDataSource.setIdTenant(sharingTenantRequest.getIdTenant());
 			tenantDataSource.setIsactive(Util.booleanToInt(true));
 			tenantDataSource.setIsmanager(Util.booleanToInt(false));
@@ -143,23 +423,24 @@ public class ServiceUtil {
 		
 		for (ComponentRequest componentRequest : listComponentRequest) {
 
-			Component component = new Component();
-			
-			component.name(componentRequest.getName());
-			component.alias(componentRequest.getAlias());
-			component.inorder(componentRequest.getInorder());
-			component.tolerance(componentRequest.getTolerance());
-			component.idPhenomenon(componentRequest.getIdPhenomenon());
-			component.idDataType(componentRequest.getIdDataType());
-			component.idMeasureUnit(componentRequest.getIdMeasureUnit());
-			component.sourcecolumn(componentRequest.getSourcecolumn());
-			component.sourcecolumnname(componentRequest.getSourcecolumnname());
-			component.required( Util.booleanToInt(componentRequest.getRequired()));
-			component.setIskey(isKey==null ? Util.booleanToInt(componentRequest.getIskey()) : isKey);
-			component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
-			component.setIdDataSource(idDataSource);
-			component.setDatasourceversion(datasourceVersion);
-			componentMapper.insertComponent(component);
+			if (componentRequest.getIdComponent() != null) {
+				Component component = new Component();
+				component.name(componentRequest.getName());
+				component.alias(componentRequest.getAlias());
+				component.inorder(componentRequest.getInorder());
+				component.tolerance(componentRequest.getTolerance());
+				component.idPhenomenon(componentRequest.getIdPhenomenon());
+				component.idDataType(componentRequest.getIdDataType());
+				component.idMeasureUnit(componentRequest.getIdMeasureUnit());
+				component.sourcecolumn(componentRequest.getSourcecolumn());
+				component.sourcecolumnname(componentRequest.getSourcecolumnname());
+				component.required( Util.booleanToInt(componentRequest.getRequired()));
+				component.setIskey(isKey==null ? Util.booleanToInt(componentRequest.getIskey()) : isKey);
+				component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
+				component.setIdDataSource(idDataSource);
+				component.setDatasourceversion(datasourceVersion);
+				componentMapper.insertComponent(component);
+			}
 		}
 	}
 
@@ -564,11 +845,11 @@ public class ServiceUtil {
 	private static void checkVisibility(String visibility, LicenseRequest license, OpenDataRequest openData, 
 			List<SharingTenantRequest> sharingTenants, String copyright, TenantMapper tenantMapper) throws BadRequestException, NotFoundException {
 
-		ServiceUtil.checkValue("visibility", visibility, StreamVisibility.PRIVATE.code(),
-				StreamVisibility.PUBLIC.code());
+		ServiceUtil.checkValue("visibility", visibility, Visibility.PRIVATE.code(),
+				Visibility.PUBLIC.code());
 
 		// PRIVATE
-		if (StreamVisibility.PRIVATE.code().equals(visibility)) {
+		if (Visibility.PRIVATE.code().equals(visibility)) {
 			if (license != null) {
 				throw new BadRequestException(Errors.INCORRECT_VALUE, "License only for public visibility, provided: " + visibility);
 			}
@@ -589,7 +870,7 @@ public class ServiceUtil {
 		}
 
 		// PUBLIC
-		if (StreamVisibility.PUBLIC.code().equals(visibility)) {
+		if (Visibility.PUBLIC.code().equals(visibility)) {
 
 			if (sharingTenants != null) {
 				throw new BadRequestException(Errors.INCORRECT_VALUE, "Sharing Tenants permitted only for private visibility!");
@@ -803,6 +1084,16 @@ public class ServiceUtil {
 	 * @param s
 	 * @return
 	 */
+	public static boolean isAlphaNumericOrUnderscore(String s){
+	    return s.matches(ALPHANUMERICOrUnderscore_PATTERN);
+	}
+
+	
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
 	public static boolean matchUUIDPattern(String s){
 	    return s.matches(UUID_PATTERN);
 	}
@@ -838,6 +1129,14 @@ public class ServiceUtil {
 		}
 
 	}
+	
+	private static void checkAphanumericAndUnderscore(String s,
+			String fieldName) throws BadRequestException {
+		if (!isAlphaNumericOrUnderscore(s)){
+			throw new BadRequestException(Errors.ALPHANUMERIC_VALUE_REQUIRED, "received " + fieldName + " [ " + s + " ]");
+		}
+	}
+
 	
 	/**
 	 * 
@@ -951,6 +1250,19 @@ public class ServiceUtil {
 		checkWhitespace(s, parameterName);
 		checkAphanumeric(s, parameterName);
 	}
+
+	/**
+	 * 
+	 * @param s
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
+	public static void checkTenantCode(String s, String parameterName) throws BadRequestException {
+		checkMandatoryParameter(s, parameterName);
+		checkWhitespace(s, parameterName);
+		checkAphanumericAndUnderscore(s, parameterName);
+	}
+
 	
 	/**
 	 * 
