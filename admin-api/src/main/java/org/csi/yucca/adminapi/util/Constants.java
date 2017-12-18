@@ -52,4 +52,15 @@ public class Constants {
 			new Component().name("userMentions").alias(TWEET_ALIAS_COMPONENT).idDataType(DataType.STRING.id()).iskey(0).idMeasureUnit(OTHER_MEASURE_UNIT_ID).inorder(26),	
 			new Component().name("retweetParentId").alias(TWEET_ALIAS_COMPONENT).idDataType(DataType.LONG.id()).iskey(0).idMeasureUnit(OTHER_MEASURE_UNIT_ID).inorder(27));
 	
+	public static Integer ADMINAPI_DATA_TYPE_INT = 1;
+	public static Integer ADMINAPI_DATA_TYPE_LONG = 2;
+	public static Integer ADMINAPI_DATA_TYPE_DOUBLE = 3;
+	public static Integer ADMINAPI_DATA_TYPE_FLOAT = 4;
+	public static Integer ADMINAPI_DATA_TYPE_STRING = 5;
+	public static Integer ADMINAPI_DATA_TYPE_BOOLEAN = 6;
+	public static Integer ADMINAPI_DATA_TYPE_DATETIME = 7;
+	public static Integer ADMINAPI_DATA_TYPE_LONGITUDE = 8;
+	public static Integer ADMINAPI_DATA_TYPE_LATITUDE = 9;
+	public static Integer ADMINAPI_DATA_TYPE_BINARY = 10;
+
 }

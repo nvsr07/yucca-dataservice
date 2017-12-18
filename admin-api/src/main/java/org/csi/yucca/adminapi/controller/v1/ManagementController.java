@@ -8,6 +8,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_IMPORT_METADATA_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_IMPORT_METADATA_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_CSV_DATA;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_CSV_DATA_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET;
@@ -30,6 +32,7 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -40,6 +43,7 @@ import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.DatasetRequest;
+import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
@@ -72,8 +76,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("1/management")
@@ -108,17 +110,10 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_INSERT_CSV_DATA, notes = M_INSERT_CSV_DATA_NOTES, response = Response.class)
 	@PostMapping("/organizations/{organizationCode}/datasets/{idDataset}/addData")
-	public ResponseEntity<Object> addCSVData(
-			@RequestParam("file") final MultipartFile file,
-			@RequestParam("skipFirstRow") final Boolean skipFirstRow,
-			@RequestParam("encoding") final String encoding,
-			@RequestParam("csvSeparator") final String csvSeparator,
-			@PathVariable final String organizationCode,
-			@PathVariable final Integer idDataset,		
-			@RequestParam final String componentInfoRequests,
-			final HttpServletRequest request
-			) {
-		
+	public ResponseEntity<Object> addCSVData(@RequestParam("file") final MultipartFile file, @RequestParam("skipFirstRow") final Boolean skipFirstRow,
+			@RequestParam("encoding") final String encoding, @RequestParam("csvSeparator") final String csvSeparator, @PathVariable final String organizationCode,
+			@PathVariable final Integer idDataset, @RequestParam final String componentInfoRequests, final HttpServletRequest request) {
+
 		logger.info("addCSVData");
 
 		return run(new ApiCallable() {
@@ -126,9 +121,9 @@ public class ManagementController extends YuccaController {
 				return datasetService.insertCSVData(file, skipFirstRow, encoding, csvSeparator, componentInfoRequests, organizationCode, idDataset, getAuthorizedUser(request));
 			}
 		}, logger);
-		
+
 	}
-	
+
 	/**
 	 * 
 	 * @param organizationCode
@@ -138,13 +133,9 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/datasets/{idDataset}")
-	public ResponseEntity<Object> updateDataset(
-			@PathVariable final String organizationCode,
-			@PathVariable final Integer idDataset,
-			@RequestBody final DatasetRequest datasetRequest,
-			@RequestParam(required = false) final String tenantCodeManager,
-			final HttpServletRequest request) {
-		
+	public ResponseEntity<Object> updateDataset(@PathVariable final String organizationCode, @PathVariable final Integer idDataset,
+			@RequestBody final DatasetRequest datasetRequest, @RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
+
 		logger.info("updateDataset");
 
 		return run(new ApiCallable() {
@@ -153,10 +144,11 @@ public class ManagementController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * 
-	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/Inserimento_Dataset
+	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/
+	 * Inserimento_Dataset
 	 * 
 	 * @param organizationCode
 	 * @param file
@@ -169,11 +161,7 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_INSERT_DATASET, notes = M_INSERT_DATASET_NOTES, response = Response.class)
 	@PostMapping("/organizations/{organizationCode}/datasets")
-	public ResponseEntity<Object> addDataSet(
-			@PathVariable final String organizationCode,
-			@RequestBody final DatasetRequest postDatasetRequest ,
-			final HttpServletRequest request
-			) {
+	public ResponseEntity<Object> addDataSet(@PathVariable final String organizationCode, @RequestBody final DatasetRequest postDatasetRequest, final HttpServletRequest request) {
 		logger.info("addDataSet");
 
 		return run(new ApiCallable() {
@@ -182,7 +170,34 @@ public class ManagementController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
+	/**
+	 * 
+	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/
+	 * ImportMetadata_Dataset
+	 * 
+	 * @param organizationCode
+	 * @param file
+	 * @param dataset
+	 * @param formatType
+	 * @param csvSeparator
+	 * @param encoding
+	 * @param skipFirstRow
+	 * @return
+	 */
+	@ApiOperation(value = M_IMPORT_METADATA_DATASET, notes = M_IMPORT_METADATA_NOTES, response = Response.class)
+	@PostMapping("/organizations/{organizationCode}/datasets/importMetadata")
+	public ResponseEntity<Object> importMetadata(@PathVariable final String organizationCode, @RequestBody final ImportMetadataDatasetRequest importMetadataRequest,
+			final HttpServletRequest request) {
+		logger.info("addDataSet");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.importMetadata(organizationCode, importMetadataRequest, getAuthorizedUser(request));
+			}
+		}, logger);
+	}
+
 	/**
 	 * 
 	 * @param organizationCode
@@ -193,16 +208,14 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_DATASET, notes = M_LOAD_DATASET_NOTES, response = DettaglioStreamResponse.class)
 	@GetMapping("/organizations/{organizationCode}/datasets/{idDataset}")
-	public ResponseEntity<Object> loadDataset(@PathVariable final String organizationCode,
-			@PathVariable final Integer idDataset, @RequestParam(required = false) final String tenantCodeManager,
-			final HttpServletRequest request) {
+	public ResponseEntity<Object> loadDataset(@PathVariable final String organizationCode, @PathVariable final Integer idDataset,
+			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
 
 		logger.info("loadDataset");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectDataset(organizationCode, idDataset, tenantCodeManager,
-						getAuthorizedUser(request));
+				return datasetService.selectDataset(organizationCode, idDataset, tenantCodeManager, getAuthorizedUser(request));
 			}
 		}, logger);
 	}
@@ -217,16 +230,14 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_DATA_SETS, notes = M_LOAD_DATA_SETS_NOTES, response = DatasetResponse.class, responseContainer = "List")
 	@GetMapping("/organizations/{organizationCode}/datasets")
-	public ResponseEntity<Object> loadDataSets(@PathVariable final String organizationCode,
-			@RequestParam(required = false) final String tenantCodeManager,
+	public ResponseEntity<Object> loadDataSets(@PathVariable final String organizationCode, @RequestParam(required = false) final String tenantCodeManager,
 			@RequestParam(required = false) final String sort, final HttpServletRequest request) {
 
 		logger.info("loadDataSets");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectDatasets(organizationCode, tenantCodeManager, sort,
-						getAuthorizedUser(request));
+				return datasetService.selectDatasets(organizationCode, tenantCodeManager, sort, getAuthorizedUser(request));
 			}
 		}, logger);
 
@@ -244,15 +255,13 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams/{idStream}")
-	public ResponseEntity<Object> updateStream(@RequestParam(required = false) final String tenantCodeManager,
-			@RequestBody final StreamRequest streamRequest, @PathVariable final String organizationCode,
-			@PathVariable final String soCode, @PathVariable final Integer idStream, final HttpServletRequest request) {
+	public ResponseEntity<Object> updateStream(@RequestParam(required = false) final String tenantCodeManager, @RequestBody final StreamRequest streamRequest,
+			@PathVariable final String organizationCode, @PathVariable final String soCode, @PathVariable final Integer idStream, final HttpServletRequest request) {
 		logger.info("updateDraftStream");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.updateStream(organizationCode, soCode, idStream, streamRequest, tenantCodeManager,
-						getAuthorizedUser(request));
+				return streamService.updateStream(organizationCode, soCode, idStream, streamRequest, tenantCodeManager, getAuthorizedUser(request));
 			}
 		}, logger);
 	}
@@ -267,16 +276,14 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamResponse.class)
 	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
-	public ResponseEntity<Object> loadStream(@PathVariable final String organizationCode,
-			@PathVariable final Integer idstream, @RequestParam(required = false) final String tenantCodeManager,
-			final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStream(@PathVariable final String organizationCode, @PathVariable final Integer idstream,
+			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
 
 		logger.info("loadStream");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.selectStream(organizationCode, idstream, tenantCodeManager,
-						getAuthorizedUser(request));
+				return streamService.selectStream(organizationCode, idstream, tenantCodeManager, getAuthorizedUser(request));
 			}
 		}, logger);
 	}
@@ -290,8 +297,8 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/organizations/{organizationCode}/streams/{idstream}/icon")
-	public void loadStreamIcon(@PathVariable final String organizationCode, @PathVariable final Integer idstream,
-			final HttpServletRequest request, final HttpServletResponse response) {
+	public void loadStreamIcon(@PathVariable final String organizationCode, @PathVariable final Integer idstream, final HttpServletRequest request,
+			final HttpServletResponse response) {
 
 		logger.info("loadStreamIcon");
 
@@ -322,15 +329,13 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_STREAMS, notes = M_LOAD_STREAMS_NOTES, response = ListStreamResponse.class, responseContainer = "List")
 	@GetMapping("/organizations/{organizationCode}/streams")
-	public ResponseEntity<Object> loadStreams(@PathVariable final String organizationCode,
-			@RequestParam(required = false) final String tenantCodeManager,
+	public ResponseEntity<Object> loadStreams(@PathVariable final String organizationCode, @RequestParam(required = false) final String tenantCodeManager,
 			@RequestParam(required = false) final String sort, final HttpServletRequest request) {
 		logger.info("loadStreams");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.selectStreams(organizationCode, tenantCodeManager, sort,
-						getAuthorizedUser(request));
+				return streamService.selectStreams(organizationCode, tenantCodeManager, sort, getAuthorizedUser(request));
 			}
 		}, logger);
 	}
@@ -345,16 +350,14 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_CREATE_STREAM_DATASET, notes = M_CREATE_STREAM_DATASET_NOTES, response = PostStreamResponse.class)
 	@PostMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams")
-	public ResponseEntity<Object> createStreamDataset(@RequestBody final PostStreamRequest request,
-			@PathVariable final String organizationCode, @PathVariable final String soCode,
+	public ResponseEntity<Object> createStreamDataset(@RequestBody final PostStreamRequest request, @PathVariable final String organizationCode, @PathVariable final String soCode,
 			final HttpServletRequest httpRequest) {
 
 		logger.info("createStreamDataset");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.createStreamDataset(request, organizationCode, soCode,
-						getAuthorizedUser(httpRequest));
+				return streamService.createStreamDataset(request, organizationCode, soCode, getAuthorizedUser(httpRequest));
 			}
 		}, logger);
 	}
@@ -366,8 +369,7 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_CREATE_TENANT_SOCIAL, notes = M_CREATE_TENANT_SOCIAL_NOTES, response = TenantResponse.class)
 	@PostMapping("/tenants")
-	public ResponseEntity<Object> createTenantSocial(
-			@RequestBody final PostTenantSocialRequest installationTenantRequest) {
+	public ResponseEntity<Object> createTenantSocial(@RequestBody final PostTenantSocialRequest installationTenantRequest) {
 		logger.info("createTenantSocial");
 
 		return run(new ApiCallable() {
@@ -386,8 +388,7 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_SMART_OBJECT, notes = M_LOAD_SMART_OBJECT_NOTES, response = DettaglioSmartobjectResponse.class)
 	@GetMapping("/organizations/{organizationCode}/smartobjects/{socode}")
-	public ResponseEntity<Object> loadSmartobject(@PathVariable final String organizationCode,
-			@PathVariable final String socode, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadSmartobject(@PathVariable final String organizationCode, @PathVariable final String socode, final HttpServletRequest request) {
 		logger.info("loadSmartobject");
 
 		return run(new ApiCallable() {
@@ -406,8 +407,8 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_SMART_OBJECTS, notes = M_LOAD_SMART_OBJECTS_NOTES, response = DettaglioSmartobjectResponse.class, responseContainer = "List")
 	@GetMapping("/organizations/{organizationCode}/smartobjects")
-	public ResponseEntity<Object> loadSmartobjects(@PathVariable final String organizationCode,
-			@RequestParam(required = false) final String tenantCode, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadSmartobjects(@PathVariable final String organizationCode, @RequestParam(required = false) final String tenantCode,
+			final HttpServletRequest request) {
 		logger.info("loadSmartobjects");
 
 		return run(new ApiCallable() {
@@ -429,9 +430,8 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_TENANT, notes = M_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer = "List")
 	@GetMapping("/tenants")
-	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip,
-			@RequestParam(required = false) final Integer limit, @RequestParam(required = false) final String fields,
-			@RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
+	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip, @RequestParam(required = false) final Integer limit,
+			@RequestParam(required = false) final String fields, @RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
 		logger.info("loadTenants");
 
 		return run(new ApiCallable() {
@@ -452,8 +452,8 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
-	public ResponseEntity<Object> updateSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest,
-			@PathVariable final String organizationCode, @PathVariable final String soCode) {
+	public ResponseEntity<Object> updateSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final String organizationCode,
+			@PathVariable final String soCode) {
 		logger.info("updateSmartobject");
 
 		return run(new ApiCallable() {
@@ -471,8 +471,7 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_DELETE_SMARTOBJECT, notes = M_DELETE_SMARTOBJECT_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/organizations/{organizationCode}/smartobjects/{soCode}")
-	public ResponseEntity<Object> deleteSmartobject(@PathVariable final String organizationCode,
-			@PathVariable final String soCode) {
+	public ResponseEntity<Object> deleteSmartobject(@PathVariable final String organizationCode, @PathVariable final String soCode) {
 		logger.info("deleteSmartobject");
 
 		return run(new ApiCallable() {
@@ -502,8 +501,7 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_CREATE_SMARTOBJECT, notes = M_CREATE_SMARTOBJECT_NOTES, response = DataTypeResponse.class)
 	@PostMapping("/organizations/{organizationCode}/smartobjects")
-	public ResponseEntity<Object> createSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest,
-			@PathVariable final String organizationCode) {
+	public ResponseEntity<Object> createSmartobject(@RequestBody final SmartobjectRequest smartobjectRequest, @PathVariable final String organizationCode) {
 		logger.info("createSmartobject");
 
 		return run(new ApiCallable() {

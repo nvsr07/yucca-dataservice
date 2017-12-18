@@ -7,6 +7,7 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
+import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,4 +28,5 @@ public interface DatasetService {
 	ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
 			String csvSeparator, String componentInfoRequests, String organizationCode, Integer idDataset, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, JwtUser authorizedUser)throws BadRequestException, NotFoundException, Exception;
 }

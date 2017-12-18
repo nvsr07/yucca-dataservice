@@ -17,7 +17,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@PropertySource(value = { "classpath:datasource.properties" })
+@PropertySource(value = { "classpath:adminapi.properties" })
 public class StoreDelegate {
 
 	private static final Logger logger = Logger.getLogger(StoreDelegate.class);

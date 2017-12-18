@@ -534,5 +534,100 @@ public interface DatasetMapper {
 	int insertDataset(Dataset dataset);
 
 	
+	/*************************************************************************
+	* 					SELECT DATASETS FROM JDBC
+	* ***********************************************************************/
+	public static final String SELECT_DATASET_FROM_JDBC = 
+//	" SELECT yucca_dataset.id_data_source, yucca_dataset.datasourceversion, iddataset, datasetcode, datasetname, " +
+//	"description, startingestiondate, endingestiondate, importfiletype, " +
+//	"id_dataset_type, id_dataset_subtype, solrcollectionname, phoenixtablename, " +
+//	"phoenixschemaname, availablehive, availablespeed, istransformed, " +
+//	"dbhiveschema, dbhivetable, id_data_source_binary, datasourceversion_binary, " +
+//	"jdbcdburl, jdbcdbname, jdbcdbtype, jdbctablename " +
+//	" FROM " +  DatasetMapper.DATASET_TABLE  + " yucca_dataset  " +
+//	" INNER JOIN " + DataSourceMapper.DATA_SOURCE_TABLE  + " yucca_data_source ON yucca_dataset.id_data_source = yucca_data_source.id_data_source AND  " +
+//	" yucca_dataset.datasourceversion = yucca_data_source.datasourceversion  " +
+//	" LEFT JOIN " + TenantMapper.R_TENANT_DATA_SOURCE_TABLE  + " yucca_r_tenant_data_source ON yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source " + 
+//	" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " yucca_organization ON  yucca_data_source.id_organization = yucca_organization.id_organization " +
+//	" where " + 
+//	" yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND  " +
+//	" yucca_r_tenant_data_source.isactive = 1 AND  " +
+//	" yucca_r_tenant_data_source.ismanager = 1  " + 
+//	" where jdbcdburl=#{jdbcdburl} and jdbcdbname=#{jdbcdbname} and jdbcdbtype=#{jdbcdbtype} and id_tenant=#{idTenant} " + 
+//	" (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
+//	"    (select id_data_source, max(datasourceversion) from " + DataSourceMapper.DATA_SOURCE_TABLE  + "  where id_data_source = yucca_dataset.id_data_source group by id_data_source) " +
+//	"  AND yucca_organization.organizationcode = #{organizationCode} ";
+	" SELECT " + 
+	" yucca_dataset.iddataset, " + 
+	" yucca_dataset.id_data_source, " +
+	" yucca_dataset.datasetcode, " + 
+	" yucca_dataset.datasetname, " + 
+	" yucca_dataset.datasourceversion, " + 
+	" yucca_d_status.id_status, " + 
+	" yucca_d_status.statuscode, " + 
+	" yucca_d_status.description status_description, " + 
+	" yucca_organization.organizationcode, " + 
+	" yucca_organization.description organization_description, " + 
+	" yucca_organization.id_organization, " + 
+	" yucca_r_tenant_data_source.isactive, " + 
+	" yucca_r_tenant_data_source.ismanager, " + 
+	" yucca_tenant.tenantcode, " + 
+	" yucca_tenant.name tenant_name, " + 
+	" yucca_tenant.description tenant_description, " + 
+	" yucca_tenant.id_tenant, " +
+	" yucca_data_source.id_subdomain, " +
+	" yucca_d_subdomain.id_domain " +
+	" FROM " +  DATASET_TABLE + " yucca_dataset " + 
+	" INNER JOIN " + DataSourceMapper.DATA_SOURCE_TABLE  + " yucca_data_source ON yucca_dataset.id_data_source = yucca_data_source.id_data_source AND yucca_dataset.datasourceversion = yucca_data_source.datasourceversion " +
+	" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " yucca_organization ON  yucca_data_source.id_organization = yucca_organization.id_organization " +
+	" INNER JOIN " + SmartobjectMapper.STATUS_TABLE + " yucca_d_status ON yucca_data_source.id_status = yucca_d_status.id_status " + 
+	" INNER JOIN " + SubdomainMapper.SUBDOMAIN_TABLE  + " yucca_d_subdomain ON yucca_data_source.id_subdomain = yucca_d_subdomain.id_subdomain " + 
+	" LEFT JOIN " + TenantMapper.R_TENANT_DATA_SOURCE_TABLE  + " yucca_r_tenant_data_source ON yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
+	"                     yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
+	"                     yucca_r_tenant_data_source.isactive = 1 AND yucca_r_tenant_data_source.ismanager = 1 " +
+	" LEFT JOIN " + TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " +
+	" WHERE  " +
+	" jdbcdburl=#{jdbcdburl} and jdbcdbname=#{jdbcdbname} and jdbcdbtype=#{jdbcdbtype} and tenantcode=#{tenantCode} AND yucca_data_source.id_status!=5 and " + 
+	" (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
+	"    (select id_data_source, max(datasourceversion) from " + DataSourceMapper.DATA_SOURCE_TABLE  + "  where id_data_source = yucca_dataset.id_data_source group by id_data_source) " +
+	"  AND yucca_organization.organizationcode = #{organizationCode} " +
+
+	"<if test=\"tenantCodeManager != null\">" +
+	" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
+	"</if>" +
+	"  AND (yucca_data_source.visibility = 'public' OR " +
+	"   EXISTS ( " +
+	"   SELECT yucca_tenant.tenantcode " + 
+	"   FROM " + TenantMapper.TENANT_TABLE  + " yucca_tenant , " + TenantMapper.R_TENANT_DATA_SOURCE_TABLE + " yucca_r_tenant_data_source " +
+	"   WHERE yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " + 
+	"   AND yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
+	"       yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
+	"       yucca_r_tenant_data_source.isactive = 1 AND tenantcode IN ("
+	+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
+	+ "#{authorizedTenantCode}"
+	+ " </foreach>"
+	+ ") " +
+	"   ) " +
+	"   ) ";
+	@Results({
+		@Result(property = "idDataSource", column = "id_data_source"),
+		@Result(property = "idStatus", column = "id_status"),
+		@Result(property = "statusCode", column = "statuscode"), 
+		@Result(property = "statusDescription", column = "status_description"),
+		@Result(property = "organizationCode", column = "organizationcode"), 
+		@Result(property = "organizationDescription", column = "organization_description"),
+		@Result(property = "idOrganization", column = "id_organization"), 
+		@Result(property = "tenantCode", column = "tenantcode"), 
+		@Result(property = "tenantName", column = "tenant_name"), 
+		@Result(property = "tenantDescription", column = "tenant_description"), 
+		@Result(property = "idTenant", column = "id_tenant"),
+		@Result(property = "subIdSubDomain", column = "id_subdomain"),
+		@Result(property = "domIdDomain", column = "id_domain") 
+      })		
+	@Select({"<script>", SELECT_DATASET_FROM_JDBC, "</script>"}) 
+	List<DettaglioDataset> selectDatasetFromJdbc(@Param("jdbcdburl") String jdbcdburl, @Param("jdbcdbname") String jdbcdbname, @Param("jdbcdbtype") String jdbcdbtype, 
+			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode);	
+	
+	
 	
 }

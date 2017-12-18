@@ -34,6 +34,7 @@ import java.util.List;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
+import org.csi.yucca.adminapi.importmetadata.DatabaseReader;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.mapper.ApiMapper;
 import org.csi.yucca.adminapi.mapper.ComponentMapper;
@@ -76,6 +77,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -666,5 +668,16 @@ public class DatasetServiceImpl implements DatasetService {
 			throw new BadRequestException(Errors.NOT_ACCEPTABLE);
 		}
 	}
+	
+	@Override
+	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, JwtUser authorizedUser)  throws BadRequestException, NotFoundException, Exception {
+		
+		DatabaseReader databaseReader = new DatabaseReader(organizationCode, importMetadataRequest.getTenantCode(), importMetadataRequest.getDbType(), importMetadataRequest.getJdbcHostname(), 
+				importMetadataRequest.getJdbcDbname(), importMetadataRequest.getJdbcUsername(), importMetadataRequest.getJdbcPassword());
+		String schema = databaseReader.loadSchema();
+
+		return buildResponse(schema);
+	}
+
 
 }
