@@ -86,6 +86,10 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_GENERETATE_ADMIN_KEY_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_GENERETATE_ADMIN_KEY_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS_NOTES;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -108,12 +112,14 @@ import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
+import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
+import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -148,6 +154,9 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private TenantService tenantService;
+	
+	@Autowired
+	private StreamService streamService;
 
 	/**
 	 * 
@@ -973,6 +982,24 @@ public class BackOfficeController extends YuccaController {
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.updateDomain(domainRequest, idDomain);
+			}
+		}, logger);
+	}
+	
+	/**
+	 * LOAD ALL STREAMS
+	 * @param sort	 
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_STREAMS, notes = BO_LOAD_STREAMS_NOTES, response = ListStreamResponse.class, responseContainer = "List")
+	@GetMapping("/streams")
+	public ResponseEntity<Object> loadStreams(
+			@RequestParam(required = false) final String sort, final HttpServletRequest request) {
+		logger.info("loadStreams");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.selectStreams(sort);
 			}
 		}, logger);
 	}

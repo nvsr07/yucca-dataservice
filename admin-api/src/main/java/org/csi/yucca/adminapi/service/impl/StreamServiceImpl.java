@@ -166,7 +166,7 @@ public class StreamServiceImpl implements StreamService {
 	}
 
 	/**
-	 * 
+	 *  SELECT STREAMS FROM MANAGEMENT
 	 */
 	@Override
 	public ServiceResponse selectStreams(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
@@ -174,9 +174,27 @@ public class StreamServiceImpl implements StreamService {
 		
 		checkAuthTenant(authorizedUser, tenantCodeManager);
 		
+		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");		
+		
 		List<String> sortList = getSortList(sort, DettaglioStream.class);
 		
 		List<DettaglioStream> list = streamMapper.selectStreams(tenantCodeManager, organizationCode, sortList, getTenantCodeListFromUser(authorizedUser));
+		
+		checkList(list);
+		
+		return buildResponse(buildSelectStreamsResponse(list));
+	}
+	
+	/**
+	 * SELECT STREAMS FROM BACKOFFICE
+	 */
+	@Override
+	public ServiceResponse selectStreams(String sort)
+			throws BadRequestException, NotFoundException, UnauthorizedException, Exception {		
+		
+		List<String> sortList = getSortList(sort, DettaglioStream.class);
+		
+		List<DettaglioStream> list = streamMapper.selectStreams(null, null, sortList, null);
 		
 		checkList(list);
 		
