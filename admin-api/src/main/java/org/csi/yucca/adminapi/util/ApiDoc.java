@@ -229,4 +229,7 @@ public class ApiDoc {
 
 	public static final String BO_DELETE_PHENOMENON = "DELETE PHENOMENON";
 	public static final String BO_DELETE_PHENOMENON_NOTES = "Delete Phenomenon in the System.";
+	
+	public static final String BO_LOAD_STREAMS = "LOAD STREAMS";
+	public static final String BO_LOAD_STREAMS_NOTES = "Load all Streams in the System.";
 }

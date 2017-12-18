@@ -557,16 +557,21 @@ public interface StreamMapper {
 			" WHERE TENANT.id_tenant = TENANT_DATASOURCE.id_tenant " + 
 			" AND TENANT_DATASOURCE.id_data_source = DATA_SOURCE.id_data_source AND " +
 			" TENANT_DATASOURCE.datasourceversion = DATA_SOURCE.datasourceversion AND " +
-			" TENANT_DATASOURCE.isactive = 1 AND tenantcode IN ("
+			" TENANT_DATASOURCE.isactive = 1 " +
+			"<if test=\"userAuthorizedTenantCodeList != null\">" +
+			" AND tenantcode IN (" 
 			
 			+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
 			+ "#{authorizedTenantCode}"
-			+ " </foreach>"
-			
+			+ " </foreach>"	
 			+ ") " +
+			"</if>" +
+			
 			" ) " +
 			" ) " +
+			"<if test=\"organizationcode != null\">" +
 			"and ORGANIZATION.organizationcode = #{organizationcode}" +
+			"</if>" +
 			
 			"<if test=\"sortList != null\">" +
 		      " ORDER BY " +
