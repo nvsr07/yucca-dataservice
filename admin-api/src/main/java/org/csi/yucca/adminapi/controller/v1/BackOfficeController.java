@@ -143,7 +143,6 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("1/backoffice")
 public class BackOfficeController extends YuccaController {
 
-	// hhh
 	private static final Logger logger = Logger.getLogger(BackOfficeController.class);
 
 	@Autowired
@@ -323,18 +322,6 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * 
-	 * INSERT DATA TYPE
-	 * 
-	 * CREATE SEQUENCE int_yucca.data_type_id_data_type_seq; ALTER TABLE
-	 * int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET DEFAULT
-	 * nextval('int_yucca.data_type_id_data_type_seq'); ALTER TABLE
-	 * int_yucca.yucca_d_data_type ALTER COLUMN id_data_type SET NOT NULL; ALTER
-	 * SEQUENCE int_yucca.data_type_id_data_type_seq OWNED BY
-	 * int_yucca.yucca_d_data_type.id_data_type; -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.data_type_id_data_type_seq RESTART WITH 15;
-	 * 
 	 * @param dataTypeRequest
 	 * @return
 	 */
@@ -553,18 +540,6 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * 
-	 * CREATE SEQUENCE int_yucca.measure_unit_id_measure_unit_seq; ALTER TABLE
-	 * int_yucca.yucca_d_measure_unit ALTER COLUMN id_measure_unit SET DEFAULT
-	 * nextval('int_yucca.measure_unit_id_measure_unit_seq'); ALTER TABLE
-	 * int_yucca.yucca_d_measure_unit ALTER COLUMN id_measure_unit SET NOT NULL;
-	 * ALTER SEQUENCE int_yucca.measure_unit_id_measure_unit_seq OWNED BY
-	 * int_yucca.yucca_d_measure_unit.id_measure_unit; -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.measure_unit_id_measure_unit_seq RESTART WITH
-	 * 53;
-	 * 
-	 * 
 	 * @param measureUnitRequest
 	 * @return
 	 */
@@ -730,19 +705,6 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * CREATE SUBDOMAIN
-	 * 
-	 * CREATE SEQUENCE int_yucca.subdomain_id_subdomain_seq; ALTER TABLE
-	 * int_yucca.yucca_d_subdomain ALTER COLUMN id_subdomain SET DEFAULT
-	 * nextval('int_yucca.subdomain_id_subdomain_seq'); ALTER TABLE
-	 * int_yucca.yucca_d_subdomain ALTER COLUMN id_subdomain SET NOT NULL; ALTER
-	 * SEQUENCE int_yucca.subdomain_id_subdomain_seq OWNED BY
-	 * int_yucca.yucca_d_subdomain.id_subdomain; -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.subdomain_id_subdomain_seq RESTART WITH 200;
-	 * 
-	 * AGGIUNGERE CHIAVE UNIVOCA PER subdomaincode NELLA TABELLA SUBDOMAIN.
-	 * 
 	 * @param subdomainRequest
 	 * @return
 	 */
@@ -819,15 +781,6 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * CREATE SEQUENCE int_yucca.license_id_license_seq; ALTER TABLE
-	 * int_yucca.yucca_d_license ALTER COLUMN id_license SET DEFAULT
-	 * nextval('int_yucca.license_id_license_seq'); ALTER TABLE
-	 * int_yucca.yucca_d_license ALTER COLUMN id_license SET NOT NULL; ALTER
-	 * SEQUENCE int_yucca.license_id_license_seq OWNED BY
-	 * int_yucca.yucca_d_license.id_license; -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.license_id_license_seq RESTART WITH 200;
-	 * 
 	 * @param licenseRequest
 	 * @return
 	 */
@@ -869,27 +822,8 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * 
-	 ALTER TABLE int_yucca.yucca_organization ADD COLUMN
-	 * datasolrcollectionname character varying(200); ALTER TABLE
-	 * int_yucca.yucca_organization ADD COLUMN measuresolrcollectionname
-	 * character varying(200); ALTER TABLE int_yucca.yucca_organization ADD
-	 * COLUMN mediasolrcollectionname character varying(200); ALTER TABLE
-	 * int_yucca.yucca_organization ADD COLUMN socialsolrcollectionname
-	 * character varying(200); ALTER TABLE int_yucca.yucca_organization ADD
-	 * COLUMN dataphoenixtablename character varying(200); ALTER TABLE
-	 * int_yucca.yucca_organization ADD COLUMN dataphoenixschemaname character
-	 * varying(200); ALTER TABLE int_yucca.yucca_organization ADD COLUMN
-	 * measuresphoenixtablename character varying(200); ALTER TABLE
-	 * int_yucca.yucca_organization ADD COLUMN measuresphoenixschemaname
-	 * character varying(200); ALTER TABLE int_yucca.yucca_organization ADD
-	 * COLUMN mediaphoenixtablename character varying(200); ALTER TABLE
-	 * int_yucca.yucca_organization ADD COLUMN mediaphoenixschemaname character
-	 * varying(200); ALTER TABLE int_yucca.yucca_organization ADD COLUMN
-	 * socialphoenixtablename character varying(200); ALTER TABLE
-	 * int_yucca.yucca_organization ADD COLUMN socialphoenixschemaname character
-	 * varying(200);
-	 * 
-	 * 
+	 * @param organizationRequest
+	 * @return
 	 */
 	@ApiOperation(value = BO_CREATE_ORGANIZATION, notes = BO_CREATE_ORGANIZATION_NOTES, response = BackOfficeOrganizationResponse.class)
 	@PostMapping("/organizations")
@@ -903,6 +837,11 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * 
+	 * @param idEcosystem
+	 * @return
+	 */
 	@ApiOperation(value = BO_DELETE_ECOSYSTEM, notes = BO_DELETE_ECOSYSTEM_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> deleteEcosystem(@PathVariable final Integer idEcosystem) {
@@ -915,6 +854,11 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * 
+	 * @param ecosystemRequest
+	 * @return
+	 */
 	@ApiOperation(value = BO_CREATE_ECOSYSTEM, notes = BO_CREATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PostMapping("/ecosystems")
 	public ResponseEntity<Object> createEcosystem(@RequestBody final EcosystemRequest ecosystemRequest) {
@@ -928,6 +872,12 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * 
+	 * @param ecosystemRequest
+	 * @param idEcosystem
+	 * @return
+	 */
 	@ApiOperation(value = BO_UPDATE_ECOSYSTEM, notes = BO_UPDATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PutMapping("/ecosystems/{idEcosystem}")
 	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest, @PathVariable final Integer idEcosystem) {
@@ -940,6 +890,11 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * 
+	 * @param idDomain
+	 * @return
+	 */
 	@ApiOperation(value = BO_DELETE_DOMAIN, notes = BO_DELETE_DOMAIN_NOTES, response = ServiceResponse.class)
 	@DeleteMapping("/domains/{idDomain}")
 	public ResponseEntity<Object> deleteDomain(@PathVariable final Integer idDomain) {
@@ -953,12 +908,6 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * CREATE SEQUENCE foo_a_seq; ALTER TABLE foo ALTER COLUMN a SET DEFAULT
-	 * nextval('foo_a_seq'); ALTER TABLE foo ALTER COLUMN a SET NOT NULL; ALTER
-	 * SEQUENCE foo_a_seq OWNED BY foo.a; -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.yucca_d_domain_seq RESTART WITH 22;
-	 * 
 	 * @param domainRequest
 	 * @return
 	 */
@@ -974,6 +923,12 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * 
+	 * @param domainRequest
+	 * @param idDomain
+	 * @return
+	 */
 	@ApiOperation(value = BO_UPDATE_DOMAIN, notes = BO_UPDATE_DOMAIN_NOTES, response = DomainResponse.class)
 	@PutMapping("/domains/{idDomain}")
 	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest, @PathVariable final Integer idDomain) {
