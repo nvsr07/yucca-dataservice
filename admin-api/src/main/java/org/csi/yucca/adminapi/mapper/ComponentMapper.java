@@ -29,10 +29,10 @@ public interface ComponentMapper {
 			" INSERT INTO " + COMPONENT_TABLE + "( " +
 				" name, alias, inorder, tolerance, since_version, " + 
 				" id_phenomenon, id_data_type, id_measure_unit, id_data_source, " + 
-				" datasourceversion, iskey, sourcecolumn, sourcecolumnname, required) " +
+				" datasourceversion, iskey, sourcecolumn, sourcecolumnname, required, foreignkey) " +
 			" SELECT name, alias, inorder, tolerance, since_version, " + 
 				" id_phenomenon, id_data_type, id_measure_unit, id_data_source, " + 
-				" #{newDataSourceVersion}, iskey, sourcecolumn, sourcecolumnname, required " +
+				" #{newDataSourceVersion}, iskey, sourcecolumn, sourcecolumnname, required, foreignkey " +
 			" FROM " + COMPONENT_TABLE + " WHERE id_component in ( " +
 				"<foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"listIdComponent\">" +
 					"#{propName}" +
@@ -48,7 +48,7 @@ public interface ComponentMapper {
 	public static final String UPDATE_CLONED_COMPONENT = 
 		"UPDATE " + COMPONENT_TABLE + 
 		" SET alias=#{alias}, inorder=#{inorder}, id_measure_unit=#{idMeasureUnit} " + 
-		" WHERE name=#{name} and datasourceversion=#{dataSourceVersion} and id_data_source=#{idDataSource}";
+		" WHERE name=#{name} and datasourceversion=#{dataSourceVersion} and id_data_source=#{idDataSource}, foreignkey=#{foreignkey}";
 	@Update(UPDATE_CLONED_COMPONENT)
 	int updateClonedComponent(
 			@Param("name") String name,
@@ -56,15 +56,15 @@ public interface ComponentMapper {
 			@Param("inorder") Integer inorder,
 			@Param("idMeasureUnit") Integer idMeasureUnit,
 			@Param("dataSourceVersion") Integer dataSourceVersion,
-			@Param("idDataSource") Integer idDataSource );
-
+			@Param("idDataSource") Integer idDataSource,
+			@Param("foreignkey") String foreignkey);
 	
 	/*************************************************************************
 	 * 					UPDATE COMPONENT
 	 * ***********************************************************************/	
 	public static final String UPDATE_COMPONENT = 
 		"UPDATE " + COMPONENT_TABLE + 
-		" SET alias=#{alias}, inorder=#{inorder}, tolerance=#{tolerance},id_phenomenon=#{idPhenomenon},id_measure_unit=#{idMeasureUnit} " + 
+		" SET alias=#{alias}, inorder=#{inorder}, tolerance=#{tolerance},id_phenomenon=#{idPhenomenon},id_measure_unit=#{idMeasureUnit}, foreignkey=#{foreignkey} " + 
 		" WHERE id_component=#{idComponent}";
 	@Update(UPDATE_COMPONENT)
 	int updateComponent(Component component);
@@ -91,7 +91,7 @@ public interface ComponentMapper {
 	public static final String SELECT_COMPONENT_BY_DATA_SOURCE_AND_VERSION =
 			"SELECT id_component, name, alias, inorder, tolerance, since_version, "
 			+ "id_phenomenon, id_data_type, id_measure_unit, id_data_source, "
-			+ "datasourceversion, iskey, sourcecolumn, sourcecolumnname, required "
+			+ "datasourceversion, iskey, sourcecolumn, sourcecolumnname, required, foreignkey "
 			+ "from " + COMPONENT_TABLE + "  where id_data_source  = #{idDataSource} and "
 					+ "datasourceversion =#{dataSourceVersion}";
 	@Results({
@@ -112,11 +112,10 @@ public interface ComponentMapper {
 	public static final String INSERT_COMPONENT = 
 	" INSERT INTO " + COMPONENT_TABLE + "( name, alias, inorder, tolerance, since_version, "
 	+ "id_phenomenon, id_data_type, id_measure_unit, id_data_source, datasourceversion, iskey, "
-	+ "sourcecolumn, sourcecolumnname, required)"
+	+ "sourcecolumn, sourcecolumnname, required, foreignkey)"
 	+ "VALUES (#{name}, #{alias}, #{inorder}, #{tolerance}, #{sinceVersion}, #{idPhenomenon}, "
 	+ "#{idDataType}, #{idMeasureUnit}, #{idDataSource}, #{datasourceversion}, #{iskey}, #{sourcecolumn}, "
-	+ "#{sourcecolumnname}, #{required})";
-
+	+ "#{sourcecolumnname}, #{required}, #{foreignkey})";
 	@Insert(INSERT_COMPONENT)
 	@Options(useGeneratedKeys=true, keyProperty="idComponent")
 	int insertComponent(Component component);

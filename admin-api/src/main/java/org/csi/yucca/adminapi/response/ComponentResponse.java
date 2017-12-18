@@ -34,7 +34,24 @@ public class ComponentResponse extends Response {
 		this.sourcecolumn = componentJson.getSourcecolumn();
 		this.sourcecolumnname = componentJson.getSourcecolumnname();
 	}
+	
+	public ComponentResponse idDataType(Integer idDataType){
+		DataTypeResponse dataTypeResponse = new DataTypeResponse();
+		dataTypeResponse.setIdDataType(idDataType);
+		this.dataType = dataTypeResponse;
+		return this;
+	}
+	
+	public ComponentResponse name(String name){
+		this.name = name;
+		return this;
+	}
 
+	public ComponentResponse idComponent(Integer idComponent){
+		this.idComponent = idComponent;
+		return this;
+	}
+	
 	public ComponentResponse() {
 		super();
 		// TODO Auto-generated constructor stub

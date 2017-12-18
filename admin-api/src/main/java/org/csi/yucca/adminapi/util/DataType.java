@@ -13,17 +13,17 @@ public enum DataType {
 	LATITUDE   (9,   "latitude",   "latitude"),
 	BINARY   (10,   "binary",   "binary");
 	
-	private int id;
+	private Integer id;
 	private String code;
 	private String description;
 	
-	DataType(int id, String code, String description){
+	DataType(Integer id, String code, String description){
 		this.id = id;
 		this.code = code;
 		this.description = description;
 	}
 
-	public int id() {
+	public Integer id() {
 		return id;
 	}
 
@@ -34,4 +34,19 @@ public enum DataType {
 	public String description() {
 		return description;
 	}
+	
+	public void checkValue(String value)throws Exception{
+		if(this == INT){
+			Integer.parseInt(value);
+		}
+		else if(this == LONG){
+			Long.valueOf(value);
+		}
+		else if(this == DOUBLE){
+			Double.valueOf(value);
+		}
+	}
+	
+	
+	
 }

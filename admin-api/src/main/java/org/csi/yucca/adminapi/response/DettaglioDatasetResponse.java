@@ -18,7 +18,9 @@ public class DettaglioDatasetResponse extends DatasetResponse {
 	private String dataSourceLastUpdate;
 	private String dataSourceDisclaimer;
 	private String dataSourceIcon;
-
+	private String jdbcdbschema;
+	private String importedfiles;
+	
 	private List<ComponentResponse> components = new ArrayList<ComponentResponse>();
 	private List<TenantResponse> sharingTenants = new ArrayList<TenantResponse>();
 	private LicenseResponse license;
@@ -28,7 +30,9 @@ public class DettaglioDatasetResponse extends DatasetResponse {
 	public DettaglioDatasetResponse(DettaglioDataset dettaglioDataset) throws Exception {
 		
 		super(dettaglioDataset);
-		
+
+		this.jdbcdbschema = dettaglioDataset.getJdbcdbschema();
+		this.importedfiles = dettaglioDataset.getImportedfiles();
 		this.dcat = new DcatResponse(dettaglioDataset.getDcat());
 		this.idDataSource = dettaglioDataset.getIdDataSource();
 		this.dataSourceIsActive = dettaglioDataset.getDataSourceIsActive();
@@ -44,6 +48,22 @@ public class DettaglioDatasetResponse extends DatasetResponse {
 		this.dataSourceIcon = dettaglioDataset.getDataSourceIcon();
 		Util.addSharingTenants(dettaglioDataset.getSharingTenant(), this.sharingTenants);
 		Util.addComponents(dettaglioDataset.getComponents(), this.components);
+	}
+
+	public String getJdbcdbschema() {
+		return jdbcdbschema;
+	}
+
+	public void setJdbcdbschema(String jdbcdbschema) {
+		this.jdbcdbschema = jdbcdbschema;
+	}
+
+	public String getImportedfiles() {
+		return importedfiles;
+	}
+
+	public void setImportedfiles(String importedfiles) {
+		this.importedfiles = importedfiles;
 	}
 
 	public Integer getIdDataSource() {

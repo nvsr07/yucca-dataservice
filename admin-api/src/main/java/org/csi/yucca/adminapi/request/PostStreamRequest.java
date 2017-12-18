@@ -9,6 +9,15 @@ public class PostStreamRequest extends StreamRequest implements IDataSourceReque
 	private String requestermail;
 	private Boolean privacyacceptance;
 	private Integer idSubdomain;
+	private String externalreference;
+	
+	public String getExternalreference() {
+		return externalreference;
+	}
+
+	public void setExternalreference(String externalreference) {
+		this.externalreference = externalreference;
+	}
 
 	public Integer getIdTenant() {
 		return idTenant;

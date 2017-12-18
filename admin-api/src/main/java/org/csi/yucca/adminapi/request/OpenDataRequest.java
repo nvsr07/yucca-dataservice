@@ -1,9 +1,8 @@
 package org.csi.yucca.adminapi.request;
 
 public class OpenDataRequest {
-	
-    private String opendataexternalreference;
-    private String opendataauthor;
+
+	private String opendataauthor;
     private String opendataupdatedate;
     private String opendatalanguage;
     private String lastupdate;
@@ -14,12 +13,6 @@ public class OpenDataRequest {
 	}
 	public void setOpendataupdatedate(String opendataupdatedate) {
 		this.opendataupdatedate = opendataupdatedate;
-	}
-	public String getOpendataexternalreference() {
-		return opendataexternalreference;
-	}
-	public void setOpendataexternalreference(String opendataexternalreference) {
-		this.opendataexternalreference = opendataexternalreference;
 	}
 	public String getOpendataauthor() {
 		return opendataauthor;

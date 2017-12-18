@@ -18,8 +18,26 @@ public interface UserMapper {
 	
 	String USER_TABLE = Constants.SCHEMA_DB + "yucca_users";
 	String R_TENANT_USERS_TABLE = Constants.SCHEMA_DB + "yucca_r_tenant_users";
-
-
+	
+	/*************************************************************************
+	 * 
+	 * 		    SELECT USER BY ID_DATA_SOURCE AND DATASOURCEVERSION
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_USER_BY_ID_DATA_SOURCE_AND_VERSION =
+	" SELECT YUSER.id_user, YUSER.username, YUSER.id_organization, YUSER.password " +
+	" FROM " + USER_TABLE + " YUSER, " +  TenantMapper.R_TENANT_DATA_SOURCE_TABLE + " DATA_SOURCE, " + TenantMapper.TENANT_TABLE  + " TENANT  " +
+	" WHERE DATA_SOURCE.id_data_source = #{idDataSource} AND " +
+	" DATA_SOURCE.datasourceversion = #{dataSourceVersion} AND " +
+	" DATA_SOURCE.id_tenant = TENANT.id_tenant AND " +
+	" TENANT.tenantcode = YUSER.username ";
+	@Results({
+        @Result(property = "idUser", column = "id_user"),
+        @Result(property = "idOrganization", column = "id_organization")
+      })
+	@Select(SELECT_USER_BY_ID_DATA_SOURCE_AND_VERSION) 
+	User selectUserByIdDataSourceAndVersion( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);
+	
 	
 	/*************************************************************************
 	 * 

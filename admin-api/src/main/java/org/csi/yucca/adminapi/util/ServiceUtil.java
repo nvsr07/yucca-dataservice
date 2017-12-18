@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkComponents;
 import static org.csi.yucca.adminapi.util.Util.*;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -65,7 +66,17 @@ public class ServiceUtil {
 	public static final String API_SUBTYPE_ODATA = "odata";
 	public static final String API_CODE_PREFIX_WEBSOCKET = "ws_";
 	public static final String API_CODE_PREFIX_MQTT = "mqtt_";
-
+	public static final Integer MAXIMUM_ERRORS_ALLOWED = 20;
+	
+	/**
+	 * 
+	 * @param errors
+	 * @return
+	 */
+	public static boolean maximumLimitErrorsReached(List<String> errors){
+		return errors.size() == MAXIMUM_ERRORS_ALLOWED;
+	}
+	
 	/**
 	 * 
 	 * @param idTagList
@@ -120,7 +131,7 @@ public class ServiceUtil {
         dataSource.setIcon(streamRequest.getIcon());
         dataSource.setIsopendata(streamRequest.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
         if(streamRequest.getOpenData() != null){
-            dataSource.setOpendataexternalreference(streamRequest.getOpenData().getOpendataexternalreference());    
+            dataSource.setExternalreference(streamRequest.getExternalreference());    
             dataSource.setOpendataauthor(streamRequest.getOpenData().getOpendataauthor());
             dataSource.setOpendataupdatedate(Util.dateStringToTimestamp(streamRequest.getOpenData().getOpendataupdatedate()));
             dataSource.setOpendatalanguage(streamRequest.getOpenData().getOpendatalanguage());
@@ -154,6 +165,17 @@ public class ServiceUtil {
 	 */
 	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
 		checkComponents(listComponentRequest, idSoType, null, null, componentMapper);
+	}
+	
+	/**
+	 * 
+	 * @param listComponentRequest
+	 * @param componentMapper
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static void checkComponents(List<ComponentRequest> listComponentRequest, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+		checkComponents(listComponentRequest, null, componentMapper);
 	}
 	
 	/**
@@ -762,7 +784,7 @@ public class ServiceUtil {
 		dataSource.setPrivacyacceptance(Util.booleanToInt(request.getPrivacyacceptance()));
 		dataSource.setIcon(request.getIcon());		
 		dataSource.setIsopendata(request.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
-		dataSource.setOpendataexternalreference(request.getOpenData() != null ? request.getOpenData().getOpendataexternalreference() : null);
+		dataSource.setExternalreference(request.getExternalreference());
 		dataSource.setOpendataauthor(request.getOpenData() != null ? request.getOpenData().getOpendataauthor() : null);
 		dataSource.setOpendataupdatedate(request.getOpenData() != null? Util.dateStringToTimestamp(request.getOpenData().getOpendataupdatedate()) : null);
 		dataSource.setOpendatalanguage(request.getOpenData() != null ? request.getOpenData().getOpendatalanguage() : null);

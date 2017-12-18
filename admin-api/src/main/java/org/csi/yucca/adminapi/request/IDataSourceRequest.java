@@ -15,4 +15,5 @@ public interface IDataSourceRequest {
 	String getIcon();
 	OpenDataRequest getOpenData();
 	String getCopyright();
+	String getExternalreference();
 }

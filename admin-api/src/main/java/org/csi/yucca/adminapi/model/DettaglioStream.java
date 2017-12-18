@@ -10,7 +10,7 @@ public class DettaglioStream extends Stream
 	private Long streamsCountBySO;
 	private String dataSourceCopyright;
 	private Integer dataSourceIsopendata;
-	private String dataSourceOpenDataExternalReference;
+	private String dataSourceExternalReference;
 	private String dataSourceOpenDataAuthor;
 	private Timestamp dataSourceOpenDataUpdateDate;
 	private String dataSourceOpenDataLanguage;
@@ -40,6 +40,14 @@ public class DettaglioStream extends Stream
 	private String soTypeCode;
 	private String smartObjectTypeDescription;
 	private Integer idSoType;
+	
+	public String getDataSourceExternalReference() {
+		return dataSourceExternalReference;
+	}
+
+	public void setDataSourceExternalReference(String dataSourceExternalReference) {
+		this.dataSourceExternalReference = dataSourceExternalReference;
+	}
 
 	public Long getUsedInInternalCount() {
 		return usedInInternalCount;
@@ -71,14 +79,6 @@ public class DettaglioStream extends Stream
 
 	public void setDataSourceIsopendata(Integer dataSourceIsopendata) {
 		this.dataSourceIsopendata = dataSourceIsopendata;
-	}
-
-	public String getDataSourceOpenDataExternalReference() {
-		return dataSourceOpenDataExternalReference;
-	}
-
-	public void setDataSourceOpenDataExternalReference(String dataSourceOpenDataExternalReference) {
-		this.dataSourceOpenDataExternalReference = dataSourceOpenDataExternalReference;
 	}
 
 	public String getDataSourceOpenDataAuthor() {

@@ -26,6 +26,9 @@ public class ApiDoc {
 	public static final String M_LOAD_DATASET = "LOAD DATASET";
 	public static final String M_LOAD_DATASET_NOTES = "Load Dataset in the System.";
 
+	public static final String M_INSERT_CSV_DATA = "INSERT CSV DATA";
+	public static final String M_INSERT_CSV_DATA_NOTES = "Insert CSV Data.";
+	
 	public static final String M_INSERT_DATASET = "INSERT DATASET";
 	public static final String M_INSERT_DATASET_NOTES = "Insert Dataset in the System.";
 
@@ -229,4 +232,7 @@ public class ApiDoc {
 
 	public static final String BO_DELETE_PHENOMENON = "DELETE PHENOMENON";
 	public static final String BO_DELETE_PHENOMENON_NOTES = "Delete Phenomenon in the System.";
+	
+	public static final String BO_LOAD_STREAMS = "LOAD STREAMS";
+	public static final String BO_LOAD_STREAMS_NOTES = "Load all Streams in the System.";
 }

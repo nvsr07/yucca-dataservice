@@ -1,6 +1,35 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.*;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_CSV_DATA;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_CSV_DATA_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +71,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -63,6 +93,42 @@ public class ManagementController extends YuccaController {
 	@Autowired
 	private DatasetService datasetService;
 
+	/**
+	 * 
+	 * @param file
+	 * @param filename
+	 * @param skipFirstRow
+	 * @param encoding
+	 * @param csvSeparator
+	 * @param dateFormat
+	 * @param organizationCode
+	 * @param idDataset
+	 * @param request
+	 * @return
+	 */
+	@ApiOperation(value = M_INSERT_CSV_DATA, notes = M_INSERT_CSV_DATA_NOTES, response = Response.class)
+	@PostMapping("/organizations/{organizationCode}/datasets/{idDataset}/addData")
+	public ResponseEntity<Object> addCSVData(
+			@RequestParam("file") final MultipartFile file,
+			@RequestParam("skipFirstRow") final Boolean skipFirstRow,
+			@RequestParam("encoding") final String encoding,
+			@RequestParam("csvSeparator") final String csvSeparator,
+			@PathVariable final String organizationCode,
+			@PathVariable final Integer idDataset,		
+			@RequestParam final String componentInfoRequests,
+			final HttpServletRequest request
+			) {
+		
+		logger.info("addCSVData");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.insertCSVData(file, skipFirstRow, encoding, csvSeparator, componentInfoRequests, organizationCode, idDataset, getAuthorizedUser(request));
+			}
+		}, logger);
+		
+	}
+	
 	/**
 	 * 
 	 * @param organizationCode
@@ -116,36 +182,6 @@ public class ManagementController extends YuccaController {
 			}
 		}, logger);
 	}
-
-
-//	@ApiOperation(value = M_INSERT_DATASET, notes = M_INSERT_DATASET_NOTES, response = Response.class)
-//	@PostMapping("/organizations/{organizationCode}/datasets")
-//	public ResponseEntity<Object> addDataSet(
-//			@PathVariable final String organizationCode,
-//			@RequestParam("file") final MultipartFile file,
-//			@RequestParam("dataset") final String dataset,
-//			@RequestParam("formatType") final String formatType,
-//			@RequestParam("csvSeparator") final String csvSeparator,
-//			@RequestParam("encoding") final String encoding,
-//			@RequestParam("skipFirstRow") final Boolean skipFirstRow,
-//			final HttpServletRequest request
-//			) {
-//		logger.info("addDataSet");
-//
-//		return run(new ApiCallable() {
-//			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-//				return datasetService.insertDataset(organizationCode, file, dataset, formatType, csvSeparator, encoding, skipFirstRow, getAuthorizedUser(request));
-//			}
-//		}, logger);
-//	}
-//	
-//  CSV
-//	String contentTyope = file.getContentType(); // application/vnd.ms-excel
-//	String name = file.getName();   // file
-//	String originalFileName = file.getOriginalFilename(); // file.csv
-//	byte[] bytes = file.getBytes();
-//  String completeData = new String(bytes);
-
 	
 	/**
 	 * 

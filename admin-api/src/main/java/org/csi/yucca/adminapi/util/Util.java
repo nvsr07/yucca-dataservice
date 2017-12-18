@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -13,17 +15,58 @@ import javax.imageio.ImageIO;
 
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
+import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.fusesource.hawtbuf.ByteArrayInputStream;
 import org.springframework.util.Base64Utils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 
 public class Util {
+	
+	public static String[] getCsvRows(MultipartFile file, boolean skipFirstRow)throws IOException{
+		
+		byte[] bytes = file.getBytes();
+		
+		String completeData = new String(bytes);
+		
+		String[] rows = completeData.split("\r\n");
 
+		if (skipFirstRow) {
+			return Arrays.copyOfRange(rows, 1, rows.length);
+		}
+		
+		return rows;
+	}
+
+	
+	public static boolean isThisDateValid(String dateToValidate, String dateFromat){
+
+		if(dateToValidate == null){
+			return false;
+		}
+
+		SimpleDateFormat sdf = new SimpleDateFormat(dateFromat);
+		sdf.setLenient(false);
+
+		try {
+
+			//if not valid, it will throw ParseException
+			Date date = sdf.parse(dateToValidate);
+			System.out.println(date);
+
+		} catch (ParseException e) {
+
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
 	
 	public static <E> boolean notEqual(E value1, E value2){
 
@@ -47,6 +90,14 @@ public class Util {
 		}
 	}
 	
+	public static List<ComponentInfoRequest> getComponentInfoRequests(String json) throws Exception {
+		if (json != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			return mapper.readValue(json, new TypeReference<List<ComponentInfoRequest>>() {});
+		}
+		return null;
+	}
+	
 	public static void addComponents(String sComponents, List<ComponentResponse> components) throws Exception {
 		if (sComponents != null) {
 			
@@ -58,15 +109,32 @@ public class Util {
 			}
 		}
 	}
-	
-	public static <E> List<E> getListFromJsonString(String jsonString, Class<E> type)throws Exception{
 
-		if(jsonString == null) return null;
+	public static List<ComponentResponse> getComponents(String sComponents) throws Exception {
 
-		ObjectMapper mapper = new ObjectMapper();
+		List<ComponentResponse> components = new ArrayList<ComponentResponse>();
+ 		
+		addComponents(sComponents, components);
 		
-		return mapper.readValue(jsonString, new TypeReference<List<E>>(){});
+		return components;
 	}
+	
+//	public static <E> List<E> getListFromJsonString(String jsonString, Class<E> type)throws Exception{
+//
+//		if(jsonString == null) return null;
+//
+//		ObjectMapper mapper = new ObjectMapper();
+//		
+//		return mapper.readValue(jsonString, new TypeReference<List<E>>(){});
+//	}
+//	public static <E> List<E> getListFromJsonString(String jsonString)throws Exception{
+//
+//		if(jsonString == null) return null;
+//
+//		ObjectMapper mapper = new ObjectMapper();
+//		
+//		return mapper.readValue(jsonString, new TypeReference<List<E>>(){});
+//	}
 	
 	public static <T> T getFromJsonString(String jsonString, Class<T> type) throws Exception {
 		if (jsonString == null) return null;

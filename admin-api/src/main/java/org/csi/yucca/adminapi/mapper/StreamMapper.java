@@ -288,7 +288,7 @@ public interface StreamMapper {
 			+ "yucca_data_source.unpublished data_source_unpublished, "
 			+ "yucca_data_source.registrationdate data_source_registration_date, " + 
 			" yucca_data_source.isopendata data_source_isopendata, "
-			+ "yucca_data_source.opendataexternalreference data_source_open_data_external_reference, "
+			+ "yucca_data_source.externalreference data_source_external_reference, "
 			+ "yucca_data_source.opendataauthor data_source_open_data_author, "
 			+ "yucca_data_source.opendataupdatedate data_source_open_data_update_date, " + 
 			" yucca_data_source.opendatalanguage data_source_open_data_language, "
@@ -398,7 +398,7 @@ public interface StreamMapper {
 	@Results({
 		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
 		@Result(property = "dataSourceIsopendata", column = "data_source_isopendata"),	
-		@Result(property = "dataSourceOpenDataExternalReference", column = "data_source_open_data_external_reference"),		
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
 		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
 		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
 		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
@@ -557,16 +557,21 @@ public interface StreamMapper {
 			" WHERE TENANT.id_tenant = TENANT_DATASOURCE.id_tenant " + 
 			" AND TENANT_DATASOURCE.id_data_source = DATA_SOURCE.id_data_source AND " +
 			" TENANT_DATASOURCE.datasourceversion = DATA_SOURCE.datasourceversion AND " +
-			" TENANT_DATASOURCE.isactive = 1 AND tenantcode IN ("
+			" TENANT_DATASOURCE.isactive = 1 " +
+			"<if test=\"userAuthorizedTenantCodeList != null\">" +
+			" AND tenantcode IN (" 
 			
 			+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
 			+ "#{authorizedTenantCode}"
-			+ " </foreach>"
-			
+			+ " </foreach>"	
 			+ ") " +
+			"</if>" +
+			
 			" ) " +
 			" ) " +
+			"<if test=\"organizationcode != null\">" +
 			"and ORGANIZATION.organizationcode = #{organizationcode}" +
+			"</if>" +
 			
 			"<if test=\"sortList != null\">" +
 		      " ORDER BY " +

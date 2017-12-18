@@ -17,7 +17,16 @@ public class Component {
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
 	private Integer required;
-	
+	private String foreignkey;
+
+	public String getForeignkey() {
+		return foreignkey;
+	}
+
+	public void setForeignkey(String foreignkey) {
+		this.foreignkey = foreignkey;
+	}
+
 	public Integer getIdComponent() {
 		return idComponent;
 	}
@@ -138,100 +147,81 @@ public class Component {
 		this.required = required;
 	}
 
-	//--------------------------------------
+	// --------------------------------------
 
-	public Component idComponent(Integer idComponent){
+	public Component idComponent(Integer idComponent) {
 		this.idComponent = idComponent;
 		return this;
 	}
-	public Component name(String name){
+
+	public Component name(String name) {
 		this.name = name;
 		return this;
 	}
-	public Component alias(String alias){
+
+	public Component alias(String alias) {
 		this.alias = alias;
 		return this;
 	}
-	public Component inorder(Integer inorder){
+
+	public Component inorder(Integer inorder) {
 		this.inorder = inorder;
 		return this;
 	}
-	public Component tolerance(Integer tolerance){
+
+	public Component tolerance(Integer tolerance) {
 		this.tolerance = tolerance;
 		return this;
 	}
-	public Component sinceVersion(Integer sinceVersion){
-		this.sinceVersion = sinceVersion; 
+
+	public Component sinceVersion(Integer sinceVersion) {
+		this.sinceVersion = sinceVersion;
 		return this;
 	}
-	public Component idPhenomenon(Integer idPhenomenon){
+
+	public Component idPhenomenon(Integer idPhenomenon) {
 		this.idPhenomenon = idPhenomenon;
 		return this;
 	}
-	public Component idDataType(Integer idDataType){
+
+	public Component idDataType(Integer idDataType) {
 		this.idDataType = idDataType;
 		return this;
 	}
-	public Component idMeasureUnit(Integer idMeasureUnit){
+
+	public Component idMeasureUnit(Integer idMeasureUnit) {
 		this.idMeasureUnit = idMeasureUnit;
 		return this;
 	}
-	public Component idDataSource(Integer idDataSource){
+
+	public Component idDataSource(Integer idDataSource) {
 		this.idDataSource = idDataSource;
 		return this;
 	}
-	public Component datasourceversion(Integer datasourceversion){
+
+	public Component datasourceversion(Integer datasourceversion) {
 		this.datasourceversion = datasourceversion;
 		return this;
 	}
-	public Component iskey(Integer iskey){
+
+	public Component iskey(Integer iskey) {
 		this.iskey = iskey;
 		return this;
 	}
-	public Component sourcecolumn(Integer sourcecolumn){
+
+	public Component sourcecolumn(Integer sourcecolumn) {
 		this.sourcecolumn = sourcecolumn;
 		return this;
 	}
-	public Component sourcecolumnname(String sourcecolumnname){
+
+	public Component sourcecolumnname(String sourcecolumnname) {
 		this.sourcecolumnname = sourcecolumnname;
 		return this;
 	}
-	public Component required(Integer required){
+
+	public Component required(Integer required) {
 		this.required = required;
 		return this;
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }

@@ -15,7 +15,16 @@ public class ComponentRequest {
 	private String datetimeformat;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
+	private String foreignkey;
 	
+	public String getForeignkey() {
+		return foreignkey;
+	}
+
+	public void setForeignkey(String foreignkey) {
+		this.foreignkey = foreignkey;
+	}
+
 	public Integer getSourcecolumn() {
 		return sourcecolumn;
 	}

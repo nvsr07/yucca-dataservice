@@ -7,7 +7,6 @@ import org.csi.yucca.adminapi.model.DettaglioStream;
 
 public class OpenDataResponse extends Response {
 
-	private String opendataexternalreference;
 	private String opendataauthor;
 	private Timestamp opendataupdatedate;
 	private String opendatalanguage;
@@ -15,7 +14,6 @@ public class OpenDataResponse extends Response {
 	
 	public OpenDataResponse(DettaglioStream dettaglioStream) {
 		super();
-		this.opendataexternalreference = dettaglioStream.getDataSourceOpenDataExternalReference();
 		this.opendataauthor = dettaglioStream.getDataSourceOpenDataAuthor();
 		this.opendataupdatedate = dettaglioStream.getDataSourceOpenDataUpdateDate();
 		this.opendatalanguage = dettaglioStream.getDataSourceOpenDataLanguage();
@@ -24,7 +22,6 @@ public class OpenDataResponse extends Response {
 
 	public OpenDataResponse(DettaglioDataset dettaglioDataset) {
 		super();
-		this.opendataexternalreference = dettaglioDataset.getDataSourceOpendataExternalReference();
 		this.opendataauthor = dettaglioDataset.getDataSourceOpenDataAuthor();
 		this.opendataupdatedate = dettaglioDataset.getDataSourceOpenDataUpdateDate();
 		this.opendatalanguage = dettaglioDataset.getDataSourceOpenDataLanguage();
@@ -34,14 +31,6 @@ public class OpenDataResponse extends Response {
 	public OpenDataResponse() {
 		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	public String getOpendataexternalreference() {
-		return opendataexternalreference;
-	}
-
-	public void setOpendataexternalreference(String opendataexternalreference) {
-		this.opendataexternalreference = opendataexternalreference;
 	}
 
 	public String getOpendataauthor() {

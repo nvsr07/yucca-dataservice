@@ -25,6 +25,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertSharingTenants;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.maximumLimitErrorsReached;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 
 import java.util.ArrayList;
@@ -44,13 +45,19 @@ import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
 import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
+import org.csi.yucca.adminapi.mapper.UserMapper;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Subdomain;
+import org.csi.yucca.adminapi.model.User;
+import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
+import org.csi.yucca.adminapi.request.InvioCsvRequest;
+import org.csi.yucca.adminapi.response.ComponentResponse;
+import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
@@ -68,6 +75,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -103,6 +111,160 @@ public class DatasetServiceImpl implements DatasetService {
 	@Autowired
 	private SubdomainMapper subdomainMapper;
 
+	@Autowired
+	private UserMapper userMapper;
+	
+	@Override
+	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
+			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, Exception {
+		
+		List<ComponentInfoRequest> componentInfoRequests = Util.getComponentInfoRequests(componentInfoRequestsJson);
+		
+		DettaglioDataset  dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
+		checkIfFoundRecord(dataset);
+		List<ComponentResponse> components = Util.getComponents(dataset.getComponents());
+		
+		checkComponentsSize(components, componentInfoRequests);
+
+		List<String> errors = checkCsvFile(file, skipFirstRow, csvSeparator, components, componentInfoRequests);
+		if (!errors.isEmpty()) {
+			return ServiceResponse.build().object(errors);
+		}
+
+		// INSERIMENTO CSV: per api
+		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
+
+		List<String> csvRows = getCsvRows(file, skipFirstRow, components, componentInfoRequests, csvSeparator);
+		
+		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
+
+		// invio api todo
+		
+        return ServiceResponse.build().object(invioCsvRequest);
+	}
+	
+	
+	private String getCsvRow(String row, String csvSeparator, List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests){
+		
+		StringBuilder resultRow = new StringBuilder();
+		
+		String[] columns =  row.split(csvSeparator);
+		
+		for (int c = 0; c < columns.length; c++) {
+
+			ComponentInfoRequest info = getInfoByNumColumn(c, componentInfoRequests);
+			ComponentResponse component = getComponentResponseById(info.getIdComponent(), components);
+
+			if (info.isSkipColumn()) continue;
+			
+			String doubleQuote = "";
+			
+			if(DataType.STRING.id().equals(component.getDataType().getIdDataType())||DataType.DATE_TIME.id().equals(component.getDataType().getIdDataType())){
+				doubleQuote = "\"";
+			}
+			
+			resultRow.append("\"").append(component.getName()).append("\"")
+				     .append(":")
+				     .append(doubleQuote).append(columns[c]).append(doubleQuote).append(",");
+		}
+
+		resultRow.setLength(resultRow.length() - 1);
+		
+		return resultRow.toString();
+
+	}
+	
+	
+	private List<String> getCsvRows(MultipartFile file, boolean skipFirstRow, List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests, String csvSeparator)throws Exception{
+		
+		String [] rows = Util.getCsvRows(file, skipFirstRow);
+		
+		List<String> result =  new ArrayList<String>();
+
+		for (int i = 0; i < rows.length; i++) {
+			
+			String row = getCsvRow(rows[i], csvSeparator, components, componentInfoRequests);
+			
+			result.add("{" + row + "}" );
+		}
+		
+		return result;
+
+	}
+	
+	
+	
+	/**
+	 * 
+	 * @param file
+	 * @param skipFirstRow
+	 * @param csvSeparator
+	 * @param components
+	 * @param componentInfoRequests
+	 * @return
+	 * @throws Exception
+	 */
+	private List<String> checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests) throws Exception{
+
+		checkComponentsSize(components, componentInfoRequests);
+		
+//		String contentType = file.getContentType(); // application/vnd.ms-excel
+//		String name = file.getName();   // file
+//		String originalFileName = file.getOriginalFilename(); // file.csv
+
+//		byte[] bytes = file.getBytes();
+//		String completeData = new String(bytes);
+		
+		String[] rows = Util.getCsvRows(file, skipFirstRow);
+		
+		List<String> errors = new ArrayList<String>();
+		
+		for (int r = 0; r < rows.length; r++) {
+			
+			String[] columns =  rows[r].split(csvSeparator);
+			
+			for (int c = 0; c < columns.length; c++) {
+
+				if(maximumLimitErrorsReached(errors)) break;
+				
+				ComponentInfoRequest info = getInfoByNumColumn(c, componentInfoRequests);
+				ComponentResponse component = getComponentResponseById(info.getIdComponent(), components);
+
+				if(info.isSkipColumn() || DataType.STRING.id().equals(component.getDataType().getIdDataType())){
+					continue;
+				}
+				
+				String column = columns[c];
+				DataTypeResponse typeResponse = component.getDataType();
+				for (DataType dateType : DataType.values()) {
+					if(dateType.id().equals(typeResponse.getIdDataType())){
+						try {
+							
+							if (DataType.DATE_TIME == dateType) {
+								if(!Util.isThisDateValid(column, info.getDateFormat())){
+									throw new Exception();
+								}
+								continue;
+							}
+							dateType.checkValue(column);
+						} 
+						catch (Exception e) {
+							errors.add("Errore alla riga " + r + ", il dato della colonna " + component.getName() + " non è di tipo " + dateType.description());
+						}
+						break;
+					}
+				}
+			}
+		}
+		return errors;
+	}
+	
+	/**
+	 * 
+	 * @param datasetRequest
+	 * @throws Exception
+	 */
 	private void updateDatasetComponent(DatasetRequest datasetRequest) throws Exception{
 
 		// COMPONENT already present
@@ -120,9 +282,10 @@ public class DatasetServiceImpl implements DatasetService {
 						component.getName(), 
 						component.getAlias(), 
 						component.getInorder(), 
-						component.getIdMeasureUnit(), 
+						component.getIdMeasureUnit(),
 						datasetRequest.getNewDataSourceVersion(), 
-						datasetRequest.getIdDataSource());
+						datasetRequest.getIdDataSource(),
+						component.getForeignkey());
 			}
 		}
 		
@@ -240,7 +403,6 @@ public class DatasetServiceImpl implements DatasetService {
 		datasetRequest.setIdDataSource(dataset.getIdDataSource());
 		datasetRequest.setDatasetcode(dataset.getDatasetcode());
 	}
-
 	
 	
 	/**
@@ -325,6 +487,9 @@ public class DatasetServiceImpl implements DatasetService {
 	private void insertDatasetValidation(DatasetRequest datasetRequest, JwtUser authorizedUser,
 			String organizationCode, Organization organization) throws Exception {
 
+		// component
+		checkComponents(datasetRequest.getComponents(), componentMapper);
+		
 		// verifica che sia presente idSubdomain o multisubdomanin
 		if (datasetRequest.getIdSubdomain() == null && datasetRequest.getMultiSubdomain() == null) {
 			throw new BadRequestException(Errors.MANDATORY_PARAMETER, "Mandatory idSubdomanin or multiSubdomain");
@@ -454,6 +619,54 @@ public class DatasetServiceImpl implements DatasetService {
 				.idDataSource(idDataSource));
 		
 		return dataset;
+	}
+
+	/**
+	 * 
+	 * @param numColumn
+	 * @param list
+	 * @return
+	 */
+	private ComponentInfoRequest getInfoByNumColumn(Integer numColumn, List<ComponentInfoRequest> list){
+		for (ComponentInfoRequest componentInfoRequest : list) {
+			if (componentInfoRequest.getNumColumn().equals(numColumn)) {
+				return componentInfoRequest;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param idComponent
+	 * @param list
+	 * @return
+	 */
+	private ComponentResponse getComponentResponseById(Integer idComponent, List<ComponentResponse> list){
+		for (ComponentResponse componentResponse : list) {
+			
+			if (componentResponse.getIdComponent().equals(idComponent)) {
+				return componentResponse;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param components
+	 * @param componentInfoRequests
+	 * @throws Exception
+	 */
+	private void checkComponentsSize(List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests)throws Exception{
+		int columnCount = 0;
+		for (ComponentInfoRequest info : componentInfoRequests) {
+			if(!info.isSkipColumn())
+				columnCount++;
+		}
+		if (columnCount != components.size()) {
+			throw new BadRequestException(Errors.NOT_ACCEPTABLE);
+		}
 	}
 
 }

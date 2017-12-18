@@ -18,7 +18,7 @@ public class DataSource {
 	private Integer privacyacceptance;
 	private String icon;
 	private Integer isopendata;
-	private String opendataexternalreference;
+	private String externalreference;
 	private String opendataauthor;
 	private Timestamp opendataupdatedate;
 	private String opendatalanguage;
@@ -32,6 +32,8 @@ public class DataSource {
 	private Integer idLicense;
 	private Integer idStatus;
 
+	
+	
 	public Integer getIdDataSource() {
 		return idDataSource;
 	}
@@ -144,12 +146,12 @@ public class DataSource {
 		this.isopendata = isopendata;
 	}
 
-	public String getOpendataexternalreference() {
-		return opendataexternalreference;
+	public String getExternalreference() {
+		return externalreference;
 	}
 
-	public void setOpendataexternalreference(String opendataexternalreference) {
-		this.opendataexternalreference = opendataexternalreference;
+	public void setExternalreference(String externalreference) {
+		this.externalreference = externalreference;
 	}
 
 	public String getOpendataauthor() {

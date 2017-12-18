@@ -144,13 +144,13 @@ public interface DatasetMapper {
 	 ******************************************************************/
 	public static final String SELECT_DETTAGLIO_DATASET = 
 		    " SELECT " +
-			" yucca_dataset.id_data_source, yucca_dataset.datasourceversion, yucca_dataset.iddataset, yucca_dataset.datasetcode, " +
+			" yucca_dataset.importedfiles, yucca_dataset.jdbcdbschema, yucca_dataset.id_data_source, yucca_dataset.datasourceversion, yucca_dataset.iddataset, yucca_dataset.datasetcode, " +
 			" yucca_dataset.datasetname, yucca_dataset.description dataset_description, yucca_d_dataset_type.id_dataset_type, " +
 			" yucca_d_dataset_type.dataset_type, yucca_d_dataset_type.description dataset_type_description, yucca_d_dataset_subtype.id_dataset_subtype, " +
 			" yucca_d_dataset_subtype.dataset_subtype, yucca_d_dataset_subtype.description dataset_subtype_description, yucca_dataset.id_data_source_binary, " +
 			" yucca_dataset.datasourceversion_binary, yucca_data_source.visibility data_source_visibility, yucca_data_source.copyright data_source_copyright, " +
 			" yucca_data_source.unpublished data_source_unpublished, yucca_data_source.registrationdate data_source_registration_date, " +
-			" yucca_data_source.isopendata data_source_is_opendata, yucca_data_source.opendataexternalreference data_source_opendata_external_reference, " +
+			" yucca_data_source.isopendata data_source_is_opendata, yucca_data_source.externalreference data_source_external_reference, " +
 			" yucca_data_source.opendataauthor data_source_open_data_author, yucca_data_source.opendataupdatedate data_source_open_data_update_date, " +
 			" yucca_data_source.opendatalanguage data_source_open_data_language, yucca_data_source.lastupdate data_source_last_update, " +
 			" yucca_data_source.disclaimer data_source_disclaimer, yucca_data_source.requestername data_source_requester_name, " +
@@ -302,7 +302,7 @@ public interface DatasetMapper {
 		@Result(property = "datasetSubtypeDescription", column = "dataset_subtype_description"), 
 		@Result(property = "dataSourceCopyright", column = "data_source_copyright"), 	
 		@Result(property = "dataSourceIsOpendata", column = "data_source_is_opendata"), 
-		@Result(property = "dataSourceOpendataExternalReference", column = "data_source_opendata_external_reference"), 
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"), 
 		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"), 
 		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"), 
 		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"), 
@@ -317,7 +317,7 @@ public interface DatasetMapper {
       })		
 	@Select({"<script>", SELECT_DETTAGLIO_DATASET, "</script>"}) 
 	DettaglioDataset selectDettaglioDataset( @Param("tenantCodeManager") String tenantCodeManager,
-							      @Param("idDataSet") Integer idStream,
+							      @Param("idDataSet") Integer idDataSet,
 							      @Param("organizationCode") String organizationcode,
 							      @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
 	
