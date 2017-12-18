@@ -155,9 +155,6 @@ public class ManagementController extends YuccaController {
 	}
 	
 	/**
-	 * 
-	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/Inserimento_Dataset
-	 * 
 	 * @param organizationCode
 	 * @param file
 	 * @param dataset
@@ -442,9 +439,6 @@ public class ManagementController extends YuccaController {
 	}
 
 	/**
-	 * 
-	 * campi che non possono essere cambiati: idsotype , slug, socode
-	 * 
 	 * @param smartobjectRequest
 	 * @param organizationCode
 	 * @param soCode
@@ -483,19 +477,6 @@ public class ManagementController extends YuccaController {
 	}
 
 	/**
-	 * IMPORTANTE! rendere univoche le colonne slug, e twtusername della tabella
-	 * smartobject. Inoltre occorre creare l'autoincrement dell'id_smart_object.
-	 * 
-	 * CREATE SEQUENCE int_yucca.smart_object_id_smart_object_seq; ALTER TABLE
-	 * int_yucca.yucca_smart_object ALTER COLUMN id_smart_object SET DEFAULT
-	 * nextval('int_yucca.smart_object_id_smart_object_seq'); ALTER TABLE
-	 * int_yucca.yucca_smart_object ALTER COLUMN id_smart_object SET NOT NULL;
-	 * ALTER SEQUENCE int_yucca.smart_object_id_smart_object_seq OWNED BY
-	 * int_yucca.yucca_smart_object.id_smart_object; -- 8.2 or later
-	 * 
-	 * ALTER SEQUENCE int_yucca.smart_object_id_smart_object_seq RESTART WITH
-	 * 400;
-	 * 
 	 * @param smartobjectRequest
 	 * @param organizationCode
 	 * @return
