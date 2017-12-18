@@ -132,14 +132,12 @@ public class DatasetServiceImpl implements DatasetService {
 			return ServiceResponse.build().object(errors);
 		}
 
-		// INSERIMENTO CSV: per api
-		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
-
 		List<String> csvRows = getCsvRows(file, skipFirstRow, components, componentInfoRequests, csvSeparator);
 		
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
 
 		// invio api todo
+		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
 		
         return ServiceResponse.build().object(invioCsvRequest);
 	}
