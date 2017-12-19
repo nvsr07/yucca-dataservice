@@ -1,7 +1,7 @@
 package org.csi.yucca.adminapi.model;
 
 public class ComponentJson {
-	
+
 	private Integer id_component;
 	private String name;
 	private String alias;
@@ -24,6 +24,15 @@ public class ComponentJson {
 	private String dt_description;
 	private String measureunit;
 	private String measureunitcategory;
+	private String foreignkey;
+
+	public String getForeignkey() {
+		return foreignkey;
+	}
+
+	public void setForeignkey(String foreignkey) {
+		this.foreignkey = foreignkey;
+	}
 
 	public Integer getId_component() {
 		return id_component;
