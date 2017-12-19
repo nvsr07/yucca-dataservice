@@ -337,7 +337,8 @@ public class StreamServiceImpl implements StreamService {
 
 		if (request.getSavedata() && dataset != null) {
 			apiMapper.insertApi(Api.buildOutput(dataSourceVersion).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA).idDataSource(idDataSource));
+					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(idDataSource).entitynamespace("it.csi.smartdata.odata."+dataset.getDatasetcode()));
 		}
 	}
 	

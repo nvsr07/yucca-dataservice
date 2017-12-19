@@ -88,6 +88,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_API;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_API_NOTES;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -109,6 +111,7 @@ import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
@@ -121,6 +124,7 @@ import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
+import org.csi.yucca.adminapi.service.ApiService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -959,4 +963,21 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * LOAD API 
+	 * 	 
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_API, notes = BO_LOAD_API_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@GetMapping("/api/{apiCode}")
+	public ResponseEntity<Object> loadApi(
+			@PathVariable final String apiCode, final HttpServletRequest request) {
+		logger.info("loadApi");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return null;// TOOD apiService.selectApi(apiCode);
+			}
+		}, logger);
+	}
 }

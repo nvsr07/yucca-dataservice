@@ -239,4 +239,7 @@ public class ApiDoc {
 	
 	public static final String BO_LOAD_STREAMS = "LOAD STREAMS";
 	public static final String BO_LOAD_STREAMS_NOTES = "Load all Streams in the System.";
+	
+	public static final String BO_LOAD_API = "LOAD APIS";
+	public static final String BO_LOAD_API_NOTES = "Load api from api code with all details.";
 }

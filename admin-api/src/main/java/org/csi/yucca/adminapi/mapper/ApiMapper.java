@@ -28,8 +28,8 @@ public interface ApiMapper {
 	 * 					INSERT API
 	 * ***********************************************************************/
 	public static final String INSERT_API = 
-	" INSERT INTO " + API_TABLE + "( apicode, apiname, apitype, apisubtype, id_data_source, datasourceversion ) "
-	+ "VALUES (#{apicode}, #{apiname}, #{apitype}, #{apisubtype}, #{idDataSource}, #{datasourceversion})";
+	" INSERT INTO " + API_TABLE + "( apicode, apiname, apitype, apisubtype, id_data_source, datasourceversion, entitynamespace ) "
+	+ "VALUES (#{apicode}, #{apiname}, #{apitype}, #{apisubtype}, #{idDataSource}, #{datasourceversion}, #{entitynamespace})";
 	@Insert(INSERT_API)
 	@Options(useGeneratedKeys=true, keyProperty="idapi")
 	int insertApi(Api api);
