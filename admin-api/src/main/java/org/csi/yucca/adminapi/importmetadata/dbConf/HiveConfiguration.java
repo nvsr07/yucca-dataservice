@@ -2,19 +2,12 @@ package org.csi.yucca.adminapi.importmetadata.dbConf;
 
 import org.csi.yucca.adminapi.importmetadata.DatabaseConfiguration;
 import org.csi.yucca.adminapi.util.Constants;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.annotation.PropertySources;
 
 
-@PropertySources({
-    @PropertySource("classpath:adminapi.properties")
-})
 public class HiveConfiguration extends DatabaseConfiguration {
 
 	
-	@Value("${hive.jdbc.url}")
-	private String hiveUrl;
+
 
 	@Override
 	protected void initTypesMap() {
@@ -41,7 +34,7 @@ public class HiveConfiguration extends DatabaseConfiguration {
 
 	@Override
 	protected String getConnectionUrl(String hostname, String dbname) {
-		return hiveUrl;
+		return hostname;
 	}
 
 	@Override

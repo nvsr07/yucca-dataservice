@@ -590,7 +590,7 @@ public interface DatasetMapper {
 	" jdbcdburl=#{jdbcdburl} and jdbcdbname=#{jdbcdbname} and jdbcdbtype=#{jdbcdbtype} and tenantcode=#{tenantCode} AND yucca_data_source.id_status!=5 and " + 
 	" (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
 	"    (select id_data_source, max(datasourceversion) from " + DataSourceMapper.DATA_SOURCE_TABLE  + "  where id_data_source = yucca_dataset.id_data_source group by id_data_source) " +
-	"  AND yucca_organization.organizationcode = #{organizationCode} " +
+	"  AND yucca_organization.organizationcode = #{organizationcode} " +
 
 	"<if test=\"tenantCodeManager != null\">" +
 	" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
@@ -626,7 +626,7 @@ public interface DatasetMapper {
       })		
 	@Select({"<script>", SELECT_DATASET_FROM_JDBC, "</script>"}) 
 	List<DettaglioDataset> selectDatasetFromJdbc(@Param("jdbcdburl") String jdbcdburl, @Param("jdbcdbname") String jdbcdbname, @Param("jdbcdbtype") String jdbcdbtype, 
-			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode);	
+			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode, @Param("tenantCodeManager") String  tenantCodeManager, @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
 	
 	
 	

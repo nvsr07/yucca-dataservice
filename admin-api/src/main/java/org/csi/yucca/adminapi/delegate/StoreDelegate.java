@@ -12,11 +12,13 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@Configuration
 @PropertySource(value = { "classpath:adminapi.properties" })
 public class StoreDelegate {
 

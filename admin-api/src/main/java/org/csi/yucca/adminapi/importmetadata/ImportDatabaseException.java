@@ -1,6 +1,5 @@
 package org.csi.yucca.adminapi.importmetadata;
 
-@Deprecated
 public class ImportDatabaseException extends Exception {
 
 	private static final long serialVersionUID = 1L;

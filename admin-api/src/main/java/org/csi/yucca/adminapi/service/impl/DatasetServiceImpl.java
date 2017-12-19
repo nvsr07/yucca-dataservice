@@ -56,6 +56,7 @@ import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
+import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.InvioCsvRequest;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
@@ -73,14 +74,22 @@ import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.csi.yucca.adminapi.util.Status;
 import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+@Configuration
+@PropertySources({
+    @PropertySource("classpath:adminapi.properties"),
+    @PropertySource("classpath:adminapiSecret.properties")
+})
 public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
@@ -115,6 +124,15 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	private UserMapper userMapper;
+	
+	@Value("${hive.jdbc.user}")
+	private String hiveUser;
+
+	@Value("${hive.jdbc.password}")
+	private String hivePassword;
+
+	@Value("${hive.jdbc.url}")
+	private String hiveUrl;
 	
 	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
@@ -670,10 +688,15 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 	
 	@Override
-	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, JwtUser authorizedUser)  throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, String tenantCodeManager,  JwtUser authorizedUser)  throws BadRequestException, NotFoundException, Exception {
+		
+		
+		List<DettaglioDataset> existingMedatataList = datasetMapper.selectDatasetFromJdbc(importMetadataRequest.getJdbcHostname(), importMetadataRequest.getJdbcDbname(), importMetadataRequest.getDbType(), 
+				importMetadataRequest.getTenantCode(), organizationCode, tenantCodeManager,
+					getTenantCodeListFromUser(authorizedUser));
 		
 		DatabaseReader databaseReader = new DatabaseReader(organizationCode, importMetadataRequest.getTenantCode(), importMetadataRequest.getDbType(), importMetadataRequest.getJdbcHostname(), 
-				importMetadataRequest.getJdbcDbname(), importMetadataRequest.getJdbcUsername(), importMetadataRequest.getJdbcPassword());
+				importMetadataRequest.getJdbcDbname(), importMetadataRequest.getJdbcUsername(), importMetadataRequest.getJdbcPassword(), existingMedatataList, hiveUser, hivePassword, hiveUrl);
 		String schema = databaseReader.loadSchema();
 
 		return buildResponse(schema);

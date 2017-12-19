@@ -14,18 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.csi.yucca.adminapi.mapper.DatasetMapper;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.util.Constants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@PropertySource("classpath:adminapiSecret.properties")
 public class DatabaseReader {
 
 	private String organizationCode;
@@ -37,15 +32,7 @@ public class DatabaseReader {
 	private String password;
 	private String dbSchema;
 
-	@Value("${hive.jdbc.user}")
-	private String hiveUser;
-
-	@Value("${hive.jdbc.password}")
-	private String hivePassword;
-
-	@Autowired
-	private DatasetMapper datasetMapper;
-
+	private List<DettaglioDataset> existingMedatataList;
 	private DatabaseConfiguration databaseConfiguation;
 
 	List<Dataset> dataset = new LinkedList<Dataset>();
@@ -56,9 +43,11 @@ public class DatabaseReader {
 
 	ObjectMapper mapper = new ObjectMapper();
 
-	public DatabaseReader(String organizationCode, String tenantCode, String dbType, String dbUrl, String dbName, String username, String password) throws ImportDatabaseException {
+	public DatabaseReader(String organizationCode, String tenantCode, String dbType, String dbUrl, String dbName, String username, String password,
+			List<DettaglioDataset> existingMedatataList, String hiveUser, String hivePassword, String hiveUrl) throws ImportDatabaseException {
 		super();
 		log.debug("[DatabaseReader::DatabaseReader] START - dbType:  " + dbType + ", dbUrl: " + dbUrl + ", dbName: " + dbName + ", username: " + username);
+		this.existingMedatataList = existingMedatataList;
 		this.organizationCode = organizationCode;
 		this.tenantCode = tenantCode;
 		this.dbType = dbType;
@@ -80,6 +69,7 @@ public class DatabaseReader {
 																						// area
 			this.username = hiveUser;
 			this.password = hivePassword;
+			this.dbUrl = hiveUrl;
 		}
 
 		databaseConfiguation = DatabaseConfiguration.getDatabaseConfiguration(dbType);
@@ -113,7 +103,7 @@ public class DatabaseReader {
 		Connection conn = getConnection();
 		log.debug("[DatabaseReader::loadSchema]  Got Connection.");
 
-		Map<String, DettaglioDataset> existingMetadataMap = loadExistingMetadata();
+		Map<String, DettaglioDataset> existingMetadataMap = mapExistingMetadata();
 		log.debug("[DatabaseReader::loadSchema]  existing metadata loaded.");
 
 		DatabaseMetaData meta = conn.getMetaData();
@@ -201,12 +191,11 @@ public class DatabaseReader {
 					}
 				}
 
-				//FIXME modicare tabella
-//				for (Component component : components) {
-//					if (fkMap.containsKey(tableName + "." + component.getName())) {
-//						component.setForeignKey(fkMap.get(tableName + "." + component.getName()));
-//					}
-//				}
+				for (Component component : components) {
+					if (fkMap.containsKey(tableName + "." + component.getName())) {
+						component.setForeignkey(fkMap.get(tableName + "." + component.getName()));
+					}
+				}
 
 				DettaglioDataset metadata = existingMetadataMap.get(tableName);
 				if (metadata == null) {
@@ -226,8 +215,8 @@ public class DatabaseReader {
 					metadata.setJdbcdburl(dbUrl);
 					metadata.setJdbcdbtype(dbType);
 					metadata.setJdbctablename(tableName);
-					//if (dbSchema != null) //FIXME modicare tabella
-					//	metadata.setJdbcdbschema(dbType);
+					if (dbSchema != null)
+						metadata.setJdbcdbschema(dbSchema);
 
 				} else {
 					table.setStatus(DatabaseTableDataset.DATABASE_TABLE_DATASET_STATUS_EXISTING);
@@ -302,16 +291,16 @@ public class DatabaseReader {
 		return foundedComponent;
 	}
 
-	private Map<String, DettaglioDataset> loadExistingMetadata() {
+	private Map<String, DettaglioDataset> mapExistingMetadata() {
 		log.debug("[DatabaseReader::loadExistingMetadata] START");
 
-		List<DettaglioDataset> existingMedatataList = datasetMapper.selectDatasetFromJdbc(dbUrl, dbName, dbType, tenantCode, organizationCode);
-
 		Map<String, DettaglioDataset> existingMedatata = new HashMap<String, DettaglioDataset>();
-		if (existingMedatataList != null && existingMedatataList.size() > 0) {
+		if (existingMedatataList != null) {
+			if (existingMedatataList != null && existingMedatataList.size() > 0) {
 
-			for (DettaglioDataset dettaglioDataset : existingMedatataList) {
-				existingMedatata.put(dettaglioDataset.getJdbctablename(), dettaglioDataset);
+				for (DettaglioDataset dettaglioDataset : existingMedatataList) {
+					existingMedatata.put(dettaglioDataset.getJdbctablename(), dettaglioDataset);
+				}
 			}
 		}
 

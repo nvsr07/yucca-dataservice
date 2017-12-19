@@ -190,13 +190,13 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_IMPORT_METADATA_DATASET, notes = M_IMPORT_METADATA_NOTES, response = Response.class)
 	@PostMapping("/organizations/{organizationCode}/datasets/importMetadata")
-	public ResponseEntity<Object> importMetadata(@PathVariable final String organizationCode, @RequestBody final ImportMetadataDatasetRequest importMetadataRequest,
-			final HttpServletRequest request) {
-		logger.info("addDataSet");
+	public ResponseEntity<Object> importMetadata(@PathVariable final String organizationCode, @RequestBody final ImportMetadataDatasetRequest importMetadataRequest,  
+			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
+		logger.info("importMetadata");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.importMetadata(organizationCode, importMetadataRequest, getAuthorizedUser(request));
+				return datasetService.importMetadata(organizationCode, importMetadataRequest, tenantCodeManager, getAuthorizedUser(request));
 			}
 		}, logger);
 	}
