@@ -9,6 +9,7 @@ public class Api {
 	private String apisubtype;
 	private Integer idDataSource;
 	private Integer datasourceversion;
+	private String entitynamespace = null;
 
 	public static Api buildOutput(Integer datasourceversion){
 		Api out = new Api();
@@ -39,6 +40,10 @@ public class Api {
 	}
 	public Api datasourceversion (Integer datasourceversion){
 		this.datasourceversion = datasourceversion;
+		return this;
+	}
+	public Api entitynamespace (String entitynamespace){
+		this.entitynamespace = entitynamespace;
 		return this;
 	}
 
@@ -96,6 +101,14 @@ public class Api {
 
 	public void setDatasourceversion(Integer datasourceversion) {
 		this.datasourceversion = datasourceversion;
+	}
+
+	public String getEntitynamespace() {
+		return entitynamespace;
+	}
+
+	public void setEntitynamespace(String entitynamespace) {
+		this.entitynamespace = entitynamespace;
 	}
 
 }

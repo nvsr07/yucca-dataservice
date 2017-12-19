@@ -17,6 +17,7 @@ public class ComponentResponse extends Response {
 	private Integer iskey;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
+	private String foreignkey;
 	
 	public ComponentResponse(ComponentJson componentJson) {
 		super();
@@ -33,6 +34,7 @@ public class ComponentResponse extends Response {
 		this.iskey = componentJson.getIskey();
 		this.sourcecolumn = componentJson.getSourcecolumn();
 		this.sourcecolumnname = componentJson.getSourcecolumnname();
+		this.foreignkey = componentJson.getForeignkey();
 	}
 	
 	public ComponentResponse idDataType(Integer idDataType){
@@ -75,6 +77,14 @@ public class ComponentResponse extends Response {
 
 	public String getAlias() {
 		return alias;
+	}
+
+	public String getForeignkey() {
+		return foreignkey;
+	}
+
+	public void setForeignkey(String foreignkey) {
+		this.foreignkey = foreignkey;
 	}
 
 	public void setAlias(String alias) {

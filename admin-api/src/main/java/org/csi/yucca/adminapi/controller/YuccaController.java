@@ -76,22 +76,23 @@ public class YuccaController {
 			
 		} 
 		catch (UnauthorizedException unauthorizedException) {
-			logger.error("UnauthorizedException: " + unauthorizedException);
+			logger.error("UnauthorizedException: " + unauthorizedException, unauthorizedException);
 			return buildErrorResponse(unauthorizedException);
 		}
 		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
+			logger.error("BadRequestException: " + badRequestException, badRequestException);
 			return buildErrorResponse(badRequestException);
 		}
 		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
+			logger.error("NotFoundException: " + notFoundException, notFoundException);			
 			return buildErrorResponse(notFoundException);
 		}
 		catch (ConflictException conflictException) {
-			logger.error("ConflictException: " + conflictException);			
+			logger.error("ConflictException: " + conflictException, conflictException);			
 			return buildErrorResponse(conflictException);
 		}
 		catch (Exception e) {
+			logger.error("Internal Server Error: " + e, e);
 			return internalServerError(e);
 		}
 		
@@ -108,18 +109,19 @@ public class YuccaController {
 			
 		} 
 		catch (BadRequestException badRequestException) {
-			logger.error("BadRequestException: " + badRequestException);
+			logger.error("BadRequestException: " + badRequestException, badRequestException);
 			return buildErrorResponse(badRequestException);
 		}
 		catch (NotFoundException notFoundException) {
-			logger.error("NotFoundException: " + notFoundException);			
+			logger.error("NotFoundException: " + notFoundException, notFoundException);			
 			return buildErrorResponse(notFoundException);
 		}
 		catch (ConflictException conflictException) {
-			logger.error("ConflictException: " + conflictException);			
+			logger.error("ConflictException: " + conflictException, conflictException);			
 			return buildErrorResponse(conflictException);
 		}
 		catch (Exception e) {
+			logger.error("Internal Server Error: " + e, e);
 			return internalServerError(e);
 		}
 		
