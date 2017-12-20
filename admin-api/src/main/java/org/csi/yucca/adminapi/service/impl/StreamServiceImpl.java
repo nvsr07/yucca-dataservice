@@ -1142,7 +1142,7 @@ public class StreamServiceImpl implements StreamService {
 	}
 
 	/**
-	 * 
+	 * Remove odata api if saveData is "false" and insert if saveData is "true"
 	 * @param streamRequest
 	 * @param streamToUpdate
 	 * @param smartObject
@@ -1150,8 +1150,18 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws Exception
 	 */
 	private void updateApi(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject , Dataset dataset) throws Exception{
-		apiMapper.deleteApi(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
-		insertApi(streamRequest, smartObject, dataset, streamToUpdate.getIdDataSource(), streamToUpdate.getStreamCode(), streamToUpdate.getDataSourceVersion());
+		
+		if (streamRequest.getSavedata().booleanValue() && streamToUpdate.getSaveData().intValue() == 0 && dataset!=null)
+		{
+			apiMapper.insertApi(Api.buildOutput(streamToUpdate.getDataSourceVersion()).apicode(dataset.getDatasetcode())
+					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(streamToUpdate.getIdDataSource()).entitynamespace("it.csi.smartdata.odata."+dataset.getDatasetcode()));
+		}
+		if (streamRequest.getSavedata().booleanValue() == false && streamToUpdate.getSaveData().intValue() >= 1)
+		{
+			apiMapper.deleteApi(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(), API_SUBTYPE_ODATA);
+		}
+		
 	}
 	
 	/**

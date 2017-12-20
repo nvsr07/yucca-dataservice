@@ -20,9 +20,9 @@ public interface ApiMapper {
 	 * 					DELETE API
 	 * ***********************************************************************/
 	public static final String DELETE_API =
-		"DELETE FROM " + API_TABLE + " WHERE id_data_source = #{idDataSource} AND datasourceversion = #{dataSourceVersion}";
+		"DELETE FROM " + API_TABLE + " WHERE id_data_source = #{idDataSource} AND datasourceversion = #{dataSourceVersion} AND apisubtype = #{apisubtype}";
 	@Delete(DELETE_API)
-	int deleteApi(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);
+	int deleteApi(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion, @Param("apisubtype") String apisubtype);
 	
 	/*************************************************************************
 	 * 					INSERT API

@@ -21,6 +21,7 @@ public class StreamToUpdate {
 	private Integer idTenant;
 	private Integer idSmartObject;
 	private String smartObjectCode;
+	private Integer saveData;
 	public Integer getIdStream() {
 		return idStream;
 	}
@@ -134,6 +135,12 @@ public class StreamToUpdate {
 	}
 	public void setSmartObjectCode(String smartObjectCode) {
 		this.smartObjectCode = smartObjectCode;
+	}
+	public Integer getSaveData() {
+		return saveData;
+	}
+	public void setSaveData(Integer saveData) {
+		this.saveData = saveData;
 	}
 
 	

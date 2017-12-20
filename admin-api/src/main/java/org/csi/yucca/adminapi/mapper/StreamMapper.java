@@ -73,7 +73,8 @@ public interface StreamMapper {
 			" yucca_stream.id_data_source, " +
 			" yucca_stream.streamcode, " + 
 			" yucca_stream.streamname, " + 
-			" yucca_stream.datasourceversion, " + 
+			" yucca_stream.datasourceversion, " +
+			" yucca_stream.savedata, " +
 			" yucca_d_status.statuscode, " + 
 			" yucca_d_status.description statusDescription, " + 
 			" yucca_d_status.id_status, " + 
@@ -141,7 +142,8 @@ public interface StreamMapper {
 		@Result(property = "tenantCode", column = "tenantcode"),
 		@Result(property = "tenantName", column = "name"),
 		@Result(property = "idSmartObject", column = "id_smart_object"),
-		@Result(property = "smartObjectCode", column = "soCode")
+		@Result(property = "smartObjectCode", column = "soCode"),
+		@Result(property = "saveData", column = "savedata")
       })	
 	@Select({"<script>", SELECT_STREAM_TO_UPDATE, "</script>"}) 
 	StreamToUpdate selectStreamToUpdate(@Param("tenantCodeManager") String tenantCodeManager,@Param("idStream") Integer idStream,
