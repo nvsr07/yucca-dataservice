@@ -31,6 +31,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.csi.yucca.adminapi.delegate.HttpDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -83,6 +84,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @Configuration
@@ -134,6 +137,9 @@ public class DatasetServiceImpl implements DatasetService {
 	@Value("${hive.jdbc.url}")
 	private String hiveUrl;
 	
+	@Value("${datainsert.base.url}")
+	private String datainsertBaseUrl;
+	
 	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
 			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, JwtUser authorizedUser)
@@ -154,10 +160,16 @@ public class DatasetServiceImpl implements DatasetService {
 
 		List<String> csvRows = getCsvRows(file, skipFirstRow, components, componentInfoRequests, csvSeparator);
 		
+
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
 
-		// invio api todo
+		ObjectMapper mapper = new ObjectMapper();
+
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
+
+		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));
+
+		// invio api todo
 		
         return ServiceResponse.build().object(invioCsvRequest);
 	}
