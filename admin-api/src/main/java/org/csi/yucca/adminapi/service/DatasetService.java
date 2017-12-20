@@ -26,4 +26,7 @@ public interface DatasetService {
 			String csvSeparator, String componentInfoRequests, String organizationCode, Integer idDataset, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception;
 	ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+	
+	byte[] selectDatasetIcon(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+
 }

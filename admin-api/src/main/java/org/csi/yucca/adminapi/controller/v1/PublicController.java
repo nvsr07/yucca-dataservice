@@ -4,8 +4,6 @@ import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_SUBTYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_SUBTYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_TYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATASET_TYPES_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TENANT_TYPES;
-import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TENANT_TYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATA_TYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DATA_TYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_DOMAINS;
@@ -34,6 +32,10 @@ import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_SUPPLY_TYPES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_SUPPLY_TYPES_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TAGS;
 import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TAGS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TENANT_TYPES;
+import static org.csi.yucca.adminapi.util.ApiDoc.P_LOAD_TENANT_TYPES_NOTES;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -70,31 +72,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 @Api(value = "public", description = "Endpoint for public")
 @RestController
 @RequestMapping("1/public")
-public class PublicController extends YuccaController{
-	
+public class PublicController extends YuccaController {
+
 	private static final Logger logger = Logger.getLogger(PublicController.class);
 
 	@Autowired
 	private ClassificationService classificationService;
-	
-	@Autowired
-	private ComponentService componentService;  
 
 	@Autowired
-	private SmartObjectService smartObjectService;    
-	
+	private ComponentService componentService;
+
+	@Autowired
+	private SmartObjectService smartObjectService;
+
 	@Autowired
 	private TechnicalService technicalService;
 
-	@ApiOperation(value = P_LOAD_DATASET_TYPES, notes = P_LOAD_DATASET_TYPES_NOTES, response = DatasetTypeResponse.class, responseContainer="List")
+	@ApiOperation(value = P_LOAD_DATASET_TYPES, notes = P_LOAD_DATASET_TYPES_NOTES, response = DatasetTypeResponse.class, responseContainer = "List")
 	@GetMapping("/dataset_types")
-	public ResponseEntity<Object> loadDatasetTypes( @RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadDatasetTypes(@RequestParam(required = false) final String sort) {
 
 		logger.info("loadDatasetTypes");
 
@@ -103,13 +102,13 @@ public class PublicController extends YuccaController{
 				return technicalService.selectDatasetType(sort);
 			}
 		}, logger);
-		
-	}	
-	
+
+	}
+
 	@Autowired
 	private TenantService tenantService;
 
-	@ApiOperation(value = P_LOAD_TENANT_TYPES, notes = P_LOAD_TENANT_TYPES_NOTES, response = TenantTypeResponse.class, responseContainer="List")
+	@ApiOperation(value = P_LOAD_TENANT_TYPES, notes = P_LOAD_TENANT_TYPES_NOTES, response = TenantTypeResponse.class, responseContainer = "List")
 	@GetMapping("/tenant_types")
 	public ResponseEntity<Object> loadTenantTypes() {
 
@@ -120,13 +119,12 @@ public class PublicController extends YuccaController{
 				return tenantService.selectTenantTypes();
 			}
 		}, logger);
-		
-	}		
-	
-	@ApiOperation(value = P_LOAD_DATASET_SUBTYPES, notes = P_LOAD_DATASET_SUBTYPES_NOTES, response = DatasetSubtypeResponse.class, responseContainer="List")
+
+	}
+
+	@ApiOperation(value = P_LOAD_DATASET_SUBTYPES, notes = P_LOAD_DATASET_SUBTYPES_NOTES, response = DatasetSubtypeResponse.class, responseContainer = "List")
 	@GetMapping("/dataset_subtypes")
-	public ResponseEntity<Object> loadDatasetSubtypes( @RequestParam(required=false) final String datasetTypeCode, 
-			@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadDatasetSubtypes(@RequestParam(required = false) final String datasetTypeCode, @RequestParam(required = false) final String sort) {
 
 		logger.info("loadDatasetSubtypes");
 
@@ -135,85 +133,84 @@ public class PublicController extends YuccaController{
 				return technicalService.selectDatasetSubtype(datasetTypeCode, sort);
 			}
 		}, logger);
-		
-	}		
 
-	@ApiOperation(value = P_LOAD_SUPPLY_TYPES, notes = P_LOAD_SUPPLY_TYPES_NOTES, response = SupplyTypeResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_SUPPLY_TYPES, notes = P_LOAD_SUPPLY_TYPES_NOTES, response = SupplyTypeResponse.class, responseContainer = "List")
 	@GetMapping("/supply_types")
-	public ResponseEntity<Object> loadSupplyTypes(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadSupplyTypes(@RequestParam(required = false) final String sort) {
 		logger.info("loadSupplyTypes");
-				
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectSupplyType(sort);
 			}
 		}, logger);
-	}			
-	
-	@ApiOperation(value = P_LOAD_SO_TYPES, notes = P_LOAD_SO_TYPES_NOTES, response = SoTypeResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_SO_TYPES, notes = P_LOAD_SO_TYPES_NOTES, response = SoTypeResponse.class, responseContainer = "List")
 	@GetMapping("/so_types")
-	public ResponseEntity<Object> loadSoType(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadSoType(@RequestParam(required = false) final String sort) {
 		logger.info("loadSoType");
-				
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectSoType(sort);
 			}
 		}, logger);
-	}			
-	
-	@ApiOperation(value = P_LOAD_SO_CATEGORIES, notes = P_LOAD_SO_CATEGORIES_NOTES, response = SoCategoryResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_SO_CATEGORIES, notes = P_LOAD_SO_CATEGORIES_NOTES, response = SoCategoryResponse.class, responseContainer = "List")
 	@GetMapping("/so_categories")
-	public ResponseEntity<Object> loadSoCategory(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadSoCategory(@RequestParam(required = false) final String sort) {
 		logger.info("loadSoCategory");
-				
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectSoCategory(sort);
 			}
 		}, logger);
-	}			
-	
-	@ApiOperation(value = P_LOAD_LOCATION_TYPES, notes = P_LOAD_LOCATION_TYPES_NOTES, response = LocationTypeResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_LOCATION_TYPES, notes = P_LOAD_LOCATION_TYPES_NOTES, response = LocationTypeResponse.class, responseContainer = "List")
 	@GetMapping("/location_types")
-	public ResponseEntity<Object> loadLocationType(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadLocationType(@RequestParam(required = false) final String sort) {
 		logger.info("loadLocationType");
-				
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectLocationType(sort);
 			}
 		}, logger);
-	}			
-	
-	
-	@ApiOperation(value = P_LOAD_EXPOSURE_TYPES, notes = P_LOAD_EXPOSURE_TYPES_NOTES, response = ExposureTypeResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_EXPOSURE_TYPES, notes = P_LOAD_EXPOSURE_TYPES_NOTES, response = ExposureTypeResponse.class, responseContainer = "List")
 	@GetMapping("/exposure_types")
-	public ResponseEntity<Object> loadExposureType(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadExposureType(@RequestParam(required = false) final String sort) {
 		logger.info("loadExposureType");
-				
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return smartObjectService.selectExposureType(sort);
 			}
 		}, logger);
-	}			
-	
-	@ApiOperation(value = P_LOAD_PHENOMENONS, notes = P_LOAD_PHENOMENONS_NOTES, response = PhenomenonResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_PHENOMENONS, notes = P_LOAD_PHENOMENONS_NOTES, response = PhenomenonResponse.class, responseContainer = "List")
 	@GetMapping("/phenomenons")
-	public ResponseEntity<Object> loadPhenomenons(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadPhenomenons(@RequestParam(required = false) final String sort) {
 		logger.info("loadPhenomenons");
-				
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return componentService.selectPhenomenon(sort);
 			}
 		}, logger);
-	}			
-	
-	@ApiOperation(value = P_LOAD_MESAURE_UNIT, notes = P_LOAD_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_MESAURE_UNIT, notes = P_LOAD_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class, responseContainer = "List")
 	@GetMapping("/measure_units")
-	public ResponseEntity<Object> loadMeasureUnit(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadMeasureUnit(@RequestParam(required = false) final String sort) {
 
 		logger.info("loadMeasureUnit");
 
@@ -222,12 +219,12 @@ public class PublicController extends YuccaController{
 				return componentService.selectMeasureUnit(sort);
 			}
 		}, logger);
-		
-	}			
-	
-	@ApiOperation(value = P_LOAD_DATA_TYPES, notes = P_LOAD_DATA_TYPES_NOTES, response = DataTypeResponse.class, responseContainer="List")
+
+	}
+
+	@ApiOperation(value = P_LOAD_DATA_TYPES, notes = P_LOAD_DATA_TYPES_NOTES, response = DataTypeResponse.class, responseContainer = "List")
 	@GetMapping("/data_types")
-	public ResponseEntity<Object> loadDataTypes(@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadDataTypes(@RequestParam(required = false) final String sort) {
 
 		logger.info("loadDataTypes");
 
@@ -236,13 +233,12 @@ public class PublicController extends YuccaController{
 				return componentService.selectDataType(sort);
 			}
 		}, logger);
-	}		
-	
-	@ApiOperation(value = P_LOAD_TAGS, notes = P_LOAD_TAGS_NOTES, response = TagResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_TAGS, notes = P_LOAD_TAGS_NOTES, response = TagResponse.class, responseContainer = "List")
 	@GetMapping("/tags")
-	public ResponseEntity<Object> loadTags( @RequestParam(required=false) final String sort, 
-			@RequestParam(required=false) final String lang,
-			@RequestParam(required=false) final String ecosystemCode ) {
+	public ResponseEntity<Object> loadTags(@RequestParam(required = false) final String sort, @RequestParam(required = false) final String lang,
+			@RequestParam(required = false) final String ecosystemCode) {
 
 		logger.info("loadTags");
 
@@ -251,12 +247,12 @@ public class PublicController extends YuccaController{
 				return classificationService.selectTag(lang, sort, ecosystemCode);
 			}
 		}, logger);
-	}		
-	
-	@ApiOperation(value = P_LOAD_SUBDOMAINS, notes = P_LOAD_SUBDOMAINS_NOTES, response = SubdomainResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_SUBDOMAINS, notes = P_LOAD_SUBDOMAINS_NOTES, response = SubdomainResponse.class, responseContainer = "List")
 	@GetMapping("/subdomains")
-	public ResponseEntity<Object> loadSubdomains(@RequestParam(required=false) final String domainCode, 
-			@RequestParam(required=false) final String sort, @RequestParam(required=false) final String lang  ) {
+	public ResponseEntity<Object> loadSubdomains(@RequestParam(required = false) final String domainCode, @RequestParam(required = false) final String sort,
+			@RequestParam(required = false) final String lang) {
 
 		logger.info("loadSubdomains");
 
@@ -265,13 +261,12 @@ public class PublicController extends YuccaController{
 				return classificationService.selectSubdomain(domainCode, lang, sort);
 			}
 		}, logger);
-		
-	}		
-	
-	@ApiOperation(value = P_LOAD_ORGANIZATIONS, notes = P_LOAD_ORGANIZATIONS_NOTES, response = PublicOrganizationResponse.class, responseContainer="List")
+
+	}
+
+	@ApiOperation(value = P_LOAD_ORGANIZATIONS, notes = P_LOAD_ORGANIZATIONS_NOTES, response = PublicOrganizationResponse.class, responseContainer = "List")
 	@GetMapping("/organizations")
-	public ResponseEntity<Object> loadOrganizations( @RequestParam(required=false) final String ecosystemCode, 
-			@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadOrganizations(@RequestParam(required = false) final String ecosystemCode, @RequestParam(required = false) final String sort) {
 
 		logger.info("loadOrganizations");
 
@@ -280,54 +275,49 @@ public class PublicController extends YuccaController{
 				return classificationService.selectOrganization(ecosystemCode, sort);
 			}
 		}, logger);
-		
-	}		
-	
-	@ApiOperation(value = P_LOAD_LICENSES, notes = P_LOAD_LICENSES_NOTES, response = LicenseResponse.class, responseContainer="List")
+
+	}
+
+	@ApiOperation(value = P_LOAD_LICENSES, notes = P_LOAD_LICENSES_NOTES, response = LicenseResponse.class, responseContainer = "List")
 	@GetMapping("/licenses")
-	public ResponseEntity<Object> loadLicenses( @RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadLicenses(@RequestParam(required = false) final String sort) {
 
 		logger.info("loadLicenses");
-		
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectLicense(sort);
 			}
-		}, logger);		
-		
-	}	
-	
-	@ApiOperation(value = P_LOAD_ECOSYSTEMS, notes = P_LOAD_ECOSYSTEMS_NOTES, response = EcosystemResponse.class, responseContainer="List")
+		}, logger);
+
+	}
+
+	@ApiOperation(value = P_LOAD_ECOSYSTEMS, notes = P_LOAD_ECOSYSTEMS_NOTES, response = EcosystemResponse.class, responseContainer = "List")
 	@GetMapping("/ecosystems")
-	public ResponseEntity<Object> loadEcosystems(@RequestParam(required=false) final String organizationCode, 
-			@RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadEcosystems(@RequestParam(required = false) final String organizationCode, @RequestParam(required = false) final String sort) {
 
 		logger.info("loadEcosystems");
-		
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectEcosystem(organizationCode, sort);
 			}
-		}, logger);		
-		
-	}	
+		}, logger);
 
-	@ApiOperation(value = P_LOAD_DOMAINS, notes = P_LOAD_DOMAINS_NOTES, response = DomainResponse.class, responseContainer="List")
+	}
+
+	@ApiOperation(value = P_LOAD_DOMAINS, notes = P_LOAD_DOMAINS_NOTES, response = DomainResponse.class, responseContainer = "List")
 	@GetMapping("/domains")
-	public ResponseEntity<Object> loadDomains(@RequestParam(required=false)final String ecosystemCode, 
-			@RequestParam(required=false) final String lang, @RequestParam(required=false) final String sort  ) {
+	public ResponseEntity<Object> loadDomains(@RequestParam(required = false) final String ecosystemCode, @RequestParam(required = false) final String lang,
+			@RequestParam(required = false) final String sort) {
 
 		logger.info("loadDomains");
-		
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectDomain(ecosystemCode, lang, sort);
 			}
-		}, logger);		
+		}, logger);
 	}
-	
+
 }
-
-
-
-

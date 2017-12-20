@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
@@ -262,6 +263,14 @@ public class Util {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static String defaultIconPath(HttpServletRequest request, String datasourceType){
+		String scheme = request.getScheme() + "://";
+	    String serverName = request.getServerName();
+	    String serverPort = (request.getServerPort() == 80) ? "" : ":" + request.getServerPort();
+	    String contextPath = request.getContextPath();
+	    return scheme + serverName + serverPort + contextPath + "/img/"+datasourceType+"-icon-default.png";
 	}
 	
 	

@@ -64,6 +64,7 @@ import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
+import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -76,6 +77,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 
 @RestController
 @RequestMapping("1/management")
@@ -146,13 +148,14 @@ public class ManagementController extends YuccaController {
 	}
 
 	/**
-<<<<<<< HEAD
+	 * <<<<<<< HEAD
 	 * 
 	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/
 	 * Inserimento_Dataset
 	 * 
-=======
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice.git
+	 * ======= >>>>>>> branch 'master' of
+	 * https://github.com/csipiemonte/yucca-dataservice.git
+	 * 
 	 * @param organizationCode
 	 * @param file
 	 * @param dataset
@@ -190,7 +193,7 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_IMPORT_METADATA_DATASET, notes = M_IMPORT_METADATA_NOTES, response = Response.class)
 	@PostMapping("/organizations/{organizationCode}/datasets/importMetadata")
-	public ResponseEntity<Object> importMetadata(@PathVariable final String organizationCode, @RequestBody final ImportMetadataDatasetRequest importMetadataRequest,  
+	public ResponseEntity<Object> importMetadata(@PathVariable final String organizationCode, @RequestBody final ImportMetadataDatasetRequest importMetadataRequest,
 			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
 		logger.info("importMetadata");
 
@@ -305,22 +308,62 @@ public class ManagementController extends YuccaController {
 
 		logger.info("loadStreamIcon");
 
-		byte[] imgByte;
+		byte[] imgByte = null;
 		try {
 			imgByte = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
-			response.setHeader("Cache-Control", "no-store");
-			response.setHeader("Pragma", "no-cache");
-			response.setDateHeader("Expires", 0);
-			response.setContentType("image/png");
-			ServletOutputStream responseOutputStream = response.getOutputStream();
-			responseOutputStream.write(imgByte);
-			responseOutputStream.flush();
-			responseOutputStream.close();
+			if (imgByte != null) {
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", 0);
+				response.setContentType("image/png");
+				ServletOutputStream responseOutputStream = response.getOutputStream();
+				responseOutputStream.write(imgByte);
+				responseOutputStream.flush();
+				responseOutputStream.close();
+			} else 
+				response.sendRedirect(Util.defaultIconPath(request, "stream"));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
+			logger.info("loadStreamIcon ERROR: " + e.getMessage());
 			e.printStackTrace();
+			imgByte = null;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param request
+	 * @param response
+	 */
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/organizations/{organizationCode}/datasets/{iddataset}/icon")
+	public void loadDatasetIcon(@PathVariable final String organizationCode, @PathVariable final Integer iddataset, final HttpServletRequest request,
+			final HttpServletResponse response) {
+
+		logger.info("loadDatasetIcon");
+
+		byte[] imgByte = null;
+		try {
+			imgByte = datasetService.selectDatasetIcon(organizationCode, iddataset, getAuthorizedUser(request));
+			if (imgByte != null) {
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", 0);
+				response.setContentType("image/png");
+				ServletOutputStream responseOutputStream = response.getOutputStream();
+				responseOutputStream.write(imgByte);
+				responseOutputStream.flush();
+				responseOutputStream.close();
+			} else 
+				response.sendRedirect(Util.defaultIconPath(request, "dataset"));
+		} catch (Exception e) {
+			logger.info("loadDatasetIcon ERROR: " + e.getMessage());
+			e.printStackTrace();
+			imgByte = null;
+		}
+	}
+	
+	
+
 
 	/**
 	 * 

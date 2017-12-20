@@ -454,6 +454,22 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return buildResponse(new DettaglioDatasetResponse(dettaglioDataset));
 	}
+	
+	/**
+	 * 
+	 */
+	@Override
+	public byte[] selectDatasetIcon(String organizationCode, Integer idDataset, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, 
+				getTenantCodeListFromUser(authorizedUser));
+
+		checkIfFoundRecord(dettaglioDataset);
+
+		return Util.convertIconFromDBToByte(dettaglioDataset.getDataSourceIcon());
+	}
+
 
 	/**
 	 * 

@@ -2,6 +2,8 @@ package org.csi.yucca.adminapi.controller.v1;
 
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_ACTION_ON_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_ACTION_ON_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_ADD_ADMIN_APPLICATION_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_ADD_ADMIN_APPLICATION_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_DATA_TYPE;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_DATA_TYPE_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_CREATE_ECOSYSTEM;
@@ -40,6 +42,10 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TAG;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TAG_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_DELETE_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_GENERETATE_ADMIN_KEY_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_GENERETATE_ADMIN_KEY_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_API;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_API_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DATA_TYPE;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DATA_TYPE_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_DOMAIN;
@@ -54,6 +60,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ORGANIZATION;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_ORGANIZATION_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_PHENOMENON;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_PHENOMENON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_SUBDOMAIN_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TAG;
@@ -62,6 +70,8 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANTS;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANTS_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DATA_TYPE_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_DOMAIN;
@@ -80,18 +90,14 @@ import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_SUBDOMAIN;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_SUBDOMAIN_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_TAG;
 import static org.csi.yucca.adminapi.util.ApiDoc.BO_UPDATE_TAG_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_ADD_ADMIN_APPLICATION_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_ADD_ADMIN_APPLICATION_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_GENERETATE_ADMIN_KEY_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_GENERETATE_ADMIN_KEY_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_STREAMS_NOTES;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_API;
-import static org.csi.yucca.adminapi.util.ApiDoc.BO_LOAD_API_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
@@ -110,8 +116,8 @@ import org.csi.yucca.adminapi.request.PostTenantRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
-import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
@@ -124,9 +130,9 @@ import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
-import org.csi.yucca.adminapi.service.ApiService;
 import org.csi.yucca.adminapi.util.ApiCallable;
 import org.csi.yucca.adminapi.util.ServiceResponse;
+import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -138,9 +144,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 @Api(value = "backoffice", description = "Endpoint for backoffice")
 @RestController
@@ -961,6 +964,40 @@ public class BackOfficeController extends YuccaController {
 				return streamService.selectStreams(sort);
 			}
 		}, logger);
+	}
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param request
+	 * @param response
+	 */
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/streams/{idstream}/icon")
+	public void loadStreamIcon(@RequestParam(required = true) final  String organizationCode, @PathVariable final Integer idstream, final HttpServletRequest request,
+			final HttpServletResponse response) {
+
+		logger.info("loadStreamIcon");
+
+		byte[] imgByte = null;
+		try {
+			imgByte = streamService.selectStreamIcon(organizationCode, idstream, getAuthorizedUser(request));
+			if (imgByte != null) {
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", 0);
+				response.setContentType("image/png");
+				ServletOutputStream responseOutputStream = response.getOutputStream();
+				responseOutputStream.write(imgByte);
+				responseOutputStream.flush();
+				responseOutputStream.close();
+			} else 
+				response.sendRedirect(Util.defaultIconPath(request, "stream"));
+		} catch (Exception e) {
+			logger.info("loadStreamIcon ERROR: " + e.getMessage());
+			e.printStackTrace();
+			imgByte = null;
+		}
 	}
 
 	/**
