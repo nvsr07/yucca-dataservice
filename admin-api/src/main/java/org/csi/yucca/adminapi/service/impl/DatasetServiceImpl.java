@@ -45,15 +45,20 @@ import org.csi.yucca.adminapi.mapper.DcatMapper;
 import org.csi.yucca.adminapi.mapper.LicenseMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
+import org.csi.yucca.adminapi.mapper.SmartobjectMapper;
+import org.csi.yucca.adminapi.mapper.StreamMapper;
 import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
+import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
+import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.User;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
@@ -62,7 +67,7 @@ import org.csi.yucca.adminapi.request.InvioCsvRequest;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
-import org.csi.yucca.adminapi.response.DettaglioDatasetResponse;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
@@ -127,6 +132,24 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	private UserMapper userMapper;
+
+	@Autowired
+	private StreamMapper streamMapper;
+
+	@Autowired
+	private SmartobjectMapper smartobjectMapper;
+	
+	@Value("${hive.jdbc.user}")
+	private String hiveUser;
+
+	@Value("${hive.jdbc.password}")
+	private String hivePassword;
+
+	@Value("${hive.jdbc.url}")
+	private String hiveUrl;
+	
+	@Value("${datainsert.base.url}")
+	private String datainsertBaseUrl;
 	
 	@Value("${hive.jdbc.user}")
 	private String hiveUser;
@@ -162,6 +185,12 @@ public class DatasetServiceImpl implements DatasetService {
 		
 
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
+
+		ObjectMapper mapper = new ObjectMapper();
+
+		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
+
+		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -464,7 +493,28 @@ public class DatasetServiceImpl implements DatasetService {
 
 		checkIfFoundRecord(dettaglioDataset);
 
-		return buildResponse(new DettaglioDatasetResponse(dettaglioDataset));
+		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+				DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+
+			Stream stream = streamMapper.selectStreamByIdDataSourceAndVersion(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+
+			if(stream != null){
+				
+				DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, stream.getIdstream(), organizationCode, getTenantCodeListFromUser(authorizedUser));
+
+				if (dettaglioStream != null) {
+
+					DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
+							organizationCode, getTenantCodeListFromUser(authorizedUser)).get(0);
+					
+					List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+					
+					return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream));
+				}				
+			}
+		}
+		
+		return buildResponse(new DettaglioStreamDatasetResponse(dettaglioDataset));
 	}
 	
 	/**
@@ -508,6 +558,21 @@ public class DatasetServiceImpl implements DatasetService {
 
 	}
 
+	/**
+	 * 
+	 */
+	@Override
+	public byte[] selectDatasetIcon(String organizationCode, Integer idDataset, JwtUser authorizedUser) 
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, 
+				getTenantCodeListFromUser(authorizedUser));
+
+		checkIfFoundRecord(dettaglioDataset);
+
+		return Util.convertIconFromDBToByte(dettaglioDataset.getDataSourceIcon());
+	}
+	
 	/**
 	 * 
 	 * @param components

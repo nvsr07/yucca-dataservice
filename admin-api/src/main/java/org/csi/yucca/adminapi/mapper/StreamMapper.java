@@ -717,4 +717,25 @@ public interface StreamMapper {
 	@Select(SELECT_STREAM_BY_STREAMCODE_AND_ID_SO)
 	Stream selectStreamByStreamcodeAndIdSmartObject( @Param("streamcode") String streamcode, @Param("idSmartObject") Integer idSmartObject);	
 	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT STREAM BY id_data_source AND DATASOURCEVERSION
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_STREAM_BY_ID_DATA_SOURCE_AND_VERSION = 
+		" SELECT id_data_source, datasourceversion, idstream, streamcode, streamname, publishstream, "
+		+ "savedata, fps, internalquery, twtquery, twtgeoloclat, twtgeoloclon, twtgeolocradius, twtgeolocunit, "
+		+ "twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid, id_smart_object "
+		+ "FROM " + STREAM_TABLE
+		+ " where id_data_source = #{idDataSource} AND "
+		+ "datasourceversion = #{dataSourceVersion}";
+	@Results({
+        @Result(property = "idDataSource", column = "id_data_source"),
+        @Result(property = "idSmartObject", column = "id_smart_object"),
+      })	
+	@Select(SELECT_STREAM_BY_ID_DATA_SOURCE_AND_VERSION)
+	Stream selectStreamByIdDataSourceAndVersion( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
+	
+	
 }

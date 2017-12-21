@@ -7,17 +7,17 @@ public enum DatasetSubtype {
 	BINARY (3,"binaryDataset", "binaryDataset"),
 	SOCIAL (4,"socialDataset", "socialDataset");
 	
-	private int id;
+	private Integer id;
 	private String code;
 	private String description;
 	
-	DatasetSubtype(int id, String code, String description){
+	DatasetSubtype(Integer id, String code, String description){
 		this.id = id;
 		this.code = code;
 		this.description = description;
 	}
 
-	public int id() {
+	public Integer id() {
 		return id;
 	}
 

@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.util;
 
+import static org.csi.yucca.adminapi.util.Util.notEqual;
+
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -8,8 +10,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkComponents;
-import static org.csi.yucca.adminapi.util.Util.*;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
 
 public class ServiceUtil {
 
+	
 	private static final String SORT_PROPERTIES_SEPARATOR = ",";
 	private static final String DESC_CHAR = "-";
 	public static final String MULTI_SUBDOMAIN_PATTERN = "^[\\S]*$";
@@ -243,6 +244,43 @@ public class ServiceUtil {
 		
 		return componentMapper.selectComponentByDataSourceAndVersion(idDataSource, dataSourceVersion);
 	}
+
+	
+	/**
+	 * 
+	 * @param listComponentRequest
+	 * @param idSoType
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @param componentMapper
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
+			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+		
+		checkComponents(listComponentRequest, idSoType, idDataSource, dataSourceVersion, componentMapper, false);
+		
+	}
+
+	/**
+	 * 
+	 * @param listComponentRequest
+	 * @param idSoType
+	 * @param idDataSource
+	 * @param dataSourceVersion
+	 * @param componentMapper
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static void checkStreamComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
+			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+		
+		checkComponents(listComponentRequest, idSoType, idDataSource, dataSourceVersion, componentMapper, true);
+		
+	}
+
+	
 	
 	
 	/**
@@ -252,8 +290,8 @@ public class ServiceUtil {
 	 * @throws NotFoundException
 	 * @throws BadRequestException
 	 */
-	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
-			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper) throws NotFoundException, BadRequestException {
+	private static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
+			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper, boolean isStream) throws NotFoundException, BadRequestException {
 			
 		
 		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersion, componentMapper);
@@ -281,14 +319,15 @@ public class ServiceUtil {
 				if(component.getIdComponent() != null){
 					for (Component cmp : alreadyPresentComponents) {
 						if(component.getIdComponent().equals(cmp.getIdComponent())  &&
-								notEqual(component.getName(), cmp.getName()) &&
-								notEqual(component.getTolerance(), cmp.getTolerance()) &&
-								notEqual(component.getIdPhenomenon(), cmp.getIdPhenomenon()) &&
-								notEqual(component.getIdDataType(), cmp.getIdDataType()) &&
-								notEqual(component.getIskey(), cmp.getIskey()) &&
-								notEqual(component.getSourcecolumn(), cmp.getSourcecolumn()) &&
-								notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname()) &&
-								notEqual(component.getRequired(), cmp.getRequired())){
+								
+								(notEqual(component.getName(), cmp.getName()) ||
+								notEqual(component.getTolerance(), cmp.getTolerance()) ||  
+								notEqual(component.getIdPhenomenon(), cmp.getIdPhenomenon()) ||
+								notEqual(component.getIdDataType(), cmp.getIdDataType()) ||
+								notEqual(component.getIskey(), cmp.getIskey()) ||
+								notEqual(component.getSourcecolumn(), cmp.getSourcecolumn()) ||
+								notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname()) ||
+								notEqual(component.getRequired(), cmp.getRequired()))){
 							throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The only field you can mofify are: alias, inorder and idMeasureUnit");
 						}
 					}
@@ -302,11 +341,15 @@ public class ServiceUtil {
 					ServiceUtil.checkAphanumeric(component.getName(), "component name");
 					ServiceUtil.checkMandatoryParameter(component.getAlias(), "alias");
 					ServiceUtil.checkMandatoryParameter(component.getInorder(), "inorder");
-					ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
-					ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
+					if (isStream) {
+						ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
+						ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
+						ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
+						ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
+					}
+
 					ServiceUtil.checkMandatoryParameter(component.getIdDataType(), "idDataType");
-					ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
-					ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
+
 				}
 				
 			}

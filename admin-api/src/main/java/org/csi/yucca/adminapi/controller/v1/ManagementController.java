@@ -32,7 +32,6 @@ import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
 import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
-import io.swagger.annotations.ApiOperation;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -79,6 +78,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("1/management")
 public class ManagementController extends YuccaController {
@@ -97,6 +98,20 @@ public class ManagementController extends YuccaController {
 	@Autowired
 	private DatasetService datasetService;
 
+//	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
+//	@PutMapping("/tenants/{tenantcode}/action")
+//	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionOnTenantRequest actionOnTenantRequest, @PathVariable final String tenantcode) {
+//		logger.info("actionOnTenant");
+//
+//		return run(new ApiCallable() {
+//			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+//				return tenantService.actionOnTenant(actionOnTenantRequest, tenantcode);
+//			}
+//		}, logger);
+//	}
+	
+	
+	
 	/**
 	 * 
 	 * @param file
@@ -148,6 +163,8 @@ public class ManagementController extends YuccaController {
 	}
 
 	/**
+<<<<<<< HEAD
+=======
 	 * <<<<<<< HEAD
 	 * 
 	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/
@@ -156,6 +173,7 @@ public class ManagementController extends YuccaController {
 	 * ======= >>>>>>> branch 'master' of
 	 * https://github.com/csipiemonte/yucca-dataservice.git
 	 * 
+>>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice.git
 	 * @param organizationCode
 	 * @param file
 	 * @param dataset
@@ -365,6 +383,40 @@ public class ManagementController extends YuccaController {
 	
 
 
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param request
+	 * @param response
+	 */
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/organizations/{organizationCode}/datasets/{iddataset}/icon")
+	public void loadDatasetIcon(@PathVariable final String organizationCode, @PathVariable final Integer iddataset, final HttpServletRequest request,
+			final HttpServletResponse response) {
+
+		logger.info("loadDatasetIcon");
+
+		byte[] imgByte = null;
+		try {
+			imgByte = datasetService.selectDatasetIcon(organizationCode, iddataset, getAuthorizedUser(request));
+			if (imgByte != null) {
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", 0);
+				response.setContentType("image/png");
+				ServletOutputStream responseOutputStream = response.getOutputStream();
+				responseOutputStream.write(imgByte);
+				responseOutputStream.flush();
+				responseOutputStream.close();
+			} else 
+				response.sendRedirect(Util.defaultIconPath(request, "dataset"));
+		} catch (Exception e) {
+			logger.info("loadDatasetIcon ERROR: " + e.getMessage());
+			e.printStackTrace();
+			imgByte = null;
+		}
+	}	
+	
 	/**
 	 * 
 	 * @param organizationCode

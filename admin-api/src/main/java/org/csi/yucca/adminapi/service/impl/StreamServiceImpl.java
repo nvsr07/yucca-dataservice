@@ -1,5 +1,32 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_MQTT;
+import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_WEBSOCKET;
+import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
+import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
+import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_WEBSOCKET;
+import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
+import static org.csi.yucca.adminapi.util.ServiceUtil.SINCE_VERSION;
+import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkAuthTenant;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkCode;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkComponents;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkIfFoundRecord;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkVisibility;
+import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
+import static org.csi.yucca.adminapi.util.ServiceUtil.getTenantCodeListFromUser;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataset;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertDcat;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
+import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +53,7 @@ import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.Dataset;
+import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
@@ -42,7 +70,7 @@ import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
-import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.service.StreamService;
@@ -135,19 +163,50 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse selectStream(String organizationCode, Integer idStream, String tenantCodeManager, JwtUser authorizedUser) 
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, 
-				getTenantCodeListFromUser(authorizedUser));
+		List<String> tenantCodeListFromUser = getTenantCodeListFromUser(authorizedUser);
+		
+		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, tenantCodeListFromUser);
 
 		checkIfFoundRecord(dettaglioStream);
 
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-				organizationCode, getTenantCodeListFromUser(authorizedUser)).get(0);
+				organizationCode, tenantCodeListFromUser).get(0);
 		
 		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 		   
-		DettaglioStreamResponse response = new DettaglioStreamResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
+		DettaglioDataset dettaglioDataset = getDettaglioDataset(dettaglioStream, tenantCodeManager, organizationCode, tenantCodeListFromUser);
 		
-		return buildResponse(response);
+		if(dettaglioDataset != null){
+			return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream)); 
+		}
+		else{
+			return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioSmartobject, listInternalStream));
+		}
+		
+	}
+	
+	/**
+	 * 
+	 * @param dettaglioStream
+	 * @param tenantCodeManager
+	 * @param organizationCode
+	 * @param tenantCodeListFromUser
+	 * @return
+	 */
+	private DettaglioDataset getDettaglioDataset(DettaglioStream dettaglioStream, String tenantCodeManager, String organizationCode, List<String> tenantCodeListFromUser) {
+		
+		DettaglioDataset dettaglioDataset = null;
+		
+		if (dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
+
+			Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(),
+					dettaglioStream.getDatasourceversion());
+
+			dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, dataset.getIddataset(), organizationCode, tenantCodeListFromUser);
+
+		}
+
+		return dettaglioDataset;
 	}
 	
 	/**
