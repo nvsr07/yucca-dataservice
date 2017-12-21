@@ -27,6 +27,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.maximumLimitErrorsReached;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,6 @@ import org.csi.yucca.adminapi.request.InvioCsvRequest;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
-import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
@@ -151,18 +151,6 @@ public class DatasetServiceImpl implements DatasetService {
 	@Value("${datainsert.base.url}")
 	private String datainsertBaseUrl;
 	
-	@Value("${hive.jdbc.user}")
-	private String hiveUser;
-
-	@Value("${hive.jdbc.password}")
-	private String hivePassword;
-
-	@Value("${hive.jdbc.url}")
-	private String hiveUrl;
-	
-	@Value("${datainsert.base.url}")
-	private String datainsertBaseUrl;
-	
 	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
 			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, JwtUser authorizedUser)
@@ -185,12 +173,6 @@ public class DatasetServiceImpl implements DatasetService {
 		
 
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
-
-		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));
 
 		ObjectMapper mapper = new ObjectMapper();
 
@@ -558,21 +540,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 	}
 
-	/**
-	 * 
-	 */
-	@Override
-	public byte[] selectDatasetIcon(String organizationCode, Integer idDataset, JwtUser authorizedUser) 
-			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, 
-				getTenantCodeListFromUser(authorizedUser));
-
-		checkIfFoundRecord(dettaglioDataset);
-
-		return Util.convertIconFromDBToByte(dettaglioDataset.getDataSourceIcon());
-	}
-	
 	/**
 	 * 
 	 * @param components

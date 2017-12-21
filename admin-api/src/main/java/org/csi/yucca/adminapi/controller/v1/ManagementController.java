@@ -381,41 +381,6 @@ public class ManagementController extends YuccaController {
 	}
 	
 	
-
-
-	/**
-	 * 
-	 * @param organizationCode
-	 * @param idstream
-	 * @param request
-	 * @param response
-	 */
-	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
-	@GetMapping("/organizations/{organizationCode}/datasets/{iddataset}/icon")
-	public void loadDatasetIcon(@PathVariable final String organizationCode, @PathVariable final Integer iddataset, final HttpServletRequest request,
-			final HttpServletResponse response) {
-
-		logger.info("loadDatasetIcon");
-
-		byte[] imgByte = null;
-		try {
-			imgByte = datasetService.selectDatasetIcon(organizationCode, iddataset, getAuthorizedUser(request));
-			if (imgByte != null) {
-				response.setHeader("Pragma", "no-cache");
-				response.setDateHeader("Expires", 0);
-				response.setContentType("image/png");
-				ServletOutputStream responseOutputStream = response.getOutputStream();
-				responseOutputStream.write(imgByte);
-				responseOutputStream.flush();
-				responseOutputStream.close();
-			} else 
-				response.sendRedirect(Util.defaultIconPath(request, "dataset"));
-		} catch (Exception e) {
-			logger.info("loadDatasetIcon ERROR: " + e.getMessage());
-			e.printStackTrace();
-			imgByte = null;
-		}
-	}	
 	
 	/**
 	 * 
