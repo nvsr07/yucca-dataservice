@@ -302,8 +302,8 @@ public class ManagementController extends YuccaController {
 	public ResponseEntity<Object> loadStream(@PathVariable final String organizationCode, @PathVariable final Integer idstream,
 			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
 
-		logger.info("loadStream");
-
+		logger.info(">>>>>> loadStream <<<<<<<< ");
+		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return streamService.selectStream(organizationCode, idstream, tenantCodeManager, getAuthorizedUser(request));

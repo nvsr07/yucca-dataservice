@@ -196,7 +196,7 @@ public class StreamServiceImpl implements StreamService {
 		
 		DettaglioDataset dettaglioDataset = null;
 		
-		if (dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
+		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
 
 			Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(),
 					dettaglioStream.getDatasourceversion());
