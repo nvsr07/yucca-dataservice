@@ -50,7 +50,7 @@ import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
-import org.csi.yucca.adminapi.response.DettaglioStreamResponse;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
@@ -76,7 +76,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import io.swagger.annotations.ApiOperation;
 
@@ -230,7 +229,7 @@ public class ManagementController extends YuccaController {
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = M_LOAD_DATASET, notes = M_LOAD_DATASET_NOTES, response = DettaglioStreamResponse.class)
+	@ApiOperation(value = M_LOAD_DATASET, notes = M_LOAD_DATASET_NOTES, response = DettaglioStreamDatasetResponse.class)
 	@GetMapping("/organizations/{organizationCode}/datasets/{idDataset}")
 	public ResponseEntity<Object> loadDataset(@PathVariable final String organizationCode, @PathVariable final Integer idDataset,
 			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
@@ -298,7 +297,7 @@ public class ManagementController extends YuccaController {
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamResponse.class)
+	@ApiOperation(value = M_LOAD_STREAM, notes = M_LOAD_STREAM_NOTES, response = DettaglioStreamDatasetResponse.class)
 	@GetMapping("/organizations/{organizationCode}/streams/{idstream}")
 	public ResponseEntity<Object> loadStream(@PathVariable final String organizationCode, @PathVariable final Integer idstream,
 			@RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
