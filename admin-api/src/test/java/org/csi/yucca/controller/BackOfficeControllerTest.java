@@ -43,6 +43,12 @@ public class BackOfficeControllerTest extends TestBase{
 			     );
 	}	
 	
+	@DataProvider(name="jsonGet")
+	public Iterator<Object[]> getFromJsonGet(){  
+		return super.getFromJson(
+			     "/BackOfficeController_get_api_dataIn.json"
+			     );
+	}	
 	/**
 	 * POST
 	 * http://localhost:8080/adminapi/1/backoffice/domains
@@ -113,6 +119,33 @@ public class BackOfficeControllerTest extends TestBase{
 			updateValidatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString(JSON_KEY_UPDATE_ERROR_NAME)));
 		}
 		
+	}
+	
+	
+	@Test(dataProvider = "jsonGet")
+	public void backOfficeTestSelect(JSONObject dato) throws JSONException, InterruptedException {
+		
+
+		// define url
+		StringBuilder urlBuilder = getUrl(dato.getString(JSON_KEY_APICODE), dato.getString(JSON_KEY_ENTITY_SET), dato);
+		
+		// test get
+		testGet(urlBuilder.toString(), dato);
+		
+
+	}
+	
+	
+	private void testGet(String url, JSONObject dato){
+		RequestSpecification requestSpecification = given().contentType(ContentType.JSON);
+		
+		Response response = requestSpecification.when().get(url+"/"+dato.getString("adminapi.additionalpath"));
+		ValidatableResponse validatableResponse  = response.then().statusCode(dato.getInt(JSON_KEY_EXPECTED_HTTP_STATUS));
+		// check dell'eventuale messaggio di errore:
+		if(!dato.optString(JSON_KEY_EXPECTED_ERROR_NAME).isEmpty()){
+			validatableResponse.assertThat().body("errorName", Matchers.containsString(dato.getString(JSON_KEY_EXPECTED_ERROR_NAME)));
+		}
+
 	}
 	
 }
