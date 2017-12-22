@@ -4,6 +4,9 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+import org.apache.ibatis.annotations.Select;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.util.Constants;
 
@@ -34,4 +37,23 @@ public interface ApiMapper {
 	@Options(useGeneratedKeys=true, keyProperty="idapi")
 	int insertApi(Api api);
 	
-}
+	/*************************************************************************
+	 * 					SELECT API
+	 * ***********************************************************************/
+	public static final String SELECT_API_BY_CODE = 
+	"SELECT idapi, apicode, apiname, apitype, apisubtype, id_data_source, datasourceversion, entitynamespace "
+	+ " FROM " + API_TABLE + " WHERE apicode=#{apicode}";
+	@Results({
+	    @Result(property = "idapi", column = "idapi"),
+	    @Result(property = "apicode", column = "apicode"),
+	    @Result(property = "apiname", column = "apiname"),
+	    @Result(property = "apitype", column = "apitype"),
+	    @Result(property = "apisubtype", column = "apisubtype"),
+	    @Result(property = "idDataSource", column = "id_data_source"),
+	    @Result(property = "datasourceversion", column = "datasourceversion"),
+	    @Result(property = "entitynamespace", column = "entitynamespace")
+	  })
+	@Select(SELECT_API_BY_CODE) 
+		Api selectApi(@Param("apicode") String apiCode);
+		
+	}
