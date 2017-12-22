@@ -1,6 +1,9 @@
 package org.csi.yucca.adminapi.util;
 
 public class ApiDoc {
+	
+	public static final String M_ACTION_ON_STREAM = "ACTION ON TENANT";
+	public static final String M_ACTION_ON_STREAM_NOTES = "Action on Tenant.";
 
 	public static final String M_LOAD_DATA_SETS = "LOAD DATASETS";
 	public static final String M_LOAD_DATA_SETS_NOTES = "Load all Dataset in the System.";

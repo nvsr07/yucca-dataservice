@@ -12,7 +12,7 @@ public class StreamDettaglioResponse {
 	private Long streamsCountBySO;
 	private String internalquery;
 	private TwitterInfoResponse twitterInfo;
-	private List<DettaglioStreamResponse> internalStreams = new ArrayList<DettaglioStreamResponse>();
+	private List<StreamDettaglioResponse> internalStreams = new ArrayList<StreamDettaglioResponse>();
 	private DettaglioSmartobjectResponse smartobject;
 	private Double fps;
 	private Integer idstream;
@@ -26,8 +26,15 @@ public class StreamDettaglioResponse {
 
 	private void addInternalStreams(List<DettaglioStream> listInternalStream)throws Exception{
 		for (DettaglioStream dettaglioStream : listInternalStream) {
-			internalStreams.add(new DettaglioStreamResponse(dettaglioStream));
+			internalStreams.add(new StreamDettaglioResponse(dettaglioStream));
 		}
+	}
+	
+	public StreamDettaglioResponse(DettaglioStream dettaglioStream)throws Exception{
+		this.setIdstream(dettaglioStream.getIdstream());
+		this.setStreamcode(dettaglioStream.getStreamcode());
+		this.setStreamname(dettaglioStream.getStreamname());
+		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
 	}
 	
 	public StreamDettaglioResponse( DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
@@ -79,11 +86,11 @@ public class StreamDettaglioResponse {
 		this.twitterInfo = twitterInfo;
 	}
 
-	public List<DettaglioStreamResponse> getInternalStreams() {
+	public List<StreamDettaglioResponse> getInternalStreams() {
 		return internalStreams;
 	}
 
-	public void setInternalStreams(List<DettaglioStreamResponse> internalStreams) {
+	public void setInternalStreams(List<StreamDettaglioResponse> internalStreams) {
 		this.internalStreams = internalStreams;
 	}
 

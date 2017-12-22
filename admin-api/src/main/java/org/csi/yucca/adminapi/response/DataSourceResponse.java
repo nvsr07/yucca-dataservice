@@ -24,7 +24,8 @@ public class DataSourceResponse extends Response {
 	private String lastUpdate;
 	private String requestername;
 	private String requestersurname;
-
+	private String externalReference;
+	
 	private TenantResponse tenantManager;
 	private OrganizationResponse organization;
 	private List<TagResponse> tags = new ArrayList<TagResponse>();
@@ -205,6 +206,14 @@ public class DataSourceResponse extends Response {
 		this.requestersurname = requestersurname;
 	}
 
+	public String getExternalReference() {
+		return externalReference;
+	}
+
+	public void setExternalReference(String externalReference) {
+		this.externalReference = externalReference;
+	}
+
 	private void setAllParameter(DettaglioDataset dettaglioDataset) throws Exception {
 		this.tenantManager = new TenantResponse(dettaglioDataset);
 		this.organization = new OrganizationResponse(dettaglioDataset);
@@ -223,6 +232,7 @@ public class DataSourceResponse extends Response {
 		this.lastUpdate = dettaglioDataset.getDataSourceLastUpdate();
 		this.requestername = dettaglioDataset.getDataSourceRequesterName();
 		this.requestersurname = dettaglioDataset.getDataSourceRequesterSurname();
+		this.externalReference = dettaglioDataset.getDataSourceExternalReference();
 	}
 
 	private void setAllParameter(DettaglioStream dettaglioStream) throws Exception {
@@ -243,7 +253,7 @@ public class DataSourceResponse extends Response {
 		this.lastUpdate = dettaglioStream.getDataSourceLastUpdate();
 		this.requestername = dettaglioStream.getDataSourceRequesterName();
 		this.requestersurname = dettaglioStream.getDataSourceRequesterSurname();
-
+		this.externalReference = dettaglioStream.getDataSourceExternalReference();
 	}
 
 }

@@ -131,6 +131,15 @@ public class StreamServiceImpl implements StreamService {
 	@Autowired
 	private ComponentMapper componentMapper;
 	
+	@Override
+	public ServiceResponse actionOnStream(String action, String organizationCode, String soCode, Integer idStream) {
+
+		
+		
+		
+		return null;
+	}
+	
     /**
      * update stream
      */
