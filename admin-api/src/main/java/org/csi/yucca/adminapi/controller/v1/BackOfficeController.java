@@ -126,6 +126,7 @@ import org.csi.yucca.adminapi.response.MeasureUnitResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
+import org.csi.yucca.adminapi.service.ApiService;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
 import org.csi.yucca.adminapi.service.StreamService;
@@ -163,6 +164,9 @@ public class BackOfficeController extends YuccaController {
 	
 	@Autowired
 	private StreamService streamService;
+
+	@Autowired
+	private ApiService apiService;
 
 	/**
 	 * 
@@ -1013,7 +1017,7 @@ public class BackOfficeController extends YuccaController {
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return null;// TOOD apiService.selectApi(apiCode);
+				return apiService.selectBackofficeDettaglioApi(apiCode);
 			}
 		}, logger);
 	}
