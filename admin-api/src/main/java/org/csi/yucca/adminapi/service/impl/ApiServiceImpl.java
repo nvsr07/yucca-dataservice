@@ -78,6 +78,7 @@ import org.csi.yucca.adminapi.service.ApiService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
+import org.csi.yucca.adminapi.util.DatasetSubtype;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ManageOption;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -140,6 +141,36 @@ public class ApiServiceImpl implements ApiService {
 		Api api =  apiMapper.selectApi(apiCode);
 		
 		checkIfFoundRecord(api);
+		
+		if (api.getApisubtype().equals(org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA))
+		{
+//			Dataset dataset = datasetMapper.selectDataSet(api.getIdDataSource(), api.getDatasourceversion());
+//
+//			checkIfFoundRecord(dettaglioDataset);
+//
+//			if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+//					DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+//
+//				Stream stream = streamMapper.selectStreamByIdDataSourceAndVersion(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+//
+//				if(stream != null){
+//					
+//					DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, stream.getIdstream(), organizationCode, getTenantCodeListFromUser(authorizedUser));
+//
+//					if (dettaglioStream != null) {
+//
+//						DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
+//								organizationCode, getTenantCodeListFromUser(authorizedUser)).get(0);
+//						
+//						List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+//						
+//						return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream));
+//					}				
+//				}
+			}
+			
+//			return buildResponse(new DettaglioStreamDatasetResponse(dettaglioDataset));
+//		}
 		
 //		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, tenantCodeListFromUser);
 //

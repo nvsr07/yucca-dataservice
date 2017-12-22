@@ -219,7 +219,7 @@ public interface StreamMapper {
 		@Result(property = "idOrganization", column = "id_organization"),  
 		@Result(property = "organizationDescription", column = "organization_description"), 
 		@Result(property = "organizationCode", column = "organizationcode"), 
-		@Result(property = "idStream", column = "idstream"), 
+		@Result(property = "idstream", column = "idstream"), 
 		@Result(property = "dataSourceVersion", column = "datasourceversion"), 
 		@Result(property = "streamCode", column = "streamcode"), 
 		@Result(property = "streamName", column = "streamname"), 
