@@ -20,6 +20,6 @@ public interface StreamService {
 
 	byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
-	ServiceResponse actionOnStream( String action, String organizationCode, String soCode, Integer idStream );
+	ServiceResponse actionOnStream( String action, String organizationCode, String soCode, Integer idStream, JwtUser authorizedUser ) throws BadRequestException, NotFoundException, Exception;
 	
 }

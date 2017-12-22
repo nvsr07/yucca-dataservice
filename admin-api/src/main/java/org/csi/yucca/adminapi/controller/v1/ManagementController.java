@@ -72,13 +72,14 @@ public class ManagementController extends YuccaController {
 			@RequestParam(required = true) final String action,	
 			@PathVariable final String organizationCode,
 			@PathVariable final String soCode,
-			@PathVariable final Integer idStream ) {
+			@PathVariable final Integer idStream,
+			final HttpServletRequest httpRequest) {
 		
 		logger.info("actionOnStream");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.actionOnStream(action, organizationCode, soCode, idStream);
+				return streamService.actionOnStream(action, organizationCode, soCode, idStream, getAuthorizedUser(httpRequest));
 			}
 		}, logger);
 	}

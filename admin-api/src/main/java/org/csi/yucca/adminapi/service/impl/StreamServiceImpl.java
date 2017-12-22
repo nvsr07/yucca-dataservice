@@ -132,12 +132,57 @@ public class StreamServiceImpl implements StreamService {
 	private ComponentMapper componentMapper;
 	
 	@Override
-	public ServiceResponse actionOnStream(String action, String organizationCode, String soCode, Integer idStream) {
+	public ServiceResponse actionOnStream(String action, String organizationCode, String soCode, Integer idStream, JwtUser authorizedUser)  throws BadRequestException, NotFoundException, Exception {
 
+		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, getTenantCodeListFromUser(authorizedUser));
+		
+		checkIfFoundRecord(dettaglioStream);
+		
+		// ----------------------------------------------------------------------------
+		//	1. Se stato DRAFT --> unica action accettata è req_install 
+		//  In questo caso l'unica operazione da fare è mettere lo stato in REQ_INST
+		if(Status.DRAFT.code().equals(dettaglioStream.getStatusCode())){
+			if (!Status.REQUEST_INSTALLATION.code().equals(action)) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE);
+			}
+			
+			// TO DO
+			// fare update con stato in "REQ_INST"
+			
+			return ServiceResponse.build().OK();
+		}
 		
 		
+//		2. Se stato REQ_INST --> nessuna action accettata da management ma solo da BO
+		if(Status.REQUEST_INSTALLATION.code().equals(dettaglioStream.getStatusCode()) || 
+		   Status.REQUEST_UNINSTALLATION.code().equals(dettaglioStream.getStatusCode()) ||
+		   Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode()) ||
+		   Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode()) ||
+		   Status.INSTALLATION_FAIL.code().equals(dettaglioStream.getStatusCode()) ||
+		   Status.UNINSTALLATION.code().equals(dettaglioStream.getStatusCode()) ){
+			throw new BadRequestException(Errors.INCORRECT_VALUE);
+		}
 		
-		return null;
+//		6. Se stato INST --> uniche action accettata sono new_version e req_uninstall
+//		se new_version
+		if(Status.INSTALLED.code().equals(dettaglioStream.getStatusCode())){
+			if (!"new_version".equals(action) && !"req_uninstall".equals(action)) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE);
+			}
+			
+			if ("new_version".equals(action)) {
+				
+			}
+			else{
+				// req_uninstall
+				
+			}
+			
+			return ServiceResponse.build().OK();
+		}
+		
+		
+		return ServiceResponse.build().NO_CONTENT();
 	}
 	
     /**
