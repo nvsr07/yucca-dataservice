@@ -188,29 +188,7 @@ public class ApiServiceImpl implements ApiService {
 		
 	}
 	
-	/**
-	 * 
-	 * @param dettaglioStream
-	 * @param tenantCodeManager
-	 * @param organizationCode
-	 * @param tenantCodeListFromUser
-	 * @return
-	 */
-	private DettaglioDataset getDettaglioDataset(DettaglioStream dettaglioStream, String tenantCodeManager, String organizationCode, List<String> tenantCodeListFromUser) {
-		
-		DettaglioDataset dettaglioDataset = null;
-		
-		if (dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
 
-			Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(),
-					dettaglioStream.getDatasourceversion());
-
-			dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, dataset.getIddataset(), organizationCode, tenantCodeListFromUser);
-
-		}
-
-		return dettaglioDataset;
-	}
 	
 
 

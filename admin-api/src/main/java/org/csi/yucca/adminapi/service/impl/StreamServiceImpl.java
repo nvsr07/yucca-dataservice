@@ -251,13 +251,7 @@ public class StreamServiceImpl implements StreamService {
 		DettaglioDataset dettaglioDataset = null;
 		
 		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
-
-			Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(),
-					dettaglioStream.getDatasourceversion());
-
-			if (dataset != null) {
-				dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, dataset.getIddataset(), organizationCode, tenantCodeListFromUser);				
-			}
+			dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		}
 
 		return dettaglioDataset;

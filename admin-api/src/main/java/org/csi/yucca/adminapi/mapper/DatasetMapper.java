@@ -234,37 +234,51 @@ public interface DatasetMapper {
 			" yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND  " +
 			" yucca_r_tenant_data_source.isactive = 1 AND  " +
 			" yucca_r_tenant_data_source.ismanager = 1  " +
-			" LEFT JOIN " + TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " + 
+			" LEFT JOIN " + TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant "; 
 
-			" WHERE (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN  " +
-			" ( select id_data_source, " +
-			"          max(datasourceversion)  " +
-			"     from " + DataSourceMapper.DATA_SOURCE_TABLE  + 
-			"    where id_data_source = yucca_dataset.id_data_source " + 
-			"    group by id_data_source " +
-			" ) AND  " +
+	
+	
+	public static final String WHERE_DETTAGLIO_DATASET_START = " WHERE 1=1 ";
+	
+	public static final String WHERE_DETTAGLIO_DATASET_MAX_VERSION =
+			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
+			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
+			+ "  where id_data_source = yucca_dataset.id_data_source group by id_data_source) " ;
+	
 
-			" yucca_organization.organizationcode = #{organizationCode}" + 
-			
+	public static final String WHERE_DETTAGLIO_DATASET_ORGANIZATION_CODE =
+			" AND yucca_organization.organizationcode = #{organizationCode} ";
+
+	public static final String WHERE_DETTAGLIO_DATASET_TENANT_MANAGER_CODE =
 			"<if test=\"tenantCodeManager != null\">" +
-			" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
-			"</if>" +
-			
-			" AND ( yucca_data_source.visibility = 'public'  OR " + 
-			" EXISTS ( SELECT yucca_tenant.tenantcode " + 
-			" FROM " + TenantMapper.TENANT_TABLE + " yucca_tenant, " + TenantMapper.R_TENANT_DATA_SOURCE_TABLE  + " yucca_r_tenant_data_source " + 
-			" WHERE yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant AND " + 
-			" yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " + 
-			" yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " + 
-			" yucca_r_tenant_data_source.isactive = 1 AND " + 
-			" tenantcode IN ( "
+					" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
+			"</if>";
+	
+	public static final String WHERE_DETTAGLIO_DATASET_TENANT_VISIBILITY =
+			" AND (yucca_data_source.visibility = 'public' OR " +
+			" EXISTS ( " +
+			" SELECT yucca_tenant.tenantcode " + 
+			" FROM " +  TenantMapper.TENANT_TABLE  + " yucca_tenant, " +  TenantMapper.R_TENANT_DATA_SOURCE_TABLE + " yucca_r_tenant_data_source " +
+			" WHERE yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " + 
+			" AND yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
+			" yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
+			" yucca_r_tenant_data_source.isactive = 1 AND tenantcode IN ("
 			+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
 			+ "#{authorizedTenantCode}"
 			+ " </foreach>"
-			+ " ) " + 
+			+ ") " + 
 			" ) " +
-			" ) AND " + 
-			" yucca_dataset.iddataset = #{idDataSet} ";
+			" ) ";
+
+	public static final String WHERE_DETTAGLIO_DATASET_IDDATASET = " AND yucca_dataset.iddataset = #{idDataSet}  ";
+	
+	public static final String WHERE_DETTAGLIO_DATASET_IDDATASOURCE = " AND yucca_data_source.id_data_source = #{idDataSource} ";
+	
+	public static final String WHERE_DETTAGLIO_DATASET_DATASOURCEVERSION = " AND yucca_data_source.datasourceversion = #{dataSourceVersion} ";
+
+	
+	
+	
 	@Results({
 		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
 		@Result(property = "idDataSource", column = "id_data_source"),
@@ -315,12 +329,73 @@ public interface DatasetMapper {
 		@Result(property = "dataSourceIcon", column = "data_source_icon"), 
 		@Result(property = "sharingTenant", column = "sharing_tenant") 
       })		
-	@Select({"<script>", SELECT_DETTAGLIO_DATASET, "</script>"}) 
+	@Select({"<script>", SELECT_DETTAGLIO_DATASET,WHERE_DETTAGLIO_DATASET_START + WHERE_DETTAGLIO_DATASET_MAX_VERSION 
+		+ WHERE_DETTAGLIO_DATASET_TENANT_MANAGER_CODE  
+		+ WHERE_DETTAGLIO_DATASET_ORGANIZATION_CODE
+		+ WHERE_DETTAGLIO_DATASET_TENANT_VISIBILITY
+		+ WHERE_DETTAGLIO_DATASET_IDDATASET,  "</script>"}) 
 	DettaglioDataset selectDettaglioDataset( @Param("tenantCodeManager") String tenantCodeManager,
 							      @Param("idDataSet") Integer idDataSet,
 							      @Param("organizationCode") String organizationcode,
 							      @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
 	
+	
+	
+	@Results({
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
+		@Result(property = "idDataSource", column = "id_data_source"),
+		@Result(property = "description", column = "dataset_description"),
+		@Result(property = "idDatasetType", column = "id_dataset_type"),	
+		@Result(property = "idDatasetSubtype", column = "id_dataset_subtype"),
+	    @Result(property = "idDataSourceBinary", column = "id_data_source_binary"),
+	    @Result(property = "datasourceversionBinary", column = "datasourceversion_binary"),	
+	    @Result(property = "dataSourceVisibility", column = "data_source_visibility"),	
+	    @Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),	
+	    @Result(property = "dataSourceRegistrationDate", column = "data_source_registration_date"),
+	    @Result(property = "statusCode", column = "statuscode"),
+	    @Result(property = "statusDescription", column = "status_description"),
+	    @Result(property = "idStatus", column = "id_status"),
+	    @Result(property = "domIdDomain", column = "dom_id_domain"),
+	    @Result(property = "domLangEn", column = "dom_langen"),
+	    @Result(property = "domLangIt", column = "dom_langit"),
+	    @Result(property = "domDomainCode", column = "dom_domaincode"),
+		@Result(property = "subIdSubDomain", column = "sub_id_subdomain"),
+		@Result(property = "subSubDomainCode", column = "sub_subdomaincode"),
+		@Result(property = "subLangIt", column = "sub_lang_it"),
+		@Result(property = "subLangEn", column = "sub_lang_en"),
+		@Result(property = "organizationCode", column = "organizationcode"),
+		@Result(property = "organizationDescription", column = "organization_description"),
+		@Result(property = "idOrganization", column = "id_organization"),
+		@Result(property = "dataSourceIsActive", column = "isactive"),
+		@Result(property = "dataSourceIsManager", column = "ismanager"),
+		@Result(property = "tenantCode", column = "tenantcode"),
+		@Result(property = "tenantName", column = "tenant_name"),
+		@Result(property = "tenantDescription", column = "tenant_description"),
+		@Result(property = "idTenant", column = "id_tenant"),
+		@Result(property = "datasetType", column = "dataset_type"),
+		@Result(property = "datasetTypeDescription", column = "dataset_type_description"),
+		@Result(property = "datasetSubtype", column = "dataset_subtype"), 	
+		@Result(property = "datasetSubtypeDescription", column = "dataset_subtype_description"), 
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"), 	
+		@Result(property = "dataSourceIsOpendata", column = "data_source_is_opendata"), 
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"), 
+		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"), 
+		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"), 
+		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"), 
+		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"), 
+		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"), 
+		@Result(property = "dataSourceRequesterName", column = "data_source_requester_name"), 
+		@Result(property = "dataSourceRequesterSurname", column = "data_source_requester_surname"), 
+		@Result(property = "dataSourceRequesterMail", column = "data_source_requester_mail"), 
+		@Result(property = "dataSourcePrivacyAcceptance", column = "data_source_privacy_acceptance"), 
+		@Result(property = "dataSourceIcon", column = "data_source_icon"), 
+		@Result(property = "sharingTenant", column = "sharing_tenant") 
+      })
+	  @Select({"<script>", SELECT_DETTAGLIO_DATASET,WHERE_DETTAGLIO_DATASET_START + 
+		  			WHERE_DETTAGLIO_DATASET_IDDATASOURCE+ WHERE_DETTAGLIO_DATASET_DATASOURCEVERSION+"</script>"}) 
+	  DettaglioDataset selectDettaglioDatasetByDatasource( @Param("idDataSource") Integer idDataSource,
+		      @Param("dataSourceVersion") Integer dataSourceVersion
+		      );
 	
 	/********************************************************************************************
 	 * 				SELECT DATASETS
