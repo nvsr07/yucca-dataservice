@@ -369,7 +369,7 @@ public interface StreamMapper {
 			" yucca_r_tenant_data_source.isactive = 1 AND yucca_r_tenant_data_source.ismanager = 1 " +
 			" LEFT JOIN " +  TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant ";
 
-	public static final String WHERE_STREAM_START = " WHERE ";
+	public static final String WHERE_STREAM_START = " WHERE 1=1 ";
 	
 	public static final String WHERE_STREAM_MAX_VERSION =
 			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
