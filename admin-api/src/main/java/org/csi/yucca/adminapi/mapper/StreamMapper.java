@@ -558,7 +558,7 @@ public interface StreamMapper {
       })	
 	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_IDDATASOURCE
 						+ WHERE_STREAM_DATASOURCEVERSION, "</script>"}) 
-	DettaglioStream selectStream( @Param("idDataSource") Integer idDataSource,
+	DettaglioStream selectStreamByDatasource( @Param("idDataSource") Integer idDataSource,
 							      @Param("dataSourceVersion") Integer dataSourceVersion
 							      );	
 	

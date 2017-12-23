@@ -478,7 +478,7 @@ public class DatasetServiceImpl implements DatasetService {
 		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
 				DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
 
-			DettaglioStream dettaglioStream = streamMapper.selectStream(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
 			if (dettaglioStream != null) {
 
 				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
