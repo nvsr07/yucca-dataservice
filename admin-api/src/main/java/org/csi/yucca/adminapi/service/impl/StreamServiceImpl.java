@@ -396,10 +396,12 @@ public class StreamServiceImpl implements StreamService {
 	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) throws Exception{
 
 		Timestamp now = Util.getNow();
+		Integer idLicense = null;
 
 		Long idDcat = insertDcat(request.getDcat(), dcatMapper);
 
-		Integer idLicense = insertLicense(request.getLicense(), licenseMapper);
+		if (request.getVisibility().equals("public"))
+			idLicense = insertLicense(request.getLicense(), licenseMapper);
 
 		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 
@@ -741,7 +743,7 @@ public class StreamServiceImpl implements StreamService {
 		
 		checkDcat(request);
 
-		ServiceUtil.checkLicense(request.getLicense());
+		//ServiceUtil.checkLicense(request.getLicense());
 		
 	}
 
