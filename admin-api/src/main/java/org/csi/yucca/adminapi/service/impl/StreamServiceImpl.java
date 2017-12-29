@@ -222,8 +222,7 @@ public class StreamServiceImpl implements StreamService {
 
 		checkIfFoundRecord(dettaglioStream);
 
-		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-				organizationCode, tenantCodeListFromUser).get(0);
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
 		
 		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 		   

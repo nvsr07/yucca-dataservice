@@ -71,6 +71,7 @@ import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
@@ -140,51 +141,35 @@ public class ApiServiceImpl implements ApiService {
 
 		Api api =  apiMapper.selectApi(apiCode);
 		
+		DettaglioStreamDatasetResponse dettaglio = null;
+		
 		checkIfFoundRecord(api);
 		
 		if (api.getApisubtype().equals(org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA))
 		{
-//			Dataset dataset = datasetMapper.selectDataSet(api.getIdDataSource(), api.getDatasourceversion());
-//
-//			checkIfFoundRecord(dettaglioDataset);
-//
-//			if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
-//					DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
-//
-//				Stream stream = streamMapper.selectStreamByIdDataSourceAndVersion(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-//
-//				if(stream != null){
-//					
-//					DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, stream.getIdstream(), organizationCode, getTenantCodeListFromUser(authorizedUser));
-//
-//					if (dettaglioStream != null) {
-//
-//						DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-//								organizationCode, getTenantCodeListFromUser(authorizedUser)).get(0);
-//						
-//						List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
-//						
-//						return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream));
-//					}				
-//				}
+			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(api.getIdDataSource(),api.getDatasourceversion());
+
+			checkIfFoundRecord(dettaglioDataset);
+
+			if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+					DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+
+				DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+				if (dettaglioStream != null) {
+
+					DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+					
+					List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+					
+					dettaglio = new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+				}				
 			}
 			
-//			return buildResponse(new DettaglioStreamDatasetResponse(dettaglioDataset));
-//		}
+			dettaglio = new DettaglioStreamDatasetResponse(dettaglioDataset);
+		}
 		
-//		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, tenantCodeListFromUser);
-//
-//		
-//
-//		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-//				organizationCode, tenantCodeListFromUser).get(0);
-//		
-//		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
-//		   
-//		DettaglioDataset dettaglioDataset = getDettaglioDataset(dettaglioStream, tenantCodeManager, organizationCode, tenantCodeListFromUser);
-//		
 
-		return buildResponse(new BackofficeDettaglioApiResponse(api));
+		return buildResponse(new BackofficeDettaglioApiResponse(api, dettaglio));
 		
 	}
 	

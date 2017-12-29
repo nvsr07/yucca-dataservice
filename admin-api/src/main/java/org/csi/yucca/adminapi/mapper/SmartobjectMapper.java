@@ -77,7 +77,7 @@ public interface SmartobjectMapper{
 	 * 								LOAD ELENCO SO
 	 * 
 	 ************************************************************************************/
-	public static final String SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT =
+	public static final String SELECT_DETTAGLIO_SMARTOBJECT =
 			" SELECT " +
 		    " lat, lon, elevation, room, building, floor, address, city, country, placegeometry, " +
 			" SMARTOBJECT.id_smart_object, socode, " +
@@ -108,32 +108,32 @@ public interface SmartobjectMapper{
 			" LEFT JOIN " + SoTypeMapper.SO_TYPE_TABLE + " SO_TYPE ON SMARTOBJECT.id_so_type = SO_TYPE.id_so_type " +
 			" LEFT JOIN " + STATUS_TABLE + " STATUS ON SMARTOBJECT.id_status = STATUS.id_status " +
 			" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " ORGANIZATION ON ORGANIZATION.id_organization = SMARTOBJECT.id_organization " +
-			" LEFT JOIN " + POSITION_TABLE + "  POSITION ON POSITION.id_smart_object = SMARTOBJECT.id_smart_object " + 
-			
-			" WHERE ORGANIZATION.organizationcode = #{organizationCode} AND " +
-			
-			"<if test=\"socode != null\">" +
-			"SMARTOBJECT.socode = #{socode} AND " +
-		    "</if>" +
-			
-			" SMARTOBJECT.id_smart_object in ( " +
+			" LEFT JOIN " + POSITION_TABLE + "  POSITION ON POSITION.id_smart_object = SMARTOBJECT.id_smart_object ";
+	
+	public static final String WHERE_DETTAGLIO_SMARTOBJECT_START = " WHERE 1=1 ";
+	
+	public static final String WHERE_DETTAGLIO_SMARTOBJECT_ORGANIZATION =
+			" AND ORGANIZATION.organizationcode = #{organizationCode} ";
+	
+	public static final String WHERE_DETTAGLIO_SMARTOBJECT_SO_CODE =
+			" <if test=\"socode != null\">" +
+			" AND SMARTOBJECT.socode = #{socode} " +
+		    " </if>";
+
+	public static final String WHERE_DETTAGLIO_SMARTOBJECT_TENANT_LIST =
+			" AND SMARTOBJECT.id_smart_object in ( " +
 			" select id_smart_object from "
 			+  TENANT_SMARTOBJECT_TABLE  + " TENANT_SO, " + TenantMapper.TENANT_TABLE + " TENANT where " + 
 				"TENANT.id_tenant = TENANT_SO.id_tenant  " +
-			
 			"<if test=\"tenantCodeList != null\">" +
 			" and (" 
-	
 			 	+ " <foreach item=\"propName\" separator=\" OR \" index=\"index\" collection=\"tenantCodeList\">" 
-			
 				+  " TENANT.tenantcode = #{propName} "
-
 				+ " </foreach>" 
-			
 			+ ") "
 			+"</if>" 
-			
 			+ " AND  TENANT_SO.isactive = 1) ";
+	
 	@Results({
         @Result(property = "descriptionOrganization",  column = "description_organization"),
         @Result(property = "descriptionStatus",        column = "description_status"),
@@ -151,7 +151,8 @@ public interface SmartobjectMapper{
         @Result(property = "idStatus",                 column = "id_status"),
         @Result(property = "idOrganization",           column = "id_organization")
       })
-	@Select({"<script>",SELECT_SMARTOBJECT_BY_ORGANIZATION_AND_TENANAT,"</script>"})
+	@Select({"<script>",SELECT_DETTAGLIO_SMARTOBJECT + WHERE_DETTAGLIO_SMARTOBJECT_START + WHERE_DETTAGLIO_SMARTOBJECT_ORGANIZATION +
+						WHERE_DETTAGLIO_SMARTOBJECT_SO_CODE + WHERE_DETTAGLIO_SMARTOBJECT_TENANT_LIST,"</script>"})
 	List<DettaglioSmartobject> selectSmartobjectByOrganizationAndTenant(
 			@Param("socode") String socode,
 			@Param("organizationCode") String organizationCode, 
@@ -221,27 +222,31 @@ public interface SmartobjectMapper{
 	 * 					SELECT SMARTOBJECT BY ID
 	 * 
 	 * ***********************************************************************/	
-	public static final String SELECT_SMARTOBJECT_BY_ID 
-		= " SELECT id_smart_object, socode, name, description, " + 
-				" urladmin, fbcoperationfeedback, swclientversion, version, model, " + 
-				" deploymentversion, creationdate, twtusername, twtusertoken, twttokensecret, twtname, " + 
-				" twtuserid, twtmaxstreams, slug, id_location_type, id_exposure_type, " + 
-				" id_supply_type, id_so_category, id_so_type, id_status, id_organization " + 
-		  " FROM " + SMARTOBJECT_TABLE + 
-		  " WHERE id_smart_object = #{idSmartObject}";
+	public static final String WHERE_DETTAGLIO_SMARTOBJECT_ID =
+			" AND SMARTOBJECT.id_smart_object = #{idSmartObject} ";
+	
+	
 	@Results({
-        @Result(property = "idSmartObject",  column = "id_smart_object"),
-        @Result(property = "idSoType",       column = "id_so_type"),
-        @Result(property = "idLocationType", column = "id_location_type"),
-        @Result(property = "idExposureType", column = "id_exposure_type"),
-        @Result(property = "idSupplyType",   column = "id_supply_type"),
-        @Result(property = "idSoCategory",   column = "id_so_category"),
-        @Result(property = "idStatus",       column = "id_status"),
-        @Result(property = "idOrganization", column = "id_organization")
+        @Result(property = "descriptionOrganization",  column = "description_organization"),
+        @Result(property = "descriptionStatus",        column = "description_status"),
+        @Result(property = "descriptionSoType",        column = "description_so_type"),
+        @Result(property = "descriptionSoCategory",    column = "description_so_category"),
+        @Result(property = "descriptionSupplytype",    column = "description_supplytype"),
+        @Result(property = "descriptionExposuretype",  column = "description_exposuretype"),
+        @Result(property = "descriptionLocationtype",  column = "description_locationtype"),
+        @Result(property = "idSmartObject",            column = "id_smart_object"),
+        @Result(property = "idSoType",                 column = "id_so_type"),
+        @Result(property = "idLocationType",           column = "id_location_type"),
+        @Result(property = "idExposureType",           column = "id_exposure_type"),
+        @Result(property = "idSupplyType",             column = "id_supply_type"),
+        @Result(property = "idSoCategory",             column = "id_so_category"),
+        @Result(property = "idStatus",                 column = "id_status"),
+        @Result(property = "idOrganization",           column = "id_organization")
       })
-	@Select(SELECT_SMARTOBJECT_BY_ID)
-	Smartobject selectSmartobjectById( @Param("idSmartObject") Integer idSmartObject);	
-
+	@Select({"<script>",SELECT_DETTAGLIO_SMARTOBJECT + WHERE_DETTAGLIO_SMARTOBJECT_START + 
+						WHERE_DETTAGLIO_SMARTOBJECT_ID,"</script>"})
+	DettaglioSmartobject selectSmartobjectById( @Param("idSmartObject") Integer idSmartObject);	
+	
 	
 	
 	/*************************************************************************
