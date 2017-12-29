@@ -5,12 +5,17 @@ import java.sql.Timestamp;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 
+//import bsh.util.Util;
+import org.csi.yucca.adminapi.util.Util;
+
+
 public class OpenDataResponse extends Response {
 
 	private String opendataauthor;
 	private Timestamp opendataupdatedate;
 	private String opendatalanguage;
 	private String lastupdate;
+	private Boolean isOpenData;
 	
 	public OpenDataResponse(DettaglioStream dettaglioStream) {
 		super();
@@ -18,6 +23,7 @@ public class OpenDataResponse extends Response {
 		this.opendataupdatedate = dettaglioStream.getDataSourceOpenDataUpdateDate();
 		this.opendatalanguage = dettaglioStream.getDataSourceOpenDataLanguage();
 		this.lastupdate = dettaglioStream.getDataSourceLastUpdate();
+		this.isOpenData = Util.intToBoolean(dettaglioStream.getDataSourceIsopendata());
 	}
 
 	public OpenDataResponse(DettaglioDataset dettaglioDataset) {
@@ -26,6 +32,7 @@ public class OpenDataResponse extends Response {
 		this.opendataupdatedate = dettaglioDataset.getDataSourceOpenDataUpdateDate();
 		this.opendatalanguage = dettaglioDataset.getDataSourceOpenDataLanguage();
 		this.lastupdate = dettaglioDataset.getDataSourceLastUpdate();
+		this.isOpenData = Util.intToBoolean(dettaglioDataset.getDataSourceIsOpendata());
 	}
 
 	public OpenDataResponse() {
@@ -64,5 +71,15 @@ public class OpenDataResponse extends Response {
 	public void setLastupdate(String lastupdate) {
 		this.lastupdate = lastupdate;
 	}
+
+	public Boolean getIsOpenData() {
+		return isOpenData;
+	}
+
+	public void setIsOpenData(Boolean isOpenData) {
+		this.isOpenData = isOpenData;
+	}
+	
+	
 
 }

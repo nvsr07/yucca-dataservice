@@ -738,7 +738,6 @@ public class StreamServiceImpl implements StreamService {
 		checkMandatoryParameter(request.getRequestername(), "requestername");
 		checkMandatoryParameter(request.getRequestersurname(), "requestersurname");
 		checkMandatoryParameter(request.getRequestermail(), "requestermail");
-		checkMandatoryParameter(request.getUnpublished(), "unpublished");
 		checkList(request.getTags(), "tags");
 		
 		checkDcat(request);

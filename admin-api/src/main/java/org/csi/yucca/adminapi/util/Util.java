@@ -195,6 +195,12 @@ public class Util {
 		if(booleanValue == null || booleanValue==false) return 0;
 		return 1;
 	}
+	
+	public static Boolean intToBoolean(Integer intValue) {
+		if(intValue==0) return false;
+		return true;
+		
+	}
 
 	public static Timestamp getNow() {
 		return new Timestamp(System.currentTimeMillis());
