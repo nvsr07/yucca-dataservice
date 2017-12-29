@@ -13,6 +13,10 @@ public class BackofficeDettaglioApiResponse {
 	private String entitynamespace;
 	
 
+	public BackofficeDettaglioApiResponse() {
+		super();
+	}
+
 	public BackofficeDettaglioApiResponse(Api api) {
 		this.idapi = api.getIdapi();
 		this.apicode = api.getApicode();
