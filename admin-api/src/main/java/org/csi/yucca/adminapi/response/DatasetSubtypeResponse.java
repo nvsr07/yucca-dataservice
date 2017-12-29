@@ -9,6 +9,10 @@ public class DatasetSubtypeResponse extends Response{
 	private String description;
 	private Integer idDatasetType;
 	
+	public DatasetSubtypeResponse() {
+		super();
+	}
+	
 	public DatasetSubtypeResponse(Dataset dataset) {
 		super();
 		this.idDatasetSubtype = dataset.getIdDatasetSubtype();

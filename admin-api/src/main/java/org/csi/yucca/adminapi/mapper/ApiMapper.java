@@ -42,7 +42,9 @@ public interface ApiMapper {
 	 * ***********************************************************************/
 	public static final String SELECT_API_BY_CODE = 
 	"SELECT idapi, apicode, apiname, apitype, apisubtype, id_data_source, datasourceversion, entitynamespace "
-	+ " FROM " + API_TABLE + " WHERE apicode=#{apicode}";
+	+ " FROM " + API_TABLE + " WHERE apicode=#{apicode} AND (id_data_source, datasourceversion) IN " + 
+			" (select api2.id_data_source, max(api2.datasourceversion) from " +  API_TABLE + " api2 "
+			+ "  where api2.id_data_source = id_data_source group by id_data_source) ";
 	@Results({
 	    @Result(property = "idapi", column = "idapi"),
 	    @Result(property = "apicode", column = "apicode"),

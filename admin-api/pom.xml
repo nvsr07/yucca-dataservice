@@ -36,6 +36,8 @@
 		            <configuration>
 		              <classifier>client</classifier>
 		              <includes>
+		                <include>**/adminapi/util/**/*</include>
+		                <include>**/adminapi/model/**/*</include>
 		                <include>**/adminapi/client/*</include>
 		                <include>**/adminapi/response/*</include>
 		              </includes>
