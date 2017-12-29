@@ -8,6 +8,7 @@ import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.util.Util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class DettaglioStreamDatasetResponse extends DataSourceResponse {
@@ -28,6 +29,8 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		super();
 	}
 
+	
+	@JsonIgnore
 	private void setAllParameter(DettaglioStream dettaglioStream)throws Exception{
 		Util.addSharingTenants(dettaglioStream.getSharingTenant(), this.sharingTenants);
 		Util.addComponents(dettaglioStream.getComponents(), this.components);
@@ -35,6 +38,8 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		this.license = new LicenseResponse(dettaglioStream.getLicense());
 		this.dcat = new DcatResponse(dettaglioStream.getDcat());
 	}
+	
+	@JsonIgnore
 	private void setAllParameter(DettaglioDataset dettaglioDataset)throws Exception{
 		Util.addSharingTenants(dettaglioDataset.getSharingTenant(), this.sharingTenants);
 		Util.addComponents(dettaglioDataset.getComponents(), this.components);
