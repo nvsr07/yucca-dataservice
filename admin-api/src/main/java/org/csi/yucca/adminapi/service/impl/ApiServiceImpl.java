@@ -166,7 +166,16 @@ public class ApiServiceImpl implements ApiService {
 				}				
 			}
 			
-			dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset);
+			DettaglioDataset dettaglioBinary = null;
+			
+			if (dettaglioDataset.getIdDataSourceBinary()!=null)
+			{
+				dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
+						dettaglioDataset.getIdDataSourceBinary(), 	
+						dettaglioDataset.getDatasourceversionBinary());
+			}
+				
+			dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
 		}
 		
 

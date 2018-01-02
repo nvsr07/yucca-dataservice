@@ -25,6 +25,10 @@ public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private BackofficeDatasetDettaglioResponse dataset;
 	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private BackofficeDatasetDettaglioResponse binarydataset;
+	
+	
 	public BackofficeDettaglioStreamDatasetResponse() {
 		super();
 	}
@@ -68,10 +72,12 @@ public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse
 		this.stream = new StreamDettaglioResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
 	}
 	
-	public BackofficeDettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset) throws Exception {
+	public BackofficeDettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset, 
+													DettaglioDataset binaryDataset) throws Exception {
 		super(dettaglioDataset);
 		setAllParameter(dettaglioDataset);
 		this.dataset = new BackofficeDatasetDettaglioResponse(dettaglioDataset);
+		this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
 	}
 
 	public List<ComponentResponse> getComponents() {
@@ -122,12 +128,22 @@ public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse
 		this.stream = stream;
 	}
 
-	public DatasetDettaglioResponse getDataset() {
+	public BackofficeDatasetDettaglioResponse getDataset() {
 		return dataset;
 	}
 
 	public void setDataset(BackofficeDatasetDettaglioResponse dataset) {
 		this.dataset = dataset;
+	}
+
+
+	public BackofficeDatasetDettaglioResponse getBinarydataset() {
+		return binarydataset;
+	}
+
+
+	public void setBinarydataset(BackofficeDatasetDettaglioResponse binarydataset) {
+		this.binarydataset = binarydataset;
 	}
 
 }
