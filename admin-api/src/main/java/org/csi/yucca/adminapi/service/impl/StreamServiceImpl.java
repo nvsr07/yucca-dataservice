@@ -206,19 +206,14 @@ public class StreamServiceImpl implements StreamService {
 		// sono bo perchè sennò mi avrebbe buttato fuori la validation:
 		if(Status.REQUEST_INSTALLATION.code().equals(dettaglioStream.getStatusCode())){
 			// action install e lo porta in prg_inst
+			dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		}
 
 		// sono bo perchè sennò mi avrebbe buttato fuori la validation:
 		if(Status.REQUEST_UNINSTALLATION.code().equals(dettaglioStream.getStatusCode())){
 			//  action uninstalle lo porta in prg_uninst
+			dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		}
-		
-		
-		
-		
-		
-		
-		
 		
 		return ServiceResponse.build().NO_CONTENT();
 	}
