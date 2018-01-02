@@ -488,7 +488,7 @@ public class ServiceUtil {
 		
 		for (ComponentRequest componentRequest : listComponentRequest) {
 
-			if (componentRequest.getIdComponent() != null) {
+			if (componentRequest.getIdComponent() == null) {
 				Component component = new Component();
 				component.name(componentRequest.getName());
 				component.alias(componentRequest.getAlias());

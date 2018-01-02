@@ -23,7 +23,28 @@
 	</properties>
 	<build>
 		<plugins>
-
+		      <plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-jar-plugin</artifactId>
+		        <version>3.0.2</version>
+		        <executions>
+		          <execution>
+		            <phase>package</phase>
+		            <goals>
+		              <goal>jar</goal>
+		            </goals>
+		            <configuration>
+		              <classifier>client</classifier>
+		              <includes>
+		                <include>**/adminapi/util/**/*</include>
+		                <include>**/adminapi/model/**/*</include>
+		                <include>**/adminapi/client/*</include>
+		                <include>**/adminapi/response/*</include>
+		              </includes>
+		            </configuration>
+		          </execution>
+		        </executions>
+		      </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

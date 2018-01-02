@@ -219,10 +219,12 @@ public interface StreamMapper {
 		@Result(property = "idOrganization", column = "id_organization"),  
 		@Result(property = "organizationDescription", column = "organization_description"), 
 		@Result(property = "organizationCode", column = "organizationcode"), 
-		@Result(property = "idStream", column = "idstream"), 
-		@Result(property = "dataSourceVersion", column = "datasourceversion"), 
-		@Result(property = "streamCode", column = "streamcode"), 
-		@Result(property = "streamName", column = "streamname"), 
+        //@Result(property = "idStream", column = "idstream"), 
+        //@Result(property = "idDataSource", column = "id_data_source"),
+        //@Result(property = "streamCode", column = "streamcode"), 
+        //@Result(property = "streamName", column = "streamname"), 
+        //@Result(property = "streamSaveData", column = "savedata"),
+        //@Result(property = "dataSourceVersion", column = "datasourceversion"), 
 		@Result(property = "idSmartObject", column = "id_smart_object"), 
 		@Result(property = "socode", column = "smartObjectCode"),
 		@Result(property = "smartObjectName", column = "smart_object_name"), 
@@ -245,7 +247,6 @@ public interface StreamMapper {
 	 * 
 	 * ***********************************************************************/
 	public static final String SELECT_STREAM = 
-			
 			" SELECT yucca_stream.idstream, "
 			+ "yucca_stream.id_data_source, "
 			+ "yucca_stream.streamcode, "
@@ -253,7 +254,6 @@ public interface StreamMapper {
 			+ "yucca_stream.savedata, "
 			+ "yucca_stream.datasourceversion, " 
 			+ "yucca_stream.fps, " +
-
 			" (select count(*) from " + STREAM_INTERNAL_TABLE + " yucca_r_stream_internal, " + DataSourceMapper.DATA_SOURCE_TABLE + " d1  where " +
 			" yucca_r_stream_internal.idstream = yucca_stream.idstream " +
 			" AND d1.id_data_source = yucca_r_stream_internal.id_data_sourceinternal " + 
@@ -262,7 +262,6 @@ public interface StreamMapper {
 			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
 			+ "  where id_data_source = yucca_r_stream_internal.id_data_sourceinternal group by id_data_source) " +
 			" ) as usedInInternalCount, " +
-			 
 			" (select count(*) from " + STREAM_TABLE + " s, " +  DataSourceMapper.DATA_SOURCE_TABLE + " d2  where " +  
 			" s.id_smart_object = yucca_stream.id_smart_object " +
 			" AND d2.id_data_source = s.id_data_source " +
@@ -270,7 +269,6 @@ public interface StreamMapper {
 			" AND  (d2.id_data_source, d2.datasourceversion) IN " + 
 			" (select id_data_source, max(datasourceversion) from " + DataSourceMapper.DATA_SOURCE_TABLE + "  where id_data_source = s.id_data_source group by id_data_source) " +
 			" ) as streamsCountBySO, " +
-			 
 			" yucca_stream.internalquery,	"
 			+ "yucca_stream.twtquery, "
 			+ "yucca_stream.twtgeoloclat, "
@@ -284,7 +282,6 @@ public interface StreamMapper {
 			+ "yucca_stream.twtuntil, "
 			+ "yucca_stream.twtratepercentage, " +			
 			" yucca_stream.twtlastsearchid, "
-			
 			+ "yucca_data_source.visibility data_source_visibility, "
 			+ "yucca_data_source.copyright data_source_copyright, "
 			+ "yucca_data_source.unpublished data_source_unpublished, "
@@ -370,18 +367,24 @@ public interface StreamMapper {
 			" LEFT JOIN " +  TenantMapper.R_TENANT_DATA_SOURCE_TABLE + " yucca_r_tenant_data_source ON yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
 			" yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
 			" yucca_r_tenant_data_source.isactive = 1 AND yucca_r_tenant_data_source.ismanager = 1 " +
-			" LEFT JOIN " +  TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " +
-			" WHERE " + 
-			
-			" (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
-			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
-			+ "  where id_data_source = yucca_stream.id_data_source group by id_data_source) " +
-			
-			" AND	yucca_organization.organizationcode = #{organizationCode} " + 
+			" LEFT JOIN " +  TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant ";
 
+	public static final String WHERE_STREAM_START = " WHERE 1=1 ";
+	
+	public static final String WHERE_STREAM_MAX_VERSION =
+			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
+			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
+			+ "  where id_data_source = yucca_stream.id_data_source group by id_data_source) " ;
+	
+	public static final String WHERE_STREAM_ORGANIZATION_CODE =
+			" AND yucca_organization.organizationcode = #{organizationCode} ";
+
+	public static final String WHERE_STREAM_TENANT_MANAGER_CODE =
 			"<if test=\"tenantCodeManager != null\">" +
-			" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
-			"</if>" +
+					" AND yucca_tenant.tenantcode =  #{tenantCodeManager} " +
+			"</if>";
+	
+	public static final String WHERE_STREAM_TENANT_VISIBILITY =
 			" AND (yucca_data_source.visibility = 'public' OR " +
 			" EXISTS ( " +
 			" SELECT yucca_tenant.tenantcode " + 
@@ -395,8 +398,14 @@ public interface StreamMapper {
 			+ " </foreach>"
 			+ ") " + 
 			" ) " +
-			" ) " +
-			" AND yucca_stream.idstream = #{idStream} ";
+			" ) ";
+	
+	public static final String WHERE_STREAM_IDSTREAM = " AND yucca_stream.idstream = #{idStream} ";
+	
+	public static final String WHERE_STREAM_IDDATASOURCE = " AND yucca_data_source.id_data_source = #{idDataSource} ";
+	
+	public static final String WHERE_STREAM_DATASOURCEVERSION = " AND yucca_data_source.datasourceversion = #{dataSourceVersion} ";
+
 	@Results({
 		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
 		@Result(property = "dataSourceIsopendata", column = "data_source_isopendata"),	
@@ -464,13 +473,96 @@ public interface StreamMapper {
 		  
 		@Result(property = "soTypeCode", column = "sotypecode"),
 		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"),
-		@Result(property = "idSoType", column = "id_so_type")
+		@Result(property = "idSoType", column = "id_so_type"),
+		@Result(property = "sharingTenant", column = "sharing_tenant") 
       })	
-	@Select({"<script>", SELECT_STREAM, "</script>"}) 
+	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION 
+						+ WHERE_STREAM_TENANT_MANAGER_CODE  
+						+ WHERE_STREAM_ORGANIZATION_CODE
+						+ WHERE_STREAM_TENANT_VISIBILITY
+						+ WHERE_STREAM_IDSTREAM, "</script>"}) 
 	DettaglioStream selectStream( @Param("tenantCodeManager") String tenantCodeManager,
 							      @Param("idStream") Integer idStream,
 							      @Param("organizationCode") String organizationcode,
 							      @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
+	
+
+	
+	@Results({
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
+		@Result(property = "dataSourceIsopendata", column = "data_source_isopendata"),	
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
+		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
+		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
+		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
+		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"),
+		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"),	
+		@Result(property = "dataSourceRequesterName", column = "data_source_requester_name"),	
+		@Result(property = "dataSourceRequesterSurname", column = "data_source_requester_surname"),
+		@Result(property = "dataSourceRequesterMail", column = "data_source_requester_mail"),	
+		@Result(property = "dataSourcePrivacyAcceptance", column = "data_source_privacy_acceptance"), 			
+		@Result(property = "dataSourceIcon", column = "data_source_icon"),
+		
+        @Result(property = "idDataSource", column = "id_data_source"),
+        @Result(property = "idSmartObject", column = "id_smart_object"),
+        
+        //@Result(property = "idStream", column = "idstream"), 
+        //@Result(property = "idDataSource", column = "id_data_source"),
+        //@Result(property = "streamCode", column = "streamcode"), 
+        //@Result(property = "streamName", column = "streamname"), 
+        //@Result(property = "streamSaveData", column = "savedata"),
+        //@Result(property = "dataSourceVersion", column = "datasourceversion"), 
+        @Result(property = "fps", column = "fps"),
+  	  
+		@Result(property = "dataSourceVisibility", column = "data_source_visibility"), 
+		@Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),  
+		@Result(property = "dataSourceRegistrationDate", column = "data_source_registration_date"), 
+		@Result(property = "dataSourceName", column = "data_source_name"),
+		
+		@Result(property = "statusCode", column = "statuscode"), 
+		@Result(property = "statusDescription", column = "status_description"),  
+		@Result(property = "idStatus", column = "id_status"), 
+
+		@Result(property = "domIdDomain", column = "dom_id_domain"),  
+		@Result(property = "domLangEn", column = "dom_langen"),  
+		@Result(property = "domLangIt", column = "dom_langit"),  
+		@Result(property = "domDomainCode", column = "dom_domaincode"),  
+		@Result(property = "subIdSubDomain", column = "sub_id_subdomain"), 
+		@Result(property = "subSubDomainCode", column = "sub_subdomaincode"),  
+		@Result(property = "subLangIt", column = "sub_lang_it"),  
+		@Result(property = "subLangEn", column = "sub_lang_en"), 
+  	
+		@Result(property = "organizationCode", column = "organizationcode"),  
+		@Result(property = "organizationDescription", column = "organization_description"),  
+		@Result(property = "idOrganization", column = "id_organization"),
+		
+		@Result(property = "dataSourceIsActive", column = "data_source_is_active"), 
+		@Result(property = "dataSourceIsManager", column = "data_source_is_manager"),
+		@Result(property = "tenantCode", column = "tenantcode"),
+		@Result(property = "tenantName", column = "tenant_name"),
+		@Result(property = "tenantDescription", column = "tenant_description"),
+		@Result(property = "idTenant", column = "id_tenant"),
+		
+		@Result(property = "smartObjectCode", column = "smart_object_code"),
+		@Result(property = "smartObjectName", column = "smart_object_name"),
+		@Result(property = "idSmartObject", column = "id_smart_object"),
+		@Result(property = "smartObjectDescription", column = "smart_object_description"),
+		@Result(property = "smartObjectSlug", column = "smart_object_slug"),
+		  
+		@Result(property = "smartObjectCategoryCode", column = "smart_object_category_code"),
+		@Result(property = "smartObjectCategoryDescription", column = "smart_object_category_description"),
+		@Result(property = "idSoCategory", column = "id_so_category"),
+		  
+		@Result(property = "soTypeCode", column = "sotypecode"),
+		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"),
+		@Result(property = "idSoType", column = "id_so_type"),
+		@Result(property = "sharingTenant", column = "sharing_tenant")
+      })	
+	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_IDDATASOURCE
+						+ WHERE_STREAM_DATASOURCEVERSION, "</script>"}) 
+	DettaglioStream selectStreamByDatasource( @Param("idDataSource") Integer idDataSource,
+							      @Param("dataSourceVersion") Integer dataSourceVersion
+							      );	
 	
 	
 	/*************************************************************************
@@ -718,24 +810,6 @@ public interface StreamMapper {
 	Stream selectStreamByStreamcodeAndIdSmartObject( @Param("streamcode") String streamcode, @Param("idSmartObject") Integer idSmartObject);	
 	
 	
-	/*************************************************************************
-	 * 
-	 * 					SELECT STREAM BY id_data_source AND DATASOURCEVERSION
-	 * 
-	 * ***********************************************************************/
-	public static final String SELECT_STREAM_BY_ID_DATA_SOURCE_AND_VERSION = 
-		" SELECT id_data_source, datasourceversion, idstream, streamcode, streamname, publishstream, "
-		+ "savedata, fps, internalquery, twtquery, twtgeoloclat, twtgeoloclon, twtgeolocradius, twtgeolocunit, "
-		+ "twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid, id_smart_object "
-		+ "FROM " + STREAM_TABLE
-		+ " where id_data_source = #{idDataSource} AND "
-		+ "datasourceversion = #{dataSourceVersion}";
-	@Results({
-        @Result(property = "idDataSource", column = "id_data_source"),
-        @Result(property = "idSmartObject", column = "id_smart_object"),
-      })	
-	@Select(SELECT_STREAM_BY_ID_DATA_SOURCE_AND_VERSION)
-	Stream selectStreamByIdDataSourceAndVersion( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
-	
+
 	
 }

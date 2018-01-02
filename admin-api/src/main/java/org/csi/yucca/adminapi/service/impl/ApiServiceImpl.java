@@ -71,6 +71,8 @@ import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
+import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
@@ -78,6 +80,7 @@ import org.csi.yucca.adminapi.service.ApiService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
+import org.csi.yucca.adminapi.util.DatasetSubtype;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.ManageOption;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -139,47 +142,48 @@ public class ApiServiceImpl implements ApiService {
 
 		Api api =  apiMapper.selectApi(apiCode);
 		
+		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
+		
 		checkIfFoundRecord(api);
 		
-//		DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, idStream, organizationCode, tenantCodeListFromUser);
-//
-//		
-//
-//		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-//				organizationCode, tenantCodeListFromUser).get(0);
-//		
-//		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
-//		   
-//		DettaglioDataset dettaglioDataset = getDettaglioDataset(dettaglioStream, tenantCodeManager, organizationCode, tenantCodeListFromUser);
-//		
+		if (api.getApisubtype().equals(org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA))
+		{
+			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(api.getIdDataSource(),api.getDatasourceversion());
 
-		return buildResponse(new BackofficeDettaglioApiResponse(api));
+			checkIfFoundRecord(dettaglioDataset);
+
+			if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+					DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+
+				DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+				if (dettaglioStream != null) {
+
+					DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+					
+					List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+					
+					dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+				}				
+			}
+			
+			DettaglioDataset dettaglioBinary = null;
+			
+			if (dettaglioDataset.getIdDataSourceBinary()!=null)
+			{
+				dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
+						dettaglioDataset.getIdDataSourceBinary(), 	
+						dettaglioDataset.getDatasourceversionBinary());
+			}
+				
+			dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+		}
+		
+
+		return buildResponse(new BackofficeDettaglioApiResponse(api, dettaglio));
 		
 	}
 	
-	/**
-	 * 
-	 * @param dettaglioStream
-	 * @param tenantCodeManager
-	 * @param organizationCode
-	 * @param tenantCodeListFromUser
-	 * @return
-	 */
-	private DettaglioDataset getDettaglioDataset(DettaglioStream dettaglioStream, String tenantCodeManager, String organizationCode, List<String> tenantCodeListFromUser) {
-		
-		DettaglioDataset dettaglioDataset = null;
-		
-		if (dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
 
-			Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(),
-					dettaglioStream.getDatasourceversion());
-
-			dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, dataset.getIddataset(), organizationCode, tenantCodeListFromUser);
-
-		}
-
-		return dettaglioDataset;
-	}
 	
 
 

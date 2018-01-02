@@ -378,6 +378,8 @@ public class DatasetServiceImpl implements DatasetService {
 		// sharing tenants		
 		updateSharingTenants(datasetRequest);
 		
+		
+		// TODO vanno clonate le api?
 	}
 
 	/**
@@ -478,22 +480,15 @@ public class DatasetServiceImpl implements DatasetService {
 		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
 				DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
 
-			Stream stream = streamMapper.selectStreamByIdDataSourceAndVersion(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			if (dettaglioStream != null) {
 
-			if(stream != null){
+				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
 				
-				DettaglioStream dettaglioStream = streamMapper.selectStream(tenantCodeManager, stream.getIdstream(), organizationCode, getTenantCodeListFromUser(authorizedUser));
-
-				if (dettaglioStream != null) {
-
-					DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-							organizationCode, getTenantCodeListFromUser(authorizedUser)).get(0);
-					
-					List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
-					
-					return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream));
-				}				
-			}
+				List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+				
+				return buildResponse(new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream));
+			}				
 		}
 		
 		return buildResponse(new DettaglioStreamDatasetResponse(dettaglioDataset));

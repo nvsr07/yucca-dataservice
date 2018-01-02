@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.util.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-public class DettaglioStreamDatasetResponse extends DataSourceResponse {
+public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse {
 
 	private List<ComponentResponse> components = new ArrayList<ComponentResponse>();
 	private List<TenantResponse> sharingTenants = new ArrayList<TenantResponse>();
@@ -23,9 +23,13 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 	private StreamDettaglioResponse stream;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private DatasetDettaglioResponse dataset;
+	private BackofficeDatasetDettaglioResponse dataset;
 	
-	public DettaglioStreamDatasetResponse() {
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private BackofficeDatasetDettaglioResponse binarydataset;
+	
+	
+	public BackofficeDettaglioStreamDatasetResponse() {
 		super();
 	}
 
@@ -48,7 +52,7 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		this.dcat = new DcatResponse(dettaglioDataset.getDcat());
 	}
 	
-	public DettaglioStreamDatasetResponse(
+	public BackofficeDettaglioStreamDatasetResponse(
 			DettaglioStream dettaglioStream, 
 			DettaglioDataset dettaglioDataset, 
 			DettaglioSmartobject dettaglioSmartobject, 
@@ -58,20 +62,23 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		setAllParameter(dettaglioStream);
 		
 		this.stream = new StreamDettaglioResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
-		this.dataset = new DatasetDettaglioResponse(dettaglioDataset);
+		this.dataset = new BackofficeDatasetDettaglioResponse(dettaglioDataset);
 	}
 	
-	public DettaglioStreamDatasetResponse(DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
+	public BackofficeDettaglioStreamDatasetResponse(DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
 			List<DettaglioStream> listInternalStream) throws Exception {
 		super(dettaglioStream);
 		setAllParameter(dettaglioStream);
 		this.stream = new StreamDettaglioResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);
 	}
 	
-	public DettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset) throws Exception {
+	public BackofficeDettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset, 
+													DettaglioDataset binaryDataset) throws Exception {
 		super(dettaglioDataset);
 		setAllParameter(dettaglioDataset);
-		this.dataset = new DatasetDettaglioResponse(dettaglioDataset);
+		this.dataset = new BackofficeDatasetDettaglioResponse(dettaglioDataset);
+		if (binaryDataset!=null)
+			this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
 	}
 
 	public List<ComponentResponse> getComponents() {
@@ -122,12 +129,22 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		this.stream = stream;
 	}
 
-	public DatasetDettaglioResponse getDataset() {
+	public BackofficeDatasetDettaglioResponse getDataset() {
 		return dataset;
 	}
 
-	public void setDataset(DatasetDettaglioResponse dataset) {
+	public void setDataset(BackofficeDatasetDettaglioResponse dataset) {
 		this.dataset = dataset;
+	}
+
+
+	public BackofficeDatasetDettaglioResponse getBinarydataset() {
+		return binarydataset;
+	}
+
+
+	public void setBinarydataset(BackofficeDatasetDettaglioResponse binarydataset) {
+		this.binarydataset = binarydataset;
 	}
 
 }

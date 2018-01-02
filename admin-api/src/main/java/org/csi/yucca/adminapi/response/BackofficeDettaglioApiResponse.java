@@ -12,14 +12,22 @@ public class BackofficeDettaglioApiResponse {
 	private String apisubtype;
 	private String entitynamespace;
 	
+	
+	
+	private BackofficeDettaglioStreamDatasetResponse backofficeDettaglioStreamDatasetResponse;
+	
+	public BackofficeDettaglioApiResponse() {
+		super();
+	}
 
-	public BackofficeDettaglioApiResponse(Api api) {
+	public BackofficeDettaglioApiResponse(Api api, BackofficeDettaglioStreamDatasetResponse dettaglioStreamDatasetResponse) {
 		this.idapi = api.getIdapi();
 		this.apicode = api.getApicode();
 		this.apiname = api.getApiname();
 		this.apitype = api.getApitype();
 		this.apisubtype = api.getApisubtype();
 		this.entitynamespace = api.getEntitynamespace();
+		this.backofficeDettaglioStreamDatasetResponse = dettaglioStreamDatasetResponse;
 	}
 
 	public Integer getIdapi() {
@@ -68,6 +76,15 @@ public class BackofficeDettaglioApiResponse {
 
 	public void setEntitynamespace(String entitynamespace) {
 		this.entitynamespace = entitynamespace;
+	}
+
+	public BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetResponse() {
+		return backofficeDettaglioStreamDatasetResponse;
+	}
+
+	public void setDettaglioStreamDatasetResponse(
+			BackofficeDettaglioStreamDatasetResponse dettaglioStreamDatasetResponse) {
+		this.backofficeDettaglioStreamDatasetResponse = dettaglioStreamDatasetResponse;
 	}
 	
 }

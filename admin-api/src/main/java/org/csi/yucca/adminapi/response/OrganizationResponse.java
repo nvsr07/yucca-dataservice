@@ -11,6 +11,10 @@ public class OrganizationResponse extends Response{
 	private String organizationcode;
 	private String description;
 
+	public OrganizationResponse() {
+		super();
+	}
+	
 	public OrganizationResponse(IOrganization organizatioImpl) {
 		super();
 		if (organizatioImpl != null) {
