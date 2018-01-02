@@ -145,10 +145,9 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void validateActionOnStream(String statusCode, String action, ApiUserType apiUserType)  throws BadRequestException, NotFoundException, Exception{
 		
-		if(Status.DRAFT.code().equals(statusCode)){
-			if (!StreamAction.REQUEST_INSTALLATION.code().equals(action)) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE);
-			}
+		if(Status.DRAFT.code().equals(statusCode) &&  
+				( !StreamAction.REQUEST_INSTALLATION.code().equals(action) || ApiUserType.BACK_OFFICE.equals(apiUserType) ) ){
+			throw new BadRequestException(Errors.INCORRECT_VALUE);
 		}
 		
 		if(ApiUserType.MANAGEMENT.equals(apiUserType) &&	
@@ -158,7 +157,14 @@ public class StreamServiceImpl implements StreamService {
 				   Status.UNINSTALLATION_IN_PROGRESS.code().equals(statusCode) ||
 				   Status.INSTALLATION_FAIL.code().equals(statusCode) ||
 				   Status.UNINSTALLATION.code().equals(statusCode))){
-			throw new BadRequestException(Errors.INCORRECT_VALUE);
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "No action accepted to Management.");
+		}
+
+		if(ApiUserType.BACK_OFFICE.equals(apiUserType) &&	
+				   (Status.INSTALLATION_IN_PROGRESS.code().equals(statusCode) || 
+				   Status.UNINSTALLATION.code().equals(statusCode) ||
+				   Status.INSTALLED.code().equals(statusCode))){
+			throw new BadRequestException(Errors.INCORRECT_VALUE, "No action accepted to Back Office.");
 		}
 		
 		if(Status.INSTALLED.code().equals(statusCode) && !StreamAction.NEW_VERSION.code().equals(action) && !StreamAction.REQUEST_UNINSTALLATION.code().equals(action) ){
@@ -196,6 +202,23 @@ public class StreamServiceImpl implements StreamService {
 			
 			return ServiceResponse.build().OK();
 		}
+		
+		// sono bo perchè sennò mi avrebbe buttato fuori la validation:
+		if(Status.REQUEST_INSTALLATION.code().equals(dettaglioStream.getStatusCode())){
+			// action install e lo porta in prg_inst
+		}
+
+		// sono bo perchè sennò mi avrebbe buttato fuori la validation:
+		if(Status.REQUEST_UNINSTALLATION.code().equals(dettaglioStream.getStatusCode())){
+			//  action uninstalle lo porta in prg_uninst
+		}
+		
+		
+		
+		
+		
+		
+		
 		
 		return ServiceResponse.build().NO_CONTENT();
 	}
