@@ -74,6 +74,7 @@ import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.service.StreamService;
+import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
 import org.csi.yucca.adminapi.util.Errors;
@@ -81,6 +82,7 @@ import org.csi.yucca.adminapi.util.ManageOption;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.csi.yucca.adminapi.util.Status;
+import org.csi.yucca.adminapi.util.StreamAction;
 import org.csi.yucca.adminapi.util.Type;
 import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,57 +132,69 @@ public class StreamServiceImpl implements StreamService {
 
 	@Autowired
 	private ComponentMapper componentMapper;
+
+	/**
+	 * 
+	 * @param statusCode
+	 * @param action
+	 * @param apiUserType
+	 * @throws BadRequestException
+	 * @throws NotFoundException
+	 * @throws Exception
+	 */
+	private void validateActionOnStream(String statusCode, String action, ApiUserType apiUserType)  throws BadRequestException, NotFoundException, Exception{
+		
+		if(Status.DRAFT.code().equals(statusCode)){
+			if (!StreamAction.REQUEST_INSTALLATION.code().equals(action)) {
+				throw new BadRequestException(Errors.INCORRECT_VALUE);
+			}
+		}
+		
+		if(ApiUserType.MANAGEMENT.equals(apiUserType) &&	
+				   (Status.REQUEST_INSTALLATION.code().equals(statusCode) || 
+				   Status.REQUEST_UNINSTALLATION.code().equals(statusCode) ||
+				   Status.INSTALLATION_IN_PROGRESS.code().equals(statusCode) ||
+				   Status.UNINSTALLATION_IN_PROGRESS.code().equals(statusCode) ||
+				   Status.INSTALLATION_FAIL.code().equals(statusCode) ||
+				   Status.UNINSTALLATION.code().equals(statusCode))){
+			throw new BadRequestException(Errors.INCORRECT_VALUE);
+		}
+		
+		if(Status.INSTALLED.code().equals(statusCode) && !StreamAction.NEW_VERSION.code().equals(action) && !StreamAction.REQUEST_UNINSTALLATION.code().equals(action) ){
+				throw new BadRequestException(Errors.INCORRECT_VALUE);
+		}
+	}
 	
 	@Override
-	public ServiceResponse actionOnStream(String action, String organizationCode, String soCode, Integer idStream, JwtUser authorizedUser)  throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse actionOnStream(String action, String organizationCode, String soCode, Integer idStream, ApiUserType apiUserType, JwtUser authorizedUser)  throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioStream dettaglioStream = streamMapper.selectStream(null, idStream, organizationCode, getTenantCodeListFromUser(authorizedUser));
 		
 		checkIfFoundRecord(dettaglioStream);
 		
-		// ----------------------------------------------------------------------------
+		validateActionOnStream(dettaglioStream.getStatusCode(), action, apiUserType);
+		
 		//	1. Se stato DRAFT --> unica action accettata è req_install 
 		//  In questo caso l'unica operazione da fare è mettere lo stato in REQ_INST
 		if(Status.DRAFT.code().equals(dettaglioStream.getStatusCode())){
-			if (!Status.REQUEST_INSTALLATION.code().equals(action)) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE);
-			}
-			
-			// TO DO
-			// fare update con stato in "REQ_INST"
-			
+			dataSourceMapper.updateDataSourceStatus(Status.REQUEST_INSTALLATION.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 			return ServiceResponse.build().OK();
 		}
 		
-		
-//		2. Se stato REQ_INST --> nessuna action accettata da management ma solo da BO
-		if(Status.REQUEST_INSTALLATION.code().equals(dettaglioStream.getStatusCode()) || 
-		   Status.REQUEST_UNINSTALLATION.code().equals(dettaglioStream.getStatusCode()) ||
-		   Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode()) ||
-		   Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode()) ||
-		   Status.INSTALLATION_FAIL.code().equals(dettaglioStream.getStatusCode()) ||
-		   Status.UNINSTALLATION.code().equals(dettaglioStream.getStatusCode()) ){
-			throw new BadRequestException(Errors.INCORRECT_VALUE);
-		}
-		
-//		6. Se stato INST --> uniche action accettata sono new_version e req_uninstall
-//		se new_version
+		//		6. Se stato INST --> uniche action accettata sono new_version e req_uninstall
+		//		se new_version
 		if(Status.INSTALLED.code().equals(dettaglioStream.getStatusCode())){
-			if (!"new_version".equals(action) && !"req_uninstall".equals(action)) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE);
-			}
 			
-			if ("new_version".equals(action)) {
+			if (StreamAction.NEW_VERSION.code().equals(action)) {
 				
 			}
 			else{
 				// req_uninstall
-				
+				dataSourceMapper.updateDataSourceStatus(Status.REQUEST_UNINSTALLATION.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 			}
 			
 			return ServiceResponse.build().OK();
 		}
-		
 		
 		return ServiceResponse.build().NO_CONTENT();
 	}
@@ -222,8 +236,7 @@ public class StreamServiceImpl implements StreamService {
 
 		checkIfFoundRecord(dettaglioStream);
 
-		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectByOrganizationAndTenant(dettaglioStream.getSmartObjectCode(), 
-				organizationCode, tenantCodeListFromUser).get(0);
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
 		
 		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 		   
@@ -251,13 +264,7 @@ public class StreamServiceImpl implements StreamService {
 		DettaglioDataset dettaglioDataset = null;
 		
 		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true))) {
-
-			Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(),
-					dettaglioStream.getDatasourceversion());
-
-			if (dataset != null) {
-				dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, dataset.getIddataset(), organizationCode, tenantCodeListFromUser);				
-			}
+			dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		}
 
 		return dettaglioDataset;
@@ -403,10 +410,12 @@ public class StreamServiceImpl implements StreamService {
 	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) throws Exception{
 
 		Timestamp now = Util.getNow();
+		Integer idLicense = null;
 
 		Long idDcat = insertDcat(request.getDcat(), dcatMapper);
 
-		Integer idLicense = insertLicense(request.getLicense(), licenseMapper);
+		if (request.getVisibility().equals("public"))
+			idLicense = insertLicense(request.getLicense(), licenseMapper);
 
 		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 
@@ -744,12 +753,11 @@ public class StreamServiceImpl implements StreamService {
 		checkMandatoryParameter(request.getRequestername(), "requestername");
 		checkMandatoryParameter(request.getRequestersurname(), "requestersurname");
 		checkMandatoryParameter(request.getRequestermail(), "requestermail");
-		checkMandatoryParameter(request.getUnpublished(), "unpublished");
 		checkList(request.getTags(), "tags");
 		
 		checkDcat(request);
 
-		ServiceUtil.checkLicense(request.getLicense());
+		//ServiceUtil.checkLicense(request.getLicense());
 		
 	}
 
