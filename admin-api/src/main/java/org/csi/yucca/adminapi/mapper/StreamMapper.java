@@ -473,7 +473,8 @@ public interface StreamMapper {
 		  
 		@Result(property = "soTypeCode", column = "sotypecode"),
 		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"),
-		@Result(property = "idSoType", column = "id_so_type")
+		@Result(property = "idSoType", column = "id_so_type"),
+		@Result(property = "sharingTenant", column = "sharing_tenant") 
       })	
 	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION 
 						+ WHERE_STREAM_TENANT_MANAGER_CODE  
@@ -554,7 +555,8 @@ public interface StreamMapper {
 		  
 		@Result(property = "soTypeCode", column = "sotypecode"),
 		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"),
-		@Result(property = "idSoType", column = "id_so_type")
+		@Result(property = "idSoType", column = "id_so_type"),
+		@Result(property = "sharingTenant", column = "sharing_tenant")
       })	
 	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_IDDATASOURCE
 						+ WHERE_STREAM_DATASOURCEVERSION, "</script>"}) 

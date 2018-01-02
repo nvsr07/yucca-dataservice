@@ -143,7 +143,25 @@ public interface DatasetMapper {
 	 * 				SELECT DETTAGLIO DATSET
 	 ******************************************************************/
 	public static final String SELECT_DETTAGLIO_DATASET = 
-		    " SELECT " +
+		    " SELECT " + 
+		     " case yucca_d_dataset_subtype.dataset_subtype " +   
+			  "	when 'bulkDataset' then coalesce(yucca_dataset.solrcollectionname, yucca_organization.datasolrcollectionname) " +
+			 "	when 'socialDataset' then coalesce(yucca_dataset.solrcollectionname, yucca_organization.socialsolrcollectionname) " +
+			  "	when 'streamDataset' then coalesce(yucca_dataset.solrcollectionname, yucca_organization.measuresolrcollectionname) " +
+			"	else coalesce(yucca_dataset.solrcollectionname, yucca_organization.mediasolrcollectionname) " +
+			"     end solrcollectionname, " +
+			" case yucca_d_dataset_subtype.dataset_subtype " +   
+			"	when 'bulkDataset' then coalesce(yucca_dataset.phoenixtablename, yucca_organization.dataphoenixtablename) " +
+		   "	when 'socialDataset' then coalesce(yucca_dataset.phoenixtablename, yucca_organization.socialphoenixtablename) " +
+			"	when 'streamDataset' then coalesce(yucca_dataset.phoenixtablename, yucca_organization.measuresphoenixtablename) " +
+			"	else coalesce(yucca_dataset.phoenixtablename, yucca_organization.mediaphoenixtablename) " +
+			"     end phoenixtablename, " +
+			" case yucca_d_dataset_subtype.dataset_subtype " +  
+			"	when 'bulkDataset' then coalesce(yucca_dataset.phoenixschemaname, yucca_organization.dataphoenixschemaname) " +
+			"	when 'socialDataset' then coalesce(yucca_dataset.phoenixschemaname, yucca_organization.socialphoenixschemaname) " +
+			"	when 'streamDataset' then coalesce(yucca_dataset.phoenixschemaname, yucca_organization.measuresphoenixschemaname) " +
+			"	else coalesce(yucca_dataset.phoenixschemaname, yucca_organization.mediaphoenixschemaname) " +
+			"     end phoenixschemaname," +
 			" yucca_dataset.importedfiles, yucca_dataset.jdbcdbschema, yucca_dataset.id_data_source, yucca_dataset.datasourceversion, yucca_dataset.iddataset, yucca_dataset.datasetcode, " +
 			" yucca_dataset.datasetname, yucca_dataset.description dataset_description, yucca_d_dataset_type.id_dataset_type, " +
 			" yucca_d_dataset_type.dataset_type, yucca_d_dataset_type.description dataset_type_description, yucca_d_dataset_subtype.id_dataset_subtype, " +

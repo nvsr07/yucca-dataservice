@@ -28,6 +28,11 @@ public class DettaglioDataset extends Dataset {
 	private String components;
 	private String sharingTenant;
 	
+	private String solrcollectionname;
+	private String phoenixtablename;
+	private String phoenixschemaname;
+	
+	
 	public String getJdbcdbschema() {
 		return jdbcdbschema;
 	}
@@ -190,6 +195,30 @@ public class DettaglioDataset extends Dataset {
 		}
 		return deserializedComponents;
 
+	}
+
+	public String getSolrcollectionname() {
+		return solrcollectionname;
+	}
+
+	public void setSolrcollectionname(String solrcollectionname) {
+		this.solrcollectionname = solrcollectionname;
+	}
+
+	public String getPhoenixtablename() {
+		return phoenixtablename;
+	}
+
+	public void setPhoenixtablename(String phoenixtablename) {
+		this.phoenixtablename = phoenixtablename;
+	}
+
+	public String getPhoenixschemaname() {
+		return phoenixschemaname;
+	}
+
+	public void setPhoenixschemaname(String phoenixschemaname) {
+		this.phoenixschemaname = phoenixschemaname;
 	}
 
 }

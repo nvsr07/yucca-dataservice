@@ -71,6 +71,7 @@ import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioSmartobjectResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
@@ -141,7 +142,7 @@ public class ApiServiceImpl implements ApiService {
 
 		Api api =  apiMapper.selectApi(apiCode);
 		
-		DettaglioStreamDatasetResponse dettaglio = null;
+		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
 		
 		checkIfFoundRecord(api);
 		
@@ -161,11 +162,11 @@ public class ApiServiceImpl implements ApiService {
 					
 					List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 					
-					dettaglio = new DettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+					dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
 				}				
 			}
 			
-			dettaglio = new DettaglioStreamDatasetResponse(dettaglioDataset);
+			dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset);
 		}
 		
 
