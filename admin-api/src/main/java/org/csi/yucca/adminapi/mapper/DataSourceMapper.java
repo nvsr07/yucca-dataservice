@@ -102,4 +102,16 @@ public interface DataSourceMapper {
 	int updateDataSource(DataSource dataSource);
 	
 	
+	/*************************************************************************
+	 * 					UPDATE DATA SOURCE STATUS
+	 * ***********************************************************************/
+	public static final String UPDATE_DATA_SOURCE_STATUS = 
+		" UPDATE " + DATA_SOURCE_TABLE  +
+			" SET id_status=#{idStatus}" +
+			" WHERE id_datasource = #{idDataSource} and datasourceversion=#{datasourceversion} ";
+	@Update(UPDATE_DATA_SOURCE_STATUS)
+	int updateDataSourceStatus(@Param("idStatus") Integer idStatus, 
+			@Param("idDataSource") Integer idDataSource, 
+			@Param("datasourceversion") Integer datasourceversion);
+	
 }

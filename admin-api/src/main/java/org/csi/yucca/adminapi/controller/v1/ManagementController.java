@@ -31,6 +31,7 @@ import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
+import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,16 @@ public class ManagementController extends YuccaController {
 
 	@Autowired
 	private DatasetService datasetService;
-	
+
+	/**
+	 * 
+	 * @param action
+	 * @param organizationCode
+	 * @param soCode
+	 * @param idStream
+	 * @param httpRequest
+	 * @return
+	 */
 	@ApiOperation(value = M_ACTION_ON_STREAM, notes = M_ACTION_ON_STREAM_NOTES, response = ServiceResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams/{idStream}/action")
 	public ResponseEntity<Object> actionOnStream(
@@ -79,11 +89,10 @@ public class ManagementController extends YuccaController {
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.actionOnStream(action, organizationCode, soCode, idStream, getAuthorizedUser(httpRequest));
+				return streamService.actionOnStream(action, organizationCode, soCode, idStream, ApiUserType.MANAGEMENT, getAuthorizedUser(httpRequest));
 			}
 		}, logger);
 	}
-	
 	
 	/**
 	 * 
