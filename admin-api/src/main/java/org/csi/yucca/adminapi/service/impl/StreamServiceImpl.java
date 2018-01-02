@@ -85,6 +85,7 @@ import org.csi.yucca.adminapi.util.Status;
 import org.csi.yucca.adminapi.util.StreamAction;
 import org.csi.yucca.adminapi.util.Type;
 import org.csi.yucca.adminapi.util.Util;
+import org.csi.yucca.adminapi.util.Visibility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -414,8 +415,9 @@ public class StreamServiceImpl implements StreamService {
 
 		Long idDcat = insertDcat(request.getDcat(), dcatMapper);
 
-		if (request.getVisibility().equals("public"))
+		if ( Visibility.PUBLIC.code().equals(request.getVisibility())){
 			idLicense = insertLicense(request.getLicense(), licenseMapper);
+		}
 
 		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 
