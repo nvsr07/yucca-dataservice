@@ -3,7 +3,6 @@ package it.csi.smartdata.dataapi.odata;
 
 
 import it.csi.smartdata.dataapi.adminapi.SDPAdminApiOdataCast;
-
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
 import it.csi.smartdata.dataapi.dto.SDPDataResult;

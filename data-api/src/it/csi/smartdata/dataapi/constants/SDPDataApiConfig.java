@@ -7,15 +7,12 @@ import java.util.ResourceBundle;
 public class SDPDataApiConfig {
 
 	
-	public static final String MONGO_DB_CFG_DATASET="MONGO_DB_CFG_DATASET";
-	public static final String MONGO_DB_CFG_API="MONGO_DB_CFG_API";
-	public static final String MONGO_DB_CFG_STREAM="MONGO_DB_CFG_STREAM";
-	public static final String MONGO_DB_CFG_TENANT="MONGO_DB_CFG_TENANT";
 	public static final String SDP_SOLR_URL="SDP_SOLR_URL";
 	public static final String SDP_AMBIENTE="SDP_AMBIENTE";
 	public static final String SDP_PHOENIX_URL="PHOENIX_URL";
 	
 	
+	public static final String SDP_ADMINAPI_URL="SDP_ADMINAPI_URL";
 	
 	
 		
@@ -57,6 +54,7 @@ public class SDPDataApiConfig {
 			params.put("SDP_AMBIENTE", rb.getString("SDP_AMBIENTE"));
 			params.put(SDP_PHOENIX_URL, rb.getString(SDP_PHOENIX_URL));
 			
+			params.put(SDP_ADMINAPI_URL, rb.getString(SDP_ADMINAPI_URL));
 		 
 		params.put("SDP_WEB_FILTER_PATTERN", rb.getString("SDP_WEB_FILTER_PATTERN"));
 		params.put("SDP_WEB_SERVLET_URL", rb.getString("SDP_WEB_SERVLET_URL"));
@@ -66,44 +64,11 @@ public class SDPDataApiConfig {
 		params.put("SDP_WEB_PUB_URI", rb.getString("SDP_WEB_PUB_URI"));
 		
 		
-		
-		params.put("SDP_MONGO_CFG_DATASET_HOST", rb.getString("SDP_MONGO_CFG_DATASET_HOST"));
-		params.put("SDP_MONGO_CFG_DATASET_PORT", rb.getString("SDP_MONGO_CFG_DATASET_PORT"));
-		params.put("SDP_MONGO_CFG_DATASET_DB", rb.getString("SDP_MONGO_CFG_DATASET_DB"));
-		params.put("SDP_MONGO_CFG_DATASET_COLLECTION", rb.getString("SDP_MONGO_CFG_DATASET_COLLECTION"));
-		
-		params.put("SDP_MONGO_CFG_API_HOST", rb.getString("SDP_MONGO_CFG_API_HOST"));
-		params.put("SDP_MONGO_CFG_API_PORT", rb.getString("SDP_MONGO_CFG_API_PORT"));
-		params.put("SDP_MONGO_CFG_API_DB", rb.getString("SDP_MONGO_CFG_API_DB"));
-		params.put("SDP_MONGO_CFG_API_COLLECTION", rb.getString("SDP_MONGO_CFG_API_COLLECTION"));
-		
-		params.put("SDP_MONGO_CFG_STREAM_HOST", rb.getString("SDP_MONGO_CFG_STREAM_HOST"));
-		params.put("SDP_MONGO_CFG_STREAM_PORT", rb.getString("SDP_MONGO_CFG_STREAM_PORT"));
-		params.put("SDP_MONGO_CFG_STREAM_DB", rb.getString("SDP_MONGO_CFG_STREAM_DB"));
-		params.put("SDP_MONGO_CFG_STREAM_COLLECTION", rb.getString("SDP_MONGO_CFG_STREAM_COLLECTION"));
-
-		
-		
-		params.put("SDP_MONGO_CFG_TENANT_HOST", rb.getString("SDP_MONGO_CFG_TENANT_HOST"));
-		params.put("SDP_MONGO_CFG_TENANT_PORT", rb.getString("SDP_MONGO_CFG_TENANT_PORT"));
-		params.put("SDP_MONGO_CFG_TENANT_DB", rb.getString("SDP_MONGO_CFG_TENANT_DB"));
-		params.put("SDP_MONGO_CFG_TENANT_COLLECTION", rb.getString("SDP_MONGO_CFG_TENANT_COLLECTION"));
-		
-		
-		params.put("SDP_MONGO_CFG_DEFAULT_HOST", rb.getString("SDP_MONGO_CFG_DEFAULT_HOST"));
-		params.put("SDP_MONGO_CFG_DEFAULT_PORT", rb.getString("SDP_MONGO_CFG_DEFAULT_PORT"));
-		
-		
 		params.put("SDP_MAX_DOCS_PER_PAGE", rb.getString("SDP_MAX_DOCS_PER_PAGE"));
 		params.put("SDP_MAX_SKIP_PAGE", rb.getString("SDP_MAX_SKIP_PAGE"));
 		params.put("SDP_ENABLE_NEXT", rb.getString("SDP_ENABLE_NEXT"));
 		
 		
-		
-		
-		params.put("SDP_MONGO_CFG_DEFAULT_USER", rb.getString("SDP_MONGO_CFG_DEFAULT_USER"));
-		params.put("SDP_MONGO_CFG_DEFAULT_PWD", rb.getString("SDP_MONGO_CFG_DEFAULT_PWD"));
-
 		
 		params.put("SOLR_TYPE_ACCESS", rb.getString("SOLR_TYPE_ACCESS"));
 		params.put("SOLR_USERNAME", rb.getString("SOLR_USERNAME"));
@@ -139,6 +104,12 @@ public class SDPDataApiConfig {
 	public String getPhoenixUrl() {
 		return params.get(SDP_PHOENIX_URL);
 	}
+	
+	public String getAdminApiUrl()
+	{
+		return params.get(SDP_ADMINAPI_URL);
+	}
+	
 	public String getSolrUrl() {
 		return params.get(SDP_SOLR_URL);
 	}
@@ -177,65 +148,6 @@ public class SDPDataApiConfig {
 		return params.get("SDP_WEB_PUB_URI");
 	}
 	
-	public String getMongoCfgHost(String cfgType) {
-		if (MONGO_DB_CFG_DATASET.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_DATASET_HOST");
-		} else if (MONGO_DB_CFG_API.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_API_HOST");
-		} else if (MONGO_DB_CFG_STREAM.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_STREAM_HOST");
-		} else if (MONGO_DB_CFG_TENANT.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_TENANT_HOST");
-		} else return null;
-	}
-	public String getMongoCfgDB(String cfgType) {
-		if (MONGO_DB_CFG_DATASET.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_DATASET_DB");
-		} else if (MONGO_DB_CFG_API.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_API_DB");
-		} else if (MONGO_DB_CFG_STREAM.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_STREAM_DB");
-		} else if (MONGO_DB_CFG_TENANT.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_TENANT_DB");
-		} else return null;
-	}
-	public String getMongoCfgCollection(String cfgType) {
-		if (MONGO_DB_CFG_DATASET.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_DATASET_COLLECTION");
-		} else if (MONGO_DB_CFG_API.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_API_COLLECTION");
-		} else if (MONGO_DB_CFG_STREAM.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_STREAM_COLLECTION");
-		} else if (MONGO_DB_CFG_TENANT.equals(cfgType)) {
-			return params.get("SDP_MONGO_CFG_TENANT_COLLECTION");
-		} else return null;
-	}
-	public int getMongoCfgPort(String cfgType) {
-		if (MONGO_DB_CFG_DATASET.equals(cfgType)) {
-			return Integer.parseInt(params.get("SDP_MONGO_CFG_DATASET_PORT"));
-		} else if (MONGO_DB_CFG_API.equals(cfgType)) {
-			return Integer.parseInt(params.get("SDP_MONGO_CFG_API_PORT"));
-		} else if (MONGO_DB_CFG_STREAM.equals(cfgType)) {
-			return Integer.parseInt(params.get("SDP_MONGO_CFG_STREAM_PORT"));
-		} else if (MONGO_DB_CFG_TENANT.equals(cfgType)) {
-			return Integer.parseInt(params.get("SDP_MONGO_CFG_TENANT_PORT"));
-		} else return -1;
-	}
-	
-	
-    public int getMongoDefaultPort() {
-		return Integer.parseInt(params.get("SDP_MONGO_CFG_DEFAULT_PORT"));
-    }
-    public String getMongoDefaultHost() {
-		return params.get("SDP_MONGO_CFG_DEFAULT_HOST");
-    }
-    public String getMongoDefaultUser() {
-		return params.get("SDP_MONGO_CFG_DEFAULT_USER");
-    }
-    public String getMongoDefaultPassword() {
-		return params.get("SDP_MONGO_CFG_DEFAULT_PWD");
-    }
-    
     
     public boolean isNextEnabled() {
     	if (null!=params.get("SDP_ENABLE_NEXT") && "true".equalsIgnoreCase(params.get("SDP_ENABLE_NEXT"))) return true;

@@ -82,7 +82,7 @@ public class SDPAdminApiOdataCast {
 			try {
 				log.info("[SDPAdminApiOdataCast::initDbObject] Calling for codiceApi:"+codiceApi);
 				this.configObject = BackofficeDettaglioApiClient
-						.getBackofficeDettaglioApi(codiceApi);
+						.getBackofficeDettaglioApi(SDPDataApiConfig.getInstance().getAdminApiUrl(),  codiceApi, log.getName());
 				log.info("[SDPAdminApiOdataCast::initDbObject] Calling for codiceApi:"+codiceApi+"..done!");
 			} catch (AdminApiClientException e) {
 				log.error("[SDPAdminApiOdataCast::initDbObject] Error", e);
