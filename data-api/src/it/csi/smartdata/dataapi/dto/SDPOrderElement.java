@@ -1,9 +1,9 @@
-package it.csi.smartdata.dataapi.mongo.dto;
+package it.csi.smartdata.dataapi.dto;
 
-public class SDPMongoOrderElement {
+public class SDPOrderElement {
 
 	
-	public SDPMongoOrderElement (String nomeCampo,int ordine) {
+	public SDPOrderElement (String nomeCampo,int ordine) {
 		this.nomeCampo = nomeCampo;
 		this.ordine = ordine;
 	}

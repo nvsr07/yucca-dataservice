@@ -2,12 +2,12 @@ package it.csi.smartdata.dataapi.odata;
 
 
 
+import it.csi.smartdata.dataapi.adminapi.SDPAdminApiOdataCast;
+
 import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
 import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
-import it.csi.smartdata.dataapi.mongo.SDPDataApiMongoAccess;
-import it.csi.smartdata.dataapi.mongo.SDPMongoOdataCast;
-import it.csi.smartdata.dataapi.mongo.dto.SDPDataResult;
-import it.csi.smartdata.dataapi.mongo.exception.SDPPageSizeException;
+import it.csi.smartdata.dataapi.dto.SDPDataResult;
+import it.csi.smartdata.dataapi.exception.SDPPageSizeException;
 import it.csi.smartdata.dataapi.util.AccountingLog;
 
 import java.lang.reflect.Method;
@@ -48,6 +48,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 	static Logger log = Logger.getLogger(SDPSingleProcessor.class.getPackage().getName());
 	static Logger logAccounting= Logger.getLogger("accounting");
 
+	private SDPAdminApiOdataCast adminApiAccess= new SDPAdminApiOdataCast();
 
 
 	private String codiceApi=null;
@@ -256,6 +257,9 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			
 			accLog.setApicode(codiceApi);
 			accLog.setUniqueid(apacheUniqueId);
+			SDPAdminApiOdataCast sdpAdminApiOdataCast = new SDPAdminApiOdataCast();
+
+			
 			URI newUri=getContext().getPathInfo().getServiceRoot();
 			try {
 				newUri=new URI(this.baseUrl);
@@ -263,12 +267,12 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 			log.debug("[SDPSingleProcessor::readEntitySet] newUri="+newUri);
 			EdmEntitySet entitySet;
 			ExpandSelectTreeNode expandSelectTreeNode = UriParser.createExpandSelectTree(uriInfo.getSelect(), uriInfo.getExpand());
-
+			
+			
 			if (uriInfo.getNavigationSegments().size() == 0) {
 				entitySet = uriInfo.getStartEntitySet();
 
 				Object userQuery=null;
-				Object orderQuery=null;
 				Object userQuerySolr = null;
 				Object userQueryPhoneix = null;
 				Object orderQuerySolr=null;
@@ -277,36 +281,21 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				FilterExpression fe = uriInfo.getFilter();
 				OrderByExpression oe=uriInfo.getOrderBy();
 				
-				HashMap<String, String> mappaCampi=new SDPMongoOdataCast().getDatasetMetadata (this.codiceApi);
+				HashMap<String, String> mappaCampi=sdpAdminApiOdataCast.getDatasetMetadata (this.codiceApi);
 				if (fe != null) {
-					SDPExpressionVisitor ev = new SDPExpressionVisitor();
-					ev.setEntitySetName(entitySet.getName());
-					//userQuery = fe.accept(ev);
-					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
-					
-					
 					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
 					evs.setEntitySetName(entitySet.getName());
 					evs.setMappaCampi(mappaCampi);
 					userQuerySolr = fe.accept(evs);
 					log.debug("[SDPSingleProcessor::readEntitySet] userQuerySolr="+userQuerySolr);
 					
-					
-					
-					
 				}
 				if (oe != null) {
-					SDPExpressionVisitor ev = new SDPExpressionVisitor();
-					ev.setEntitySetName(entitySet.getName());
-					//orderQuery=oe.accept(ev);
-					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
-
 					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
 					evs.setEntitySetName(entitySet.getName());
 					evs.setMappaCampi(mappaCampi);
 					orderQuerySolr = oe.accept(evs);
 					log.debug("[SDPSingleProcessor::readEntitySet] orderQuerySolr="+orderQuerySolr);
-				
 				
 				}
 				log.debug("[SDPSingleProcessor::readEntitySet] entitySet="+entitySet.getName());
@@ -328,8 +317,8 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					}
 					
 					
-					String dataType=SDPDataApiMongoAccess.DATA_TYPE_MEASURE;
-					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) dataType=SDPDataApiMongoAccess.DATA_TYPE_SOCIAL; 
+					String dataType=SDPAdminApiOdataCast.DATA_TYPE_MEASURE;
+					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS).equals(entitySet.getName())) dataType=SDPAdminApiOdataCast.DATA_TYPE_SOCIAL; 
 					
 					
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(setNameStatCONST).getEntityType().getNamespace();
@@ -337,40 +326,25 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					String timeGroupOperatorsParam=uriInfo.getCustomQueryOptions().get("timeGroupOperators");
 					
 					String timeGroupFilter=uriInfo.getCustomQueryOptions().get("timeGroupFilter");
-					Object userSourceEntityQuery=null;
 					if (null!=timeGroupFilter && timeGroupFilter.trim().length()>0) {
 						EdmEntityType measureType=uriInfo.getEntityContainer().getEntitySet(setNameCONST).getEntityType();
 						FilterExpression feStats=new FilterParserImpl(measureType).parseFilterString(timeGroupFilter, true);
 						if (feStats != null) {
-							SDPExpressionVisitor ev = new SDPExpressionVisitor();
-							ev.setEntitySetName(entitySet.getName());
-							//userSourceEntityQuery = feStats.accept(ev);
-							log.debug("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
-							
-							
 							SDPPhoenixExpressionVisitor evp=new SDPPhoenixExpressionVisitor();
 							evp.setEntitySetName(entitySet.getName());
 							evp.setMappaCampi(mappaCampi);
 							userQueryPhoneix = feStats.accept(evp);
 							log.debug("[SDPSingleProcessor::readEntitySet] userQueryPhoneix="+userQueryPhoneix);
-							
 						}
 						
 					}
 					if (oe != null) {
-						SDPExpressionVisitor ev = new SDPExpressionVisitor();
-						ev.setEntitySetName(entitySet.getName());
-						//orderQuery=oe.accept(ev);
-						log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
-
 						SDPPhoenixExpressionVisitor evs = new SDPPhoenixExpressionVisitor();
 						evs.setEntitySetName(entitySet.getName());
 						evs.setMappaCampi(mappaCampi);
 						evs.setvisitorMOde(SDPPhoenixExpressionVisitor.MODE_STATS_HAVINGCLAUSE);
 						orderQueryPhoenix = oe.accept(evs);
 						log.debug("[SDPSingleProcessor::readEntitySet] orderQueryPhoenix="+orderQueryPhoenix);
-					
-					
 					}
 					if (fe != null) {
 						SDPPhoenixExpressionVisitor evp=new SDPPhoenixExpressionVisitor();
@@ -385,7 +359,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					int skip=skiptop[0];
 					int top=skiptop[1];
 					
-					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQueryPhoneix,orderQueryPhoenix,-1,-1,
+					SDPDataResult dataRes= sdpAdminApiOdataCast.getMeasuresStatsPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQueryPhoneix,orderQueryPhoenix,-1,-1,
 							timeGroupByParam,timeGroupOperatorsParam,userQuery,dataType);
 					
 					
@@ -432,14 +406,14 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					int skip=skiptop[0];
 					int top=skiptop[1];
 					
-					String dataType=SDPDataApiMongoAccess.DATA_TYPE_MEASURE;
-					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) dataType=SDPDataApiMongoAccess.DATA_TYPE_SOCIAL; 
+					String dataType=SDPAdminApiOdataCast.DATA_TYPE_MEASURE;
+					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) dataType=SDPAdminApiOdataCast.DATA_TYPE_SOCIAL; 
 					
 					//log.info("[SDPSingleProcessor::readEntitySet] ORDINE MISURE "+((ArrayList<Object>)orderQuerySolr).get(0));
 					
 					
 					//SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuery,orderQuery,skip,top);
-					SDPDataResult dataRes= new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,skip,top,dataType);
+					SDPDataResult dataRes= sdpAdminApiOdataCast.getMeasuresPerApi(this.codiceApi, nameSpace,uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,skip,top,dataType);
 					
 			
 					accLog.setDataOut(dataRes.getDati().size());
@@ -495,7 +469,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					//log.info("[SDPSingleProcessor::readEntitySet] ORDINE BULK "+((ArrayList<Object>)orderQuerySolr).get(0).getClass());
 					
 					
-					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+					SDPDataResult dataRes=  new SDPAdminApiOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,
 							skiptop[0],
 							skiptop[1]);
@@ -546,7 +520,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 
 
-					SDPDataResult dataRes=  new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
+					SDPDataResult dataRes=  sdpAdminApiOdataCast.getBynaryPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,
 							null,
 							skiptop[0],
@@ -604,19 +578,13 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 				
 				
-				Object userQuery=null;
-				Object orderQuery=null;
 				Object userQuerySolr = null;
 				Object orderQuerySolr=null;
-				HashMap<String, String> mappaCampi=new SDPMongoOdataCast().getDatasetMetadata (this.codiceApi);
+				HashMap<String, String> mappaCampi=new SDPAdminApiOdataCast().getDatasetMetadata (this.codiceApi);
 
 				FilterExpression fe = uriInfo.getFilter();
 				OrderByExpression oe=uriInfo.getOrderBy();
 				if (fe != null) {
-					SDPExpressionVisitor ev = new SDPExpressionVisitor();
-					ev.setEntitySetName(targetEntity.getName());
-					userQuery = fe.accept(ev);
-					log.debug("[SDPSingleProcessor::readEntitySet] userQuery="+userQuery);
 					
 					SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
 					evs.setEntitySetName(entitySet.getName());
@@ -627,10 +595,6 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 					
 				}
 				if (oe != null) {
-					SDPExpressionVisitor ev = new SDPExpressionVisitor();
-					ev.setEntitySetName(targetEntity.getName());
-					orderQuery=oe.accept(ev);
-					log.debug("[SDPSingleProcessor::readEntitySet] orderQuery="+orderQuery);
 					
 	                SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
 						evs.setEntitySetName(entitySet.getName());
@@ -642,7 +606,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 				
 				
 				accLog.setPath(entitySet.getName());				
-				accLog.setQuerString(""+userQuery);
+				accLog.setQuerString(""+userQuerySolr);
 
 
 				if  (SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA.equals(startEntity.getName())) {
@@ -650,7 +614,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
-					SDPDataResult dataRes  = new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+					SDPDataResult dataRes  = sdpAdminApiOdataCast.getMeasuresPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),id,null,null,-1,-1);
 
 
@@ -672,7 +636,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 						int [] skiptop = checkSkipTop(uriInfo.getSkip(), uriInfo.getTop());
 
 
-						SDPDataResult dataResTarget=  new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpaceTarget,
+						SDPDataResult dataResTarget=  sdpAdminApiOdataCast.getBynaryPerDataset(this.codiceApi, nameSpaceTarget,
 								uriInfo.getEntityContainer(),null,userQuerySolr,orderQuerySolr,
 								elencoIdBinary,
 								skiptop[0],
@@ -716,7 +680,7 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 
-					SDPDataResult dataRes  = new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
+					SDPDataResult dataRes  = sdpAdminApiOdataCast.getBynaryPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),id,null,null,null,-1,-1);
 					
 
@@ -893,14 +857,16 @@ accLog.setUniqueid(apacheUniqueId);
 
 					String nameSpace=uriInfo.getEntityContainer().getEntitySet(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES).getEntityType().getNamespace();
 
+					
+		
 					String id = getKeyValue(uriInfo.getKeyPredicates().get(0));
 					accLog.setPath(entitySet.getName());				
 					accLog.setQuerString("objectid="+id);
 
-					String dataType=SDPDataApiMongoAccess.DATA_TYPE_MEASURE;
-					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) dataType=SDPDataApiMongoAccess.DATA_TYPE_SOCIAL; 
+					String dataType=SDPAdminApiOdataCast.DATA_TYPE_MEASURE;
+					if ((SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL).equals(entitySet.getName())) dataType=SDPAdminApiOdataCast.DATA_TYPE_SOCIAL; 
 
-					SDPDataResult dataRes=  new SDPMongoOdataCast().getMeasuresPerApi(this.codiceApi, nameSpace,
+					SDPDataResult dataRes=  adminApiAccess.getMeasuresPerApi(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),id,null,null,-1,-1,dataType);
 
 
@@ -931,7 +897,7 @@ accLog.setUniqueid(apacheUniqueId);
 					accLog.setPath(entitySet.getName());				
 					accLog.setQuerString("objectid="+id);
 
-					SDPDataResult dataRes  = new SDPMongoOdataCast().getMeasuresPerDataset(this.codiceApi, nameSpace,
+					SDPDataResult dataRes  = adminApiAccess.getMeasuresPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),id,null,null,-1,-1);
 
 
@@ -958,7 +924,7 @@ accLog.setUniqueid(apacheUniqueId);
 					accLog.setPath(entitySet.getName());				
 					accLog.setQuerString("objectid="+id);
 
-					SDPDataResult dataRes  = new SDPMongoOdataCast().getBynaryPerDataset(this.codiceApi, nameSpace,
+					SDPDataResult dataRes  = adminApiAccess.getBynaryPerDataset(this.codiceApi, nameSpace,
 							uriInfo.getEntityContainer(),id,null,null,null,-1,-1);
 
 

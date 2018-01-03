@@ -38,7 +38,7 @@ import org.apache.olingo.odata2.core.uri.expression.OrderExpressionImpl;
 import org.apache.olingo.odata2.core.uri.expression.PropertyExpressionImpl;
 
 public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
-	static Logger log = Logger.getLogger(SDPExpressionVisitor.class.getPackage().getName());
+	static Logger log = Logger.getLogger(SDPPhoenixExpressionVisitor.class.getPackage().getName());
 
 	
 	

@@ -1,4 +1,4 @@
-package it.csi.smartdata.dataapi.mongo.dto;
+package it.csi.smartdata.dataapi.dto;
 
 import java.util.List;
 import java.util.Map;

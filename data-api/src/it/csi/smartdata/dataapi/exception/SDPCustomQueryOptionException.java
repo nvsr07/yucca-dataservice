@@ -1,4 +1,4 @@
-package it.csi.smartdata.dataapi.mongo.exception;
+package it.csi.smartdata.dataapi.exception;
 
 import java.util.Locale;
 

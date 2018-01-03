@@ -37,7 +37,7 @@ public class SDPDataApiConfig {
 		else if (curGiorno > giorno_init)return true;
 		return false;
 	}
-	public synchronized static SDPDataApiConfig getInstance() throws Exception{
+	public synchronized static SDPDataApiConfig getInstance() {
 		if(instance == null || singletonToRefresh()) {
 			instance = new SDPDataApiConfig();
 			anno_init = Calendar.getInstance().get(Calendar.YEAR);
@@ -47,7 +47,7 @@ public class SDPDataApiConfig {
 		return instance;
 	}
 
-	private SDPDataApiConfig() throws Exception{
+	private SDPDataApiConfig(){
 		
 		ResourceBundle rb= ResourceBundle.getBundle("SDPDataApiConfig");
 		

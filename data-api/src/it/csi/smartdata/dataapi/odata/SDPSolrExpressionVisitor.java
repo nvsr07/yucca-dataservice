@@ -38,11 +38,8 @@ import org.apache.olingo.odata2.core.edm.Uint7;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-
 public class SDPSolrExpressionVisitor implements ExpressionVisitor {
-	static Logger log = Logger.getLogger(SDPExpressionVisitor.class.getPackage().getName());
+	static Logger log = Logger.getLogger(SDPSolrExpressionVisitor.class.getPackage().getName());
 
 	private String entitySetName=null;
 
