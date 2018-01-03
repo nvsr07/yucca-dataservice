@@ -25,18 +25,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * TODO  add cache
  */
 public class AdminApiClientDelegate {
-	private static final Logger logger = Logger
-			.getLogger(AdminApiClientDelegate.class);
 
-	public static <T> T getFromAdminApi(String relativeUrl, final Class<T> cl,
+	public static <T> T getFromAdminApi(String url, final Class<T> cl, String loggerName, 
 			Map<String, String> params) throws AdminApiClientException {
 
 		CloseableHttpClient httpClient = Singleton.Client.get();
-
+		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
 		try {
-			URIBuilder urib = new URIBuilder(
-					"http://int-sdnet-intapi.sdp.csi.it:90/adminapi/"
-							+ relativeUrl);
+			URIBuilder urib = new URIBuilder(url);
 			if (params != null && !params.isEmpty()) {
 				Iterator<Entry<String, String>> iter = params.entrySet()
 						.iterator();

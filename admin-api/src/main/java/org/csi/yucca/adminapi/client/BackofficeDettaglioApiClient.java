@@ -5,8 +5,8 @@ import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 public class BackofficeDettaglioApiClient {
 
 	
-	public static  BackofficeDettaglioApiResponse getBackofficeDettaglioApi(String codapi) throws AdminApiClientException
+	public static  BackofficeDettaglioApiResponse getBackofficeDettaglioApi(String adminApiBaseUrl, String codapi, String logger) throws AdminApiClientException
 	{
-		return AdminApiClientDelegate.getFromAdminApi("1/backoffice/api/"+codapi, BackofficeDettaglioApiResponse.class, null);
+		return AdminApiClientDelegate.getFromAdminApi(adminApiBaseUrl+"/1/backoffice/api/"+codapi,BackofficeDettaglioApiResponse.class,logger, null);
 	}
 }

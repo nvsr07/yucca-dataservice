@@ -1,5 +1,6 @@
 package org.csi.yucca.client;
 
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.csi.yucca.adminapi.client.AdminApiClientDelegate;
@@ -10,11 +11,16 @@ import org.csi.yucca.controller.TestBase;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.testng.Assert;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class AdminApiClientTest extends TestBase {
 
+	@BeforeClass
+	public void setUpSecretObject() throws IOException {
+		super.setUpSecretObject("/testSecret.json");
+	}
 	
 	@DataProvider(name="jsonGet")
 	public Iterator<Object[]> getFromJsonGet(){  
@@ -27,7 +33,8 @@ public class AdminApiClientTest extends TestBase {
 	@Test(dataProvider="jsonGet")
 	public void BackofficeDettaglioApiTest(JSONObject dato) throws JSONException, InterruptedException {
 		try {
-			BackofficeDettaglioApiResponse resp = BackofficeDettaglioApiClient.getBackofficeDettaglioApi(dato.getString("adminapi.additionalpath"));
+			BackofficeDettaglioApiResponse resp = BackofficeDettaglioApiClient.getBackofficeDettaglioApi(
+					this.secretObject.getString("adminapi.url") , dato.getString("adminapi.additionalpath"), "BackofficeDettaglioApiTest");
 			if (dato.getInt("expected.httpStatus.response")!=200)
 				Assert.assertTrue(false);
 			else
