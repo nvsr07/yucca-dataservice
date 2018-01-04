@@ -24,6 +24,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.insertDcat;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
 
@@ -49,6 +50,7 @@ import org.csi.yucca.adminapi.mapper.SmartobjectMapper;
 import org.csi.yucca.adminapi.mapper.StreamMapper;
 import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
+import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
@@ -71,7 +73,6 @@ import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
-import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
@@ -81,7 +82,6 @@ import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
-import org.csi.yucca.adminapi.util.DatasetSubtype;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.FeedbackStatus;
 import org.csi.yucca.adminapi.util.ManageOption;
@@ -140,6 +140,9 @@ public class StreamServiceImpl implements StreamService {
 	@Autowired
 	private ComponentMapper componentMapper;
 
+	@Autowired
+	private MessageSender messageSender;
+	
 	@Override
 	public ServiceResponse actionFeedback(ActionRequest actionRequest, Integer idStream)
 			throws BadRequestException, NotFoundException, Exception {
@@ -206,14 +209,15 @@ public class StreamServiceImpl implements StreamService {
 
 		if(ApiUserType.BACK_OFFICE.equals(apiUserType) && 
 				Status.REQUEST_INSTALLATION.code().equals(statusCode) &&
-				!StreamAction.INSTALLATION.code().equals(action)){
-			badRequestActionOnStream("Only action accepted: [" + StreamAction.INSTALLATION.code() + " ]");
+				!StreamAction.INSTALLATION.code().equals(action) && 
+				!StreamAction.UPGRADE.code().equals(action) ){
+			badRequestActionOnStream("Only action accepted: [" + StreamAction.INSTALLATION.code() + ", " + StreamAction.UPGRADE.code() + " ]");
 		}
 
 		if(ApiUserType.BACK_OFFICE.equals(apiUserType) && 
 				Status.REQUEST_UNINSTALLATION.code().equals(statusCode) &&
-				!StreamAction.UNINSTALLATION.code().equals(action)){
-			badRequestActionOnStream("Only action accepted: [" + StreamAction.UNINSTALLATION.code() + " ]");
+				!StreamAction.DELETE.code().equals(action)){
+			badRequestActionOnStream("Only action accepted: [" + StreamAction.DELETE.code() + " ]");
 		}
 		
 		if(ApiUserType.BACK_OFFICE.equals(apiUserType) &&	
@@ -293,7 +297,8 @@ public class StreamServiceImpl implements StreamService {
 
 		checkIfFoundRecord(dettaglioStream);
 		checkMandatoryParameter(actionRequest.getAction(), "Action");
-
+		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+		
 		validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
 
 		// REQUEST INSTALLATION (ONLY MANAGEMENT)
@@ -314,15 +319,17 @@ public class StreamServiceImpl implements StreamService {
 			return ServiceResponse.build().OK();
 		}
 		
-		// INSTALLATION (ONLY BACK OFFICE) 
-		if(StreamAction.INSTALLATION.code().equals(actionRequest.getAction())){
+		// INSTALLATION or UPGRADE (ONLY BACK OFFICE) 
+		if(StreamAction.INSTALLATION.code().equals(actionRequest.getAction()) || StreamAction.UPGRADE.code().equals(actionRequest.getAction())){
 			dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
 			return ServiceResponse.build().OK();
 		}
 
 		// UNINSTALLATION (ONLY BACK OFFICE)
-		if(StreamAction.UNINSTALLATION.code().equals(actionRequest.getAction())){
+		if(StreamAction.DELETE.code().equals(actionRequest.getAction())){
 			dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
 			return ServiceResponse.build().OK();
 		}
 		
