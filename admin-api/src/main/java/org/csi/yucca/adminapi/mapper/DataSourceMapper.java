@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.mapper;
 
+import java.sql.Timestamp;
+
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -94,14 +96,13 @@ public interface DataSourceMapper {
 			+ "registrationdate, requestername, requestersurname, requestermail, privacyacceptance, icon, isopendata, "
 			+ "externalreference, opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, unpublished, "
 			+ "fabriccontrolleroutcome, fbcoperationfeedback, id_organization, id_subdomain, id_dcat, id_license, id_status) "
-			+ "VALUES (#{datasourceversion}, #{iscurrent}, #{name}, #{visibility}, #{copyright}, #{disclaimer}, "
+	+ "VALUES (#{datasourceversion}, #{iscurrent}, #{name}, #{visibility}, #{copyright}, #{disclaimer}, "
 			+ "#{registrationdate}, #{requestername}, #{requestersurname}, #{requestermail}, #{privacyacceptance}, #{icon}, #{isopendata}, "
 			+ "#{externalreference}, #{opendataauthor}, #{opendataupdatedate}, #{opendatalanguage}, #{lastupdate}, #{unpublished}, "
 			+ "#{fabriccontrolleroutcome}, #{fbcoperationfeedback}, #{idOrganization}, #{idSubdomain}, #{idDcat}, #{idLicense}, #{idStatus})";
 	@Insert(INSERT_DATA_SOURCE)
 	@Options(useGeneratedKeys=true, keyProperty="idDataSource")
 	int insertDataSource(DataSource dataSource);
-
 	
 	/*************************************************************************
 	 * 					UPDATE DATA SOURCE

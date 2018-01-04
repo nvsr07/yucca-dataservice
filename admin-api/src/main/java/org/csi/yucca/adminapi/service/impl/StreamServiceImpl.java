@@ -54,6 +54,7 @@ import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
+import org.csi.yucca.adminapi.model.DataSource;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
@@ -68,6 +69,7 @@ import org.csi.yucca.adminapi.model.TenantDataSource;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
+import org.csi.yucca.adminapi.request.IDataSourceRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
@@ -567,7 +569,10 @@ public class StreamServiceImpl implements StreamService {
 			idLicense = insertLicense(request.getLicense(), licenseMapper);
 		}
 
-		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
+		
+//		hkggg
+//		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
+		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id());
 
 		Stream stream = insertStream(request, idDataSource, smartobject.getIdSmartObject());
 
@@ -591,6 +596,42 @@ public class StreamServiceImpl implements StreamService {
 
 	}
 
+	public Integer insertDataSource(IDataSourceRequest request, Integer idOrganization, 
+			Long idDcat, Integer idLicense, Integer idStatus) throws Exception{
+		
+		DataSource dataSource = new DataSource();
+		dataSource.setDatasourceversion(DATASOURCE_VERSION);
+		dataSource.setIscurrent(Util.booleanToInt(true));
+		dataSource.setUnpublished(Util.booleanToInt(request.getUnpublished()));
+		dataSource.setName(request.getName());
+		dataSource.setVisibility(request.getVisibility());
+		dataSource.setCopyright(request.getVisibility());
+		dataSource.setDisclaimer(request.getDisclaimer());		
+		dataSource.setRegistrationdate(Util.getNow());
+		dataSource.setRequestername(request.getRequestername());
+		dataSource.setRequestersurname(request.getRequestersurname());
+		dataSource.setRequestermail(request.getRequestermail());
+		dataSource.setPrivacyacceptance(Util.booleanToInt(request.getPrivacyacceptance()));
+		dataSource.setIcon(request.getIcon());		
+		dataSource.setIsopendata(request.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
+		dataSource.setExternalreference(request.getExternalreference());
+		dataSource.setOpendataauthor(request.getOpenData() != null ? request.getOpenData().getOpendataauthor() : null);
+		dataSource.setOpendataupdatedate(request.getOpenData() != null? Util.dateStringToTimestamp(request.getOpenData().getOpendataupdatedate()) : null);
+		dataSource.setOpendatalanguage(request.getOpenData() != null ? request.getOpenData().getOpendatalanguage() : null);
+		dataSource.setLastupdate(request.getOpenData() != null ? request.getOpenData().getLastupdate() : null);
+		dataSource.setIdOrganization(idOrganization);		
+		dataSource.setIdSubdomain(request.getIdSubdomain());
+		dataSource.setIdStatus(idStatus);		
+		
+		dataSource.setIdDcat(idDcat);
+		dataSource.setIdLicense(idLicense);
+		
+		dataSourceMapper.insertDataSource(dataSource);
+		
+		return dataSource.getIdDataSource();
+	}
+	
+	
 	/**
 	 * 
 	 * @param request
