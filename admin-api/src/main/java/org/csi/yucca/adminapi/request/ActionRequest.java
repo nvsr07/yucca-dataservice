@@ -1,11 +1,25 @@
 package org.csi.yucca.adminapi.request;
 
-public class ActionOnTenantRequest {
+public class ActionRequest {
 
 	private String action;
 	private String startStep;
 	private String endStep;
-	
+	private String status;
+	private String description;
+
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
 	public String getAction() {
 		return action;
 	}

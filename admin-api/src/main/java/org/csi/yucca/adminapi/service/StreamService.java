@@ -3,6 +3,7 @@ package org.csi.yucca.adminapi.service;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
+import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.util.ApiUserType;
@@ -21,6 +22,10 @@ public interface StreamService {
 
 	byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
-	ServiceResponse actionOnStream( String action, String organizationCode, String soCode, Integer idStream, ApiUserType apiUserType, JwtUser authorizedUser ) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse actionOnStream( ActionRequest actionRequest, String organizationCode, String soCode, Integer idStream, ApiUserType apiUserType, JwtUser authorizedUser ) throws BadRequestException, NotFoundException, Exception;
+
+	ServiceResponse actionOnStream( ActionRequest actionRequest, Integer idStream, ApiUserType apiUserType) throws BadRequestException, NotFoundException, Exception;
+
+	ServiceResponse actionFeedback( ActionRequest actionRequest, Integer idStream) throws BadRequestException, NotFoundException, Exception;
 	
 }

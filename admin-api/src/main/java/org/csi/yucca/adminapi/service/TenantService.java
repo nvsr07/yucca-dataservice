@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.service;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
-import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
+import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
 import org.csi.yucca.adminapi.request.PostTenantRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
@@ -16,7 +16,7 @@ public interface TenantService {
 
 	ServiceResponse deleteTenant(String tenantcode) throws BadRequestException, NotFoundException, Exception;
 
-	ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse actionOnTenant(ActionRequest actionOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse actionfeedbackOnTenant(ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception;
 

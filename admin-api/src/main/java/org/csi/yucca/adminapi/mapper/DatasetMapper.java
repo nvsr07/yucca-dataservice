@@ -26,20 +26,20 @@ public interface DatasetMapper {
 	 * 					INSERT DATASET
 	 * ***********************************************************************/
 	public static final String CLONE_DATASET = 
-			" INSERT INTO int_yucca.yucca_dataset( " +
+		" INSERT INTO int_yucca.yucca_dataset( " +
 			" id_data_source, datasourceversion, iddataset, datasetcode, datasetname, " + 
 			" description, startingestiondate, endingestiondate, importfiletype, " + 
 			" id_dataset_type, id_dataset_subtype, solrcollectionname, phoenixtablename, " + 
 			" phoenixschemaname, availablehive, availablespeed, istransformed, " + 
 			" dbhiveschema, dbhivetable, id_data_source_binary, datasourceversion_binary, " + 
 			" jdbcdburl, jdbcdbname, jdbcdbtype, jdbctablename) " +
-			" SELECT id_data_source, #{newDataSourceVersion}, iddataset, datasetcode, datasetname, " + 
+		" SELECT id_data_source, #{newDataSourceVersion}, iddataset, datasetcode, datasetname, " + 
 			" description, startingestiondate, endingestiondate, importfiletype, " + 
 			" id_dataset_type, id_dataset_subtype, solrcollectionname, phoenixtablename, " + 
 			" phoenixschemaname, availablehive, availablespeed, istransformed, " + 
 			" dbhiveschema, dbhivetable, id_data_source_binary, datasourceversion_binary, " + 
 			" jdbcdburl, jdbcdbname, jdbcdbtype, jdbctablename " +
-			" FROM int_yucca.yucca_dataset " +
+		" FROM int_yucca.yucca_dataset " +
 			" WHERE id_data_source = #{idDataSource} and datasourceversion = #{currentDataSourceVersion}";
 	@Insert(CLONE_DATASET)
 	int cloneDataset( @Param("newDataSourceVersion") Integer newDataSourceVersion, @Param("currentDataSourceVersion") Integer currentDataSourceVersion, @Param("idDataSource") Integer idDataSource );

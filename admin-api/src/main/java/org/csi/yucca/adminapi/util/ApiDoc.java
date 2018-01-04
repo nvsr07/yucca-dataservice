@@ -108,6 +108,9 @@ public class ApiDoc {
 	public static final String BO_ACTION_ON_TENANT = "ACTION ON TENANT";
 	public static final String BO_ACTION_ON_TENANT_NOTES = "Action on Tenant.";
 
+	public static final String BO_ACTION_ON_STREAM = "ACTION ON STREAM";
+	public static final String BO_ACTION_ON_STREAM_NOTES = "Action on Stream.";
+
 	public static final String BO_ACTIONFEEDBACK_ON_TENANT = "FEEDBACK FOR AN ACTION ON TENANT";
 	public static final String BO_ACTIONFEEDBACK_ON_TENANT_NOTES = "Feedback for an action on Tenant.";
 	

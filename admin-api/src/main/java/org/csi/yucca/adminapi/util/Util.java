@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
+import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
@@ -290,6 +291,24 @@ public class Util {
 		}
 		
 		
+	}
+	
+	public static List<Integer> getTags(String tags)throws Exception{
+
+		List<Integer> idTags = new ArrayList<Integer>();
+		
+		if (tags != null) {
+
+			ObjectMapper mapper = new ObjectMapper();
+			List<TagJson> listTagJson = mapper.readValue(tags, new TypeReference<List<TagJson>>() {
+			});
+
+			for (TagJson tagJson : listTagJson) {
+				idTags.add(tagJson.getId_tag());
+			}
+		}
+
+		return idTags;
 	}
 	
 }

@@ -37,7 +37,7 @@ public interface DataSourceMapper {
 			@Param("idTag") Integer idTag);
 
 	/*************************************************************************
-	 * 					INSERT DATA SOURCE
+	 * 					clone DATA SOURCE con new version
 	 * ***********************************************************************/
 	public static final String CLONE_DATA_SOURCE = 
 	" INSERT INTO " + DATA_SOURCE_TABLE + "( " +
@@ -59,6 +59,31 @@ public interface DataSourceMapper {
 	int cloneDataSource(@Param("newDataSourceVersion") Integer newDataSourceVersion,
 			@Param("currentDataSourceVersion") Integer currentDataSourceVersion, 
 			@Param("idDataSource") Integer idDataSource);
+	
+	/*************************************************************************
+	 * 					clone DATA SOURCE con new version e status
+	 * ***********************************************************************/
+	public static final String CLONE_DATA_SOURCE_NEW_VERSION_AND_STATUS = 
+	" INSERT INTO " + DATA_SOURCE_TABLE + "( " +
+		" id_data_source, datasourceversion, iscurrent, name, visibility, " + 
+		" copyright, disclaimer, registrationdate, requestername, requestersurname, " + 
+		" requestermail, privacyacceptance, icon, isopendata, externalreference, " + 
+		" opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, " + 
+		" unpublished, fabriccontrolleroutcome, fbcoperationfeedback, id_organization, " + 
+		" id_subdomain, id_dcat, id_license, id_status) " +
+	" SELECT id_data_source, #{newDataSourceVersion}, iscurrent, name, visibility, " + 
+		" copyright, disclaimer, registrationdate, requestername, requestersurname, " + 
+		" requestermail, privacyacceptance, icon, isopendata, externalreference, " + 
+		" opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, " + 
+		" unpublished, fabriccontrolleroutcome, fbcoperationfeedback, id_organization, " + 
+		" id_subdomain, id_dcat, id_license, #{idStatus} " +
+	" FROM " +  DATA_SOURCE_TABLE +       
+	" WHERE id_data_source = #{idDataSource} and datasourceversion=#{currentDataSourceVersion}";
+	@Insert(CLONE_DATA_SOURCE_NEW_VERSION_AND_STATUS)
+	int cloneDataSource(@Param("newDataSourceVersion") Integer newDataSourceVersion,
+			@Param("currentDataSourceVersion") Integer currentDataSourceVersion, 
+			@Param("idDataSource") Integer idDataSource,
+			@Param("idStatus") Integer idStatus);
 	
 	
 	/*************************************************************************

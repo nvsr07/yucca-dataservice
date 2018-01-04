@@ -27,7 +27,7 @@ import org.csi.yucca.adminapi.model.TenantsType;
 import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.join.DettaglioTenantBackoffice;
 import org.csi.yucca.adminapi.model.join.TenantManagement;
-import org.csi.yucca.adminapi.request.ActionOnTenantRequest;
+import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
 import org.csi.yucca.adminapi.request.BundlesRequest;
 import org.csi.yucca.adminapi.request.PostTenantRequest;
@@ -49,6 +49,7 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.csi.yucca.adminapi.util.ShareType;
 import org.csi.yucca.adminapi.util.Status;
+import org.csi.yucca.adminapi.util.StreamAction;
 import org.csi.yucca.adminapi.util.TenantType;
 import org.csi.yucca.adminapi.util.Type;
 import org.springframework.beans.BeanUtils;
@@ -201,22 +202,22 @@ public class TenantServiceImpl implements TenantService {
 	//
 	// SE LA RICHIESTA VA A BUON FINE SETTARE LO STATO A : INSTALLAZIONE IN
 	// PROGRESS
-	public ServiceResponse actionOnTenant(ActionOnTenantRequest actionOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse actionOnTenant(ActionRequest actionOnTenantRequest, String tenantcode) throws BadRequestException, NotFoundException, Exception {
 
 		ServiceUtil.checkMandatoryParameter(tenantcode, "tenantCode");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getAction(), "action");
 		ServiceUtil.checkMandatoryParameter(actionOnTenantRequest.getStartStep(), "StartStep");
 		// ServiceUtil.checkCodeTenantStatus(actionOnTenantRequest.getCodeTenantStatus());
-		ServiceUtil.checkValue("action", actionOnTenantRequest.getAction(), "install", "migrate", "delete");
-
+		ServiceUtil.checkValue("action", actionOnTenantRequest.getAction(), StreamAction.INSTALLATION.code(), StreamAction.MIGRATE.code(), StreamAction.DELETE.code());
+		
 		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantcode);
 		ServiceUtil.checkIfFoundRecord(tenant);
-
-		if (actionOnTenantRequest.getAction().equals("install") && Status.REQUEST_INSTALLATION.id() != tenant.getIdTenantStatus()) {
+			
+		if (StreamAction.INSTALLATION.code().equals(actionOnTenantRequest.getAction()) && Status.REQUEST_INSTALLATION.id() != tenant.getIdTenantStatus()) {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
 		}
-
-		if (actionOnTenantRequest.getAction().equals("delete") && Status.REQUEST_UNINSTALLATION.id() != tenant.getIdTenantStatus()) {
+		
+		if (StreamAction.DELETE.code().equals(actionOnTenantRequest.getAction()) && Status.REQUEST_UNINSTALLATION.id() != tenant.getIdTenantStatus()) {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
 		}
 
@@ -256,13 +257,13 @@ public class TenantServiceImpl implements TenantService {
 		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantcode);
 		ServiceUtil.checkIfFoundRecord(tenant);
 
-		if (Status.INSTALLATION_IN_PROGRESS.id() == tenant.getIdTenantStatus()) {
+		if (Status.INSTALLATION_IN_PROGRESS.id().equals(tenant.getIdTenantStatus())) {
 			if (actionfeedbackOnTenantRequest.getStatus().equalsIgnoreCase("ok")) {
 				tenantMapper.updateTenantStatus(Status.INSTALLED.id(), tenantcode);
 			} else {
 				tenantMapper.updateTenantStatus(Status.INSTALLATION_FAIL.id(), tenantcode);
 			}
-		} else if (Status.UNINSTALLATION_IN_PROGRESS.id() == tenant.getIdTenantStatus()) {
+		} else if (Status.UNINSTALLATION_IN_PROGRESS.id().equals(tenant.getIdTenantStatus())) {
 			if (actionfeedbackOnTenantRequest.getStatus().equalsIgnoreCase("ok")) {
 				tenantMapper.updateTenantStatus(Status.UNINSTALLATION.id(), tenantcode);
 			} else {

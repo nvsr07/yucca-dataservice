@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.controller.YuccaController;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
@@ -79,7 +80,7 @@ public class ManagementController extends YuccaController {
 	@ApiOperation(value = M_ACTION_ON_STREAM, notes = M_ACTION_ON_STREAM_NOTES, response = ServiceResponse.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams/{idStream}/action")
 	public ResponseEntity<Object> actionOnStream(
-			@RequestParam(required = true) final String action,	
+			@RequestBody final ActionRequest actionRequest,	
 			@PathVariable final String organizationCode,
 			@PathVariable final String soCode,
 			@PathVariable final Integer idStream,
@@ -89,7 +90,7 @@ public class ManagementController extends YuccaController {
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.actionOnStream(action, organizationCode, soCode, idStream, ApiUserType.MANAGEMENT, getAuthorizedUser(httpRequest));
+				return streamService.actionOnStream(actionRequest, organizationCode, soCode, idStream, ApiUserType.MANAGEMENT, getAuthorizedUser(httpRequest));
 			}
 		}, logger);
 	}
