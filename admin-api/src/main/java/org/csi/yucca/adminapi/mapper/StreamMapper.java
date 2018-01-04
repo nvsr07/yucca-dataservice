@@ -842,9 +842,9 @@ public interface StreamMapper {
 	public static final String SELECT_STREAM_BY_STREAMCODE_AND_CODE_SO = 
 		" SELECT id_data_source, datasourceversion, idstream, streamcode, streamname, publishstream, "
 		+ "savedata, fps, internalquery, twtquery, twtgeoloclat, twtgeoloclon, twtgeolocradius, twtgeolocunit, "
-		+ "twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid, id_smart_object "
-		+ "FROM " + STREAM_TABLE
-		+ " INNER JOIN " +  SmartobjectMapper.SMARTOBJECT_TABLE  + " SMART_OBJ ON STREAM.id_smart_object = SMART_OBJ.id_smart_object "
+		+ "twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid, SMART_OBJ.id_smart_object "
+		+ "FROM " + STREAM_TABLE + " yucca_stream " 
+		+ " INNER JOIN " +  SmartobjectMapper.SMARTOBJECT_TABLE  + " SMART_OBJ ON yucca_stream.id_smart_object = SMART_OBJ.id_smart_object "
 		+ " where streamcode = #{streamcode} AND "
 		+ " SMART_OBJ.socode = #{soCode}";
 	@Results({
