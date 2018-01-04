@@ -8,7 +8,8 @@ public enum StreamAction {
 	INSTALLATION           ("install"),
 	UNINSTALLATION         ("uninstall"),
 	DELETE                 ("delete"),
-	MIGRATE                ("migrate");
+	MIGRATE                ("migrate"),
+	UPGRADE                ("upgrade");
 	
 	private String code;
 	

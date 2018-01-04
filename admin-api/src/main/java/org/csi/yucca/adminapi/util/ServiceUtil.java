@@ -21,6 +21,7 @@ import org.csi.yucca.adminapi.mapper.DcatMapper;
 import org.csi.yucca.adminapi.mapper.LicenseMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
+import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.DataSource;
 import org.csi.yucca.adminapi.model.Dataset;
@@ -29,6 +30,7 @@ import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.TenantDataSource;
+import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DcatRequest;
 import org.csi.yucca.adminapi.request.IDataSourceRequest;
@@ -68,6 +70,37 @@ public class ServiceUtil {
 	public static final String API_CODE_PREFIX_WEBSOCKET = "ws_";
 	public static final String API_CODE_PREFIX_MQTT = "mqtt_";
 	public static final Integer MAXIMUM_ERRORS_ALLOWED = 20;
+	
+
+	/**
+	 * 
+	 * @param actionRequest
+	 * @param name
+	 * @param idOrCode
+	 * @param messageSender
+	 * @throws Exception
+	 */
+	public static void sendMessage(ActionRequest actionRequest, String name, String idOrCode, MessageSender messageSender )throws Exception{
+		String steps = actionRequest.getStartStep();
+		if (actionRequest.getEndStep() != null){
+			steps += ":" + actionRequest.getEndStep();
+		}
+		
+		String msg = actionRequest.getAction() + "|" + name + "|" + idOrCode + "|" + steps;
+		messageSender.sendMessage(msg);
+	}
+	
+	/**
+	 * 
+	 * @param actionRequest
+	 * @param name
+	 * @param idOrCode
+	 * @param messageSender
+	 * @throws Exception
+	 */
+	public static void sendMessage(ActionRequest actionRequest, String name, Integer idOrCode, MessageSender messageSender )throws Exception{
+		sendMessage(actionRequest, name, String.valueOf(idOrCode), messageSender );
+	}
 	
 	/**
 	 * 

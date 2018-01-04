@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -221,15 +223,9 @@ public class TenantServiceImpl implements TenantService {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "Current status: " + ServiceUtil.codeTenantStatus(tenant.getIdTenantStatus()));
 		}
 
-		// Valorizzazione steps
-		String steps = actionOnTenantRequest.getStartStep();
-		if (actionOnTenantRequest.getEndStep() != null)
-			steps += ":" + actionOnTenantRequest.getEndStep();
-
 		// jms sender
-		String msg = actionOnTenantRequest.getAction() + "|tenant|" + tenantcode + "|" + steps;
-		messageSender.sendMessage(msg);
-
+		sendMessage(actionOnTenantRequest, "tenant", tenantcode, messageSender);
+		
 		// cambia lo stato del tenant:
 		tenantMapper.updateTenantStatus(Status.INSTALLATION_IN_PROGRESS.id(), tenantcode);
 
