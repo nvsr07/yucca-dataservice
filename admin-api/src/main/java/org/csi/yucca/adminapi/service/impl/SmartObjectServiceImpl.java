@@ -180,7 +180,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
 		ServiceUtil.checkIfFoundRecord(organization);
 		
-		Smartobject currentSmartobject = smartobjectMapper.selectSmartobject(soCode, organization.getIdOrganization());
+		Smartobject currentSmartobject = smartobjectMapper.selectSmartobject(soCode);
 		ServiceUtil.checkIfFoundRecord(currentSmartobject);
 		
 		//	aggionrnamento so
@@ -197,7 +197,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 			insertSoPosition(smartobjectRequest.getPosition(), currentSmartobject.getIdSmartObject());
 		}
 		
-		Smartobject smartobjectResponse = smartobjectMapper.selectSmartobject(soCode, organization.getIdOrganization());
+		Smartobject smartobjectResponse = smartobjectMapper.selectSmartobject(soCode);
 		
 		return ServiceResponse.build().object(new SmartobjectResponse(smartobjectResponse, smartobjectRequest.getPosition()));
 	}
@@ -221,7 +221,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 
 		Organization organization = getOrganization(organizationCode);
 
-		Smartobject smartobject = smartobjectMapper.selectSmartobject(socode, organization.getIdOrganization());
+		Smartobject smartobject = smartobjectMapper.selectSmartobject(socode);
 
 		ServiceUtil.checkIfFoundRecord(smartobject);
 		
@@ -415,18 +415,18 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	
 	private void checkSmartObject(Integer idOrganization, String soCode, String slug)
 			throws NotFoundException, BadRequestException {
-		Smartobject smartobject = smartobjectMapper.selectSmartobject(soCode, idOrganization);
+		Smartobject smartobject = smartobjectMapper.selectSmartobject(soCode);
 
 		if (smartobject != null && smartobject.getIdSmartObject() != null) {
 			throw new BadRequestException(
-					Errors.DUPLICATE_KEY, "socode: " + soCode + ", idOrganization: " + idOrganization);
+					Errors.DUPLICATE_KEY, "socode: " + soCode );
 		}
 
-		smartobject = smartobjectMapper.selectSmartobjectBySlugAndOrganization(slug, idOrganization);
+		smartobject = smartobjectMapper.selectSmartobjectBySlug(slug);
 
 		if (smartobject != null && smartobject.getIdSmartObject() != null) {
 			throw new BadRequestException(
-					Errors.DUPLICATE_KEY, "slug: " + slug + ", idOrganization: " + idOrganization);
+					Errors.DUPLICATE_KEY, "slug: " + slug + "");
 		}
 
 	}
