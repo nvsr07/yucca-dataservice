@@ -846,7 +846,7 @@ public interface StreamMapper {
 		+ "FROM " + STREAM_TABLE
 		+ " INNER JOIN " +  SmartobjectMapper.SMARTOBJECT_TABLE  + " SMART_OBJ ON STREAM.id_smart_object = SMART_OBJ.id_smart_object "
 		+ " where streamcode = #{streamcode} AND "
-		+ " SMART_OBJ.soCode = #{soCode}";
+		+ " SMART_OBJ.socode = #{soCode}";
 	@Results({
         @Result(property = "idDataSource", column = "id_data_source"),
         @Result(property = "idSmartObject", column = "id_smart_object"),
