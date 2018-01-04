@@ -574,6 +574,7 @@ public class StreamServiceImpl implements StreamService {
 //		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id());
 
+		
 		Stream stream = insertStream(request, idDataSource, smartobject.getIdSmartObject());
 
 		insertTags(request.getTags(), idDataSource, DATASOURCE_VERSION, dataSourceMapper);
