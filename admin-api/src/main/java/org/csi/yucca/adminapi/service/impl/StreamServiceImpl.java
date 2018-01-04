@@ -1,31 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_MQTT;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_WEBSOCKET;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_WEBSOCKET;
-import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
-import static org.csi.yucca.adminapi.util.ServiceUtil.SINCE_VERSION;
-import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkAuthTenant;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkCode;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkComponents;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkIfFoundRecord;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkVisibility;
-import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
-import static org.csi.yucca.adminapi.util.ServiceUtil.getTenantCodeListFromUser;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataSource;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataset;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertDcat;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
-import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
-import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -49,6 +24,7 @@ import org.csi.yucca.adminapi.mapper.SmartobjectMapper;
 import org.csi.yucca.adminapi.mapper.StreamMapper;
 import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
+import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
@@ -71,6 +47,8 @@ import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
@@ -79,6 +57,7 @@ import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
+import org.csi.yucca.adminapi.util.DatasetSubtype;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.FeedbackStatus;
 import org.csi.yucca.adminapi.util.ManageOption;
@@ -137,6 +116,9 @@ public class StreamServiceImpl implements StreamService {
 	@Autowired
 	private ComponentMapper componentMapper;
 
+	@Autowired
+	private MessageSender messageSender;
+	
 	@Override
 	public ServiceResponse actionFeedback(ActionRequest actionRequest, Integer idStream)
 			throws BadRequestException, NotFoundException, Exception {
@@ -203,14 +185,15 @@ public class StreamServiceImpl implements StreamService {
 
 		if(ApiUserType.BACK_OFFICE.equals(apiUserType) && 
 				Status.REQUEST_INSTALLATION.code().equals(statusCode) &&
-				!StreamAction.INSTALLATION.code().equals(action)){
-			badRequestActionOnStream("Only action accepted: [" + StreamAction.INSTALLATION.code() + " ]");
+				!StreamAction.INSTALLATION.code().equals(action) && 
+				!StreamAction.UPGRADE.code().equals(action) ){
+			badRequestActionOnStream("Only action accepted: [" + StreamAction.INSTALLATION.code() + ", " + StreamAction.UPGRADE.code() + " ]");
 		}
 
 		if(ApiUserType.BACK_OFFICE.equals(apiUserType) && 
 				Status.REQUEST_UNINSTALLATION.code().equals(statusCode) &&
-				!StreamAction.UNINSTALLATION.code().equals(action)){
-			badRequestActionOnStream("Only action accepted: [" + StreamAction.UNINSTALLATION.code() + " ]");
+				!StreamAction.DELETE.code().equals(action)){
+			badRequestActionOnStream("Only action accepted: [" + StreamAction.DELETE.code() + " ]");
 		}
 		
 		if(ApiUserType.BACK_OFFICE.equals(apiUserType) &&	
@@ -290,7 +273,8 @@ public class StreamServiceImpl implements StreamService {
 
 		checkIfFoundRecord(dettaglioStream);
 		checkMandatoryParameter(actionRequest.getAction(), "Action");
-
+		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+		
 		validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
 
 		// REQUEST INSTALLATION (ONLY MANAGEMENT)
@@ -311,15 +295,17 @@ public class StreamServiceImpl implements StreamService {
 			return ServiceResponse.build().OK();
 		}
 		
-		// INSTALLATION (ONLY BACK OFFICE) 
-		if(StreamAction.INSTALLATION.code().equals(actionRequest.getAction())){
+		// INSTALLATION or UPGRADE (ONLY BACK OFFICE) 
+		if(StreamAction.INSTALLATION.code().equals(actionRequest.getAction()) || StreamAction.UPGRADE.code().equals(actionRequest.getAction())){
 			dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
 			return ServiceResponse.build().OK();
 		}
 
 		// UNINSTALLATION (ONLY BACK OFFICE)
-		if(StreamAction.UNINSTALLATION.code().equals(actionRequest.getAction())){
+		if(StreamAction.DELETE.code().equals(actionRequest.getAction())){
 			dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
 			return ServiceResponse.build().OK();
 		}
 		
@@ -833,7 +819,7 @@ public class StreamServiceImpl implements StreamService {
 
 		checkMaxNumStream(request.getIdTenant());
 
-		checkStreamCode(request.getStreamcode(), smartobject.getIdSmartObject());
+		checkStreamCode(request.getStreamcode(), smartobject.getSocode());
 
 		checkInternalSmartObject(request, smartobject.getIdSoType());
 		
@@ -1165,12 +1151,12 @@ public class StreamServiceImpl implements StreamService {
 	 * @param idSmartobject
 	 * @throws BadRequestException
 	 */
-	private void checkStreamCode(String streamcode, Integer idSmartobject) throws BadRequestException {
+	private void checkStreamCode(String streamcode, String soCode) throws BadRequestException {
 		checkCode(streamcode, "streamcode");
-		Stream stream = streamMapper.selectStreamByStreamcodeAndIdSmartObject(streamcode, idSmartobject);
+		Stream stream = streamMapper.selectStreamByStreamcodeAndSoCode(streamcode, soCode);
 		if (stream != null) {
 			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, "There is another stream with streamcode [ "
-					+ streamcode + " ] and idSmartObject [ " + idSmartobject + " ]");
+					+ streamcode + " ] and soCode [ " + soCode + " ]");
 		}
 	}
 	
@@ -1471,6 +1457,54 @@ public class StreamServiceImpl implements StreamService {
 	
 	private void badRequestActionOnStream() throws BadRequestException{
 		badRequestActionOnStream(null);
+	}
+
+	@Override
+	public ServiceResponse selectStreamByIdStream(Integer idStream)
+			throws BadRequestException, NotFoundException, Exception {
+		
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		checkIfFoundRecord(dettaglioStream);
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+
+		DettaglioDataset dettaglioDataset = null;
+		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true)))
+		{
+			dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		}
+
+		if(dettaglioDataset != null){
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream)); 
+		}
+		else{
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioSmartobject, listInternalStream));
+		}
+
+		
+	}
+
+	@Override
+	public ServiceResponse selectStreamBySoCodeStreamCode(String soCode,
+			String streamCode) throws BadRequestException, NotFoundException,
+			Exception {
+		DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(soCode, streamCode);
+		checkIfFoundRecord(dettaglioStream);
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+
+		DettaglioDataset dettaglioDataset = null;
+		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true)))
+		{
+			dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		}
+
+		if(dettaglioDataset != null){
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream)); 
+		}
+		else{
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioSmartobject, listInternalStream));
+		}
 	}
 	
 }
