@@ -36,6 +36,7 @@ import org.csi.yucca.adminapi.response.TagResponse;
 import org.csi.yucca.adminapi.service.ApiService;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.ComponentService;
+import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.util.ApiCallable;
@@ -75,6 +76,9 @@ public class BackOfficeController extends YuccaController {
 	
 	@Autowired
 	private StreamService streamService;
+
+	@Autowired
+	private DatasetService datasetService;
 
 	@Autowired
 	private ApiService apiService;
@@ -988,6 +992,24 @@ public class BackOfficeController extends YuccaController {
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return streamService.selectStreamByIdStream(idStream);
+			}
+		}, logger);
+	}
+	
+	/**
+	 * LOAD Dataset by IdDataset
+	 * 	 
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_DATASET_BY_IDDATASET, notes = BO_LOAD_DATASET_BY_IDDATASET_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@GetMapping("/datasets/{idDataset}")
+	public ResponseEntity<Object> loadDatasetByIdDataset(
+			@PathVariable final Integer idDataset, final HttpServletRequest request) {
+		logger.info("loadDatasetByIdDataset");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.selectDatasetByIdDataset(idDataset);
 			}
 		}, logger);
 	}

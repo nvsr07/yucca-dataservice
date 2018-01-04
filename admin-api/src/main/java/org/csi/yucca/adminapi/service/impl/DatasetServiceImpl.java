@@ -27,6 +27,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.maximumLimitErrorsReached;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
+
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 
 import java.util.ArrayList;
@@ -65,6 +66,8 @@ import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.InvioCsvRequest;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
@@ -494,6 +497,45 @@ public class DatasetServiceImpl implements DatasetService {
 		return buildResponse(new DettaglioStreamDatasetResponse(dettaglioDataset));
 	}
 	
+	@Override
+	public ServiceResponse selectDatasetByIdDataset(Integer idDataset)
+			throws BadRequestException, NotFoundException, Exception {
+		
+		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
+		
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(idDataset);
+		
+		checkIfFoundRecord(dettaglioDataset);
+
+		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+				DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+
+			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			if (dettaglioStream != null) {
+
+				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+				
+				List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+				
+				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+			}				
+		}
+			
+		DettaglioDataset dettaglioBinary = null;
+		
+		if (dettaglioDataset.getIdDataSourceBinary()!=null)
+		{
+			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
+					dettaglioDataset.getIdDataSourceBinary(), 	
+					dettaglioDataset.getDatasourceversionBinary());
+		}
+			
+		dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+
+		return buildResponse(dettaglio);
+	}
+	
+	
 	/**
 	 * 
 	 */
@@ -757,6 +799,9 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return buildResponse(schema);
 	}
+
+
+
 
 
 }

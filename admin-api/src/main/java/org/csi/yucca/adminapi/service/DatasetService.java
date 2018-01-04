@@ -16,6 +16,9 @@ public interface DatasetService {
 	ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
+	ServiceResponse selectDatasetByIdDataset(Integer idDataset) throws BadRequestException, NotFoundException, Exception;
+
+	
 	ServiceResponse insertDataset(String organizationCode, DatasetRequest postDatasetRequest, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception;
 

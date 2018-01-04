@@ -255,4 +255,9 @@ public class ApiDoc {
 	public static final String BO_LOAD_STREAM_BY_SOCODE_STREAMCODE = "LOAD STREAM BY SOCODE AND STREAMCODE";
 	public static final String BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES = "Load stream from smartobject code and stream code with all details.";
 
+	
+	public static final String BO_LOAD_DATASET_BY_IDDATASET = "LOAD LOAD DATASET BY IDDATASET";
+	public static final String BO_LOAD_DATASET_BY_IDDATASET_NOTES = "Load dataset from iddatatset with all details.";
+
+	
 }
