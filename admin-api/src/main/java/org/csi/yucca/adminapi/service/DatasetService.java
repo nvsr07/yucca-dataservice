@@ -18,6 +18,7 @@ public interface DatasetService {
 
 	ServiceResponse selectDatasetByIdDataset(Integer idDataset) throws BadRequestException, NotFoundException, Exception;
 
+	ServiceResponse selectDatasetByIdDatasetDatasetVersion(Integer idDataset,Integer datasetVersion) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse insertDataset(String organizationCode, DatasetRequest postDatasetRequest, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception;
@@ -31,5 +32,6 @@ public interface DatasetService {
 	ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 	
 	byte[] selectDatasetIcon(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+
 
 }
