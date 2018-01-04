@@ -28,4 +28,8 @@ public interface StreamService {
 
 	ServiceResponse actionFeedback( ActionRequest actionRequest, Integer idStream) throws BadRequestException, NotFoundException, Exception;
 	
+	ServiceResponse selectStreamByIdStream(Integer idStream) throws BadRequestException, NotFoundException, Exception;
+
+	ServiceResponse selectStreamBySoCodeStreamCode(String soCode, String streamCode) throws BadRequestException, NotFoundException, Exception;
+
 }

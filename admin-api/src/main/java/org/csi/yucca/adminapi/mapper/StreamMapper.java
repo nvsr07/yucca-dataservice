@@ -446,6 +446,10 @@ public interface StreamMapper {
 	
 	public static final String WHERE_STREAM_DATASOURCEVERSION = " AND yucca_data_source.datasourceversion = #{dataSourceVersion} ";
 
+	public static final String WHERE_STREAM_STREAMCODE = " AND yucca_stream.streamcode = #{streamCode} ";
+
+	public static final String WHERE_STREAM_SOCODE = " AND yucca_smart_object.socode = #{soCode} ";
+	
 	@Results({
 		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
 		@Result(property = "dataSourceIsopendata", column = "data_source_isopendata"),	
@@ -835,19 +839,20 @@ public interface StreamMapper {
 	 * 					SELECT STREAM BY STREAMCODE AND ID_SMART_OBJECT
 	 * 
 	 * ***********************************************************************/
-	public static final String SELECT_STREAM_BY_STREAMCODE_AND_ID_SO = 
+	public static final String SELECT_STREAM_BY_STREAMCODE_AND_CODE_SO = 
 		" SELECT id_data_source, datasourceversion, idstream, streamcode, streamname, publishstream, "
 		+ "savedata, fps, internalquery, twtquery, twtgeoloclat, twtgeoloclon, twtgeolocradius, twtgeolocunit, "
 		+ "twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid, id_smart_object "
 		+ "FROM " + STREAM_TABLE
+		+ " INNER JOIN " +  SmartobjectMapper.SMARTOBJECT_TABLE  + " SMART_OBJ ON STREAM.id_smart_object = SMART_OBJ.id_smart_object "
 		+ " where streamcode = #{streamcode} AND "
-		+ "id_smart_object = #{idSmartObject}";
+		+ " SMART_OBJ.soCode = #{soCode}";
 	@Results({
         @Result(property = "idDataSource", column = "id_data_source"),
         @Result(property = "idSmartObject", column = "id_smart_object"),
       })	
-	@Select(SELECT_STREAM_BY_STREAMCODE_AND_ID_SO)
-	Stream selectStreamByStreamcodeAndIdSmartObject( @Param("streamcode") String streamcode, @Param("idSmartObject") Integer idSmartObject);	
+	@Select(SELECT_STREAM_BY_STREAMCODE_AND_CODE_SO)
+	Stream selectStreamByStreamcodeAndSoCode( @Param("streamcode") String streamcode, @Param("soCode") String soCode);	
 
 	
 	/*************************************************************************
@@ -928,5 +933,85 @@ public interface StreamMapper {
 	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION
 						+ WHERE_STREAM_IDSTREAM, "</script>"}) 
 	DettaglioStream selectStreamByIdStream( @Param("idStream") Integer idStream);
+	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT STREAM BY ID_STREAM
+	 * 
+	 * ***********************************************************************/
+	@Results({
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
+		@Result(property = "dataSourceIsopendata", column = "data_source_isopendata"),	
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
+		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
+		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
+		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
+		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"),
+		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"),	
+		@Result(property = "dataSourceRequesterName", column = "data_source_requester_name"),	
+		@Result(property = "dataSourceRequesterSurname", column = "data_source_requester_surname"),
+		@Result(property = "dataSourceRequesterMail", column = "data_source_requester_mail"),	
+		@Result(property = "dataSourcePrivacyAcceptance", column = "data_source_privacy_acceptance"), 			
+		@Result(property = "dataSourceIcon", column = "data_source_icon"),
+		
+        @Result(property = "idDataSource", column = "id_data_source"),
+        @Result(property = "idSmartObject", column = "id_smart_object"),
+        
+        //@Result(property = "idStream", column = "idstream"), 
+        //@Result(property = "idDataSource", column = "id_data_source"),
+        //@Result(property = "streamCode", column = "streamcode"), 
+        //@Result(property = "streamName", column = "streamname"), 
+        //@Result(property = "streamSaveData", column = "savedata"),
+        //@Result(property = "dataSourceVersion", column = "datasourceversion"), 
+        @Result(property = "fps", column = "fps"),
+  	  
+		@Result(property = "dataSourceVisibility", column = "data_source_visibility"), 
+		@Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),  
+		@Result(property = "dataSourceRegistrationDate", column = "data_source_registration_date"), 
+		@Result(property = "dataSourceName", column = "data_source_name"),
+		
+		@Result(property = "statusCode", column = "statuscode"), 
+		@Result(property = "statusDescription", column = "status_description"),  
+		@Result(property = "idStatus", column = "id_status"), 
+
+		@Result(property = "domIdDomain", column = "dom_id_domain"),  
+		@Result(property = "domLangEn", column = "dom_langen"),  
+		@Result(property = "domLangIt", column = "dom_langit"),  
+		@Result(property = "domDomainCode", column = "dom_domaincode"),  
+		@Result(property = "subIdSubDomain", column = "sub_id_subdomain"), 
+		@Result(property = "subSubDomainCode", column = "sub_subdomaincode"),  
+		@Result(property = "subLangIt", column = "sub_lang_it"),  
+		@Result(property = "subLangEn", column = "sub_lang_en"), 
+  	
+		@Result(property = "organizationCode", column = "organizationcode"),  
+		@Result(property = "organizationDescription", column = "organization_description"),  
+		@Result(property = "idOrganization", column = "id_organization"),
+		
+		@Result(property = "dataSourceIsActive", column = "data_source_is_active"), 
+		@Result(property = "dataSourceIsManager", column = "data_source_is_manager"),
+		@Result(property = "tenantCode", column = "tenantcode"),
+		@Result(property = "tenantName", column = "tenant_name"),
+		@Result(property = "tenantDescription", column = "tenant_description"),
+		@Result(property = "idTenant", column = "id_tenant"),
+		
+		@Result(property = "smartObjectCode", column = "smart_object_code"),
+		@Result(property = "smartObjectName", column = "smart_object_name"),
+		@Result(property = "idSmartObject", column = "id_smart_object"),
+		@Result(property = "smartObjectDescription", column = "smart_object_description"),
+		@Result(property = "smartObjectSlug", column = "smart_object_slug"),
+		  
+		@Result(property = "smartObjectCategoryCode", column = "smart_object_category_code"),
+		@Result(property = "smartObjectCategoryDescription", column = "smart_object_category_description"),
+		@Result(property = "idSoCategory", column = "id_so_category"),
+		  
+		@Result(property = "soTypeCode", column = "sotypecode"),
+		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"),
+		@Result(property = "idSoType", column = "id_so_type"),
+		@Result(property = "sharingTenant", column = "sharing_tenant")
+      })	
+	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION
+						+ WHERE_STREAM_SOCODE + WHERE_STREAM_STREAMCODE, "</script>"}) 
+	DettaglioStream selectDettaglioStreamBySoCodeStreamCode( @Param("soCode") String soCode, @Param("streamCode") String streamCode);
 	
 }

@@ -972,4 +972,44 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
+	
+	
+	/**
+	 * LOAD Stream by IdStream
+	 * 	 
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_STREAM_BY_IDSTREAM, notes = BO_LOAD_STREAM_BY_IDSTREAM_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@GetMapping("/streams/{idStream}")
+	public ResponseEntity<Object> loadStreamByIdStream(
+			@PathVariable final Integer idStream, final HttpServletRequest request) {
+		logger.info("loadStreamByIdStream");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.selectStreamByIdStream(idStream);
+			}
+		}, logger);
+	}
+	
+	
+	/**
+	 * LOAD Stream by IdStream
+	 * 	 
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE, notes = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@GetMapping("/streams/{soCode}/{streamCode}")
+	public ResponseEntity<Object> loadStreamBySoCodeStreamCode(
+			@PathVariable final String  soCode, 
+			@PathVariable final String  streamCode,
+			final HttpServletRequest request) {
+		logger.info("loadStreamBySoCodeStreamCode");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.selectStreamBySoCodeStreamCode(soCode, streamCode);
+			}
+		}, logger);
+	}
 }
