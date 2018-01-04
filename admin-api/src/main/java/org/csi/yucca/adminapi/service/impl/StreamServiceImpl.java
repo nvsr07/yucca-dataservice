@@ -71,6 +71,8 @@ import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
@@ -79,6 +81,7 @@ import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
+import org.csi.yucca.adminapi.util.DatasetSubtype;
 import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.FeedbackStatus;
 import org.csi.yucca.adminapi.util.ManageOption;
@@ -833,7 +836,7 @@ public class StreamServiceImpl implements StreamService {
 
 		checkMaxNumStream(request.getIdTenant());
 
-		checkStreamCode(request.getStreamcode(), smartobject.getIdSmartObject());
+		checkStreamCode(request.getStreamcode(), smartobject.getSocode());
 
 		checkInternalSmartObject(request, smartobject.getIdSoType());
 		
@@ -1165,12 +1168,12 @@ public class StreamServiceImpl implements StreamService {
 	 * @param idSmartobject
 	 * @throws BadRequestException
 	 */
-	private void checkStreamCode(String streamcode, Integer idSmartobject) throws BadRequestException {
+	private void checkStreamCode(String streamcode, String soCode) throws BadRequestException {
 		checkCode(streamcode, "streamcode");
-		Stream stream = streamMapper.selectStreamByStreamcodeAndIdSmartObject(streamcode, idSmartobject);
+		Stream stream = streamMapper.selectStreamByStreamcodeAndSoCode(streamcode, soCode);
 		if (stream != null) {
 			throw new BadRequestException(Errors.INTEGRITY_VIOLATION, "There is another stream with streamcode [ "
-					+ streamcode + " ] and idSmartObject [ " + idSmartobject + " ]");
+					+ streamcode + " ] and soCode [ " + soCode + " ]");
 		}
 	}
 	
@@ -1471,6 +1474,54 @@ public class StreamServiceImpl implements StreamService {
 	
 	private void badRequestActionOnStream() throws BadRequestException{
 		badRequestActionOnStream(null);
+	}
+
+	@Override
+	public ServiceResponse selectStreamByIdStream(Integer idStream)
+			throws BadRequestException, NotFoundException, Exception {
+		
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		checkIfFoundRecord(dettaglioStream);
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+
+		DettaglioDataset dettaglioDataset = null;
+		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true)))
+		{
+			dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		}
+
+		if(dettaglioDataset != null){
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream)); 
+		}
+		else{
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioSmartobject, listInternalStream));
+		}
+
+		
+	}
+
+	@Override
+	public ServiceResponse selectStreamBySoCodeStreamCode(String soCode,
+			String streamCode) throws BadRequestException, NotFoundException,
+			Exception {
+		DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(soCode, streamCode);
+		checkIfFoundRecord(dettaglioStream);
+		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+
+		DettaglioDataset dettaglioDataset = null;
+		if (dettaglioStream.getSavedata() != null && dettaglioStream.getSavedata().equals(Util.booleanToInt(true)))
+		{
+			dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		}
+
+		if(dettaglioDataset != null){
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream)); 
+		}
+		else{
+			return buildResponse(new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioSmartobject, listInternalStream));
+		}
 	}
 	
 }

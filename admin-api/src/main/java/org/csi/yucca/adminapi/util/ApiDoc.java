@@ -248,4 +248,11 @@ public class ApiDoc {
 	
 	public static final String BO_LOAD_API = "LOAD APIS";
 	public static final String BO_LOAD_API_NOTES = "Load api from api code with all details.";
+	
+	public static final String BO_LOAD_STREAM_BY_IDSTREAM = "LOAD STREAM BY IDSTREAM";
+	public static final String BO_LOAD_STREAM_BY_IDSTREAM_NOTES = "Load stream from idStream with all details.";
+
+	public static final String BO_LOAD_STREAM_BY_SOCODE_STREAMCODE = "LOAD STREAM BY SOCODE AND STREAMCODE";
+	public static final String BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES = "Load stream from smartobject code and stream code with all details.";
+
 }
