@@ -811,7 +811,7 @@ public interface StreamMapper {
 	+ "#{internalquery},#{twtquery},#{twtgeoloclat},#{twtgeoloclon},#{twtgeolocradius},#{twtgeolocunit},#{twtlang},"
 	+ "#{twtlocale},#{twtcount},#{twtresulttype},#{twtuntil},#{twtratepercentage},#{twtlastsearchid},#{idSmartObject})";	
 	@Insert(INSERT_STREAM)
-	@Options(useGeneratedKeys=true, keyProperty="idstream")
+	@Options(useGeneratedKeys=true, keyProperty="idstream", keyColumn="idstream")
 	int insertStream(Stream stream);
 	
 	
