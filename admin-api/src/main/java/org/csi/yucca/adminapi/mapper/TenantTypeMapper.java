@@ -2,12 +2,9 @@ package org.csi.yucca.adminapi.mapper;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
-import org.csi.yucca.adminapi.model.Organization;
-import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.TenantsType;
 import org.csi.yucca.adminapi.util.Constants;
 

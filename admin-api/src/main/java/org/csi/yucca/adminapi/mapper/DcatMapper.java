@@ -18,7 +18,7 @@ public interface DcatMapper {
 	 * 					INSERT DCAT
 	 * ***********************************************************************/
 	public static final String INSERT_DCAT = 
-			"INSERT INTO int_yucca.yucca_dcat(dcatdataupdate, dcatnomeorg, dcatemailorg, dcatcreatorname, dcatcreatortype, dcatcreatorid, dcatrightsholdername, dcatrightsholdertype, dcatrightsholderid, dcatready) "
+			"INSERT INTO " + DCAT_TABLE + "(dcatdataupdate, dcatnomeorg, dcatemailorg, dcatcreatorname, dcatcreatortype, dcatcreatorid, dcatrightsholdername, dcatrightsholdertype, dcatrightsholderid, dcatready) "
 			+ "VALUES (#{dcatdataupdate}, #{dcatnomeorg}, #{dcatemailorg}, #{dcatcreatorname}, #{dcatcreatortype}, #{dcatcreatorid}, #{dcatrightsholdername}, #{dcatrightsholdertype}, #{dcatrightsholderid}, #{dcatready}) ";
 	@Insert(INSERT_DCAT)
 	@Options(useGeneratedKeys=true, keyProperty="idDcat")

@@ -99,7 +99,7 @@ public interface DataSourceMapper {
 			+ "#{externalreference}, #{opendataauthor}, #{opendataupdatedate}, #{opendatalanguage}, #{lastupdate}, #{unpublished}, "
 			+ "#{fabriccontrolleroutcome}, #{fbcoperationfeedback}, #{idOrganization}, #{idSubdomain}, #{idDcat}, #{idLicense}, #{idStatus})";
 	@Insert(INSERT_DATA_SOURCE)
-	@Options(useGeneratedKeys=true, keyProperty="idDataSource")
+	@Options(useGeneratedKeys=true, keyProperty="idDataSource", keyColumn="id_data_source")
 	int insertDataSource(DataSource dataSource);
 	
 	/*************************************************************************
