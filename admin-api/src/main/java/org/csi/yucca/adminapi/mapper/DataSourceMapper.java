@@ -1,7 +1,5 @@
 package org.csi.yucca.adminapi.mapper;
 
-import java.sql.Timestamp;
-
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
@@ -82,7 +80,7 @@ public interface DataSourceMapper {
 	" FROM " +  DATA_SOURCE_TABLE +       
 	" WHERE id_data_source = #{idDataSource} and datasourceversion=#{currentDataSourceVersion}";
 	@Insert(CLONE_DATA_SOURCE_NEW_VERSION_AND_STATUS)
-	int cloneDataSource(@Param("newDataSourceVersion") Integer newDataSourceVersion,
+	int cloneDataSourceNewVersionAndStatus(@Param("newDataSourceVersion") Integer newDataSourceVersion,
 			@Param("currentDataSourceVersion") Integer currentDataSourceVersion, 
 			@Param("idDataSource") Integer idDataSource,
 			@Param("idStatus") Integer idStatus);

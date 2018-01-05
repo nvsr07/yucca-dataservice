@@ -18,7 +18,6 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkVisibility;
 import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
 import static org.csi.yucca.adminapi.util.ServiceUtil.getTenantCodeListFromUser;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataset;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertDcat;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
@@ -54,7 +53,6 @@ import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
-import org.csi.yucca.adminapi.model.DataSource;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
@@ -69,7 +67,6 @@ import org.csi.yucca.adminapi.model.TenantDataSource;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
-import org.csi.yucca.adminapi.request.IDataSourceRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
@@ -259,7 +256,7 @@ public class StreamServiceImpl implements StreamService {
 		Integer newVersion =  dettaglioStream.getDatasourceversion() + 1;
 		
 		//	duplicare il record su yucca_datasource ma mettendo nuova datasourceversion e id_status quello relativo allo stato DRAFT		
-		dataSourceMapper.cloneDataSource( newVersion, dettaglioStream.getDatasourceversion(), dettaglioStream.getIdDataSource(), Status.DRAFT.id());
+		dataSourceMapper.cloneDataSourceNewVersionAndStatus( newVersion, dettaglioStream.getDatasourceversion(), dettaglioStream.getIdDataSource(), Status.DRAFT.id());
 
 		//	duplicare il record su yucca_stream ma mettendo nuova datasourceversion
 		streamMapper.cloneStream(newVersion, dettaglioStream.getDatasourceversion(), dettaglioStream.getIdstream());
@@ -559,7 +556,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @param smartobject
 	 */
 	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization, Smartobject smartobject) throws Exception{
-
+		
 		Timestamp now = Util.getNow();
 		Integer idLicense = null;
 
@@ -568,12 +565,8 @@ public class StreamServiceImpl implements StreamService {
 		if ( Visibility.PUBLIC.code().equals(request.getVisibility())){
 			idLicense = insertLicense(request.getLicense(), licenseMapper);
 		}
-
 		
-//		hkggg
-//		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
-		Integer idDataSource = insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id());
-
+		Integer idDataSource = ServiceUtil.insertDataSource(request, organization.getIdOrganization(), idDcat, idLicense, Status.DRAFT.id(), dataSourceMapper);
 		
 		Stream stream = insertStream(request, idDataSource, smartobject.getIdSmartObject());
 
@@ -596,42 +589,6 @@ public class StreamServiceImpl implements StreamService {
 		return stream;
 
 	}
-
-	public Integer insertDataSource(IDataSourceRequest request, Integer idOrganization, 
-			Long idDcat, Integer idLicense, Integer idStatus) throws Exception{
-		
-		DataSource dataSource = new DataSource();
-		dataSource.setDatasourceversion(DATASOURCE_VERSION);
-		dataSource.setIscurrent(Util.booleanToInt(true));
-		dataSource.setUnpublished(Util.booleanToInt(request.getUnpublished()));
-		dataSource.setName(request.getName());
-		dataSource.setVisibility(request.getVisibility());
-		dataSource.setCopyright(request.getVisibility());
-		dataSource.setDisclaimer(request.getDisclaimer());		
-		dataSource.setRegistrationdate(Util.getNow());
-		dataSource.setRequestername(request.getRequestername());
-		dataSource.setRequestersurname(request.getRequestersurname());
-		dataSource.setRequestermail(request.getRequestermail());
-		dataSource.setPrivacyacceptance(Util.booleanToInt(request.getPrivacyacceptance()));
-		dataSource.setIcon(request.getIcon());		
-		dataSource.setIsopendata(request.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
-		dataSource.setExternalreference(request.getExternalreference());
-		dataSource.setOpendataauthor(request.getOpenData() != null ? request.getOpenData().getOpendataauthor() : null);
-		dataSource.setOpendataupdatedate(request.getOpenData() != null? Util.dateStringToTimestamp(request.getOpenData().getOpendataupdatedate()) : null);
-		dataSource.setOpendatalanguage(request.getOpenData() != null ? request.getOpenData().getOpendatalanguage() : null);
-		dataSource.setLastupdate(request.getOpenData() != null ? request.getOpenData().getLastupdate() : null);
-		dataSource.setIdOrganization(idOrganization);		
-		dataSource.setIdSubdomain(request.getIdSubdomain());
-		dataSource.setIdStatus(idStatus);		
-		
-		dataSource.setIdDcat(idDcat);
-		dataSource.setIdLicense(idLicense);
-		
-		dataSourceMapper.insertDataSource(dataSource);
-		
-		return dataSource.getIdDataSource();
-	}
-	
 	
 	/**
 	 * 
