@@ -1052,7 +1052,19 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 	
-	
+	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
+	@GetMapping("/datasets/datasetCode={datasetCode}")
+	public ResponseEntity<Object> loadDatasetByDatasetCode(
+			@PathVariable final String datasetCode,
+			final HttpServletRequest request) {
+		logger.info("loadDatasetByDatasetCode");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.selectDatasetByDatasetCode(datasetCode);
+			}
+		}, logger);
+	}
 	
 	/**
 	 * LOAD Stream by IdStream
