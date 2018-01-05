@@ -4,8 +4,8 @@ public class SubdomainRequest {
 
 	private Integer idSubdomain;
 	private String subdomaincode;
-	private String langIt;
-	private String langEn;
+	private String langit;
+	private String langen;
 	private int deprecated;
 	private Integer idDomain;
 
@@ -26,19 +26,19 @@ public class SubdomainRequest {
 	}
 
 	public String getLangIt() {
-		return langIt;
+		return langit;
 	}
 
 	public void setLangIt(String langIt) {
-		this.langIt = langIt;
+		this.langit = langIt;
 	}
 
 	public String getLangEn() {
-		return langEn;
+		return langen;
 	}
 
 	public void setLangEn(String langEn) {
-		this.langEn = langEn;
+		this.langen = langEn;
 	}
 
 	public int getDeprecated() {
