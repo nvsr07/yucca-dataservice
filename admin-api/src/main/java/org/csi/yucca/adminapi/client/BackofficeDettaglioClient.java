@@ -34,4 +34,8 @@ public class BackofficeDettaglioClient {
 		return AdminApiClientDelegate.getFromAdminApi(adminApiBaseUrl+"/1/backoffice/datasets/"+Integer.toString(IdDataset)+"/"+Integer.toString(datasetVersion),BackofficeDettaglioStreamDatasetResponse.class,logger, null);
 	}
 
+	public static  BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(String adminApiBaseUrl, String datasetCode, Integer datasetVersion, String logger) throws AdminApiClientException
+	{
+		return AdminApiClientDelegate.getFromAdminApi(adminApiBaseUrl+"/1/backoffice/datasets/datasetCode="+datasetCode+"/"+Integer.toString(datasetVersion),BackofficeDettaglioStreamDatasetResponse.class,logger, null);
+	}
 }

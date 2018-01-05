@@ -261,4 +261,6 @@ public class ApiDoc {
 	public static final String BO_LOAD_DATASET_BY_IDDATASET_DATASETVERSION = "LOAD LOAD DATASET BY IDDATASET AND DATASETVERSION";
 	public static final String BO_LOAD_DATASET_BY_IDDATASET_DATASETVERSION_NOTES = "Load dataset from iddatatset and datasetversion with all details.";
 	
+	public static final String BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION = "LOAD LOAD DATASET BY DATASETCODE AND DATASETVERSION";
+	public static final String BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES = "Load dataset from datatsetcode and datasetversion with all details.";
 }

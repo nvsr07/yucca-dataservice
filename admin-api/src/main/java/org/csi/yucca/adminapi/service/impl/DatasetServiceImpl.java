@@ -534,6 +534,45 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return buildResponse(dettaglio);
 	}
+
+	@Override
+	public ServiceResponse selectDatasetByDatasetCodeDatasetVersion(
+			String datasetCode, Integer datasetVersion)
+			throws BadRequestException, NotFoundException, Exception {
+		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
+		
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCodeDatasourceVersion(datasetCode, datasetVersion);
+		
+		checkIfFoundRecord(dettaglioDataset);
+
+		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+				DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+
+			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			if (dettaglioStream != null) {
+
+				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+				
+				List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+				
+				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+			}				
+		}
+			
+		DettaglioDataset dettaglioBinary = null;
+		
+		if (dettaglioDataset.getIdDataSourceBinary()!=null)
+		{
+			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
+					dettaglioDataset.getIdDataSourceBinary(), 	
+					dettaglioDataset.getDatasourceversionBinary());
+		}
+			
+		dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+
+		return buildResponse(dettaglio);
+	}
+
 	
 	@Override
 	public ServiceResponse selectDatasetByIdDatasetDatasetVersion(Integer idDataset, Integer datasetVersion)
@@ -836,6 +875,8 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return buildResponse(schema);
 	}
+
+
 
 
 

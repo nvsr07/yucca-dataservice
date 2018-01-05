@@ -294,6 +294,8 @@ public interface DatasetMapper {
 	
 	public static final String WHERE_DETTAGLIO_DATASET_DATASOURCEVERSION = " AND yucca_data_source.datasourceversion = #{dataSourceVersion} ";
 
+	public static final String WHERE_DETTAGLIO_DATASET_DATASETCODE = " AND yucca_dataset.datasetcode = #{datasetCode} ";
+
 	
 	
 	
@@ -525,6 +527,67 @@ public interface DatasetMapper {
 		  			WHERE_DETTAGLIO_DATASET_IDDATASET+ WHERE_DETTAGLIO_DATASET_DATASOURCEVERSION+"</script>"}) 
 	  DettaglioDataset selectDettaglioDatasetByIdDatasetDatasourceVersion( @Param("idDataSet") Integer idDataset, 
 			  @Param("dataSourceVersion") Integer dataSourceVersion);
+	
+	
+	
+	
+	@Results({
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
+		@Result(property = "idDataSource", column = "id_data_source"),
+		@Result(property = "description", column = "dataset_description"),
+		@Result(property = "idDatasetType", column = "id_dataset_type"),	
+		@Result(property = "idDatasetSubtype", column = "id_dataset_subtype"),
+	    @Result(property = "idDataSourceBinary", column = "id_data_source_binary"),
+	    @Result(property = "datasourceversionBinary", column = "datasourceversion_binary"),	
+	    @Result(property = "dataSourceVisibility", column = "data_source_visibility"),	
+	    @Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),	
+	    @Result(property = "dataSourceRegistrationDate", column = "data_source_registration_date"),
+	    @Result(property = "statusCode", column = "statuscode"),
+	    @Result(property = "statusDescription", column = "status_description"),
+	    @Result(property = "idStatus", column = "id_status"),
+	    @Result(property = "domIdDomain", column = "dom_id_domain"),
+	    @Result(property = "domLangEn", column = "dom_langen"),
+	    @Result(property = "domLangIt", column = "dom_langit"),
+	    @Result(property = "domDomainCode", column = "dom_domaincode"),
+		@Result(property = "subIdSubDomain", column = "sub_id_subdomain"),
+		@Result(property = "subSubDomainCode", column = "sub_subdomaincode"),
+		@Result(property = "subLangIt", column = "sub_lang_it"),
+		@Result(property = "subLangEn", column = "sub_lang_en"),
+		@Result(property = "organizationCode", column = "organizationcode"),
+		@Result(property = "organizationDescription", column = "organization_description"),
+		@Result(property = "idOrganization", column = "id_organization"),
+		@Result(property = "dataSourceIsActive", column = "isactive"),
+		@Result(property = "dataSourceIsManager", column = "ismanager"),
+		@Result(property = "tenantCode", column = "tenantcode"),
+		@Result(property = "tenantName", column = "tenant_name"),
+		@Result(property = "tenantDescription", column = "tenant_description"),
+		@Result(property = "idTenant", column = "id_tenant"),
+		@Result(property = "datasetType", column = "dataset_type"),
+		@Result(property = "datasetTypeDescription", column = "dataset_type_description"),
+		@Result(property = "datasetSubtype", column = "dataset_subtype"), 	
+		@Result(property = "datasetSubtypeDescription", column = "dataset_subtype_description"), 
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"), 	
+		@Result(property = "dataSourceIsOpendata", column = "data_source_is_opendata"), 
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"), 
+		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"), 
+		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"), 
+		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"), 
+		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"), 
+		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"), 
+		@Result(property = "dataSourceRequesterName", column = "data_source_requester_name"), 
+		@Result(property = "dataSourceRequesterSurname", column = "data_source_requester_surname"), 
+		@Result(property = "dataSourceRequesterMail", column = "data_source_requester_mail"), 
+		@Result(property = "dataSourcePrivacyAcceptance", column = "data_source_privacy_acceptance"), 
+		@Result(property = "dataSourceIcon", column = "data_source_icon"), 
+		@Result(property = "sharingTenant", column = "sharing_tenant") 
+      })
+	  @Select({"<script>", SELECT_DETTAGLIO_DATASET,WHERE_DETTAGLIO_DATASET_START + 
+		  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_DATASOURCEVERSION+"</script>"}) 
+	  DettaglioDataset selectDettaglioDatasetByDatasetCodeDatasourceVersion(
+			  @Param("datasetCode")  String datasetCode, @Param("dataSourceVersion") Integer dataSourceVersion);	
+	
+	
+	
 	
 	/********************************************************************************************
 	 * 				SELECT DATASETS
@@ -830,8 +893,10 @@ public interface DatasetMapper {
       })		
 	@Select({"<script>", SELECT_DATASET_FROM_JDBC, "</script>"}) 
 	List<DettaglioDataset> selectDatasetFromJdbc(@Param("jdbcdburl") String jdbcdburl, @Param("jdbcdbname") String jdbcdbname, @Param("jdbcdbtype") String jdbcdbtype, 
-			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode, @Param("tenantCodeManager") String  tenantCodeManager, @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
-	
+			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode, @Param("tenantCodeManager") String  tenantCodeManager, @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);
+
+
+
 	
 	
 }
