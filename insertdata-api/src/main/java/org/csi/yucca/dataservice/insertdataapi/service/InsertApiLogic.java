@@ -12,18 +12,20 @@ import java.util.logging.Logger;
 
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import net.minidev.json.JSONStyle;
 
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.hdfs.SDPInsertApiHdfsDataAccess;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMedataFactory;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMetadataApiAccess;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
-import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoTenantInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.StreamInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.TenantInfo;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.phoenix.SDPInsertApiPhoenixDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.solr.SDPInsertApiSolrDataAccess;
@@ -84,11 +86,13 @@ public class InsertApiLogic {
 				curBulkToIns = datiToIns.get(key);
 				curBulkToIns.setGlobalReqId(idRequest);
 
+				
 				// int righeinserite=mongoAccess.insertBulk(tenant,
 				// curBulkToIns,indiceDaCReare);
 				Long startTimeX = System.currentTimeMillis();
 				log.finest("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
-				phoenixAccess.insertBulk(tenant, curBulkToIns);
+				phoenixAccess.insertBulk(curBulkToIns.getCollectionConfDto().getPhoenixSchemaName(),
+						curBulkToIns.getCollectionConfDto().getPhoenixTableName(), curBulkToIns);
 				log.finest("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 
 				// TODO CONTROLLI
@@ -101,7 +105,7 @@ public class InsertApiLogic {
 					try {
 						startTimeX = System.currentTimeMillis();
 						log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
-						solrInsertService.execute(solrInsertRunnable(tenant, curBulkToIns));
+						solrInsertService.execute(solrInsertRunnable(curBulkToIns.getCollectionConfDto().getSolrCollectionName(), curBulkToIns));
 						log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 					} catch (Exception e) {
 						log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
@@ -138,12 +142,12 @@ public class InsertApiLogic {
 
 	}
 
-	private Runnable solrInsertRunnable(final String tenant, final DatasetBulkInsert curBulkToIns) {
+	private Runnable solrInsertRunnable(final String collection, final DatasetBulkInsert curBulkToIns) {
 		Runnable solrInsertRunnable = new Runnable() {
 			public void run() {
 				try {
 					SDPInsertApiSolrDataAccess solrAccess = new SDPInsertApiSolrDataAccess();
-					solrAccess.insertBulk(tenant, curBulkToIns);
+					solrAccess.insertBulk(collection, curBulkToIns);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -158,8 +162,8 @@ public class InsertApiLogic {
 		boolean endArray = false;
 		JSONObject ooo = null;
 		HashMap<String, DatasetBulkInsert> ret = new HashMap<String, DatasetBulkInsert>();
-		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
-		MongoDatasetInfo infoDataset = null;
+		SDPInsertMetadataApiAccess metadataAccess = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess();
+		DatasetInfo infoDataset = null;
 		Integer datasetVersion = null;
 		int reqVersion = -1;
 
@@ -186,12 +190,12 @@ public class InsertApiLogic {
 
 				datasetVersion = (Integer) ooo.get("$.datasetVersion");
 				reqVersion = (datasetVersion == null ? -1 : datasetVersion.intValue());
-				infoDataset = mongoAccess.getInfoDataset(datasetCode, reqVersion, tenant);
+				infoDataset = metadataAccess.getInfoDataset(datasetCode, reqVersion, tenant);
 
 				if (null == infoDataset)
 					throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, " for dataset " + datasetCode);
 
-				MongoDatasetInfo infoDatasetV1 = mongoAccess.getInfoDataset(datasetCode, 1, tenant);
+				DatasetInfo infoDatasetV1 = metadataAccess.getInfoDataset(datasetCode, 1, tenant);
 
 				String insStrConst = "";
 				insStrConst += "  idDataset : " + infoDataset.getDatasetId();
@@ -204,8 +208,8 @@ public class InsertApiLogic {
 				String sensor = null;
 				if ("streamDataset".equals(infoDataset.getDatasetSubType())) {
 					// aggiungo il campo fittizio Time
-					infoDataset.getCampi().add(new FieldsMongoDto("time", FieldsMongoDto.DATA_TYPE_DATETIME, infoDataset.getDatasetId(), infoDataset.getDatasetVersion()));
-					MongoStreamInfo infoStream = SDPInsertApiMongoDataAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
+					infoDataset.getCampi().add(new FieldsDto("time", FieldsDto.DATA_TYPE_DATETIME, infoDataset.getDatasetId(), infoDataset.getDatasetVersion()));
+					StreamInfo infoStream = metadataAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
 					// System.out.println(" TIMETIME parseJsonInputDataset -- recuperata info stream--> "+System.currentTimeMillis());
 
 					// aggiungo stream e sensore alla costante
@@ -217,8 +221,8 @@ public class InsertApiLogic {
 				}
 				if ("socialDataset".equals(infoDataset.getDatasetSubType())) {
 					// aggiungo il campo fittizio Time
-					infoDataset.getCampi().add(new FieldsMongoDto("time", FieldsMongoDto.DATA_TYPE_DATETIME, infoDataset.getDatasetId(), infoDataset.getDatasetVersion()));
-					MongoStreamInfo infoStream = SDPInsertApiMongoDataAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
+					infoDataset.getCampi().add(new FieldsDto("time", FieldsDto.DATA_TYPE_DATETIME, infoDataset.getDatasetId(), infoDataset.getDatasetVersion()));
+					StreamInfo infoStream = metadataAccess.getStreamInfoForDataset(tenant, infoDataset.getDatasetId(), infoDataset.getDatasetVersion());
 					// System.out.println(" TIMETIME parseJsonInputDataset -- recuperata info stream--> "+System.currentTimeMillis());
 
 					// aggiungo stream e sensore alla costante
@@ -440,8 +444,8 @@ public class InsertApiLogic {
 		boolean endArray = false;
 		JSONObject ooo = null;
 		HashMap<String, DatasetBulkInsert> ret = new HashMap<String, DatasetBulkInsert>();
-		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
-		MongoDatasetInfo infoDataset = null;
+		SDPInsertMetadataApiAccess mongoAccess = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess();
+		DatasetInfo infoDataset = null;
 		Integer datasetVersion = null;
 		int reqVersion = -1;
 
@@ -522,8 +526,8 @@ public class InsertApiLogic {
 
 	}
 
-	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns, String insStrConst, MongoDatasetInfo datasetMongoInfo,
-			MongoDatasetInfo datasetMongoInfoV1, boolean isVerOneRequired) throws Exception {
+	private DatasetBulkInsert parseGenericDataset(String tenant, JSONObject bloccoDaIns, String insStrConst, DatasetInfo datasetMongoInfo,
+			DatasetInfo datasetMongoInfoV1, boolean isVerOneRequired) throws Exception {
 		// System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret = null;
 
@@ -532,14 +536,14 @@ public class InsertApiLogic {
 		boolean endArray = false;
 		// ArrayList<String> rigadains = new ArrayList<String>();
 
-		ArrayList<FieldsMongoDto> elencoCampi = datasetMongoInfo.getCampi();
+		ArrayList<FieldsDto> elencoCampi = datasetMongoInfo.getCampi();
 
-		HashMap<String, FieldsMongoDto> campiMongo = new HashMap<String, FieldsMongoDto>();
+		HashMap<String, FieldsDto> campiMongo = new HashMap<String, FieldsDto>();
 		for (int i = 0; i < elencoCampi.size(); i++) {
 			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
 		}
 
-		HashMap<String, FieldsMongoDto> campiMongoV1 = new HashMap<String, FieldsMongoDto>();
+		HashMap<String, FieldsDto> campiMongoV1 = new HashMap<String, FieldsDto>();
 		for (int i = 0; i < datasetMongoInfoV1.getCampi().size(); i++) {
 			campiMongoV1.put(datasetMongoInfoV1.getCampi().get(i).getFieldName(), datasetMongoInfoV1.getCampi().get(i));
 		}
@@ -554,7 +558,7 @@ public class InsertApiLogic {
 			arrayValori = new JSONArray();
 			arrayValori.add(valuesObject);
 		}
-
+		
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		// System.out.println(" TIMETIME parseGenericDataset -- inzio ciclo controllo--> "+System.currentTimeMillis());
 		// int numeroCampiMongo = elencoCampi.size();
@@ -584,8 +588,10 @@ public class InsertApiLogic {
 			}
 
 		}
-		// System.out.println(" TIMETIME parseGenericDataset -- fine ciclo controllo--> "+System.currentTimeMillis());
-		ret = new DatasetBulkInsert();
+		CollectionConfDto collectionConfDto = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess().getCollectionInfo(tenant, 
+				datasetMongoInfo.getDatasetId(), datasetMongoInfo.getDatasetVersion(), datasetMongoInfo.getDatasetSubType());
+
+		ret = new DatasetBulkInsert(collectionConfDto);
 		ret.setIdDataset(datasetMongoInfo.getDatasetId());
 		ret.setDatasetVersion(datasetMongoInfo.getDatasetVersion());
 		ret.setNumRowToInsFromJson(i);
@@ -597,7 +603,7 @@ public class InsertApiLogic {
 		return ret;
 	}
 
-	private DatasetBulkInsert parseMediaDataset(String tenant, JSONObject bloccoDaIns, String insStrConst, MongoDatasetInfo datasetMongoInfo) throws Exception {
+	private DatasetBulkInsert parseMediaDataset(String tenant, JSONObject bloccoDaIns, String insStrConst, DatasetInfo datasetMongoInfo) throws Exception {
 		// System.out.println(" TIMETIME parseGenericDataset -- inizio--> "+System.currentTimeMillis());
 		DatasetBulkInsert ret = null;
 
@@ -606,20 +612,20 @@ public class InsertApiLogic {
 		boolean endArray = false;
 		ArrayList<String> rigadains = new ArrayList<String>();
 
-		ArrayList<FieldsMongoDto> elencoCampi = datasetMongoInfo.getCampi();
+		ArrayList<FieldsDto> elencoCampi = datasetMongoInfo.getCampi();
 
-		HashMap<String, FieldsMongoDto> campiMongo = new HashMap<String, FieldsMongoDto>();
+		HashMap<String, FieldsDto> campiMongo = new HashMap<String, FieldsDto>();
 		for (int i = 0; i < elencoCampi.size(); i++) {
 			campiMongo.put(elencoCampi.get(i).getFieldName(), elencoCampi.get(i));
 		}
 
 		campiMongo.remove("urlDownloadBinary");
 		campiMongo.remove("idBinary");
-		FieldsMongoDto filePath = new FieldsMongoDto("pathHdfsBinary", FieldsMongoDto.DATA_TYPE_STRING);
+		FieldsDto filePath = new FieldsDto("pathHdfsBinary", FieldsDto.DATA_TYPE_STRING);
 		campiMongo.put(filePath.getFieldName(), filePath);
-		FieldsMongoDto tenantBinary = new FieldsMongoDto("tenantBinary", FieldsMongoDto.DATA_TYPE_STRING);
+		FieldsDto tenantBinary = new FieldsDto("tenantBinary", FieldsDto.DATA_TYPE_STRING);
 		campiMongo.put(tenantBinary.getFieldName(), tenantBinary);
-		FieldsMongoDto idBinary = new FieldsMongoDto("idBinary", FieldsMongoDto.DATA_TYPE_STRING);
+		FieldsDto idBinary = new FieldsDto("idBinary", FieldsDto.DATA_TYPE_STRING);
 		campiMongo.put(idBinary.getFieldName(), idBinary);
 
 		int i = 0;
@@ -640,8 +646,12 @@ public class InsertApiLogic {
 			}
 
 		}
+		
+		CollectionConfDto collectionConfDto = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess().getCollectionInfo(tenant, 
+				datasetMongoInfo.getDatasetId(), datasetMongoInfo.getDatasetVersion(), datasetMongoInfo.getDatasetSubType());
+		
 		// System.out.println(" TIMETIME parseGenericDataset -- fine ciclo controllo--> "+System.currentTimeMillis());
-		ret = new DatasetBulkInsert();
+		ret = new DatasetBulkInsert(collectionConfDto);
 		ret.setIdDataset(datasetMongoInfo.getDatasetId());
 		ret.setDatasetVersion(datasetMongoInfo.getDatasetVersion());
 		ret.setNumRowToInsFromJson(i);
@@ -653,7 +663,7 @@ public class InsertApiLogic {
 		return ret;
 	}
 
-	private String parseComponents(JSONObject components, String insStrConst, HashMap<String, FieldsMongoDto> campiMongo, HashMap<String, FieldsMongoDto> campiMongoV1,
+	private String parseComponents(JSONObject components, String insStrConst, HashMap<String, FieldsDto> campiMongo, HashMap<String, FieldsDto> campiMongoV1,
 			boolean isVerOneRequired) throws Exception {
 		Iterator<String> itCampiJson = components.keySet().iterator();
 
@@ -663,8 +673,8 @@ public class InsertApiLogic {
 		while (itCampiJson.hasNext()) {
 			String jsonField = (String) itCampiJson.next();
 
-			FieldsMongoDto campoMongo = campiMongo.get(jsonField);
-			FieldsMongoDto campoMongoV1 = campiMongoV1.get(jsonField);
+			FieldsDto campoMongo = campiMongo.get(jsonField);
+			FieldsDto campoMongoV1 = campiMongoV1.get(jsonField);
 			
 			// check if jsonField is in metadata definition. If not, there is a component unknown 
 			if (null == campoMongo)
@@ -744,11 +754,11 @@ public class InsertApiLogic {
 		if (null != datasetVersion)
 			reqVersion = datasetVersion.intValue();
 
-		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
+		SDPInsertMetadataApiAccess metadataAccess = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess();
 		// ArrayList<MongoStreamInfo>
 		// elencoStream=mongoAccess.getStreamInfo(tenant, (stream!=null ? stream
 		// : application), sensor);
-		ArrayList<MongoStreamInfo> elencoStream = SDPInsertApiMongoDataAccess.getStreamInfo(tenant, stream, (sensor != null ? sensor : application));
+		ArrayList<StreamInfo> elencoStream = metadataAccess.getStreamInfo(tenant, stream, (sensor != null ? sensor : application));
 
 		if (elencoStream == null || elencoStream.size() <= 0)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, ": " + (sensor != null ? sensor : application) + " (stream: " + stream + ")");
@@ -761,39 +771,39 @@ public class InsertApiLogic {
 
 			log.finest("[InsertApiLogic::parseMisura] nome stream, tipo stream: " + elencoStream.get(i).getStreamCode() + "," + elencoStream.get(i).getTipoStream());
 
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_APPLICATION && application == null)
+			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_APPLICATION && application == null)
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "
 						+ (sensor != null ? sensor : application) + " (stream: " + stream + ")");
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_SENSOR && sensor == null)
+			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_SENSOR && sensor == null)
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "
 						+ (sensor != null ? sensor : application) + " (stream: " + stream + ")");
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_TWEET && sensor == null)
+			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_TWEET && sensor == null)
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " sensor code expected, found application: "
 						+ (sensor != null ? sensor : application) + " (stream: " + stream + ")");
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_UNDEFINED)
+			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_UNDEFINED)
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND,
 						" invalid virtual object tpye: data insert allowed only for sensors and applications ");
 
 			log.finest("[InsertApiLogic::parseMisura]      OK --------------");
 
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_TWEET) {
+			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_TWEET) {
 				isVerOneRequired = false;
 				datasetType = "socialDataset";
 			}
-			if (elencoStream.get(i).getTipoStream() == MongoStreamInfo.STREAM_TYPE_INTERNAL) {
+			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_INTERNAL) {
 				isVerOneRequired = false;
 			}
 		}
 
-		ArrayList<FieldsMongoDto> elencoCampi = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("" + reqVersion));
-		ArrayList<FieldsMongoDto> elencoCampiV1 = elencoCampi;
+		ArrayList<FieldsDto> elencoCampi = metadataAccess.getCampiDataSet(datasetId, Long.parseLong("" + reqVersion));
+		ArrayList<FieldsDto> elencoCampiV1 = elencoCampi;
 		if (reqVersion != 1)
-			elencoCampiV1 = mongoAccess.getCampiDataSet(datasetId, Long.parseLong("1"));
+			elencoCampiV1 = metadataAccess.getCampiDataSet(datasetId, Long.parseLong("1"));
 
 		if (elencoCampi == null || elencoCampi.size() <= 0)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID, ": " + (stream != null ? stream : application) + " (sensor: "
 					+ sensor + ")");
-		HashMap<String, FieldsMongoDto> campiMongo = new HashMap<String, FieldsMongoDto>();
+		HashMap<String, FieldsDto> campiMongo = new HashMap<String, FieldsDto>();
 		long idDatasetTrovato = -1;
 		long datasetVersionTrovato = -1;
 		for (int i = 0; i < elencoCampi.size(); i++) {
@@ -802,7 +812,7 @@ public class InsertApiLogic {
 			datasetVersionTrovato = elencoCampi.get(i).getDatasetVersion();
 		}
 
-		HashMap<String, FieldsMongoDto> campiMongoV1 = new HashMap<String, FieldsMongoDto>();
+		HashMap<String, FieldsDto> campiMongoV1 = new HashMap<String, FieldsDto>();
 		for (int i = 0; i < elencoCampiV1.size(); i++) {
 			campiMongoV1.put(elencoCampiV1.get(i).getFieldName(), elencoCampiV1.get(i));
 		}
@@ -835,9 +845,9 @@ public class InsertApiLogic {
 
 		// ArrayList<String> rigadains = new ArrayList<String>();
 		// int numeroCampiMongo = elencoCampi.size();
-		FieldsMongoDto campotimeStamp = null;
+		FieldsDto campotimeStamp = null;
 		String timeStamp = null;
-		campotimeStamp = new FieldsMongoDto("aaa", FieldsMongoDto.DATA_TYPE_DATETIME);
+		campotimeStamp = new FieldsDto("aaa", FieldsDto.DATA_TYPE_DATETIME);
 		ArrayList<JSONObject> listJson = new ArrayList<JSONObject>();
 		JSONObject curElem = null;
 		while (i < arrayValori.size() && !endArray) {
@@ -874,7 +884,9 @@ public class InsertApiLogic {
 			}
 
 		}
-		ret = new DatasetBulkInsert();
+		CollectionConfDto collectionConfDto = metadataAccess.getCollectionInfo(tenant, idDatasetTrovato, datasetVersionTrovato,  datasetType);
+		
+		ret = new DatasetBulkInsert(collectionConfDto);
 		ret.setDatasetVersion(datasetVersionTrovato);
 		ret.setDatasetType(datasetType);
 		ret.setIdDataset(idDatasetTrovato);
@@ -899,17 +911,19 @@ public class InsertApiLogic {
 		System.out.println(getSmartobject_StreamFromJson(tenant, jsonInput).toJSONString());	
 	}
 
-	public DatasetDeleteOutput deleteManager(String codTenant, Long idDataset, Long datasetVersion) throws Exception {
+	public DatasetDeleteOutput deleteManager( String codTenant, Long idDataset, Long datasetVersion) throws Exception {
 
 		DatasetDeleteOutput outData = new DatasetDeleteOutput();
 
 		SDPInsertApiPhoenixDataAccess phoenixAccess = new SDPInsertApiPhoenixDataAccess();
 
-		SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
-		MongoDatasetInfo infoDataset = mongoAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
+		SDPInsertMetadataApiAccess metadataAccess = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess();
+		
+		DatasetInfo infoDataset = metadataAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
 		if (infoDataset == null)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
 		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
+
 
 		int numrowDeleted = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
 
@@ -922,15 +936,19 @@ public class InsertApiLogic {
 			String streamCode = null;
 			String streamVirtualEntitySlug = null;
 			if ("streamDataset".equals(infoDataset.getDatasetSubType()) || "socialDataset".equals(infoDataset.getDatasetSubType())) {
-				MongoStreamInfo streamInfo = SDPInsertApiMongoDataAccess.getStreamInfoForDataset(codTenant, idDataset, datasetVersion);
+				StreamInfo streamInfo = metadataAccess.getStreamInfoForDataset(codTenant, idDataset, datasetVersion);
 				streamCode = streamInfo.getStreamCode();
 				streamVirtualEntitySlug = streamInfo.getVirtualEntitySlug();
 			}
 
-			String tenantOrganization = null;
-			MongoTenantInfo tenantInfo = SDPInsertApiMongoDataAccess.getTenantInfo(codTenant);
-			if (tenantInfo != null)
-				tenantOrganization = tenantInfo.getOrganizationCode();
+			String tenantOrganization = infoDataset.getOrganizationCode();
+			
+			// TODO codice necessario per mongo che non riesce a recuperare l'organizzazione dai metadata di mongo
+			if (tenantOrganization == null)
+			{
+				tenantOrganization = new SDPInsertApiMongoDataAccess().getTenantInfo(codTenant).getOrganizationCode();
+			}
+			
 			log.info("[InsertApiLogic::deleteManager]     tenantOrganization " + tenantOrganization);
 			SDPInsertApiHdfsDataAccess sdpInsertApiHdfsDataAccess = new SDPInsertApiHdfsDataAccess();
 			String responseStatus = sdpInsertApiHdfsDataAccess.deleteData(infoDataset.getDatasetType(), infoDataset.getDatasetSubType(), infoDataset.getDatasetDomain(),
@@ -946,7 +964,7 @@ public class InsertApiLogic {
 		// vado su solr
 		try {
 			SDPInsertApiSolrDataAccess sdpInsertApiSolrDataAccess = new SDPInsertApiSolrDataAccess();
-			int responseStatus = sdpInsertApiSolrDataAccess.deleteData(infoDataset.getDatasetType(), codTenant, idDataset, datasetVersion);
+			int responseStatus = sdpInsertApiSolrDataAccess.deleteData(infoDataset.getDatasetSubType(), codTenant, idDataset, datasetVersion);
 			outData.setIndexDeleted(true);
 			outData.setIndexDeletedMessage("Sorl response status: " + responseStatus);
 

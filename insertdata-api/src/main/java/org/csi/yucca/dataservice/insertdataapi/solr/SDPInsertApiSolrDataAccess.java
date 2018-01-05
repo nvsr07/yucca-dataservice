@@ -13,9 +13,10 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMedataFactory;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.solr.KnoxSolrSingleton.TEHttpSolrClient;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
@@ -71,34 +72,14 @@ public class SDPInsertApiSolrDataAccess {
 //		}
 //	}
 
-	public int insertBulk(String tenant, DatasetBulkInsert dati) throws Exception {
+	public int insertBulk(String collection, DatasetBulkInsert dati) throws Exception {
 		BulkWriteResult result = null;
 		try {
 
-			CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 
-			String collection = "";
-
-			if (dati.getDatasetType().equals("streamDataset")) {
-				collection = conf.getMeasuresSolrCollectionName();
-				if (collection == null)
-					collection = "sdp_" + tenant + "_measures";
-			} else if (dati.getDatasetType().equals("socialDataset")) {
-				collection = conf.getSocialSolrCollectionName();
-				if (collection == null)
-					collection = "sdp_" + tenant + "_social";
-			} else if (dati.getDatasetType().equals("binaryDataset")) {
-				collection = conf.getMediaSolrCollectionName();
-				if (collection == null)
-					collection = "sdp_" + tenant + "_media";
-			} else {
-				collection = conf.getDataSolrCollectionName();
-				if (collection == null)
-					collection = "sdp_" + tenant + "_data";
-			}
 
 			Collection<SolrInputDocument> list = new ArrayList<SolrInputDocument>();
-			Iterator<Entry<String, FieldsMongoDto>> fieldIter = null;
+			Iterator<Entry<String, FieldsDto>> fieldIter = null;
 			Iterator<JSONObject> iter = dati.getJsonRowsToInsert().iterator();
 			while (iter.hasNext()) {
 				SolrInputDocument doc = new SolrInputDocument();
@@ -116,7 +97,7 @@ public class SDPInsertApiSolrDataAccess {
 
 				fieldIter = dati.getFieldsType().entrySet().iterator();
 				while (fieldIter.hasNext()) {
-					Entry<String, FieldsMongoDto> field = fieldIter.next();
+					Entry<String, FieldsDto> field = fieldIter.next();
 					String nome = field.getKey();
 					String tipo = (field.getValue()).getFieldType();
 					Object value = json.get(nome);
@@ -210,27 +191,7 @@ public class SDPInsertApiSolrDataAccess {
 
 	public int deleteData(String datasetType, String tenant, Long idDataset, Long datasetVersion) throws Exception {
 
-		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
-
-		String collection = "";
-
-		if (datasetType.equals("streamDataset")) {
-			collection = conf.getMeasuresSolrCollectionName();
-			if (collection == null)
-				collection = "sdp_" + tenant + "_measures";
-		} else if (datasetType.equals("socialDataset")) {
-			collection = conf.getSocialSolrCollectionName();
-			if (collection == null)
-				collection = "sdp_" + tenant + "_social";
-		} else if (datasetType.equals("binaryDataset")) {
-			collection = conf.getMediaSolrCollectionName();
-			if (collection == null)
-				collection = "sdp_" + tenant + "_media";
-		} else {
-			collection = conf.getDataSolrCollectionName();
-			if (collection == null)
-				collection = "sdp_" + tenant + "_data";
-		}
+		CollectionConfDto conf = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess().getCollectionInfo(tenant, idDataset, datasetVersion, datasetType);
 
 		// http://sdnet-solr.sdp.csi.it:8983/solr/sdp_int_tank_data/update?stream.body=%3Cdelete%3E%3Cquery%3Eiddataset_l=695%3C/query%3E%3C/delete%3E&commit=truewt=json
 
@@ -238,7 +199,7 @@ public class SDPInsertApiSolrDataAccess {
 		String query = "iddataset_l:" + idDataset;
 		if (datasetVersion != null && datasetVersion > 0)
 			query += " AND datasetversion_l:" + datasetVersion;
-		UpdateResponse updateResponse =server.deleteByQuery(collection, query,1000);
+		UpdateResponse updateResponse =server.deleteByQuery(conf.getSolrCollectionName(), query,1000);
 		
 		//UpdateResponse updateResponse = server.commit();
 		log.info("[SDPInsertApiSolrDataAccess::deleteData] updateResponse " + updateResponse);

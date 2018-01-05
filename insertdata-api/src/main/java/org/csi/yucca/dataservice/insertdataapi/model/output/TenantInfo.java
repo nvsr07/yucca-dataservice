@@ -2,7 +2,7 @@ package org.csi.yucca.dataservice.insertdataapi.model.output;
 
 import com.mongodb.DBObject;
 
-public class MongoTenantInfo {
+public class TenantInfo {
 	private Long idTenant;
 	private String tenantName;
 	private String tenantDescription;
@@ -45,11 +45,11 @@ public class MongoTenantInfo {
 	private String measuresPhoenixSchemaName;
 	private String measuresPhoenixTableName;
 
-	public MongoTenantInfo() {
+	public TenantInfo() {
 		super();
 	}
 
-	public MongoTenantInfo(DBObject tenantMongoObj) {
+	public TenantInfo(DBObject tenantMongoObj) {
 		if (tenantMongoObj != null) {
 			setIdTenant(takeNvlValuesLong(tenantMongoObj.get("idTenant")));
 			setTenantName(takeNvlValuesString(tenantMongoObj.get("tenantName")));

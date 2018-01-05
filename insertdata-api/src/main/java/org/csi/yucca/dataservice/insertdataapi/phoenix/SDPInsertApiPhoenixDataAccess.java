@@ -13,10 +13,11 @@ import net.minidev.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMedataFactory;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetBulkInsert;
-import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoConnectionSingleton;
 import org.csi.yucca.dataservice.insertdataapi.util.DateUtil;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
@@ -36,14 +37,13 @@ public class SDPInsertApiPhoenixDataAccess {
 		// Class.forName("org.apache.phoenix.queryserver.client.Driver");
 	}
 
-	public int insertBulk(String tenant, DatasetBulkInsert dati) {
+	public int insertBulk(String schema, String table, DatasetBulkInsert dati) {
 		// String riga=null;
 		// DBObject dbObject = null;
 		final int batchSize = 1000;
 		int count = 0;
 		Connection conn = null;
 		BulkWriteResult result = null;
-		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 		try {
 			// System.out.println("###########################################");
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
@@ -54,51 +54,24 @@ public class SDPInsertApiPhoenixDataAccess {
 
 			// String schema = "DB_"+tenant.toUpperCase();
 
-			String schema = "";
-			String table = "";
-
 			String campiSQL = "iddataset_l, datasetversion_l, id ";
 			String valuesSql = "(?, ?, ?  ";
 			if (dati.getDatasetType().equals("streamDataset")) {
-				schema = conf.getMeasuresPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getMeasuresPhoenixTableName();
-				if (table == null)
-					table = "measures";
 				campiSQL = campiSQL + ", time_dt, sensor_s, streamcode_s ";
 				valuesSql = valuesSql + ",? ,? ,? ";
 
 			} else if (dati.getDatasetType().equals("socialDataset")) {
-				schema = conf.getSocialPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getSocialPhoenixTableName();
-				if (table == null)
-					table = "social";
 				campiSQL = campiSQL + ", time_dt, sensor_s, streamcode_s ";
 				valuesSql = valuesSql + ",? ,? ,? ";
 
 			} else if (dati.getDatasetType().equals("binaryDataset")) {
-				schema = conf.getMediaPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getMediaPhoenixTableName();
-				if (table == null)
-					table = "media";
 			} else {
-				schema = conf.getDataPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getDataPhoenixTableName();
-				if (table == null)
-					table = "data";
 			}
 
-			Iterator<Entry<String, FieldsMongoDto>> fieldIter = dati.getFieldsType().entrySet().iterator();
+			Iterator<Entry<String, FieldsDto>> fieldIter = dati.getFieldsType().entrySet().iterator();
 
 			while (fieldIter.hasNext()) {
-				Entry<String, FieldsMongoDto> field = fieldIter.next();
+				Entry<String, FieldsDto> field = fieldIter.next();
 				String nome = field.getKey().toUpperCase();
 				String tipo = (field.getValue()).getFieldType();
 
@@ -162,7 +135,7 @@ public class SDPInsertApiPhoenixDataAccess {
 				}
 				fieldIter = dati.getFieldsType().entrySet().iterator();
 				while (fieldIter.hasNext()) {
-					Entry<String, FieldsMongoDto> field = fieldIter.next();
+					Entry<String, FieldsDto> field = fieldIter.next();
 					String nome = field.getKey();
 					String tipo = (field.getValue()).getFieldType();
 
@@ -241,30 +214,30 @@ public class SDPInsertApiPhoenixDataAccess {
 				stmt.executeBatch();
 				conn.commit();
 			} catch (ArrayIndexOutOfBoundsException ae) {
-				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ArrayIndexOutOfBoundsException I will RETRY", ae);
+				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ArrayIndexOutOfBoundsException I will RETRY", ae);
 				if (stmt != null)
 					log.info("stmt closed?"+stmt.isClosed());
 				try{
-					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"]  start RETRY");
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"]  start RETRY");
 					stmt.executeBatch();
 					conn.commit();
 				} catch (Throwable e) {
-					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"]  RETRY FAILEDD", ae);
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"]  RETRY FAILEDD", ae);
 					try {
 						conn.rollback();
 					} catch (SQLException e1) {
-						log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ROLLBACK FAILED", e1);
+						log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ROLLBACK FAILED", e1);
 					}
 					throw new InsertApiRuntimeException(e);
 				}
-				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] RETRY SUCCESS");
+				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] RETRY SUCCESS");
 				return result == null ? -1 : result.getInsertedCount();
 			} catch (Exception e) {
-				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] Excption", e);
+				log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] Excption", e);
 				try {
 					conn.rollback();
 				} catch (SQLException e1) {
-					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ROLLBACK FAILED", e1);
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] ROLLBACK FAILED", e1);
 				}
 				throw new InsertApiRuntimeException(e);
 			} finally {
@@ -274,7 +247,7 @@ public class SDPInsertApiPhoenixDataAccess {
 					stmt.close();
 					conn.close();
 				} catch (SQLException e1) {
-					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][codTenant:"+tenant+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] CLOSED FAILED", e1);
+					log.fatal("[SDPInsertApiPhoenixDataAccess::insertBulk][table:"+schema+"."+table+"][datasetCode:"+dati.getDatasetCode()+"][datasetVersion+"+dati.getDatasetVersion()+"] CLOSED FAILED", e1);
 				}
 			}
 
@@ -289,53 +262,24 @@ public class SDPInsertApiPhoenixDataAccess {
 
 	}
 
-	public int deleteData(MongoDatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
+	public int deleteData(DatasetInfo infoDataset, String tenant, Long idDataset, Long datasetVersion) {
 		log.debug("[SDPInsertApiPhoenixDataAccess::deleteData]     deleteData " + infoDataset);
 
 		int DELETE_LIMIT = 50000;
 		int totalDeletedRows = 0;
 		int deletedRows = -1;
 		Connection conn = null;
-		CollectionConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
 		try {
 			conn = DriverManager.getConnection(SDPInsertApiConfig.getInstance().getPhoenixUrl());
 
 			conn.setAutoCommit(false);
 
-			String schema = "";
-			String table = "";
+			CollectionConfDto confDto = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess()
+					.getCollectionInfo(tenant, idDataset, datasetVersion, infoDataset.getDatasetSubType());
+			
+			String schema = confDto.getPhoenixSchemaName();
+			String table = confDto.getPhoenixTableName();
 
-			if (infoDataset.getDatasetSubType().equals("streamDataset")) {
-				schema = conf.getMeasuresPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getMeasuresPhoenixTableName();
-				if (table == null)
-					table = "measures";
-
-			} else if (infoDataset.getDatasetSubType().equals("socialDataset")) {
-				schema = conf.getSocialPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getSocialPhoenixTableName();
-				if (table == null)
-					table = "social";
-
-			} else if (infoDataset.getDatasetSubType().equals("binaryDataset")) {
-				schema = conf.getMediaPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getMediaPhoenixTableName();
-				if (table == null)
-					table = "media";
-			} else {
-				schema = conf.getDataPhoenixSchemaName();
-				if (schema == null)
-					schema = "db_" + tenant;
-				table = conf.getDataPhoenixTableName();
-				if (table == null)
-					table = "data";
-			}
 
 			String sql = "DELETE FROM " + schema + "." + table + " WHERE iddataset_l=?";
 

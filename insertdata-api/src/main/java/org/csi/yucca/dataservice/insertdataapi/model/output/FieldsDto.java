@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.DatatypeConverter;
 
-public class FieldsMongoDto {
+public class FieldsDto {
 
 	public static final String DATA_TYPE_INT = "int";
 	public static final String DATA_TYPE_LONG = "long";
@@ -71,11 +71,11 @@ public class FieldsMongoDto {
 	
 	//
 	
-	public FieldsMongoDto (String fieldName,String fieldType) throws Exception{
+	public FieldsDto (String fieldName,String fieldType) throws Exception{
 		this.setFieldName(fieldName);
 		this.setFieldType(fieldType);
 	}
-	public FieldsMongoDto (String fieldName,String fieldType,long datasetId,long datasetVersion) throws Exception{
+	public FieldsDto (String fieldName,String fieldType,long datasetId,long datasetVersion) throws Exception{
 		this.setFieldName(fieldName);
 		this.setFieldType(fieldType);
 		this.setDatasetId(datasetId);

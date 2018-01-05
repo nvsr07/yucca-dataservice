@@ -42,7 +42,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 
 	private static final Log log=LogFactory.getLog("org.csi.yucca.datainsert");
 	
-	private static Map<String, CollectionConfDto> params =   Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(10,TimeUnit.MINUTES));  // new HashMap<String, CollectionConfDto>();
+	private static Map<String, CollectionMongoConfDto> params =   Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionMongoConfDto>(10,TimeUnit.MINUTES));  // new HashMap<String, CollectionConfDto>();
 	private static HashMap<String, MongoClient> mongoConnection = new HashMap<String, MongoClient>();
 	//private static HashMap<String, MongoClient> mongoTenantConnection = new HashMap<String, MongoClient>();
 
@@ -84,7 +84,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 		DBCursor cursor=null;
 		try {
 			mongoConnection = new HashMap<String, MongoClient>();
-			params = Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionConfDto>(10,TimeUnit.MINUTES)); 
+			params = Collections.synchronizedMap(new PassiveExpiringMap<String, CollectionMongoConfDto>(10,TimeUnit.MINUTES)); 
 			//STREAM
 			String host=SDPInsertApiConfig.getInstance().getMongoCfgHost(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
 			int port=SDPInsertApiConfig.getInstance().getMongoCfgPort(SDPInsertApiConfig.MONGO_DB_CFG_STREAM);
@@ -118,11 +118,11 @@ public class SDPInsertApiMongoConnectionSingleton {
 		}
 	}
 
-	public CollectionConfDto getDataDbConfiguration(String tenantCode)  {
+	protected CollectionMongoConfDto getDataDbConfiguration(String tenantCode)  {
 		if (null==params.get(tenantCode)) reloadDataDbConfig();
 		return params.get(tenantCode);
 	}
-
+	
 
 	private void reloadDataDbConfig() {
 		log.info("Reloading tenant configuration....");
@@ -140,7 +140,7 @@ public class SDPInsertApiMongoConnectionSingleton {
 
 				String tenant=obj.get("tenantCode").toString();
 				
-				CollectionConfDto collectionConf=new CollectionConfDto();
+				CollectionMongoConfDto collectionConf=new CollectionMongoConfDto();
 				
 				collectionConf.setSocialSolrCollectionName( takeNvlValues(obj.get("socialSolrCollectionName")));
 				collectionConf.setMeasuresSolrCollectionName( takeNvlValues(obj.get("measuresSolrCollectionName")));

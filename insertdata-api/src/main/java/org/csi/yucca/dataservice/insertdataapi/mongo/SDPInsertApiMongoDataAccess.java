@@ -10,13 +10,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.csi.yucca.dataservice.insertdataapi.dto.DatasetInfoKey;
+import org.csi.yucca.dataservice.insertdataapi.dto.StreamInfoKey;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
-import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsMongoDto;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoDatasetInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoStreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.MongoTenantInfo;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMetadataApiAccess;
+import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
+import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.StreamInfo;
+import org.csi.yucca.dataservice.insertdataapi.model.output.TenantInfo;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.google.common.cache.Cache;
@@ -35,7 +39,7 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 
-public class SDPInsertApiMongoDataAccess {
+public class SDPInsertApiMongoDataAccess implements SDPInsertMetadataApiAccess {
 	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("org.csi.yucca.datainsert");
 
 	// private static Map<String, ArrayList<MongoStreamInfo>> streamInfoCache =
@@ -48,19 +52,19 @@ public class SDPInsertApiMongoDataAccess {
 	// ArrayList<FieldsMongoDto>>(10,
 	// TimeUnit.MINUTES));
 
-	private static LoadingCache<DatasetInfoKey, ArrayList<FieldsMongoDto>> campiDatasetCache = CacheBuilder.newBuilder().refreshAfterWrite(5, TimeUnit.MINUTES)
-			.build(new CacheLoader<DatasetInfoKey, ArrayList<FieldsMongoDto>>() {
+	private static LoadingCache<DatasetInfoKey, ArrayList<FieldsDto>> campiDatasetCache = CacheBuilder.newBuilder().refreshAfterWrite(5, TimeUnit.MINUTES)
+			.build(new CacheLoader<DatasetInfoKey, ArrayList<FieldsDto>>() {
 				@Override
-				public ArrayList<FieldsMongoDto> load(DatasetInfoKey key) throws Exception {
+				public ArrayList<FieldsDto> load(DatasetInfoKey key) throws Exception {
 					log.info("--------------> load" + key);
 					return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
 				}
 
 				@Override
-				public ListenableFuture<ArrayList<FieldsMongoDto>> reload(final DatasetInfoKey key, ArrayList<FieldsMongoDto> oldValue) throws Exception {
+				public ListenableFuture<ArrayList<FieldsDto>> reload(final DatasetInfoKey key, ArrayList<FieldsDto> oldValue) throws Exception {
 					log.info("--------------> reloaded" + key);
-					ListenableFutureTask<ArrayList<FieldsMongoDto>> task = ListenableFutureTask.create(new Callable<ArrayList<FieldsMongoDto>>() {
-						public ArrayList<FieldsMongoDto> call() {
+					ListenableFutureTask<ArrayList<FieldsDto>> task = ListenableFutureTask.create(new Callable<ArrayList<FieldsDto>>() {
+						public ArrayList<FieldsDto> call() {
 							return getCampiDatasetFromMongo(key.getIdDataset(), key.getDatasetVersion());
 						}
 					});
@@ -69,20 +73,20 @@ public class SDPInsertApiMongoDataAccess {
 				}
 			});
 
-	private static LoadingCache<StreamInfoKey, ArrayList<MongoStreamInfo>> streamInfoCache = CacheBuilder.newBuilder().refreshAfterWrite(5, TimeUnit.MINUTES)
-			.build(new CacheLoader<StreamInfoKey, ArrayList<MongoStreamInfo>>() {
+	private static LoadingCache<StreamInfoKey, ArrayList<StreamInfo>> streamInfoCache = CacheBuilder.newBuilder().refreshAfterWrite(5, TimeUnit.MINUTES)
+			.build(new CacheLoader<StreamInfoKey, ArrayList<StreamInfo>>() {
 				@Override
-				public ArrayList<MongoStreamInfo> load(StreamInfoKey key) throws Exception {
+				public ArrayList<StreamInfo> load(StreamInfoKey key) throws Exception {
 					log.info("--------------> load" + key);
 					return getStreamInfoFromMongo(key.getTenant(), key.getStream(), key.getSensor());
 				}
 
 				@Override
-				public ListenableFuture<ArrayList<MongoStreamInfo>> reload(final StreamInfoKey key, ArrayList<MongoStreamInfo> oldValue) throws Exception {
+				public ListenableFuture<ArrayList<StreamInfo>> reload(final StreamInfoKey key, ArrayList<StreamInfo> oldValue) throws Exception {
 					log.info("--------------> reloaded" + key);
-					ListenableFutureTask<ArrayList<MongoStreamInfo>> task = ListenableFutureTask.create(new Callable<ArrayList<MongoStreamInfo>>() {
-						public ArrayList<MongoStreamInfo> call() {
-							return getStreamInfo(key.getTenant(), key.getStream(), key.getSensor());
+					ListenableFutureTask<ArrayList<StreamInfo>> task = ListenableFutureTask.create(new Callable<ArrayList<StreamInfo>>() {
+						public ArrayList<StreamInfo> call() {
+							return getStreamInfoFromMongo(key.getTenant(), key.getStream(), key.getSensor());
 						}
 					});
 					Executors.newSingleThreadExecutor().execute(task);
@@ -97,8 +101,9 @@ public class SDPInsertApiMongoDataAccess {
 			return obj.toString();
 	}
 
-	public static MongoStreamInfo getStreamInfoForDataset(String tenant, long idDataset, long datasetVersion) {
-		MongoStreamInfo ret = null;
+	@Override
+	public StreamInfo getStreamInfoForDataset(String tenant, long idDataset, long datasetVersion) {
+		StreamInfo ret = null;
 		DBCursor cursor = null;
 		try {
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STREAM);
@@ -120,7 +125,7 @@ public class SDPInsertApiMongoDataAccess {
 
 				String virtualEntitySlug = takeNvlValues(((DBObject) ((DBObject) (DBObject) obj.get("streams")).get("stream")).get("virtualEntitySlug"));
 
-				ret = new MongoStreamInfo();
+				ret = new StreamInfo();
 				ret.setSensorCode(sensore);
 				ret.setDatasetId(idDataset);
 				ret.setDatasetVersion(datasetVersion);
@@ -142,8 +147,9 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	public static MongoTenantInfo getTenantInfo(String codTenant) {
-		MongoTenantInfo ret = null;
+	
+	public TenantInfo getTenantInfo(String codTenant) {
+		TenantInfo ret = null;
 		DBObject tenant = null;
 		try {
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_TENANT);
@@ -157,7 +163,7 @@ public class SDPInsertApiMongoDataAccess {
 			tenant = coll.findOne(query);
 			log.info("MongoTenantInfo tenant " + tenant);
 			if (tenant != null)
-				ret = new MongoTenantInfo(tenant);
+				ret = new TenantInfo(tenant);
 		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			throw new InsertApiRuntimeException(e);
@@ -166,10 +172,11 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	public static ArrayList<MongoStreamInfo> getStreamInfo(String tenant, String streamApplication, String sensor) {
+	@Override
+	public ArrayList<StreamInfo> getStreamInfo(String tenant, String streamApplication, String sensor) {
 		// String cacheKey = createStreamCacheKey(tenant, streamApplication,
 		// sensor);
-		ArrayList<MongoStreamInfo> ret;
+		ArrayList<StreamInfo> ret;
 		try {
 			ret = streamInfoCache.get(new StreamInfoKey(tenant, streamApplication, sensor));
 		} catch (ExecutionException e) {
@@ -179,10 +186,10 @@ public class SDPInsertApiMongoDataAccess {
 		return ret;
 	}
 
-	private static ArrayList<MongoStreamInfo> getStreamInfoFromMongo(String tenant, String streamApplication, String sensor) {
+	private static ArrayList<StreamInfo> getStreamInfoFromMongo(String tenant, String streamApplication, String sensor) {
 		log.info("getStreamInfo -> loadinf " + tenant + "||" + sensor + "||" + streamApplication);
 		DBCursor cursor = null;
-		ArrayList<MongoStreamInfo> ret = new ArrayList<MongoStreamInfo>();
+		ArrayList<StreamInfo> ret = new ArrayList<StreamInfo>();
 		try {
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_STREAM);
 			DB db = mongoClient.getDB(SDPInsertApiConfig.getInstance().getMongoCfgDB(SDPInsertApiConfig.MONGO_DB_CFG_STREAM));
@@ -212,7 +219,7 @@ public class SDPInsertApiMongoDataAccess {
 
 				if (null == idDatasetStr || null == datasetVersionStr)
 					throw new Exception("problemi idDataset datasetVersion");
-				MongoStreamInfo cur = new MongoStreamInfo();
+				StreamInfo cur = new StreamInfo();
 				cur.setDatasetId(Long.parseLong(idDatasetStr));
 				cur.setDatasetVersion(Long.parseLong(datasetVersionStr));
 
@@ -224,19 +231,19 @@ public class SDPInsertApiMongoDataAccess {
 				// da tavola sdp_d_tipove su adim api
 				switch (tipoVe) {
 				case 0:
-					cur.setTipoStream(MongoStreamInfo.STREAM_TYPE_INTERNAL);
+					cur.setTipoStream(StreamInfo.STREAM_TYPE_INTERNAL);
 					break;
 				case 1:
-					cur.setTipoStream(MongoStreamInfo.STREAM_TYPE_SENSOR);
+					cur.setTipoStream(StreamInfo.STREAM_TYPE_SENSOR);
 					break;
 				case 2:
-					cur.setTipoStream(MongoStreamInfo.STREAM_TYPE_APPLICATION);
+					cur.setTipoStream(StreamInfo.STREAM_TYPE_APPLICATION);
 					break;
 				case 3:
-					cur.setTipoStream(MongoStreamInfo.STREAM_TYPE_TWEET);
+					cur.setTipoStream(StreamInfo.STREAM_TYPE_TWEET);
 					break;
 				default:
-					cur.setTipoStream(MongoStreamInfo.STREAM_TYPE_UNDEFINED);
+					cur.setTipoStream(StreamInfo.STREAM_TYPE_UNDEFINED);
 					break;
 
 				}
@@ -256,8 +263,12 @@ public class SDPInsertApiMongoDataAccess {
 		return ret;
 	}
 
-	public MongoDatasetInfo getInfoDataset(String datasetCode, long datasetVersion, String codiceTenant) throws Exception {
-		MongoDatasetInfo ret = null;
+	/* (non-Javadoc)
+	 * @see org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertMetadataApiAccess#getInfoDataset(java.lang.String, long, java.lang.String)
+	 */
+	@Override
+	public DatasetInfo getInfoDataset(String datasetCode, long datasetVersion, String codiceTenant) throws Exception {
+		DatasetInfo ret = null;
 		BasicDBList curDataset = new BasicDBList();
 		curDataset.add(new BasicDBObject("datasetCode", datasetCode));
 		if (datasetVersion == -1) {
@@ -274,8 +285,12 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	public MongoDatasetInfo getInfoDataset(Long idDataset, Long datasetVersion, String codiceTenant) throws Exception {
-		MongoDatasetInfo ret = null;
+	/* (non-Javadoc)
+	 * @see org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertMetadataApiAccess#getInfoDataset(java.lang.Long, java.lang.Long, java.lang.String)
+	 */
+	@Override
+	public DatasetInfo getInfoDataset(Long idDataset, Long datasetVersion, String codiceTenant) throws Exception {
+		DatasetInfo ret = null;
 		BasicDBList curDataset = new BasicDBList();
 		curDataset.add(new BasicDBObject("idDataset", idDataset));
 		if (datasetVersion == null || datasetVersion == -1) {
@@ -291,9 +306,9 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	private MongoDatasetInfo loadDatasetInfo(BasicDBList curDataset) {
+	private DatasetInfo loadDatasetInfo(BasicDBList curDataset) {
 		DBCursor cursor = null;
-		MongoDatasetInfo ret = null;
+		DatasetInfo ret = null;
 		try {
 			BasicDBObject query = new BasicDBObject("$and", curDataset);
 			MongoClient mongoClient = SDPInsertApiMongoConnectionSingleton.getInstance().getMongoClient(SDPInsertApiMongoConnectionSingleton.MONGO_DB_CFG_METADATA);
@@ -312,13 +327,13 @@ public class SDPInsertApiMongoDataAccess {
 				String type = takeNvlValues(configData.get("type"));
 				String subtype = takeNvlValues(configData.get("subtype"));
 				String tenanTcode = takeNvlValues(configData.get("tenantCode"));
-				ArrayList<FieldsMongoDto> campi = getCampiFromDbObject(obj);
+				ArrayList<FieldsDto> campi = getCampiFromDbObject(obj);
 
 				BasicDBObject info = (BasicDBObject) obj.get("info");
 				String datasetDomain = takeNvlValues(info.get("dataDomain"));
 				String datasetSubdomain = takeNvlValues(info.get("codSubDomain"));
 
-				ret = new MongoDatasetInfo();
+				ret = new DatasetInfo();
 				ret.setCampi(campi);
 				ret.setDatasetId(Long.parseLong(datasetDatasetId));
 				ret.setDatasetVersion(Long.parseLong(datasetDatasetVersion));
@@ -342,9 +357,13 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	public ArrayList<FieldsMongoDto> getCampiDataSet(Long idDataset, long datasetVersion) throws Exception {
+	/* (non-Javadoc)
+	 * @see org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertMetadataApiAccess#getCampiDataSet(java.lang.Long, long)
+	 */
+	@Override
+	public ArrayList<FieldsDto> getCampiDataSet(Long idDataset, long datasetVersion) throws Exception {
 
-		ArrayList<FieldsMongoDto> ret;
+		ArrayList<FieldsDto> ret;
 		try {
 			ret = campiDatasetCache.get(new DatasetInfoKey(idDataset, datasetVersion));
 		} catch (Exception e) {
@@ -355,8 +374,8 @@ public class SDPInsertApiMongoDataAccess {
 
 	}
 
-	private static ArrayList<FieldsMongoDto> getCampiDatasetFromMongo(Long idDataset, long datasetVersion) {
-		ArrayList<FieldsMongoDto> ret = null;
+	private static ArrayList<FieldsDto> getCampiDatasetFromMongo(Long idDataset, long datasetVersion) {
+		ArrayList<FieldsDto> ret = null;
 		try {
 
 			// DBObject query = BasicDBObjectBuilder.start().append("_id", new
@@ -389,10 +408,10 @@ public class SDPInsertApiMongoDataAccess {
 		return ret;
 	}
 
-	private static ArrayList<FieldsMongoDto> getCampiFromDbObject(DBObject obj) throws Exception {
+	private static ArrayList<FieldsDto> getCampiFromDbObject(DBObject obj) throws Exception {
 		String datasetDatasetVersion = takeNvlValues(obj.get("datasetVersion"));
 		String datasetDatasetId = takeNvlValues(obj.get("idDataset"));
-		ArrayList<FieldsMongoDto> ret = null;
+		ArrayList<FieldsDto> ret = null;
 		Object eleCapmpi = ((BasicDBObject) obj.get("info")).get("fields");
 
 		BasicDBList lista = null;
@@ -421,8 +440,8 @@ public class SDPInsertApiMongoDataAccess {
 			}
 
 			if (null == ret)
-				ret = new ArrayList<FieldsMongoDto>();
-			ret.add(new FieldsMongoDto(propName, porpType, Long.parseLong(datasetDatasetId), Long.parseLong(datasetDatasetVersion)));
+				ret = new ArrayList<FieldsDto>();
+			ret.add(new FieldsDto(propName, porpType, Long.parseLong(datasetDatasetId), Long.parseLong(datasetDatasetVersion)));
 		}
 		// ret.add(new FieldsMongoDto("c1",
 		// FieldsMongoDto.DATA_TYPE_BOOLEAN,Long.parseLong(datasetDatasetId),Long.parseLong(datasetDatasetVersion)));
@@ -446,6 +465,10 @@ public class SDPInsertApiMongoDataAccess {
 		return ret;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertMetadataApiAccess#getTenantList()
+	 */
+	@Override
 	public Set<String> getTenantList() throws MongoAccessException {
 		Set<String> tenants = new HashSet<String>();
 
@@ -490,11 +513,11 @@ public class SDPInsertApiMongoDataAccess {
 
 	public static void clearCache(String tenant, String streamApplication, String sensor) {
 		StreamInfoKey key = new StreamInfoKey(tenant, streamApplication, sensor);
-		ArrayList<MongoStreamInfo> streamList = streamInfoCache.getIfPresent(key);
+		ArrayList<StreamInfo> streamList = streamInfoCache.getIfPresent(key);
 		if (streamList != null) {
 			log.info("clearCache -> streamList NOT NULL elimino " + key);
 			streamInfoCache.refresh(key);
-			for (MongoStreamInfo stream : streamList) {
+			for (StreamInfo stream : streamList) {
 				campiDatasetCache.refresh(new DatasetInfoKey(stream.getDatasetId(), stream.getDatasetVersion()));
 			}
 		} else
@@ -555,5 +578,67 @@ public class SDPInsertApiMongoDataAccess {
 		System.out.println("---");
 		Thread.sleep(2000);
 		System.out.println("pippo:" + pm.get("pippo"));
+	}
+
+	@Override
+	public CollectionConfDto getCollectionInfo(String tenant,
+			long idDatasetTrovato, long datasetVersionTrovato,
+			String datasetType) {
+		CollectionMongoConfDto conf = SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(tenant);
+		
+		CollectionConfDto confInfo = new CollectionConfDto();
+		String schema ;
+		String table;
+		String collection;
+		
+		if (datasetType.equals("streamDataset")) {
+			schema = conf.getMeasuresPhoenixSchemaName();
+			if (schema == null)
+				schema = "db_" + tenant;
+			table = conf.getMeasuresPhoenixTableName();
+			if (table == null)
+				table = "measures";
+			collection = conf.getMeasuresSolrCollectionName();
+			if (collection == null)
+				collection = "sdp_" + tenant + "_measures";
+
+		} else if (datasetType.equals("socialDataset")) {
+			schema = conf.getSocialPhoenixSchemaName();
+			if (schema == null)
+				schema = "db_" + tenant;
+			table = conf.getSocialPhoenixTableName();
+			if (table == null)
+				table = "social";
+			collection = conf.getSocialSolrCollectionName();
+			if (collection == null)
+				collection = "sdp_" + tenant + "_social";
+
+		} else if (datasetType.equals("binaryDataset")) {
+			schema = conf.getMediaPhoenixSchemaName();
+			if (schema == null)
+				schema = "db_" + tenant;
+			table = conf.getMediaPhoenixTableName();
+			if (table == null)
+				table = "media";
+			collection = conf.getMediaSolrCollectionName();
+			if (collection == null)
+				collection = "sdp_" + tenant + "_media";
+		} else {
+			schema = conf.getDataPhoenixSchemaName();
+			if (schema == null)
+				schema = "db_" + tenant;
+			table = conf.getDataPhoenixTableName();
+			if (table == null)
+				table = "data";
+			collection = conf.getDataSolrCollectionName();
+			if (collection == null)
+				collection = "sdp_" + tenant + "_data";
+		}
+		
+		confInfo.setPhoenixTableName(table);
+		confInfo.setPhoenixSchemaName(schema);
+		confInfo.setSolrCollectionName(collection);
+		return confInfo;
+
 	}
 }

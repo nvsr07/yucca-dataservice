@@ -23,6 +23,12 @@ public class SDPInsertApiConfig {
 	public static final String SOLR_SECURITY_DOMAIN_NAME = "SOLR_SECURITY_DOMAIN_NAME";
 
 	
+	public static final String ADMIN_API_URL= "ADMIN_API_URL";
+	
+	public static final String SOURCE_METADATA= "SOURCE_METADATA"; // MONGO vs ADMIN_API
+	public static final String SOURCE_METADATA_MONGO= "MONGO";
+	public static final String SOURCE_METADATA_ADMIN_API= "ADMIN_API"; 
+	
 	
 	public static final String JMS_MB_INTERNAL_URL = "JMS_MB_INTERNAL_URL";
 	public static final String JMS_MB_INTERNAL_USERNAME = "JMS_MB_INTERNAL_USERNAME";
@@ -142,6 +148,8 @@ public class SDPInsertApiConfig {
 		params.put(DELETE_MAIL_SUBJECT_200, rb.getString(DELETE_MAIL_SUBJECT_200));
 		params.put(DELETE_MAIL_BODY_200, rb.getString(DELETE_MAIL_BODY_200));
 		
+		params.put(ADMIN_API_URL, rb.getString(ADMIN_API_URL));
+		params.put(SOURCE_METADATA, rb.getString(SOURCE_METADATA));
 	}
 
 	// MONGO_DB_DEFAULT
@@ -327,4 +335,15 @@ public class SDPInsertApiConfig {
 		return params.get(DELETE_MAIL_BODY_200);
 	}
 
+	public String getAdminApiUrl() {
+		return params.get(ADMIN_API_URL);
+	}
+	
+	public boolean isSourceAdminApi() {
+		return params.get(SOURCE_METADATA).equals(SOURCE_METADATA_ADMIN_API);
+	}
+	
+	public boolean isSourceMongo() {
+		return params.get(SOURCE_METADATA).equals(SOURCE_METADATA_MONGO);
+	}
 }

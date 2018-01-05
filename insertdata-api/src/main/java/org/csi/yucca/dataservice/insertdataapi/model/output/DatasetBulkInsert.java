@@ -26,6 +26,10 @@ public class DatasetBulkInsert {
 	
 
 	
+	public DatasetBulkInsert(CollectionConfDto collectionConfDto) {
+		super();
+		this.collectionConfDto = collectionConfDto;
+	}
 	private long idDataset=-1;
 	private long datasetVersion=-1;
 	public String getStatus() {
@@ -38,11 +42,11 @@ public class DatasetBulkInsert {
 	
 	private ArrayList<JSONObject> jsonRowsToInsert=null;
 	
-	private Map<String, FieldsMongoDto> fieldsType = null;
-	public Map<String, FieldsMongoDto> getFieldsType() {
+	private Map<String, FieldsDto> fieldsType = null;
+	public Map<String, FieldsDto> getFieldsType() {
 		return fieldsType;
 	}
-	public void setFieldsType(Map<String, FieldsMongoDto> fieldsType) {
+	public void setFieldsType(Map<String, FieldsDto> fieldsType) {
 		this.fieldsType = fieldsType;
 	}
 	private int numRowToInsFromJson=-1;
@@ -53,7 +57,7 @@ public class DatasetBulkInsert {
 	private String status=null;
 	private String datasetCode=null;
 	private String datasetType=null;
-	
+	private CollectionConfDto collectionConfDto=null;
 	
 	public String getDatasetType() {
 		return datasetType;
@@ -115,6 +119,12 @@ public class DatasetBulkInsert {
 	}
 	public void setJsonRowsToInsert(ArrayList<JSONObject> jsonRowsToInsert) {
 		this.jsonRowsToInsert = jsonRowsToInsert;
+	}
+	public CollectionConfDto getCollectionConfDto() {
+		return collectionConfDto;
+	}
+	public void setCollectionConfDto(CollectionConfDto collectionConfDto) {
+		this.collectionConfDto = collectionConfDto;
 	}
 	
 }

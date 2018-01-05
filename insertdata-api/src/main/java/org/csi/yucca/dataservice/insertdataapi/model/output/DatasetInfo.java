@@ -2,17 +2,19 @@ package org.csi.yucca.dataservice.insertdataapi.model.output;
 
 import java.util.ArrayList;
 
-public class MongoDatasetInfo {
+public class DatasetInfo {
 	private long datasetId = -1;
 	private long datasetVersion = -1;
 	private String datasetType = null;
 	private String datasetSubType = null;
-	private ArrayList<FieldsMongoDto> campi = new ArrayList<FieldsMongoDto>();
+	private ArrayList<FieldsDto> campi = new ArrayList<FieldsDto>();
 	private String tenantcode = null;
 	private String datasetDomain = null;
 	private String datasetSubdomain = null;
 	private String datasetCode = null;
 
+	private String organizationCode = null;
+	
 	// streamVirtualEntitySlug, streamCode
 
 	public String getTenantcode() {
@@ -23,11 +25,11 @@ public class MongoDatasetInfo {
 		this.tenantcode = tenantcode;
 	}
 
-	public ArrayList<FieldsMongoDto> getCampi() {
+	public ArrayList<FieldsDto> getCampi() {
 		return campi;
 	}
 
-	public void setCampi(ArrayList<FieldsMongoDto> campi) {
+	public void setCampi(ArrayList<FieldsDto> campi) {
 		this.campi = campi;
 	}
 
@@ -85,6 +87,14 @@ public class MongoDatasetInfo {
 
 	public void setDatasetCode(String datasetCode) {
 		this.datasetCode = datasetCode;
+	}
+
+	public String getOrganizationCode() {
+		return organizationCode;
+	}
+
+	public void setOrganizationCode(String organizationCode) {
+		this.organizationCode = organizationCode;
 	}
 
 }

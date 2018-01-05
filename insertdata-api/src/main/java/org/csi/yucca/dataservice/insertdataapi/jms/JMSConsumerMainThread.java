@@ -18,6 +18,8 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMedataFactory;
+import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMetadataApiAccess;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
@@ -58,10 +60,10 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 
 			while (true) {
 				log.info("[JMSConsumerMainThread::run] Get tenant list and update sessions...");
-				SDPInsertApiMongoDataAccess mongoAccess = new SDPInsertApiMongoDataAccess();
+				SDPInsertMetadataApiAccess metadataAccess = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess();
 				Set<String> tenants;
 				try {
-					tenants = mongoAccess.getTenantList();
+					tenants = metadataAccess.getTenantList();
 					Iterator<String> iter = jmsTenants.keySet().iterator();
 					while (iter.hasNext()) {
 						String oldTenant = (String) iter.next();

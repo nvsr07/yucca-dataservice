@@ -1,4 +1,4 @@
-package org.csi.yucca.dataservice.insertdataapi.mongo;
+package org.csi.yucca.dataservice.insertdataapi.dto;
 
 import java.io.Serializable;
 

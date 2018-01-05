@@ -54,8 +54,8 @@ public class JMSMessageListener implements MessageListener {
 				log.debug("[JMSMessageListener::onMessage]  JMSListener=[" + codTenant + "] -> msg" + txtMessage.getText());
 				try {
 					
-					if (SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(codTenant).getForwardToBrokerFromCEP()!=null &&
-							SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(codTenant).getForwardToBrokerFromCEP().equals(false))
+// TODO					if (SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(codTenant).getForwardToBrokerFromCEP()!=null &&
+// TODO							SDPInsertApiMongoConnectionSingleton.getInstance().getDataDbConfiguration(codTenant).getForwardToBrokerFromCEP().equals(false))
 					{
 						sendMessageService.execute(createSendMessageRunnable(connectionFactoryExternal, txtMessage));
 					}

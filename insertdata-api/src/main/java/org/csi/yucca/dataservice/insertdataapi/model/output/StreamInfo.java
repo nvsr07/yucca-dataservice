@@ -1,6 +1,6 @@
 package org.csi.yucca.dataservice.insertdataapi.model.output;
 
-public class MongoStreamInfo extends MongoDatasetInfo{
+public class StreamInfo extends DatasetInfo{
 	
 	public static int STREAM_TYPE_UNDEFINED=-1;
 	public static int STREAM_TYPE_SENSOR=1;

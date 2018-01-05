@@ -46,7 +46,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.csi.yucca.adminapi.client.AdminApiClientException;
-import org.csi.yucca.adminapi.client.BackofficeDettaglioApiClient;
+import org.csi.yucca.adminapi.client.BackofficeDettaglioClient;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 
@@ -81,7 +81,7 @@ public class SDPAdminApiOdataCast {
 			this.codiceApi = codiceApi;
 			try {
 				log.info("[SDPAdminApiOdataCast::initDbObject] Calling for codiceApi:"+codiceApi);
-				this.configObject = BackofficeDettaglioApiClient
+				this.configObject = BackofficeDettaglioClient
 						.getBackofficeDettaglioApi(SDPDataApiConfig.getInstance().getAdminApiUrl(),  codiceApi, log.getName());
 				log.info("[SDPAdminApiOdataCast::initDbObject] Calling for codiceApi:"+codiceApi+"..done!");
 			} catch (AdminApiClientException e) {
