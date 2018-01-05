@@ -17,7 +17,7 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	private List<SharingTenantRequest> sharingTenants;
 	private String copyright;
 	private String icon;
-	private OpenDataRequest openData;
+	private OpenDataRequest opendata;
 	private DcatRequest dcat;
 	private List<ComponentRequest> components;
 	private List<Integer> tags;
@@ -194,11 +194,11 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	}
 
 	public OpenDataRequest getOpenData() {
-		return openData;
+		return opendata;
 	}
 
 	public void setOpenData(OpenDataRequest openData) {
-		this.openData = openData;
+		this.opendata = openData;
 	}
 
 	public DcatRequest getDcat() {

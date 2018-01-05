@@ -12,10 +12,10 @@ public class SubdomainResponse extends Response{
 	private String subdomaincode;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String langIt;
+	private String langit;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String langEn;
+	private String langen;
 	private int deprecated;
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,8 +26,8 @@ public class SubdomainResponse extends Response{
 		if (iSubdomain != null) {
 			this.idSubdomain = iSubdomain.getSubIdSubDomain();
 			this.subdomaincode = iSubdomain.getSubSubDomainCode();
-			this.langIt = iSubdomain.getSubLangIt();
-			this.langEn = iSubdomain.getSubLangEn();
+			this.langit = iSubdomain.getSubLangIt();
+			this.langen = iSubdomain.getSubLangEn();
 		}
 	}
 	
@@ -35,8 +35,8 @@ public class SubdomainResponse extends Response{
 		super();
 		this.idSubdomain = subdomain.getIdSubdomain();
 		this.subdomaincode = subdomain.getSubdomaincode();
-		this.langIt = subdomain.getLangIt();
-		this.langEn = subdomain.getLangEn();
+		this.langit = subdomain.getLangIt();
+		this.langen = subdomain.getLangEn();
 		this.deprecated = subdomain.getDeprecated();
 		this.idDomain = subdomain.getIdDomain();
 	}
@@ -68,19 +68,19 @@ public class SubdomainResponse extends Response{
 	}
 
 	public String getLangIt() {
-		return langIt;
+		return langit;
 	}
 
 	public void setLangIt(String langIt) {
-		this.langIt = langIt;
+		this.langit = langIt;
 	}
 
 	public String getLangEn() {
-		return langEn;
+		return langen;
 	}
 
 	public void setLangEn(String langEn) {
-		this.langEn = langEn;
+		this.langen = langEn;
 	}
 
 	public int getDeprecated() {

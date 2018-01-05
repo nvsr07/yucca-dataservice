@@ -532,8 +532,8 @@ public class ServiceUtil {
 				component.idMeasureUnit(componentRequest.getIdMeasureUnit());
 				component.sourcecolumn(componentRequest.getSourcecolumn());
 				component.sourcecolumnname(componentRequest.getSourcecolumnname());
-				component.required( Util.booleanToInt(componentRequest.getRequired()));
-				component.setIskey(isKey==null ? Util.booleanToInt(componentRequest.getIskey()) : isKey);
+				component.required( componentRequest.getRequired());
+				component.setIskey(isKey==null ? componentRequest.getIskey() : isKey);
 				component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
 				component.setIdDataSource(idDataSource);
 				component.setDatasourceversion(datasourceVersion);

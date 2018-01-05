@@ -21,7 +21,7 @@ public class DatasetRequest implements IVisibility, IDataSourceRequest {
 	private String jdbcdbname;
 	private String jdbcdbtype;
 	private String jdbctablename;
-	private OpenDataRequest openData;
+	private OpenDataRequest opendata;
 	private Integer idSubdomain;
 	private DcatRequest dcat;
 	private List<ComponentRequest> components;
@@ -286,10 +286,10 @@ public class DatasetRequest implements IVisibility, IDataSourceRequest {
 	}
 
 	public OpenDataRequest getOpenData() {
-		return openData;
+		return opendata;
 	}
 
 	public void setOpenData(OpenDataRequest openData) {
-		this.openData = openData;
+		this.opendata = openData;
 	}
 }
