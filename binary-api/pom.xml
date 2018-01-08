@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.dataservice.binaryapi</groupId>
 	<artifactId>binaryapi</artifactId>
-	<version>1.0.0-001</version>
+	<version>1.0.0-002</version>
 	<packaging>war</packaging>
 	<name>binaryapi</name>
 	<scm>
