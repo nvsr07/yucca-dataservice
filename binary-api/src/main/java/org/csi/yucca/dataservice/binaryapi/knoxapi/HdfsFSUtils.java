@@ -68,7 +68,7 @@ public class HdfsFSUtils {
 				for (int i = 0; i < filesc.getFileStatuses().getFileStatus().length; i++) {
 					FileStatus currentFile = filesc.getFileStatuses().getFileStatus()[i];
 					logger.info("[KnoxHdfsFSUtils::readDir] analyze:["+remotePath+"]+["+currentFile.getPathSuffix()+"]");
-					if (currentFile.getType().equals("FILE")) {
+					if (currentFile.getType().equals("FILE") && currentFile.getPathSuffix().contains(".csv")) {
 						countFileIntoDir++;
 						String myFileName = currentFile.getPathSuffix();
 						String versionStr=myFileName.substring(myFileName.lastIndexOf("-") + 1,myFileName.lastIndexOf(".csv"));
