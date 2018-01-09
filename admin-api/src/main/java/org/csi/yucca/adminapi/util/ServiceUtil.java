@@ -851,7 +851,7 @@ public class ServiceUtil {
 		dataSource.setUnpublished(Util.booleanToInt(request.getUnpublished()));
 		dataSource.setName(request.getName());
 		dataSource.setVisibility(request.getVisibility());
-		dataSource.setCopyright(request.getVisibility());
+		dataSource.setCopyright(request.getCopyright());
 		dataSource.setDisclaimer(request.getDisclaimer());		
 		dataSource.setRegistrationdate(Util.getNow());
 		dataSource.setRequestername(request.getRequestername());
