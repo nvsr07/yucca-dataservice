@@ -121,7 +121,7 @@ public interface DomainMapper {
 					 @Param("domaincode") String domaincode,
 					 @Param("langit") String langit,
 					 @Param("langen") String langen,
-					 @Param("deprecated") int deprecated);	
+					 @Param("deprecated") Integer deprecated);	
 	
 
 	/*************************************************************************

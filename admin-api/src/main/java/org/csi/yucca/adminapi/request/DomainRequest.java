@@ -8,7 +8,7 @@ public class DomainRequest {
 	private String langen;
 	private Integer idDomain;
 	private String domaincode;
-	public Integer deprecated;
+	public Boolean deprecated;
 	private List<Integer> ecosystemCodeList;
 	
 	public String getLangit() {
@@ -35,10 +35,10 @@ public class DomainRequest {
 	public void setDomaincode(String domaincode) {
 		this.domaincode = domaincode;
 	}
-	public Integer getDeprecated() {
+	public Boolean getDeprecated() {
 		return deprecated;
 	}
-	public void setDeprecated(Integer deprecated) {
+	public void setDeprecated(Boolean deprecated) {
 		this.deprecated = deprecated;
 	}
 	public List<Integer> getEcosystemCodeList() {

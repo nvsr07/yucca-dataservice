@@ -42,6 +42,7 @@ import org.csi.yucca.adminapi.util.Errors;
 import org.csi.yucca.adminapi.util.Languages;
 import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.csi.yucca.adminapi.util.ServiceUtil;
+import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -196,6 +197,11 @@ public class ClassificationServiceImpl implements ClassificationService{
 		Subdomain subdomain = new Subdomain();
 		BeanUtils.copyProperties(subdomainRequest, subdomain);
 		subdomain.setIdSubdomain(idSubdomain);
+		subdomain.setSubdomaincode(subdomainRequest.getSubdomaincode());
+		subdomain.setLangIt(subdomainRequest.getLangIt());
+		subdomain.setLangEn(subdomainRequest.getLangEn());
+		subdomain.setDeprecated(Util.booleanToInt(subdomainRequest.getDeprecated()));
+		subdomain.setIdDomain(subdomainRequest.getIdDomain());
 		
 		int count = subdomainMapper.updateSubdomain(subdomain);
 		ServiceUtil.checkCount(count);
@@ -223,8 +229,12 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(subdomainRequest.getIdDomain(), "idDomain"); 
 		
 		Subdomain subdomain = new Subdomain();
-		BeanUtils.copyProperties(subdomainRequest, subdomain);
-
+		subdomain.setSubdomaincode(subdomainRequest.getSubdomaincode());
+		subdomain.setLangIt(subdomainRequest.getLangIt());
+		subdomain.setLangEn(subdomainRequest.getLangEn());
+		subdomain.setDeprecated(Util.booleanToInt(subdomainRequest.getDeprecated()));
+		subdomain.setIdDomain(subdomainRequest.getIdDomain());
+		
 		insertSubdomain(subdomain);
 		
 		return ServiceResponse.build().object(new SubdomainResponse(subdomain));
@@ -650,7 +660,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 		insertEcosystemDomain(domainRequest.getEcosystemCodeList(), idDomain);
 		
 		domainMapper.updateDomain(idDomain, domainRequest.getDomaincode(), domainRequest.getLangit(), 
-				domainRequest.getLangen(), domainRequest.getDeprecated());
+				domainRequest.getLangen(), Util.booleanToInt(domainRequest.getDeprecated()));
 		
 		return ServiceResponse.build().object(domainRequest);
 	}

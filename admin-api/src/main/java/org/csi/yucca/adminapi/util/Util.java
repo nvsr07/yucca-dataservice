@@ -193,7 +193,11 @@ public class Util {
 	}
 
 	public static Integer booleanToInt(Boolean booleanValue) {
-		if(booleanValue == null || booleanValue==false) return 0;
+		
+		if (booleanValue == null) return null;
+		
+		if(booleanValue==false) return 0;
+		
 		return 1;
 	}
 	

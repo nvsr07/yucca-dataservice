@@ -10,8 +10,8 @@ public class ComponentRequest {
 	private Integer idPhenomenon;
 	private Integer idDataType;
 	private Integer idMeasureUnit;
-	private Integer required;
-	private Integer iskey;
+	private Boolean required;
+	private Boolean iskey;
 	private String datetimeformat;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
@@ -49,11 +49,11 @@ public class ComponentRequest {
 		this.datetimeformat = datetimeformat;
 	}
 
-	public Integer getIskey() {
+	public Boolean getIskey() {
 		return iskey;
 	}
 
-	public void setIskey(Integer iskey) {
+	public void setIskey(Boolean iskey) {
 		this.iskey = iskey;
 	}
 
@@ -121,11 +121,11 @@ public class ComponentRequest {
 		this.idMeasureUnit = idMeasureUnit;
 	}
 
-	public Integer getRequired() {
+	public Boolean getRequired() {
 		return required;
 	}
 
-	public void setRequired(Integer required) {
+	public void setRequired(Boolean required) {
 		this.required = required;
 	}
 

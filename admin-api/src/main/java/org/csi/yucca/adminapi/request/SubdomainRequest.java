@@ -6,7 +6,7 @@ public class SubdomainRequest {
 	private String subdomaincode;
 	private String langit;
 	private String langen;
-	private int deprecated;
+	private Boolean deprecated;
 	private Integer idDomain;
 
 	public Integer getIdSubdomain() {
@@ -41,11 +41,11 @@ public class SubdomainRequest {
 		this.langen = langEn;
 	}
 
-	public int getDeprecated() {
+	public Boolean getDeprecated() {
 		return deprecated;
 	}
 
-	public void setDeprecated(int deprecated) {
+	public void setDeprecated(Boolean deprecated) {
 		this.deprecated = deprecated;
 	}
 
