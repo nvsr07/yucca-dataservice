@@ -50,7 +50,7 @@ public interface DatasetMapper {
 	public static final String UPDATE_DATASET = 
 		"UPDATE " + DATASET_TABLE + 
 		" SET datasetname=#{dataSetName}, description=#{dataSetDescription} " + 
-		" WHERE id_datasource=#{idDataSource} and datasourceversion=#{dataSourceVersion}";
+		" WHERE id_data_source=#{idDataSource} and datasourceversion=#{dataSourceVersion}";
 	@Update(UPDATE_DATASET)
 	int updateDataset( 
 			@Param("dataSetName") String dataSetName,

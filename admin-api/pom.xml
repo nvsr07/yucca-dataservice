@@ -23,29 +23,29 @@
 	</properties>
 	<build>
 		<plugins>
-		      <plugin>
-		        <groupId>org.apache.maven.plugins</groupId>
-		        <artifactId>maven-jar-plugin</artifactId>
-		        <version>3.0.2</version>
-		        <executions>
-		          <execution>
-		            <phase>package</phase>
-		            <goals>
-		              <goal>jar</goal>
-		            </goals>
-		            <configuration>
-		              <outputDirectory>target/libs/org/csi/yucca/adminapi/${version}</outputDirectory>
-		              <classifier>client</classifier>
-		              <includes>
-		                <include>**/adminapi/util/**/*</include>
-		                <include>**/adminapi/model/**/*</include>
-		                <include>**/adminapi/client/*</include>
-		                <include>**/adminapi/response/*</include>
-		              </includes>
-		            </configuration>
-		          </execution>
-		        </executions>
-		      </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.0.2</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/libs/org/csi/yucca/adminapi/${version}</outputDirectory>
+							<classifier>client</classifier>
+							<includes>
+								<include>**/adminapi/util/**/*</include>
+								<include>**/adminapi/model/**/*</include>
+								<include>**/adminapi/client/*</include>
+								<include>**/adminapi/response/*</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -114,6 +114,11 @@
 
 	<dependencies>
 
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>19.0-rc2</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.opencsv</groupId>
