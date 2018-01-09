@@ -82,7 +82,7 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 		this.components = components;
 	}
 
-	public List<TenantResponse> getSharingTenanst() {
+	public List<TenantResponse> getSharingTenants() {
 		return sharingTenants;
 	}
 
