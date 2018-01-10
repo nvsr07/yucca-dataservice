@@ -517,7 +517,7 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static void insertComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, 
-			Integer datasourceVersion, Integer sinceVersion, Integer isKey, ComponentMapper componentMapper)throws Exception{
+			Integer datasourceVersion, Integer sinceVersion, Boolean isKey, ComponentMapper componentMapper)throws Exception{
 		
 		for (ComponentRequest componentRequest : listComponentRequest) {
 
@@ -533,7 +533,7 @@ public class ServiceUtil {
 				component.sourcecolumn(componentRequest.getSourcecolumn());
 				component.sourcecolumnname(componentRequest.getSourcecolumnname());
 				component.required( Util.booleanToInt(componentRequest.getRequired()));
-				component.setIskey(isKey==null ? Util.booleanToInt(componentRequest.getIskey()) : isKey);
+				component.setIskey(isKey);
 				component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
 				component.setIdDataSource(idDataSource);
 				component.setDatasourceversion(datasourceVersion);

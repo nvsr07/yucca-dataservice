@@ -38,7 +38,7 @@ public interface ComponentMapper {
 					"#{propName}" +
 				"</foreach>" +
 					 " ) ";
-	@Insert(CLONE_COMPONENT)
+	@Insert({"<script>",CLONE_COMPONENT, "</script>"})
 	int cloneComponent( @Param("newDataSourceVersion") Integer newDataSourceVersion, 
 						@Param("listIdComponent") List<Integer> listIdComponent );
 
@@ -47,8 +47,8 @@ public interface ComponentMapper {
 	 * ***********************************************************************/	
 	public static final String UPDATE_CLONED_COMPONENT = 
 		"UPDATE " + COMPONENT_TABLE + 
-		" SET alias=#{alias}, inorder=#{inorder}, id_measure_unit=#{idMeasureUnit} " + 
-		" WHERE name=#{name} and datasourceversion=#{dataSourceVersion} and id_data_source=#{idDataSource}, foreignkey=#{foreignkey}";
+		" SET alias=#{alias}, inorder=#{inorder}, id_measure_unit=#{idMeasureUnit}, foreignkey=#{foreignkey} " + 
+		" WHERE name=#{name} and datasourceversion=#{dataSourceVersion} and id_data_source=#{idDataSource}";
 	@Update(UPDATE_CLONED_COMPONENT)
 	int updateClonedComponent(
 			@Param("name") String name,
