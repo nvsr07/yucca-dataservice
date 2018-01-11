@@ -16,7 +16,7 @@ public class Component {
 	private Boolean iskey;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
-	private Integer required;
+	private Boolean required;
 	private String foreignkey;
 
 	public String getForeignkey() {
@@ -139,11 +139,11 @@ public class Component {
 		this.sourcecolumnname = sourcecolumnname;
 	}
 
-	public Integer getRequired() {
+	public Boolean getRequired() {
 		return required;
 	}
 
-	public void setRequired(Integer required) {
+	public void setRequired(Boolean required) {
 		this.required = required;
 	}
 
@@ -219,7 +219,7 @@ public class Component {
 		return this;
 	}
 
-	public Component required(Integer required) {
+	public Component required(Boolean required) {
 		this.required = required;
 		return this;
 	}

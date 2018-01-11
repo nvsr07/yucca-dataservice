@@ -318,7 +318,8 @@ public class DatasetServiceImpl implements DatasetService {
 				listIdComponent.add(component.getIdComponent());
 			}
 		}
-		componentMapper.cloneComponent(datasetRequest.getNewDataSourceVersion(), listIdComponent);
+		if(listIdComponent.size()>0)
+			componentMapper.cloneComponent(datasetRequest.getNewDataSourceVersion(), listIdComponent);
 		
 		for (ComponentRequest component : datasetRequest.getComponents()) {
 			if(component.getIdComponent() != null){
