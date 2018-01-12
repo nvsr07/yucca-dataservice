@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
 public class TwitterInfoResponse extends Response {
 	
@@ -16,8 +17,11 @@ public class TwitterInfoResponse extends Response {
     private String twtuntil; 
     private Integer twtratepercentage; 
     private Long twtlastsearchid;
+    private String twttokensecret;
+    private String twtusertoken;
+    private Integer twtmaxstreams;
     
-	public TwitterInfoResponse( DettaglioStream dettaglioStream ) {
+	public TwitterInfoResponse( DettaglioStream dettaglioStream , DettaglioSmartobject dettaglioSmartObject) {
 		super();
 		this.twtquery = dettaglioStream.getTwtquery();
 		this.twtgeoloclat = dettaglioStream.getTwtgeoloclat();
@@ -31,6 +35,11 @@ public class TwitterInfoResponse extends Response {
 		this.twtuntil = dettaglioStream.getTwtuntil();
 		this.twtratepercentage = dettaglioStream.getTwtratepercentage();
 		this.twtlastsearchid = dettaglioStream.getTwtlastsearchid();
+		this.twttokensecret = dettaglioSmartObject.getTwttokensecret();
+		this.twtusertoken = dettaglioSmartObject.getTwtusertoken();
+		this.twtmaxstreams = dettaglioSmartObject.getTwtmaxstreams();
+		
+		
 	}
 	
 	public TwitterInfoResponse() {
@@ -107,7 +116,33 @@ public class TwitterInfoResponse extends Response {
 	}
 	public void setTwtlastsearchid(Long twtlastsearchid) {
 		this.twtlastsearchid = twtlastsearchid;
+	}
+
+	public String getTwttokensecret() {
+		return twttokensecret;
+	}
+
+	public void setTwttokensecret(String twttokensecret) {
+		this.twttokensecret = twttokensecret;
+	}
+
+	public String getTwtusertoken() {
+		return twtusertoken;
+	}
+
+	public void setTwtusertoken(String twtusertoken) {
+		this.twtusertoken = twtusertoken;
+	}
+
+	public Integer getTwtmaxstreams() {
+		return twtmaxstreams;
+	}
+
+	public void setTwtmaxstreams(Integer twtmaxstreams) {
+		this.twtmaxstreams = twtmaxstreams;
 	} 
+	
+	
 	
 	
 }

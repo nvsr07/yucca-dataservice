@@ -43,7 +43,7 @@ public class StreamDettaglioResponse {
 		this.usedInInternalCount = dettaglioStream.getUsedInInternalCount();
 		this.streamsCountBySO = dettaglioStream.getStreamsCountBySO();
 		this.internalquery = dettaglioStream.getInternalquery();
-		this.twitterInfo = new TwitterInfoResponse(dettaglioStream);
+		this.twitterInfo = new TwitterInfoResponse(dettaglioStream,dettaglioSmartobject);
 		addInternalStreams(listInternalStream);
 		this.smartobject = new DettaglioSmartobjectResponse(dettaglioSmartobject);
 		this.fps = dettaglioStream.getFps();
