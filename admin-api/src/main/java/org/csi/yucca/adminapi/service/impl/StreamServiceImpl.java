@@ -571,7 +571,7 @@ public class StreamServiceImpl implements StreamService {
 			throws Exception {
 		if (Type.FEED_TWEET.id() != smartobject.getIdSoType()) {
 			ServiceUtil.insertComponents(request.getComponents(), idDataSource, DATASOURCE_VERSION, SINCE_VERSION,
-					Util.booleanToInt(false), componentMapper);
+					false, componentMapper);
 		}
 	}
 
@@ -1286,8 +1286,8 @@ public class StreamServiceImpl implements StreamService {
 				component.setIdPhenomenon(componentRequest.getIdPhenomenon());
 				component.setIdDataType(componentRequest.getIdDataType());
 				component.setIdMeasureUnit(componentRequest.getIdMeasureUnit());
-				component.setRequired(Util.booleanToInt(true));
-				component.setIskey(Util.booleanToInt(false));
+				component.setRequired(true);
+				component.setIskey(false);
 				componentMapper.insertComponent(component);
 			}
 		}

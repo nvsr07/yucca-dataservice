@@ -500,7 +500,7 @@ public class DatabaseReader {
 				String pkColumnName = primaryKeys.getString("COLUMN_NAME");
 				for (Component component : components) {
 					if (component.getName().equals(pkColumnName))
-						component.setIskey(1);
+						component.setIskey(true);
 				}
 			}
 		} finally {

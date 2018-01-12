@@ -456,18 +456,20 @@ public class ServiceUtil {
 	public static void insertSharingTenants(List<SharingTenantRequest> listSharingTenantRequest, Integer idDataSource,
 			Timestamp now, Integer dataOptions, Integer manageOptions, Integer dataSourceVersion, TenantMapper tenantMapper) throws Exception{
 		
-		for (SharingTenantRequest sharingTenantRequest : listSharingTenantRequest) {
-			TenantDataSource tenantDataSource = new TenantDataSource();
-			tenantDataSource.setIdDataSource(idDataSource);
-			tenantDataSource.setDatasourceversion(dataSourceVersion==null?ServiceUtil.DATASOURCE_VERSION:dataSourceVersion);
-			tenantDataSource.setIdTenant(sharingTenantRequest.getIdTenant());
-			tenantDataSource.setIsactive(Util.booleanToInt(true));
-			tenantDataSource.setIsmanager(Util.booleanToInt(false));
-			tenantDataSource.setActivationdate(now);
-			tenantDataSource.setManagerfrom(now);
-			tenantDataSource.setDataoptions(dataOptions==null?sharingTenantRequest.getDataOptions():dataOptions);
-			tenantDataSource.setManageoptions(manageOptions==null?sharingTenantRequest.getManageOptions():manageOptions);
-			tenantMapper.insertTenantDataSource(tenantDataSource);
+		if(listSharingTenantRequest!=null){
+			for (SharingTenantRequest sharingTenantRequest : listSharingTenantRequest) {
+				TenantDataSource tenantDataSource = new TenantDataSource();
+				tenantDataSource.setIdDataSource(idDataSource);
+				tenantDataSource.setDatasourceversion(dataSourceVersion==null?ServiceUtil.DATASOURCE_VERSION:dataSourceVersion);
+				tenantDataSource.setIdTenant(sharingTenantRequest.getIdTenant());
+				tenantDataSource.setIsactive(Util.booleanToInt(true));
+				tenantDataSource.setIsmanager(Util.booleanToInt(false));
+				tenantDataSource.setActivationdate(now);
+				tenantDataSource.setManagerfrom(now);
+				tenantDataSource.setDataoptions(dataOptions==null?sharingTenantRequest.getDataOptions():dataOptions);
+				tenantDataSource.setManageoptions(manageOptions==null?sharingTenantRequest.getManageOptions():manageOptions);
+				tenantMapper.insertTenantDataSource(tenantDataSource);
+			}
 		}
 	}
 
@@ -517,7 +519,7 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static void insertComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, 
-			Integer datasourceVersion, Integer sinceVersion, Integer isKey, ComponentMapper componentMapper)throws Exception{
+			Integer datasourceVersion, Integer sinceVersion, Boolean isKey, ComponentMapper componentMapper)throws Exception{
 		
 		for (ComponentRequest componentRequest : listComponentRequest) {
 
@@ -532,8 +534,8 @@ public class ServiceUtil {
 				component.idMeasureUnit(componentRequest.getIdMeasureUnit());
 				component.sourcecolumn(componentRequest.getSourcecolumn());
 				component.sourcecolumnname(componentRequest.getSourcecolumnname());
-				component.required( Util.booleanToInt(componentRequest.getRequired()));
-				component.setIskey(isKey==null ? Util.booleanToInt(componentRequest.getIskey()) : isKey);
+				component.required(componentRequest.getRequired());
+				component.setIskey(isKey);
 				component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
 				component.setIdDataSource(idDataSource);
 				component.setDatasourceversion(datasourceVersion);
