@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
 public class StreamDettaglioResponse {
@@ -18,27 +19,30 @@ public class StreamDettaglioResponse {
 	private Integer idstream;
 	private String streamcode;
 	private String streamname;
+	private String streamalias;
 	private Integer savedata;
 	
 	public StreamDettaglioResponse() {
 		super();
 	}
 
-	private void addInternalStreams(List<DettaglioStream> listInternalStream)throws Exception{
-		for (DettaglioStream dettaglioStream : listInternalStream) {
+	private void addInternalStreams(List<InternalDettaglioStream> listInternalStream)throws Exception{
+		for (InternalDettaglioStream dettaglioStream : listInternalStream) {
 			internalStreams.add(new StreamDettaglioResponse(dettaglioStream));
 		}
 	}
 	
-	public StreamDettaglioResponse(DettaglioStream dettaglioStream)throws Exception{
+	public StreamDettaglioResponse(InternalDettaglioStream dettaglioStream)throws Exception{
 		this.setIdstream(dettaglioStream.getIdstream());
 		this.setStreamcode(dettaglioStream.getStreamcode());
 		this.setStreamname(dettaglioStream.getStreamname());
+		this.setStreamalias(dettaglioStream.getAliasName());
 		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
 	}
 	
+	
 	public StreamDettaglioResponse( DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
-			List<DettaglioStream> listInternalStream ) throws Exception{
+			List<InternalDettaglioStream> listInternalStream ) throws Exception{
 		super();
 		this.usedInInternalCount = dettaglioStream.getUsedInInternalCount();
 		this.streamsCountBySO = dettaglioStream.getStreamsCountBySO();
@@ -141,4 +145,14 @@ public class StreamDettaglioResponse {
 	public void setSavedata(Integer savedata) {
 		this.savedata = savedata;
 	}
+
+	public String getStreamalias() {
+		return streamalias;
+	}
+
+	public void setStreamalias(String streamalias) {
+		this.streamalias = streamalias;
+	}
+	
+	
 }

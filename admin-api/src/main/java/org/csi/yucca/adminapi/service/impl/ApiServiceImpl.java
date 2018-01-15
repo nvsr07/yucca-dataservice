@@ -55,6 +55,7 @@ import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Stream;
@@ -160,7 +161,7 @@ public class ApiServiceImpl implements ApiService {
 
 					DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
 					
-					List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+					List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 					
 					dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
 				}				

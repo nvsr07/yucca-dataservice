@@ -21,23 +21,6 @@ public class TwitterInfoResponse extends Response {
     private String twtusertoken;
     private Integer twtmaxstreams;
     
-	public TwitterInfoResponse( DettaglioStream dettaglioStream) {
-		super();
-		this.twtquery = dettaglioStream.getTwtquery();
-		this.twtgeoloclat = dettaglioStream.getTwtgeoloclat();
-		this.twtgeoloclon = dettaglioStream.getTwtgeoloclon();
-		this.twtgeolocradius = dettaglioStream.getTwtgeolocradius();
-		this.twtgeolocunit = dettaglioStream.getTwtgeolocunit();
-		this.twtlang = dettaglioStream.getTwtlang();
-		this.twtlocale = dettaglioStream.getTwtlocale();
-		this.twtcount = dettaglioStream.getTwtcount();
-		this.twtresulttype = dettaglioStream.getTwtresulttype();
-		this.twtuntil = dettaglioStream.getTwtuntil();
-		this.twtratepercentage = dettaglioStream.getTwtratepercentage();
-		this.twtlastsearchid = dettaglioStream.getTwtlastsearchid();
-
-	}
-	
 	public TwitterInfoResponse( DettaglioStream dettaglioStream , DettaglioSmartobject dettaglioSmartObject) {
 		super();
 		this.twtquery = dettaglioStream.getTwtquery();

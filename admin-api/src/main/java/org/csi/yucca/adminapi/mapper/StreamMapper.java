@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.StreamInternal;
 import org.csi.yucca.adminapi.model.StreamToUpdate;
@@ -207,6 +208,7 @@ public interface StreamMapper {
 			" yucca_stream.datasourceversion, " +
 			" yucca_stream.streamcode, " +
 			" yucca_stream.streamname, " +
+			" yucca_r_stream_internal.stream_alias, " +			
 			" yucca_smart_object.id_smart_object, " +
 			" yucca_smart_object.socode, " +
 			" yucca_smart_object.name smart_object_name, " +
@@ -278,7 +280,7 @@ public interface StreamMapper {
 		@Result(property = "idSoType", column = "id_so_type")
       })	
 	@Select({"<script>", SELECT_INTERNAL_STREAM, "</script>"}) 
-	List<DettaglioStream> selectInternalStream( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
+	List<InternalDettaglioStream> selectInternalStream( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
 
 	
 	/*************************************************************************

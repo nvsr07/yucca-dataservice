@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.util.Util;
 
@@ -52,7 +53,7 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 			DettaglioStream dettaglioStream, 
 			DettaglioDataset dettaglioDataset, 
 			DettaglioSmartobject dettaglioSmartobject, 
-			List<DettaglioStream> listInternalStream) throws Exception {
+			List<InternalDettaglioStream> listInternalStream) throws Exception {
 		
 		super(dettaglioStream);
 		setAllParameter(dettaglioStream);
@@ -62,7 +63,7 @@ public class DettaglioStreamDatasetResponse extends DataSourceResponse {
 	}
 	
 	public DettaglioStreamDatasetResponse(DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
-			List<DettaglioStream> listInternalStream) throws Exception {
+			List<InternalDettaglioStream> listInternalStream) throws Exception {
 		super(dettaglioStream);
 		setAllParameter(dettaglioStream);
 		this.stream = new StreamDettaglioResponse(dettaglioStream, dettaglioSmartobject, listInternalStream);

@@ -56,6 +56,7 @@ import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Stream;
@@ -414,7 +415,7 @@ public class StreamServiceImpl implements StreamService {
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());
 
-		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(),
+		List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(),
 				dettaglioStream.getDatasourceversion());
 
 		DettaglioDataset dettaglioDataset = getDettaglioDataset(dettaglioStream, tenantCodeManager, organizationCode,
@@ -1513,7 +1514,7 @@ public class StreamServiceImpl implements StreamService {
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(),
+		List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(),
 				dettaglioStream.getDatasourceversion());
 
 		DettaglioDataset dettaglioDataset = null;
@@ -1539,7 +1540,7 @@ public class StreamServiceImpl implements StreamService {
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-		List<DettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(),
+		List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(),
 				dettaglioStream.getDatasourceversion());
 
 		DettaglioDataset dettaglioDataset = null;
