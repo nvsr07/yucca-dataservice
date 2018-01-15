@@ -25,6 +25,7 @@ private SolrClient server;
 			clientBuilder.setDefaultCredentialsProvider(provider);
 		}
 		clientBuilder.setMaxConnTotal(128);
+		clientBuilder.setMaxConnPerRoute(128);
 				
 		
 		try {

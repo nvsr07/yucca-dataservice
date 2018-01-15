@@ -232,11 +232,14 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 //			retStr =StringUtils.replace(retStr, "?", "\\?");
 //			retStr =StringUtils.replace(retStr, ":", "\\:");
 //			retStr =StringUtils.replace(retStr, "\\", "\\\\");
-			Object ret=StringUtils.replaceEach(new String(paramEdmLiteral.getLiteral()), 
-						new String [] { "\\"   ," "  , "+"  ,"-"  ,":"  , "?"  ,"*"   ,"~"  ,"^"  , "]"  , "["  ,"{"  , "}"  , "("   , ")"  ,"!"  , "||"  , "&&"  , "\""} , 
-						new String [] { "\\\\" ,"\\ ", "\\+","\\-","\\:", "\\?","\\*" ,"\\~","\\^", "\\]", "\\[","\\{", "\\}", "\\(" , "\\)","\\!", "\\||", "\\&&", "\\\""} );
-			 
+
 			
+			
+//			Object ret=StringUtils.replaceEach(new String(paramEdmLiteral.getLiteral()), 
+//						new String [] { "\\"   ," "  , "+"  ,"-"  ,":"  , "?"  ,"*"   ,"~"  ,"^"  , "]"  , "["  ,"{"  , "}"  , "("   , ")"  ,"!"  , "||"  , "&&"  , "\""} , 
+//						new String [] { "\\\\" ,"\\ ", "\\+","\\-","\\:", "\\?","\\*" ,"\\~","\\^", "\\]", "\\[","\\{", "\\}", "\\(" , "\\)","\\!", "\\||", "\\&&", "\\\""} );
+			 
+			Object ret=new String(paramEdmLiteral.getLiteral());
 			
 			//TODO levare apici inizio e fine???
 			return ret;
@@ -306,6 +309,8 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 				SimpleDateFormat dateFormatH = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
 
 				
+				
+				
 				dateFormatA.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 				dateFormatB.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 				dateFormatC.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
@@ -314,6 +319,7 @@ public class SDPPhoenixExpressionVisitor implements ExpressionVisitor {
 				dateFormatF.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 				dateFormatG.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
 				dateFormatH.setCalendar(new GregorianCalendar(new SimpleTimeZone(0, "GMT")));
+
 
 
 				//				try  {

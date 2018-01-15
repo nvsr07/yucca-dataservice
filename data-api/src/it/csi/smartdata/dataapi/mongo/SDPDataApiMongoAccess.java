@@ -1698,11 +1698,11 @@ public class SDPDataApiMongoAccess {
 
 
 			} else if ("hour_dayofmonth_month_year".equals(timeGroupByParam)) {
-				groupby = " YEAR(time_dt), MONTH(time_dt), DAYOFMONTH(time_dt), HOUR(time_dt) ";
-				groupbysleect = " YEAR(time_dt) as year, MONTH(time_dt) as month , DAYOFMONTH(time_dt) as dayofmonth, HOUR(time_dt) as hour ,  -1 as minute, -1 as dayofweek";
+				groupby = " YEAR(time_dt), MONTH(time_dt), DAYOFMONTH(time_dt),  hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')) ";
+				groupbysleect = " YEAR(time_dt) as year, MONTH(time_dt) as month , DAYOFMONTH(time_dt) as dayofmonth,  hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')) as hour ,  -1 as minute, -1 as dayofweek";
 			} else if ("minute_hour_dayofmonth_month_year".equals(timeGroupByParam)) {
-				groupby = " YEAR(time_dt), MONTH(time_dt), DAYOFMONTH(time_dt), HOUR(time_dt), MINUTE(time_dt)";
-				groupbysleect = " YEAR(time_dt) as year, MONTH(time_dt) as month , DAYOFMONTH(time_dt) as dayofmonth, HOUR(time_dt) as hour , MINUTE(time_dt) as minute , -1 as dayofweek";
+				groupby = " YEAR(time_dt), MONTH(time_dt), DAYOFMONTH(time_dt),  hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')), MINUTE(time_dt)";
+				groupbysleect = " YEAR(time_dt) as year, MONTH(time_dt) as month , DAYOFMONTH(time_dt) as dayofmonth,  hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')) as hour , MINUTE(time_dt) as minute , -1 as dayofweek";
 
 			} else if ("month".equals(timeGroupByParam)) {
 				//YUCCA-388
@@ -1719,12 +1719,12 @@ public class SDPDataApiMongoAccess {
 				groupby = " DAYOFWEEK(time_dt)";
 				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, -1 as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("hour_dayofweek".equals(timeGroupByParam)) {
-				groupby = " DAYOFWEEK(time_dt),HOUR(time_dt)";
-				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth, HOUR(time_dt) as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
+				groupby = " DAYOFWEEK(time_dt), hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT'))";
+				groupbysleect = " -1 as month , -1 as dayfomonth,  -1 as year, -1 as dayofmonth,  hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')) as hour, -1 as minute, DAYOFWEEK(time_dt) as dayofweek ";
 			} else if ("hour".equals(timeGroupByParam)) {
 				//YUCCA-388
-				groupby = "  HOUR(time_dt) ";
-				groupbysleect = "  HOUR(time_dt) as hour, -1 as year, -1 as month,  -1 as dayofmonth,  -1 as minute, -1 as dayofweek";
+				groupby = "   hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')) ";
+				groupbysleect = "   hour(to_time(''||TIME_DT, 'yyyy-MM-dd HH:mm:sss.SSS','GMT')) as hour, -1 as year, -1 as month,  -1 as dayofmonth,  -1 as minute, -1 as dayofweek";
 
 			} else if ("retweetparentid".equals(timeGroupByParam)) {
 
@@ -1812,19 +1812,27 @@ public class SDPDataApiMongoAccess {
 				strtINdex=3;
 			}
 			if (null != userQuery) {
+				
+				
+				log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] setting userQuery values begin");
 				for (int i =0;i<((SDPPhoenixExpression)userQuery).getParameters().size();i++) {
 					Object curpar=((SDPPhoenixExpression)userQuery).getParameters().get(i);
 					stmt.setObject(strtINdex, curpar);
+					log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] setting userQuery val "+strtINdex+"---->"+curpar);
 					strtINdex++;
 				}
+				log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] setting userQuery values end");
 			}
 			if (null != groupOutQuery) {
+				log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] setting groupOutQuery values begin");
 				for (int i =0;i<((SDPPhoenixExpression)groupOutQuery).getParameters().size();i++) {
 					Object curpar=((SDPPhoenixExpression)groupOutQuery).getParameters().get(i);
+					log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] setting groupOutQuery val "+strtINdex+"---->"+curpar);
 
 					stmt.setObject(strtINdex, curpar);
 					strtINdex++;
 				}
+				log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamPhoenix] setting groupOutQuery values end");
 			}
 
 			long starTtime=0;

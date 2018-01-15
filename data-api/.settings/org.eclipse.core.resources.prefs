@@ -1,2 +1,7 @@
 eclipse.preferences.version=1
+encoding//resources/local=UTF-8
+encoding//resources/localprod=UTF-8
 encoding//src/it/csi/smartdata/dataapi/mongo/SDPMongoOdataCast.java=UTF-8
+encoding/<project>=UTF-8
+encoding/src=UTF-8
+encoding/test=UTF-8
