@@ -39,9 +39,6 @@ public class StreamDettaglioResponse {
 	}
 	
 
-	
-	
-	
 	public StreamDettaglioResponse( DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
 			List<InternalDettaglioStream> listInternalStream ) throws Exception{
 		super();
