@@ -13,13 +13,12 @@ public class StreamDettaglioResponse {
 	private Long streamsCountBySO;
 	private String internalquery;
 	private TwitterInfoResponse twitterInfo;
-	private List<StreamDettaglioResponse> internalStreams = new ArrayList<StreamDettaglioResponse>();
+	private List<InternalStreamDettaglioResponse> internalStreams = new ArrayList<InternalStreamDettaglioResponse>();
 	private DettaglioSmartobjectResponse smartobject;
 	private Double fps;
 	private Integer idstream;
 	private String streamcode;
 	private String streamname;
-	private String streamalias;
 	private Integer savedata;
 	
 	public StreamDettaglioResponse() {
@@ -28,17 +27,19 @@ public class StreamDettaglioResponse {
 
 	private void addInternalStreams(List<InternalDettaglioStream> listInternalStream)throws Exception{
 		for (InternalDettaglioStream dettaglioStream : listInternalStream) {
-			internalStreams.add(new StreamDettaglioResponse(dettaglioStream));
+			internalStreams.add(new InternalStreamDettaglioResponse(dettaglioStream));
 		}
 	}
 	
-	public StreamDettaglioResponse(InternalDettaglioStream dettaglioStream)throws Exception{
+	public StreamDettaglioResponse(DettaglioStream dettaglioStream)throws Exception{
 		this.setIdstream(dettaglioStream.getIdstream());
 		this.setStreamcode(dettaglioStream.getStreamcode());
 		this.setStreamname(dettaglioStream.getStreamname());
-		this.setStreamalias(dettaglioStream.getAliasName());
 		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
 	}
+	
+
+	
 	
 	
 	public StreamDettaglioResponse( DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, 
@@ -90,11 +91,11 @@ public class StreamDettaglioResponse {
 		this.twitterInfo = twitterInfo;
 	}
 
-	public List<StreamDettaglioResponse> getInternalStreams() {
+	public List<InternalStreamDettaglioResponse> getInternalStreams() {
 		return internalStreams;
 	}
 
-	public void setInternalStreams(List<StreamDettaglioResponse> internalStreams) {
+	public void setInternalStreams(List<InternalStreamDettaglioResponse> internalStreams) {
 		this.internalStreams = internalStreams;
 	}
 
@@ -146,13 +147,6 @@ public class StreamDettaglioResponse {
 		this.savedata = savedata;
 	}
 
-	public String getStreamalias() {
-		return streamalias;
-	}
 
-	public void setStreamalias(String streamalias) {
-		this.streamalias = streamalias;
-	}
-	
 	
 }
