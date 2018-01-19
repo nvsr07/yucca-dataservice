@@ -933,19 +933,19 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws BadRequestException
 	 * @throws NotFoundException
 	 */
-	private void checkFeedTweetSmartobject(TwitterInfoRequest twitterInfoRequest, List<ComponentRequest> components,
+	private void checkFeedTweetSmartobject(TwitterInfoRequest twitterInfo, List<ComponentRequest> components,
 			Integer idSoType) throws BadRequestException, NotFoundException {
 
 		if (Type.FEED_TWEET.id() == idSoType) {
-			checkMandatoryParameter(twitterInfoRequest, "twitterInfo mandatory (only for Feed Tweet smartobject)");
-			checkMandatoryParameter(twitterInfoRequest.getTwtquery(), "twitterInfo => Twtquery");
+			checkMandatoryParameter(twitterInfo, "twitterInfo mandatory (only for Feed Tweet smartobject)");
+			checkMandatoryParameter(twitterInfo.getTwtquery(), "twitterInfo => Twtquery");
 			if (components != null) {
 				throw new BadRequestException(Errors.INCORRECT_VALUE,
 						"Component not allowed for Feed Tweet smartobject!");
 			}
 		}
 
-		if (Type.FEED_TWEET.id() != idSoType && twitterInfoRequest != null) {
+		if (Type.FEED_TWEET.id() != idSoType && twitterInfo	!= null) {
 			throw new BadRequestException(Errors.INCORRECT_VALUE, "TwitterInfo: is not feed tweet smartobject.");
 		}
 	}

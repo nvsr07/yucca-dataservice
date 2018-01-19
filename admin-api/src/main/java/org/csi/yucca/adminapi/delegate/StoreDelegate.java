@@ -133,7 +133,6 @@ public class StoreDelegate {
 		String response = HttpDelegate.makeHttpPost(httpclient, url, subscribeAdminApiParams);
 		logger.debug("[StoreDelegate::subscribeApi] response " + response);
 		return response;
-
 	}
 	
 	public String logoutFromStore(CloseableHttpClient httpclient, String username, String password) throws Exception {

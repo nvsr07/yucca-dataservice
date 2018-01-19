@@ -26,6 +26,7 @@ import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
+import org.csi.yucca.adminapi.response.StreamResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
@@ -131,7 +132,7 @@ public class ManagementController extends YuccaController {
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
+	@ApiOperation(value = M_UPDATE_DATASET, notes = M_UPDATE_DATASET_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/datasets/{idDataset}")
 	public ResponseEntity<Object> updateDataset(@PathVariable final String organizationCode, @PathVariable final Integer idDataset,
 			@RequestBody final DatasetRequest datasetRequest, @RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
@@ -260,7 +261,7 @@ public class ManagementController extends YuccaController {
 	 * @param request
 	 * @return
 	 */
-	@ApiOperation(value = M_UPDATE_SMARTOBJECT, notes = M_UPDATE_SMARTOBJECT_NOTES, response = SmartobjectResponse.class)
+	@ApiOperation(value = M_UPDATE_STREAM, notes = M_UPDATE_STREAM_NOTES, response = Response.class)
 	@PutMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams/{idStream}")
 	public ResponseEntity<Object> updateStream(@RequestParam(required = false) final String tenantCodeManager, @RequestBody final StreamRequest streamRequest,
 			@PathVariable final String organizationCode, @PathVariable final String soCode, @PathVariable final Integer idStream, final HttpServletRequest request) {

@@ -19,7 +19,7 @@ public class StreamResponse extends Response {
 	private String streamcode;
 	private String streamname;
 	private String name;
-	private Integer unpublished;
+	private Boolean unpublished;
 	private String visibility;
 	private String disclaimer;
 	private String registrationdate;
@@ -27,7 +27,7 @@ public class StreamResponse extends Response {
 	private List<TagResponse> tags = new ArrayList<TagResponse>();
 	private DomainResponse domain;
 	private SubdomainResponse subdomain;
-	private Integer savedata;
+	private Boolean savedata;
 	
 
 	public StreamResponse(DettaglioStream dettaglioStream) throws Exception {
@@ -39,7 +39,7 @@ public class StreamResponse extends Response {
 		this.streamcode = dettaglioStream.getStreamcode();
 		this.streamname = dettaglioStream.getStreamname();
 		this.name = dettaglioStream.getDataSourceName();
-		this.unpublished = dettaglioStream.getDataSourceUnpublished();
+		this.unpublished = Util.intToBoolean(dettaglioStream.getDataSourceUnpublished());
 		this.visibility = dettaglioStream.getDataSourceVisibility();
 		this.disclaimer = dettaglioStream.getDataSourceDisclaimer();
 		this.registrationdate = Util.dateString(dettaglioStream.getDataSourceRegistrationDate());
@@ -47,7 +47,7 @@ public class StreamResponse extends Response {
 		this.domain = new DomainResponse(dettaglioStream);
 		this.subdomain = new SubdomainResponse(dettaglioStream);
 		this.addTags(dettaglioStream.getTags());
-		setSavedata(dettaglioStream.getSavedata());
+		setSavedata(Util.intToBoolean(dettaglioStream.getSavedata()));
 	}
 
 	private void addTags(String tags) throws Exception {
@@ -125,11 +125,11 @@ public class StreamResponse extends Response {
 		this.name = name;
 	}
 
-	public Integer getUnpublished() {
+	public Boolean getUnpublished() {
 		return unpublished;
 	}
 
-	public void setUnpublished(Integer unpublished) {
+	public void setUnpublished(Boolean unpublished) {
 		this.unpublished = unpublished;
 	}
 
@@ -190,11 +190,11 @@ public class StreamResponse extends Response {
 		this.subdomain = subdomain;
 	}
 
-	public Integer getSavedata() {
+	public Boolean getSavedata() {
 		return savedata;
 	}
 
-	public void setSavedata(Integer savedata) {
+	public void setSavedata(Boolean savedata) {
 		this.savedata = savedata;
 	}
 

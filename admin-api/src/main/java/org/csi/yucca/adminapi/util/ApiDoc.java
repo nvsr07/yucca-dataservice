@@ -35,8 +35,14 @@ public class ApiDoc {
 	public static final String M_INSERT_DATASET = "INSERT DATASET";
 	public static final String M_INSERT_DATASET_NOTES = "Insert Dataset in the System.";
 
+	public static final String M_UPDATE_DATASET = "INSERT DATASET";
+	public static final String M_UPDATE_DATASET_NOTES = "Insert Dataset in the System.";
+	
 	public static final String M_IMPORT_METADATA_DATASET = "IMPORT METADATA DATASET";
 	public static final String M_IMPORT_METADATA_NOTES = "Import Metadata from Db for  Dataset.";
+
+	public static final String M_UPDATE_STREAM = "UPDATE STREAM";
+	public static final String M_UPDATE_STREAM_NOTES = "Update Stream in the System.";
 
 	
 	public static final String M_LOAD_STREAM_ICON = "LOAD ICON STREAM";

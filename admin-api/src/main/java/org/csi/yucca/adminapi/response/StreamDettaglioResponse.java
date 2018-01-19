@@ -6,6 +6,7 @@ import java.util.List;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+import org.csi.yucca.adminapi.util.Util;
 
 public class StreamDettaglioResponse {
 
@@ -19,7 +20,7 @@ public class StreamDettaglioResponse {
 	private Integer idstream;
 	private String streamcode;
 	private String streamname;
-	private Integer savedata;
+	private Boolean savedata;
 	
 	public StreamDettaglioResponse() {
 		super();
@@ -52,7 +53,7 @@ public class StreamDettaglioResponse {
 		this.idstream = dettaglioStream.getIdstream();
 		this.streamcode = dettaglioStream.getStreamcode();
 		this.streamname = dettaglioStream.getStreamname();
-		this.savedata = dettaglioStream.getSavedata();
+		this.savedata = Util.intToBoolean(dettaglioStream.getSavedata());
 		
 	}
 
@@ -136,11 +137,11 @@ public class StreamDettaglioResponse {
 		this.streamname = streamname;
 	}
 
-	public Integer getSavedata() {
+	public Boolean getSavedata() {
 		return savedata;
 	}
 
-	public void setSavedata(Integer savedata) {
+	public void setSavedata(Boolean savedata) {
 		this.savedata = savedata;
 	}
 
