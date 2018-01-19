@@ -202,7 +202,7 @@ public class Util {
 	}
 	
 	public static Boolean intToBoolean(Integer intValue) {
-		if(intValue==0) return false;
+		if(intValue ==null || intValue==0) return false;
 		return true;
 		
 	}
