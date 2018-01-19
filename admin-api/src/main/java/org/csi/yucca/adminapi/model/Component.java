@@ -13,10 +13,10 @@ public class Component {
 	private Integer idMeasureUnit;
 	private Integer idDataSource;
 	private Integer datasourceversion;
-	private Boolean iskey;
+	private Integer iskey;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
-	private Boolean required;
+	private Integer required;
 	private String foreignkey;
 
 	public String getForeignkey() {
@@ -115,11 +115,11 @@ public class Component {
 		this.datasourceversion = datasourceversion;
 	}
 
-	public Boolean getIskey() {
+	public Integer getIskey() {
 		return iskey;
 	}
 
-	public void setIskey(Boolean iskey) {
+	public void setIskey(Integer iskey) {
 		this.iskey = iskey;
 	}
 
@@ -139,11 +139,11 @@ public class Component {
 		this.sourcecolumnname = sourcecolumnname;
 	}
 
-	public Boolean getRequired() {
+	public Integer getRequired() {
 		return required;
 	}
 
-	public void setRequired(Boolean required) {
+	public void setRequired(Integer required) {
 		this.required = required;
 	}
 
@@ -204,7 +204,7 @@ public class Component {
 		return this;
 	}
 
-	public Component iskey(Boolean iskey) {
+	public Component iskey(Integer iskey) {
 		this.iskey = iskey;
 		return this;
 	}
@@ -219,7 +219,7 @@ public class Component {
 		return this;
 	}
 
-	public Component required(Boolean required) {
+	public Component required(Integer required) {
 		this.required = required;
 		return this;
 	}

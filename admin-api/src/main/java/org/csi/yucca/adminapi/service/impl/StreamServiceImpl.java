@@ -1287,8 +1287,8 @@ public class StreamServiceImpl implements StreamService {
 				component.setIdPhenomenon(componentRequest.getIdPhenomenon());
 				component.setIdDataType(componentRequest.getIdDataType());
 				component.setIdMeasureUnit(componentRequest.getIdMeasureUnit());
-				component.setRequired(true);
-				component.setIskey(false);
+				component.setRequired(Util.booleanToInt(true));
+				component.setIskey(Util.booleanToInt(false));
 				componentMapper.insertComponent(component);
 			}
 		}

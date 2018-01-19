@@ -28,12 +28,11 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.maximumLimitErrorsReached;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 
-import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
+import org.csi.yucca.adminapi.delegate.StoreDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -58,7 +57,6 @@ import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
-import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
@@ -67,11 +65,11 @@ import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.InvioCsvRequest;
-import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
@@ -846,9 +844,16 @@ public class DatasetServiceImpl implements DatasetService {
 				DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);
 
 		// API
-		apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
-				.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
-				.idDataSource(idDataSource));
+		if(!postDatasetRequest.getUnpublished()){
+			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
+					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(idDataSource));
+			
+			//StoreDelegate.build().createApiForBulk(dataset);
+		}
+		
+		
+		
 		
 		return dataset;
 	}

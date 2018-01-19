@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.ComponentJson;
+import org.csi.yucca.adminapi.util.Util;
 
 public class ComponentResponse extends Response {
 
@@ -12,9 +13,9 @@ public class ComponentResponse extends Response {
 	private PhenomenonResponse phenomenon;
 	private DataTypeResponse dataType;
 	private MeasureUnitResponse measureUnit;
-	private Integer required;
+	private Boolean required;
 	private Integer sinceVersion;
-	private Integer iskey;
+	private Boolean iskey;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
 	private String foreignkey;
@@ -29,9 +30,9 @@ public class ComponentResponse extends Response {
 		this.phenomenon = new PhenomenonResponse(componentJson);
 		this.dataType = new DataTypeResponse(componentJson);
 		this.measureUnit = new MeasureUnitResponse(componentJson);
-		this.required = componentJson.getRequired();
+		this.required = Util.intToBoolean(componentJson.getRequired());
 		this.sinceVersion = componentJson.getSince_version();
-		this.iskey = componentJson.getIskey();
+		this.iskey = Util.intToBoolean(componentJson.getIskey());
 		this.sourcecolumn = componentJson.getSourcecolumn();
 		this.sourcecolumnname = componentJson.getSourcecolumnname();
 		this.foreignkey = componentJson.getForeignkey();
@@ -131,11 +132,11 @@ public class ComponentResponse extends Response {
 		this.measureUnit = measureUnit;
 	}
 
-	public Integer getRequired() {
+	public Boolean getRequired() {
 		return required;
 	}
 
-	public void setRequired(Integer required) {
+	public void setRequired(Boolean required) {
 		this.required = required;
 	}
 
@@ -147,11 +148,11 @@ public class ComponentResponse extends Response {
 		this.sinceVersion = sinceVersion;
 	}
 
-	public Integer getIskey() {
+	public Boolean getIskey() {
 		return iskey;
 	}
 
-	public void setIskey(Integer iskey) {
+	public void setIskey(Boolean iskey) {
 		this.iskey = iskey;
 	}
 
