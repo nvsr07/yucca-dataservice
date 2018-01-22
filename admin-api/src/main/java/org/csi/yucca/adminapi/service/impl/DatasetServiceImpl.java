@@ -181,17 +181,26 @@ public class DatasetServiceImpl implements DatasetService {
 
 		ObjectMapper mapper = new ObjectMapper();
 
+		logger.info("############################################################");
+		logger.info("tenantCodeManager: " + tenantCodeManager);
+		logger.info("############################################################");
+		
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
-
+		
 		if (user != null) {
 			logger.info("--------------------------------------------------------");
 			logger.info("user: " + user.getUsername());
+		}
+		else{
+			logger.info("user è nullo , ovvio che ti da null point!");
 		}
 		
 		
 		logger.info("BEGIN: HttpDelegate.makeHttpPost");
 		// invio api:
 		try {
+			
+			
 			HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));	
 		} catch (Exception e) {
 			logger.info("ECCEZIONE ALL'INVIO DELL'API");
