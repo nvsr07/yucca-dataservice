@@ -31,6 +31,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -101,6 +102,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 })
 public class DatasetServiceImpl implements DatasetService {
 
+	private static final Logger logger = Logger.getLogger(DatasetServiceImpl.class);
+	
 	@Autowired
 	private DatasetMapper datasetMapper;
 
@@ -157,6 +160,8 @@ public class DatasetServiceImpl implements DatasetService {
 			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception {
 		
+		logger.info("BEGIN: >>> insertCSVData <<<");
+		
 		List<ComponentInfoRequest> componentInfoRequests = Util.getComponentInfoRequests(componentInfoRequestsJson);
 		
 		DettaglioDataset  dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
@@ -178,8 +183,24 @@ public class DatasetServiceImpl implements DatasetService {
 
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
 
+		if (user != null) {
+			logger.info("--------------------------------------------------------");
+			logger.info("user: " + user.getUsername());
+		}
+		
+		
+		logger.info("BEGIN: HttpDelegate.makeHttpPost");
 		// invio api:
-		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));			
+		try {
+			HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));	
+		} catch (Exception e) {
+			logger.info("ECCEZIONE ALL'INVIO DELL'API");
+			logger.info(e.toString());
+		}
+		logger.info("END: HttpDelegate.makeHttpPost");
+					
+		
+		logger.info("END: >>> insertCSVData <<<");
 		
         return ServiceResponse.build().object(invioCsvRequest);
 	}
