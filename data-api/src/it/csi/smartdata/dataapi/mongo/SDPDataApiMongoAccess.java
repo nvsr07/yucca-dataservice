@@ -176,14 +176,26 @@ public class SDPDataApiMongoAccess {
 						String binaryIdDataset=(null!=returnData.get("binaryIdDataset") ? (String) returnData.get("binaryIdDataset"): null);;
 						((DBObject)obj).put("mergedComponents", compPropsTot);
 						((DBObject)obj).put("binaryIdDataset", binaryIdDataset);
+
+						//START STATSOLR
+						String groupFields=(null!=returnData.get("groupFields") ? (String) returnData.get("groupFields"): "");;
+						((DBObject)obj).put("groupFields", groupFields);
+						//END STATSOLR
 					} else 	if (SDPDataApiConstants.SDPCONFIG_CONSTANTS_TYPE_API.equals(type) && SDPDataApiConstants.SDPCONFIG_CONSTANTS_SUBTYPE_APIMULTIBULK.equals(subType)) {
 						BasicDBList objStreams = (BasicDBList)obj.get("dataset");
 						BasicDBList queryStreams=createQueryStreamPerApi(objStreams);
 						HashMap<String , Object> returnData=getMergedStreamComponentsPerQueryString(queryStreams);
 						BasicDBList compPropsTot = (null!=returnData.get("mergedComponents") ? (BasicDBList) returnData.get("mergedComponents"): null);
 						String binaryIdDataset=(null!=returnData.get("binaryIdDataset") ? (String) returnData.get("binaryIdDataset"): null);;
+
+						
 						((DBObject)obj).put("mergedComponents", compPropsTot);
 						((DBObject)obj).put("binaryIdDataset", binaryIdDataset);
+
+						//START STATSOLR
+						String groupFields=(null!=returnData.get("groupFields") ? (String) returnData.get("groupFields"): "");;
+						((DBObject)obj).put("groupFields", groupFields);
+						//END STATSOLR
 
 					}
 				}
@@ -234,6 +246,10 @@ public class SDPDataApiMongoAccess {
 			cursor = coll.find(query).sort(order);
 			//cursor = coll.find(query);
 			String binaryIdDataset=null;
+			
+			
+			String groupFields="";
+			
 			try {
 				List<Property> compProps=new ArrayList<Property>();
 				BasicDBList campiDbList=null;
@@ -248,6 +264,19 @@ public class SDPDataApiMongoAccess {
 						binaryIdDataset=null;
 					}					
 
+					
+					//START - STATSSOLR
+					try {
+						if ("1".equals(   ((BasicDBObject)obj.get("configData")).getString("current")) ) {
+							groupFields=(String)(((BasicDBObject)obj.get("info")).get("groupFields"));
+							log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] ########## groupfields="+groupFields);
+						}
+					} catch (Exception e) {
+						groupFields="";
+						log.info("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] ########## groupfields=null");
+					}					
+					//END - STATSSOLR
+					
 					campiDbList= getDatasetFiledsDbList(eleCapmpi);
 
 					log.debug("[SDPDataApiMongoAccess::getMergedStreamComponentsPerQueryString] current dataset="+obj);
@@ -278,6 +307,9 @@ public class SDPDataApiMongoAccess {
 				cursor.close();
 			}
 
+			//START - STATSSOLR
+				returnData.put("groupFields", groupFields);
+			//END - STATSSOLR
 
 			returnData.put("binaryIdDataset", binaryIdDataset);
 			returnData.put("mergedComponents", ret2);
@@ -4538,7 +4570,473 @@ public class SDPDataApiMongoAccess {
 		return outres;
 	}			
 
+	public SDPDataResult getMeasuresStatsPerStreamSolr(String codiceTenant, 
+			String nameSpace, 
+			EdmEntityContainer entityContainer,
+			DBObject streamMetadata,
+			String internalId,
+			String datatType,
+			Object userQuery, 
+			Object userOrderBy,
+			int skip,
+			int limit,
+			String timeGroupByParam,
+			String timeGroupOperatorsParam,
+			Object groupOutQuery
+			) throws SDPCustomQueryOptionException{
+		String collection=null;
+		//		String sensore=null;
+		//		String stream=null;
+		String idDataset=null;
+		String datasetCode=null;
+		String datasetToFindVersion=null;
+		List<Map<String, Object>> ret= new ArrayList<Map<String, Object>>();
+		int cnt = 0;
 
+		// TODO YUCCA-74 odata evoluzione
+		Connection conn = null;
+
+		try {
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] BEGIN");
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] codiceTenant="+codiceTenant);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] nameSpace="+nameSpace);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] entityContainer="+entityContainer);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] internalId="+internalId);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] datatType="+datatType);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] userQuery="+userQuery);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] streamMetadata="+streamMetadata);
+
+			List<Property> compPropsTot=new ArrayList<Property>();
+			List<Property> compPropsCur=new ArrayList<Property>();			
+
+
+			// TODO YUCCA-74 odata evoluzione - dettaglio
+			// l'oggetto streamMetadata camvbia (vedere SDPMongoOdataCast)
+			//       - modificare eventualmente la logica di recupero di collencion,host, port, db specifici per il dataset
+			//       - modificare eventualmente la logica di recupero dell'idDataset
+			//INVARIATO
+
+			collection=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("collection") );
+			String host=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("host"));
+			String port =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("port") );
+			String dbcfg =takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("db") );
+			idDataset=takeNvlValues(streamMetadata.get("idDataset"));
+			datasetCode=takeNvlValues(streamMetadata.get("datasetCode"));
+
+			//TODO = socialDataset
+			String streamSubtype=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("subtype") );
+			// TODO YUCCA-74 odata evoluzione - dettaglio
+			/*
+			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
+			 */
+
+			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
+			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
+
+
+			String schema = "db_"+codiceTenant;
+			String table = "";
+			DbConfDto tanantDbCfg=new DbConfDto();
+			if (DATA_TYPE_MEASURE.equals(datatType)) {
+				table = "measures";
+				tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES_PHOENIX, codiceTenant);
+			} else if (DATA_TYPE_SOCIAL.equals(datatType)) {
+				table="social";
+				tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_SOCIAL_PHOENIX, codiceTenant);
+			}
+
+			if(tanantDbCfg!=null && tanantDbCfg.getDataBase()!=null && tanantDbCfg.getDataBase().trim().length()>0) schema=tanantDbCfg.getDataBase(); 
+			if(tanantDbCfg!=null && tanantDbCfg.getCollection()!=null && tanantDbCfg.getCollection().trim().length()>0) table=tanantDbCfg.getCollection(); 
+
+
+
+			Object eleCapmpi=((DBObject)streamMetadata.get("info")).get("fields");
+			HashMap<String, String> campoTipoMetadato= new HashMap<String, String>();
+			BasicDBList lista=new BasicDBList();
+			BasicDBList campiDbList= getDatasetFiledsDbList(eleCapmpi);
+			for (int k=0;k<campiDbList.size();k++) {
+				boolean present=false;
+				compPropsCur=getDatasetFiledsOdataPros(campiDbList.get(k));
+
+				for (int i=0;i<compPropsTot.size();i++) {
+					if (compPropsTot.get(i).getName().equals(compPropsCur.get(0).getName())) present=true;
+
+				}
+				// TODO nel caso in cui present= true si potrebbe verficare il tipo che abbiamo in compsproptot con quello in  campiDbList.get(k)
+				// sollevando eccezione se son diversi
+				if (!present) {
+					compPropsTot.add(compPropsCur.get(0));
+					lista.add(campiDbList.get(k));
+				}
+			}
+
+
+			for (int i=0; i<lista.size();i++) {
+				BasicDBObject cur= (BasicDBObject)lista.get(i);
+				String nome=cur.getString("fieldName");
+				String tipo=cur.getString("dataType");
+				campoTipoMetadato.put(nome, tipo);
+
+			}
+
+
+
+
+
+
+
+
+			ArrayList<Integer> vals = new ArrayList<Integer>();
+
+
+
+
+			String queryTotSolr="(iddataset_l:"+idDataset+")";
+			List<DBObject> listDatasetVersion = (List<DBObject>) streamMetadata.get("listDatasetVersion");
+			Iterator<DBObject> listaIterator = listDatasetVersion.iterator();
+			while (listaIterator.hasNext()) {
+				DBObject el = listaIterator.next();
+				Integer tmpVersDSCode = (Integer) el.get("datasetVersion"+datasetCode);
+				vals.add(tmpVersDSCode);
+			}
+
+			//queryTot.add( new BasicDBObject("datasetVersion", new BasicDBObject("$gt", 0)));
+
+			//queryTotSolr+= " AND (datasetVersion_l : [ 0 TO * ])";
+			queryTotSolr+= " AND (datasetversion_l : [ 0 TO * ])";
+
+			if (null!=internalId) {
+				//				queryTot.add( new BasicDBObject("_id",new ObjectId(internalId)));
+				//				queryTotCnt.add( new BasicDBObject("_id",new ObjectId(internalId)));
+				queryTotSolr += "AND (id : "+internalId+")";
+
+			}
+			if (null != userQuery) {
+				log.debug("[SDPDataApiMongoAccess::getMeasuresPerStreamNewLimitSolr] userQuery="+userQuery);
+				if (userQuery instanceof SDPOdataFilterExpression) {
+					queryTotSolr += "AND ("+userQuery+")";
+				} else {
+					queryTotSolr += "AND "+userQuery;
+				}
+				//query.append("$and", userQuery);
+			}
+            
+            
+            
+
+
+//			String groupby="";
+//			String groupbysleect="";
+
+			String jsonFacet= "{ timegroup : { ";
+			jsonFacet+= "start : \"1900-01-01T00:00:00Z\",";
+			jsonFacet+= "end : \"3000-01-01T00:00:00Z\",";
+			jsonFacet+= "mincount : 1,";
+			
+
+			String [] campiGroupBy=null;
+			int campiGruppoCnt=0;
+			if (timeGroupByParam.indexOf(",")>0)  {
+				String constantValues="|year|month_year|dayofmonth_month_year|hour_dayofmonth_month_year|minute_hour_dayofmonth_month_year|iduser|retweetparentid";
+				String[] gruppoTmp=timeGroupByParam.split(",");
+				
+				campiGroupBy=new String[gruppoTmp.length-1];
+				
+				
+				
+				for (int kk=0;kk<gruppoTmp.length;kk++) {
+					if (constantValues.indexOf(gruppoTmp[kk])!=-1) {
+						timeGroupByParam=gruppoTmp[kk];	
+					} else {
+						campiGroupBy[campiGruppoCnt]=gruppoTmp[kk];
+						campiGruppoCnt++;
+					}
+				}
+				
+				
+				
+			}
+			
+			
+			
+			int nfacet=0;
+			
+			if ("year".equals(timeGroupByParam)) {
+				jsonFacet+="gap : \"%2B1YEAR\", ";
+				nfacet++;
+			} else if ("month_year".equals(timeGroupByParam)) {
+				jsonFacet+="gap : \"%2B1MONTH\", ";
+				nfacet++;
+				
+			} else if ("dayofmonth_month_year".equals(timeGroupByParam)) {
+
+				jsonFacet+="gap : \"%2B1DAY\", ";
+				nfacet++;
+
+
+			} else if ("hour_dayofmonth_month_year".equals(timeGroupByParam)) {
+				jsonFacet+="gap : \"%2B1HOUR\", ";
+				nfacet++;
+			} else if ("minute_hour_dayofmonth_month_year".equals(timeGroupByParam)) {
+				jsonFacet+="gap : \"%2B1MINUTE\", ";
+				nfacet++;
+
+			} else if ("month".equals(timeGroupByParam)) {
+				//YUCCA-388
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			} else if ("dayofmonth_month".equals(timeGroupByParam)) {
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			} else if ("dayofweek_month".equals(timeGroupByParam)) {
+				//////groupby = " MONTH(time_dt), DAYOFMONTH(time_dt)";
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			} else if ("dayofweek".equals(timeGroupByParam)) {
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			} else if ("hour_dayofweek".equals(timeGroupByParam)) {
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			} else if ("hour".equals(timeGroupByParam)) {
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			} else if ("retweetparentid".equals(timeGroupByParam)) {
+
+				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: retweetparentid aggregations is aveailable only for social dataset", Locale.UK);
+				jsonFacet="{ retweetparentid : { type:terms,field: retweetParentId_l,"; 
+				nfacet++;
+			} else if ("iduser".equals(timeGroupByParam)) {
+				//YUCCA-388
+
+				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: iduser aggregations is aveailable only for social dataset", Locale.UK);
+
+				jsonFacet="{ iduser : { type:terms,field: userId_l,"; 
+				nfacet++;
+
+			} else {
+				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
+			}			
+
+//			if (groupbysleect.indexOf("userId_l")==-1 && "socialDataset".equalsIgnoreCase(streamSubtype)) {
+//				groupbysleect+=", -1 as userId_l";
+//			}
+//			if (groupbysleect.indexOf("retweetParentId_l")==-1 && "socialDataset".equalsIgnoreCase(streamSubtype)) {
+//				groupbysleect+=", -1 as retweetParentId_l";
+//			}
+
+			
+			for (int kk=0;campiGroupBy!=null && kk<campiGroupBy.length;kk++) {
+				String campoCompleto=campiGroupBy[kk];
+				String suffisso=SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(campiGroupBy[kk]));
+				if (null!=suffisso) campoCompleto=campiGroupBy[kk]+suffisso;
+				else throw new SDPCustomQueryOptionException("invalid timeGroupBy value "+ campiGroupBy[kk], Locale.UK);
+				
+				jsonFacet+="facet: { " +campiGroupBy[kk]+" : { type:terms,field: "+campoCompleto+","; 
+				
+				nfacet++;
+				
+				
+			}
+			String lastFacet="";
+			
+
+			//operazioni statistiche 
+			if (null==timeGroupOperatorsParam || timeGroupOperatorsParam.trim().length()<=0) throw new SDPCustomQueryOptionException("invalid timeGroupOperators value", Locale.UK);
+			StringTokenizer st=new StringTokenizer(timeGroupOperatorsParam,";",false);
+			HashMap<String, String> campoOperazione=new HashMap<String, String>();
+			while (st.hasMoreTokens()) {
+				String curOperator=st.nextToken();
+				StringTokenizer stDue=new StringTokenizer(curOperator,",",false);
+				if (stDue.countTokens()!=2) throw new SDPCustomQueryOptionException("invalid timeGroupOperators value: '" + curOperator+"'", Locale.UK);
+				String op=stDue.nextToken();
+				String field=stDue.nextToken();
+				if (!hasField(compPropsTot,field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' in '" + curOperator +"' not fund in edm" , Locale.UK);
+				String opPhoenix=null;
+				boolean extraOp=false;
+				if ("avg".equals(op)) opPhoenix="avg";
+				else if ("first".equals(op)) {opPhoenix="FIRST_VALUE"; extraOp=true; }
+				else if ("last".equals(op)) {opPhoenix="LAST_VALUE"; extraOp=true; }
+				else if ("sum".equals(op)) opPhoenix="sum";
+				else if ("max".equals(op)) opPhoenix="max";
+				else if ("min".equals(op)) opPhoenix="min";
+				else throw new SDPCustomQueryOptionException("invalid timeGroupOperators invalid operation '"+op+"' in '" + curOperator  +"'", Locale.UK);
+
+				if (campoOperazione.containsKey(field)) throw new SDPCustomQueryOptionException("invalid timeGroupOperators filed '"+field+"' present in more than one operation" , Locale.UK);
+
+				campoOperazione.put(field, opPhoenix);
+
+
+				String campoCompleto=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
+				//campoCompleto="\""+campoCompleto.toUpperCase()+"\"";
+
+				if (lastFacet.length()>0) {
+					lastFacet+=",";
+				}
+				lastFacet+=campoCompleto+"_sts : \""+opPhoenix+"("+campoCompleto+")\"";
+				
+//				groupbysleect+=", "+opPhoenix + "(";
+//				groupbysleect+=campoCompleto;
+//				groupbysleect+= ")";
+//				if (extraOp) {
+//					groupbysleect+=  " WITHIN GROUP (ORDER BY "+campoCompleto+" asc) "; 
+//				}
+//				groupbysleect+=  " as \"" + (field +"_sts").toUpperCase() +"\"";
+
+			}			
+
+			jsonFacet+="facet: {" + lastFacet +"}";
+			
+			
+			for (int kk=0;kk<nfacet;kk++) {
+				jsonFacet+=" } }";
+			}
+			//jsonFacet+=" }";
+
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] ****** jsonFacet ="+jsonFacet);			
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] ****** queryTotSolr ="+queryTotSolr);			
+			
+			
+
+			
+			SolrQuery solrQuery = new SolrQuery();
+			solrQuery.setQuery("*:*");
+			solrQuery.setFilterQueries(queryTotSolr);
+			
+			
+			SolrClient solrServer = server;
+			long starTtime=System.currentTimeMillis();
+			long deltaTime=-1;
+
+		//	QueryResponse rsp = solrServer.query(collection,solrQuery);
+
+			
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] total data query executed in --> "+deltaTime);
+			
+			
+			int cntRet=1;
+			cnt=0;
+
+			
+			
+			/*
+			while (rs.next()) {
+				//System.out.println("num: "+cntRet+ "------------" +rs.getString("iddataset_l"));
+				//DBObject obj=result;
+				String giorno=rs.getString("dayofmonth");
+				String mese=rs.getString("month");
+				String anno=rs.getString("year");
+				String ora=rs.getString("hour");
+				//YUCCA-346
+				String minuto=rs.getString("minute");
+
+
+				//YUCCA-388
+				String dayofweek=rs.getString("dayofweek");
+				String retweetparentid=null;
+				String iduser=null;
+				if ("socialDataset".equalsIgnoreCase(streamSubtype)) {
+					retweetparentid=rs.getString("retweetParentId_l");
+					iduser=rs.getString("userId_l");
+				}
+
+				String count=rs.getString("totale");
+
+
+				Integer dayOfweekInt=(dayofweek==null ? -1 : new Integer(dayofweek));
+				if (dayOfweekInt > 0) {
+					dayOfweekInt++;
+					if (dayOfweekInt > 7) dayOfweekInt=1; 
+				}
+
+				Map<String, Object> misura = new HashMap<String, Object>();
+				misura.put("dayofmonth",  (giorno==null ? -1 : new Integer(giorno)));
+				misura.put("month",  (mese==null ? -1 : new Integer(mese)));
+				misura.put("year",  (anno==null ? -1 : new Integer(anno)));
+				misura.put("hour",  (ora==null ? -1 : new Integer(ora)));
+				//YUCCA-346
+				misura.put("minute",  (minuto==null ? -1 : new Integer(minuto)));
+				//YUCCA-388
+				misura.put("dayofweek", dayOfweekInt );
+
+				//TODO solo se e' social
+				misura.put("retweetparentid",  (retweetparentid==null ? -1 : new Long(retweetparentid)));
+				misura.put("iduser",  (iduser==null ? -1 : new Long(iduser)));
+
+
+				misura.put("count",  (count==null ? 0 : new Integer(count)));
+
+				for (int i=0;i<compPropsTot.size();i++) {
+
+					String chiave=compPropsTot.get(i).getName();
+					String chiaveEdm=chiave+"_sts";
+
+					if (campoOperazione.get(chiave)!=null) {
+						String valore=rs.getString(chiaveEdm);
+
+
+						if (null!=valore) {
+							if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
+								misura.put(chiaveEdm, Boolean.valueOf(valore));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
+								misura.put(chiaveEdm, valore);
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
+								//misura.put(chiaveEdm, Integer.parseInt(valore));
+								misura.put(chiaveEdm, rs.getInt(chiaveEdm));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
+								//misura.put(chiaveEdm, Long.parseLong(valore.replace(',','.')));
+								misura.put(chiaveEdm, rs.getLong(chiaveEdm));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
+								//misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								misura.put(chiaveEdm, rs.getDouble(chiaveEdm));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+								//								Object dataObj=obj.get(chiave);
+								//								misura.put(chiave, dataObj);
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
+								//								Object dataObj=obj.get(chiave);
+								//								misura.put(chiave, dataObj);
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
+								//misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								misura.put(chiaveEdm, rs.getDouble(chiaveEdm));
+
+							}					
+						}
+
+					}
+				}
+
+				cnt++;
+
+				ret.add(misura);
+
+
+			}
+
+
+
+
+              */
+
+
+
+
+
+			try {
+				deltaTime=System.currentTimeMillis()-starTtime;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] FETCH TIME ="+deltaTime);
+
+
+		} catch (Exception e) {
+			if (e instanceof SDPCustomQueryOptionException) {
+				log.error("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] rethrow" ,e);
+				throw (SDPCustomQueryOptionException) e;
+			} else log.error("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] INGORED" ,e);
+		} finally {
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] END");
+		}
+
+
+		SDPDataResult outres= new SDPDataResult(ret, cnt);
+		return outres;
+	}	
 	private String getPropertyName(Property prop) {
 		String chiave=prop.getName();
 		if (((SimpleProperty)prop).getType().equals(EdmSimpleTypeKind.Boolean)) {

@@ -111,7 +111,10 @@ public class SDPMongoOdataCast {
 						//					//ret= getMeasureComponentType (nameSpace,eleCapmpi);
 					} else if (SDPDataApiConstants.ENTITY_NAME_MEASURES_STATS.equals(edmFQName.getName())) {
 						Object eleCapmpi=obj.get("mergedComponents");
-						ret= getMeasureStatsType(nameSpace,eleCapmpi);
+						
+						//START STATSOLR
+						
+						ret= getMeasureStatsType(nameSpace,eleCapmpi,(String)obj.get("groupFields"));
 					}
 
 				
@@ -703,7 +706,7 @@ public class SDPMongoOdataCast {
 		}			
 	}
 
-	private EntityType getMeasureStatsType (String nameSpace,Object eleCapmpi) throws Exception{
+	private EntityType getMeasureStatsType (String nameSpace,Object eleCapmpi,String groupFields) throws Exception{
 		try {
 			log.debug("[SDPMongoOdataCast::getMeasureStatsType] BEGIN");
 			List<Property> measureProps=new ArrayList<Property>();
@@ -723,6 +726,7 @@ public class SDPMongoOdataCast {
 			
 			
 			List<Property> componentProp= getDatasetField(eleCapmpi,nameSpace);
+			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
 			for (int i=0;componentProp!=null && i<componentProp.size();i++) {
 				
 				SimpleProperty curProp=new SimpleProperty()
@@ -731,8 +735,13 @@ public class SDPMongoOdataCast {
 				.setFacets(new Facets().setNullable(true));
 				
 				measureProps.add(curProp);
+				
+				if (null!=groupFields && groupFields.indexOf("|"+((SimpleProperty)componentProp.get(i)).getName()+"|")!=-1) {
+					measureProps.add(new SimpleProperty().setName(((SimpleProperty)componentProp.get(i)).getName()).setType(((SimpleProperty)componentProp.get(i)).getType()).setFacets(new Facets().setNullable(true)));
+					keyPropertiesMeasure.add(new PropertyRef().setName(((SimpleProperty)componentProp.get(i)).getName()));
+				}
+				
 			}
-			List<PropertyRef> keyPropertiesMeasure = new ArrayList<PropertyRef>();
 			
 			measureProps.add(new SimpleProperty().setName("count").setType(EdmSimpleTypeKind.Int64).setFacets(new Facets().setNullable(true)));
 
@@ -1220,8 +1229,14 @@ public class SDPMongoOdataCast {
 				
 				dsCodes+=datasetCode+"|";
 				tenantsCodes+=tenantStrean+"|";
-				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStreamPhoenix(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,dataType, userQuery
+//				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStreamPhoenix(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,dataType, userQuery
+//						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
+				
+				
+				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStreamSolr(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,dataType, userQuery
 						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
+				
+				
 				List<Map<String, Object>> misureCur = cur.getDati();
 				
 				for (int k=0;misureCur!=null && k<misureCur.size(); k++) {
