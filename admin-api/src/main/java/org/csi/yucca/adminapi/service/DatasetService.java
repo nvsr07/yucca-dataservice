@@ -32,7 +32,7 @@ public interface DatasetService {
 			String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
-			String csvSeparator, String componentInfoRequests, String organizationCode, Integer idDataset, JwtUser authorizedUser)
+			String csvSeparator, String componentInfoRequests, String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception;
 	ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 	

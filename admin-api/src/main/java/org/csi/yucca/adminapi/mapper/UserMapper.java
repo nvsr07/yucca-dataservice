@@ -30,13 +30,18 @@ public interface UserMapper {
 	" WHERE DATA_SOURCE.id_data_source = #{idDataSource} AND " +
 	" DATA_SOURCE.datasourceversion = #{dataSourceVersion} AND " +
 	" DATA_SOURCE.id_tenant = TENANT.id_tenant AND " +
+	" TENANT.tenantcode = #{tenantCodeManager} AND " +		
+	" DATA_SOURCE.dataoptions = #{dataOptions} AND " +
 	" TENANT.tenantcode = YUSER.username ";
 	@Results({
         @Result(property = "idUser", column = "id_user"),
         @Result(property = "idOrganization", column = "id_organization")
       })
 	@Select(SELECT_USER_BY_ID_DATA_SOURCE_AND_VERSION) 
-	User selectUserByIdDataSourceAndVersion( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);
+	User selectUserByIdDataSourceAndVersion( @Param("idDataSource") Integer idDataSource, 
+			@Param("dataSourceVersion") Integer dataSourceVersion,
+			@Param("tenantCodeManager") String tenantCodeManager,
+			@Param("dataOptions") Integer dataOptions);
 	
 	
 	/*************************************************************************
