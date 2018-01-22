@@ -20,6 +20,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -27,6 +28,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
+import net.minidev.json.JSONObject;
 
 import org.apache.log4j.Logger;
 import org.apache.olingo.odata2.api.edm.EdmEntityContainer;
@@ -38,12 +41,12 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrQuery.SortClause;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.CloudSolrClient;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.CursorMarkParams;
+import org.apache.solr.common.util.NamedList;
+import org.apache.solr.common.util.SimpleOrderedMap;
 import org.bson.types.ObjectId;
 
 import com.mongodb.AggregationOptions;
@@ -4896,13 +4899,14 @@ public class SDPDataApiMongoAccess {
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
 			solrQuery.setFilterQueries(queryTotSolr);
-			
+			solrQuery.setRows(0);
+			solrQuery.add("json.facet", jsonFacet);
 			
 			SolrClient solrServer = server;
 			long starTtime=System.currentTimeMillis();
 			long deltaTime=-1;
 
-		//	QueryResponse rsp = solrServer.query(collection,solrQuery);
+			QueryResponse rsp = solrServer.query(collection,solrQuery);
 
 			
 			try {
@@ -4914,7 +4918,41 @@ public class SDPDataApiMongoAccess {
 			int cntRet=1;
 			cnt=0;
 
-			
+			boolean faceted = rsp.getResponse().get("facets")!=null;
+			JSONObject result = new JSONObject(); 
+			JSONObject facets_json = new JSONObject();
+			NamedList<Object> bucketList = rsp.getResponse();
+
+			if (faceted) {
+	            // notice "findRecursive" usage to get the buckets list
+	            List<SimpleOrderedMap<Object>> buckets = (List<SimpleOrderedMap<Object>>) bucketList.findRecursive("facets","timegroup", "buckets");
+	            if (buckets != null) {
+	                for (SimpleOrderedMap<Object> bucket : buckets) {
+	                	Date date = (Date) bucket.get("val");
+	                    // manufacturer's name and total of all prices for this manufacturer
+	                    // Notice "manu_level_price" that was specified in json.facet
+	                    System.out.println("val:"+date);
+
+	                    List<SimpleOrderedMap<Object>> nestedBuckets = (List<SimpleOrderedMap<Object>>) bucket.findRecursive("codaero", "buckets");
+	                    if (nestedBuckets != null) {
+	                        for (SimpleOrderedMap<Object> bucket2 : nestedBuckets) {
+	                            String val2 = (String) bucket2.get("val");
+	                            Double FLAG_ENTRO_TARGET_I_sts = (Double) bucket2.get("FLAG_ENTRO_TARGET_I_sts");
+	                            // manufacturer's name and total of all prices for this manufacturer
+	                            // Notice "manu_level_price" that was specified in json.facet
+	                            System.out.println("   val2:"+val2);
+	                            System.out.println("   FLAG_ENTRO_TARGET_I_sts:"+FLAG_ENTRO_TARGET_I_sts);
+	                        }
+	                    }
+
+	                
+	                }
+	                // Total prices of all manufacturers
+	                // notice "total_price" that was specified in json.facet and "findRecursive" usage
+	            }
+				
+				
+			}
 			
 			/*
 			while (rs.next()) {
