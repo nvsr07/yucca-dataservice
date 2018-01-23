@@ -181,36 +181,16 @@ public class DatasetServiceImpl implements DatasetService {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		logger.info("############################################################");
-		logger.info("tenantCodeManager: " + tenantCodeManager);
-		logger.info("############################################################");
+		logger.debug("tenantCodeManager: " + tenantCodeManager);
 		
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
 		
-		if (user != null) {
-			logger.info("--------------------------------------------------------");
-			logger.info("user: " + user.getUsername());
-		}
-		else{
-			logger.info("user è nullo , ovvio che ti da null point!");
-		}
+		logger.debug(user != null ? "user: " + user.getUsername() : "user è nullo!");
 		
-		
-		logger.info("BEGIN: HttpDelegate.makeHttpPost");
-		// invio api:
-		try {
-			
-			
-			HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));	
-		} catch (Exception e) {
-			logger.info("ECCEZIONE ALL'INVIO DELL'API");
-			logger.info(e.toString());
-		}
-		logger.info("END: HttpDelegate.makeHttpPost");
-					
+		logger.debug("BEGIN: HttpDelegate.makeHttpPost");
+		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));	
 		
 		logger.info("END: >>> insertCSVData <<<");
-		
         return ServiceResponse.build().object(invioCsvRequest);
 	}
 	
