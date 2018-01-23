@@ -11,7 +11,7 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	private Double fps;
 	private String internalquery;
 	private List<InternalStreamRequest> internalStreams;
-	private TwitterInfoRequest twitterInfoRequest;
+	private TwitterInfoRequest twitterInfo;
 	private LicenseRequest license;
 	private String visibility;
 	private List<SharingTenantRequest> sharingTenants;
@@ -146,11 +146,11 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	}
 
 	public TwitterInfoRequest getTwitterInfoRequest() {
-		return twitterInfoRequest;
+		return twitterInfo;
 	}
 
-	public void setTwitterInfoRequest(TwitterInfoRequest twitterInfoRequest) {
-		this.twitterInfoRequest = twitterInfoRequest;
+	public void setTwitterInfoRequest(TwitterInfoRequest twitterInfo) {
+		this.twitterInfo= twitterInfo;
 	}
 
 	public LicenseRequest getLicense() {

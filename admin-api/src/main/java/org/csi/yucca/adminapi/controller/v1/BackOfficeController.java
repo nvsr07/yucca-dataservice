@@ -371,7 +371,6 @@ public class BackOfficeController extends YuccaController {
 	@GetMapping("/measure_units/{idMeasureUnit}")
 	public ResponseEntity<Object> loadMeasureUnit(@PathVariable final Integer idMeasureUnit) {
 		logger.info("loadMeasureUnit");
-
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return componentService.selectMeasureUnit(idMeasureUnit);
@@ -549,7 +548,6 @@ public class BackOfficeController extends YuccaController {
 	@GetMapping("/organizations/{idOrganization}")
 	public ResponseEntity<Object> loadOrganization(@PathVariable final Integer idOrganization) {
 		logger.info("loadOrganization");
-
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
 				return classificationService.selectOrganization(idOrganization);

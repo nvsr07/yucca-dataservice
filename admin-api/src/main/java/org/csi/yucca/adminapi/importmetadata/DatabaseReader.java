@@ -18,6 +18,7 @@ import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.util.Constants;
+import org.csi.yucca.adminapi.util.Util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -500,7 +501,7 @@ public class DatabaseReader {
 				String pkColumnName = primaryKeys.getString("COLUMN_NAME");
 				for (Component component : components) {
 					if (component.getName().equals(pkColumnName))
-						component.setIskey(true);
+						component.setIskey(Util.booleanToInt(true));
 				}
 			}
 		} finally {

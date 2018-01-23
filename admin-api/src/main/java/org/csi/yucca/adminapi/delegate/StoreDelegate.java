@@ -10,6 +10,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -133,7 +134,6 @@ public class StoreDelegate {
 		String response = HttpDelegate.makeHttpPost(httpclient, url, subscribeAdminApiParams);
 		logger.debug("[StoreDelegate::subscribeApi] response " + response);
 		return response;
-
 	}
 	
 	public String logoutFromStore(CloseableHttpClient httpclient, String username, String password) throws Exception {
@@ -149,5 +149,149 @@ public class StoreDelegate {
 		logger.debug("[StoreDelegate::loginOnStore] response " + response);
 		return response;
 	}
+
+//	public String createApiForBulk(Dataset dataset) {
+//		logger.debug("[StoreDelegate::createApiForBulk] appName: " + appName);
+//		String apiFinalName=null; 
+//		try {
+//			String apiName = dataset.getDatasetcode();
+//			apiFinalName = dataset.getDatasecode() + "_odata";
+//
+//		AddStream addStream = new AddStream();
+//		addStream.setProperties(update);
+//
+//		// FIXME get the list of roles(tenants) from the stream info
+//		if ("public".equals(metadata.getInfo().getVisibility())) {
+//			addStream.setVar("visibility", "public");
+//			addStream.setVar("roles", "");
+//			addStream.setVar("authType", "None");
+//		} else {
+//			addStream.setVar("visibility", "restricted");
+//
+//			String ruoli = "";
+//
+//			if (metadata.getInfo().getTenantssharing() != null && metadata.getInfo().getTenantssharing().getTenantsharing() != null) {
+//				for (org.csi.yucca.storage.datamanagementapi.model.metadata.Tenantsharing t : metadata.getInfo().getTenantssharing().getTenantsharing()) {
+//					if (!ruoli.equals(""))
+//						ruoli += ",";
+//					ruoli += t.getTenantCode() + "_subscriber";
+//				}
+//			}
+//
+//			if (!ruoli.contains(metadata.getConfigData().getTenantCode() + "_subscriber")) {
+//				ruoli += metadata.getConfigData().getTenantCode() + "_subscriber";
+//			}
+//
+//			addStream.setVar("roles", ruoli);
+//			addStream.setVar("authType", "Application & Application User");
+//		}
+//
+//		if (update) {
+//			addStream.setVar("actionAPI", "updateAPI");
+//		} else {
+//			addStream.setVar("actionAPI", "addAPI");
+//		}
+//
+//		addStream.setVar("apimanConsoleAddress", Config.getInstance().getConsoleAddress());
+//		addStream.setVar("username", Config.getInstance().getStoreUsername());
+//		addStream.setVar("password", Config.getInstance().getStorePassword());
+//		addStream.setVar("httpok", Config.getInstance().getHttpOk());
+//		addStream.setVar("ok", Config.getInstance().getResponseOk());
+//
+//		// addStream.setVar("icon", path + fileName);
+//		addStream.setVar("apiVersion", "1.0");
+//		addStream.setVar("apiName", apiFinalName);
+//		addStream.setVar("context", "/api/" + apiName);// ds_Voc_28;
+//		addStream.setVar("P", "");
+//		addStream.setVar("endpoint", Config.getInstance().getBaseApiUrl() + apiName);
+//		addStream.setVar("desc", metadata.getInfo().getDescription() != null ? Util.safeSubstring(metadata.getInfo().getDescription(), API_FIELD_MAX_LENGTH) : "");
+//		addStream.setVar("copiright", metadata.getInfo().getCopyright() != null ? Util.safeSubstring(metadata.getInfo().getCopyright(), API_FIELD_MAX_LENGTH) : "");
+//
+//		addStream.setVar("extra_isApi", "false");
+//		addStream.setVar("extra_apiDescription", metadata.getInfo().getDatasetName() != null ? metadata.getInfo().getDatasetName() : "");
+//		addStream.setVar("codiceTenant", metadata.getConfigData().getTenantCode() != null ? metadata.getConfigData().getTenantCode() : "");
+//		addStream.setVar("codiceStream", "");
+//		addStream.setVar("nomeStream", "");
+//		addStream.setVar("nomeTenant", metadata.getConfigData().getTenantCode() != null ? metadata.getConfigData().getTenantCode() : "");
+//		addStream.setVar("licence", metadata.getInfo().getLicense() != null ? Util.safeSubstring(metadata.getInfo().getLicense(), API_FIELD_MAX_LENGTH) : "");
+//		addStream.setVar("disclaimer", metadata.getInfo().getDisclaimer() != null ? Util.safeSubstring(metadata.getInfo().getDisclaimer(), API_FIELD_MAX_LENGTH) : "");
+//		addStream.setVar("virtualEntityName", "");
+//		addStream.setVar("virtualEntityDescription", "");
+//
+//		String tags = "";
+//
+//		if (metadata.getInfo().getDataDomain() != null) {
+//			tags += metadata.getInfo().getDataDomain();
+//		}
+//		List<String> tagCodes = null;
+//		if (metadata.getInfo().getTags() != null) {
+//			tagCodes = new LinkedList<String>();
+//			for (org.csi.yucca.storage.datamanagementapi.model.metadata.Tag t : metadata.getInfo().getTags()) {
+//				tags += "," + t.getTagCode();
+//				tagCodes.add(t.getTagCode());
+//			}
+//		}
+//
+//		addStream.setVar("tags", Util.safeSubstring(tags, API_FIELD_MAX_LENGTH));
+//
+//		// DT Add document ? Why restart from jsonFile? we lost init
+//		//String contentJson = extractMetadataContentForDocument(jsonFile,metadata.getConfigData().getTenantCode() != null ? metadata.getConfigData().getTenantCode() : "");
+//		String contentJson = extractMetadataContentForDocument(metadata,metadata.getConfigData().getTenantCode() != null ? metadata.getConfigData().getTenantCode() : "");
+//		
+//		
+//		//SOLR
+//		//addStream.setVar("content", contentJson);
+//		Metadata metadatan = Metadata.fromJson(contentJson);
+//		metadatan.setDatasetCode(metadata.getDatasetCode());
+//		SearchEngineMetadata newdocument = new SearchEngineMetadata();
+//		newdocument.setupEngine(metadatan);
+//		Gson gson = JSonHelper.getInstance();
+//		String newJsonDoc= gson.toJson(newdocument);
+//
+//		
+//		
+////		CloudSolrClient solrServer =  CloudSolrSingleton.getServer();
+////		solrServer.setDefaultCollection(Config.getInstance().getSolrCollection());
+//		SolrInputDocument doc = newdocument.getSolrDocument();
+//		
+//		 
+//		if ("KNOX".equalsIgnoreCase(Config.getInstance().getSolrTypeAccess()))
+//		{
+//			SolrClient solrServer= null;
+//			solrServer = KnoxSolrSingleton.getServer();
+//			log.info("[StoreService::createApiForBulk] - --KNOX------" + doc.toString());
+//			log.info("[StoreService::createApiForBulk] - --user------" + Config.getInstance().getSolrUsername());
+//			log.info("[StoreService::createApiForBulk] - --pwd------" + Config.getInstance().getSolrPassword());
+//			log.info("[StoreService::createApiForBulk] - --collection------" + Config.getInstance().getSolrCollection());
+//			
+// 
+//			((TEHttpSolrClient)solrServer).setDefaultCollection(Config.getInstance().getSolrCollection());
+//			solrServer.add(Config.getInstance().getSolrCollection(),doc);
+//			//solrServer.add(doc);
+//			solrServer.commit();
+//		}
+//		else {
+//			CloudSolrClient solrServer = CloudSolrSingleton.getServer();
+//			solrServer.setDefaultCollection(Config.getInstance().getSolrCollection());
+//			log.info("[StoreService::createApiForBulk] - ---------------------" + doc.toString());
+//			solrServer.add(Config.getInstance().getSolrCollection(),doc);
+//			solrServer.commit();
+//		}
+//		
+//		
+//		addStream.run();
+//
+//		} catch (Exception e) {
+//			log.info("[StoreService::createApiForBulk] ERROREEEEE ");
+//			e.printStackTrace();throw e;
+//		}
+//
+//		return apiFinalName;
+//		
+//		
+//		
+//		
+//		
+//	}
 
 }

@@ -18,7 +18,7 @@ public class DataSourceResponse extends Response {
 	private Integer version;
 	private String disclaimer;
 	private String registrationDate;
-	private Integer unpublished;
+	private Boolean unpublished;
 	private String icon;
 	private String requestermail;
 	private String lastUpdate;
@@ -158,11 +158,11 @@ public class DataSourceResponse extends Response {
 		this.status = status;
 	}
 
-	public Integer getUnpublished() {
+	public Boolean getUnpublished() {
 		return unpublished;
 	}
 
-	public void setUnpublished(Integer unpublished) {
+	public void setUnpublished(Boolean unpublished) {
 		this.unpublished = unpublished;
 	}
 
@@ -226,7 +226,7 @@ public class DataSourceResponse extends Response {
 		this.subdomain = new SubdomainResponse(dettaglioDataset);
 		this.domain = new DomainResponse(dettaglioDataset);
 		this.status = new StatusResponse(dettaglioDataset);
-		this.unpublished = dettaglioDataset.getDataSourceUnpublished();
+		this.unpublished = Util.intToBoolean(dettaglioDataset.getDataSourceUnpublished());
 		this.icon = dettaglioDataset.getDataSourceIcon();
 		this.requestermail = dettaglioDataset.getDataSourceRequesterMail();
 		this.lastUpdate = dettaglioDataset.getDataSourceLastUpdate();
@@ -247,7 +247,7 @@ public class DataSourceResponse extends Response {
 		this.subdomain = new SubdomainResponse(dettaglioStream);
 		this.domain = new DomainResponse(dettaglioStream);
 		this.status = new StatusResponse(dettaglioStream);
-		this.unpublished = dettaglioStream.getDataSourceUnpublished();
+		this.unpublished = Util.intToBoolean(dettaglioStream.getDataSourceUnpublished());
 		this.icon = dettaglioStream.getDataSourceIcon();
 		this.requestermail = dettaglioStream.getDataSourceRequesterMail();
 		this.lastUpdate = dettaglioStream.getDataSourceLastUpdate();

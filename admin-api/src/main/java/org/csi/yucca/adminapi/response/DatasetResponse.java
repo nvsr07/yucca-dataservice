@@ -27,7 +27,7 @@ public class DatasetResponse extends Response {
 	private DatasetSubtypeResponse datasetSubtype;
 	
 	private Integer version;
-	private Integer unpublished;
+	private Boolean unpublished;
 	private String visibility;
 	private String registrationdate;
 	private List<TagResponse> tags = new ArrayList<TagResponse>();
@@ -44,7 +44,7 @@ public class DatasetResponse extends Response {
 		this.tenantManager = new TenantResponse(dataset);
 		this.organization = new OrganizationResponse(dataset);
 		this.version = dataset.getDatasourceversion(); // ????
-		this.unpublished = dataset.getDataSourceUnpublished();
+		this.unpublished = Util.intToBoolean(dataset.getDataSourceUnpublished());
 		this.visibility = dataset.getDataSourceVisibility();
 		this.registrationdate = Util.dateString(dataset.getDataSourceRegistrationDate());
 		this.status = new StatusResponse(dataset);
@@ -187,11 +187,11 @@ public class DatasetResponse extends Response {
 		this.version = version;
 	}
 
-	public Integer getUnpublished() {
+	public Boolean getUnpublished() {
 		return unpublished;
 	}
 
-	public void setUnpublished(Integer unpublished) {
+	public void setUnpublished(Boolean unpublished) {
 		this.unpublished = unpublished;
 	}
 

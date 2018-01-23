@@ -28,11 +28,10 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.maximumLimitErrorsReached;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 
-import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -58,7 +57,6 @@ import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
-import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
@@ -67,11 +65,11 @@ import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.InvioCsvRequest;
-import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
@@ -104,6 +102,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 })
 public class DatasetServiceImpl implements DatasetService {
 
+	private static final Logger logger = Logger.getLogger(DatasetServiceImpl.class);
+	
 	@Autowired
 	private DatasetMapper datasetMapper;
 
@@ -157,8 +157,10 @@ public class DatasetServiceImpl implements DatasetService {
 	
 	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
-			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, JwtUser authorizedUser)
+			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception {
+		
+		logger.info("BEGIN: >>> insertCSVData <<<");
 		
 		List<ComponentInfoRequest> componentInfoRequests = Util.getComponentInfoRequests(componentInfoRequestsJson);
 		
@@ -174,17 +176,40 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 
 		List<String> csvRows = getCsvRows(file, skipFirstRow, components, componentInfoRequests, csvSeparator);
-		
 
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
-
-		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));
-
-		// invio api todo
+		logger.info("############################################################");
+		logger.info("tenantCodeManager: " + tenantCodeManager);
+		logger.info("############################################################");
+		
+		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
+		
+		if (user != null) {
+			logger.info("--------------------------------------------------------");
+			logger.info("user: " + user.getUsername());
+		}
+		else{
+			logger.info("user è nullo , ovvio che ti da null point!");
+		}
+		
+		
+		logger.info("BEGIN: HttpDelegate.makeHttpPost");
+		// invio api:
+		try {
+			
+			
+			HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));	
+		} catch (Exception e) {
+			logger.info("ECCEZIONE ALL'INVIO DELL'API");
+			logger.info(e.toString());
+		}
+		logger.info("END: HttpDelegate.makeHttpPost");
+					
+		
+		logger.info("END: >>> insertCSVData <<<");
 		
         return ServiceResponse.build().object(invioCsvRequest);
 	}
@@ -846,9 +871,16 @@ public class DatasetServiceImpl implements DatasetService {
 				DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);
 
 		// API
-		apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
-				.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
-				.idDataSource(idDataSource));
+		if(!postDatasetRequest.getUnpublished()){
+			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
+					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(idDataSource));
+			
+			//StoreDelegate.build().createApiForBulk(dataset);
+		}
+		
+		
+		
 		
 		return dataset;
 	}
