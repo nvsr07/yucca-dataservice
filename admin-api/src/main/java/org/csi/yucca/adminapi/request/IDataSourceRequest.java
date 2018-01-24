@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.request;
 
+import java.util.List;
+
 import org.csi.yucca.adminapi.request.OpenDataRequest;
 
 public interface IDataSourceRequest {
@@ -16,4 +18,5 @@ public interface IDataSourceRequest {
 	OpenDataRequest getOpenData();
 	String getCopyright();
 	String getExternalreference();
+	List<SharingTenantRequest> getSharingTenants();
 }

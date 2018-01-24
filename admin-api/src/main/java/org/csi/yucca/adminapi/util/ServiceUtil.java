@@ -361,7 +361,7 @@ public class ServiceUtil {
 								notEqual(component.getSourcecolumn(), cmp.getSourcecolumn()) ||
 								notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname()) ||
 								notEqual(component.getRequired(), cmp.getRequired()))){
-							throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The only field you can mofify are: alias, inorder and idMeasureUnit");
+							throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The only field you can modify are: alias, inorder and idMeasureUnit");
 						}
 					}
 				}

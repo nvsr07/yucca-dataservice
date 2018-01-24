@@ -6,6 +6,7 @@ import org.csi.yucca.adminapi.util.ManageOption;
 public class SharingTenantRequest {
 
 	private Integer idTenant;
+	private String tenantcode;
 	private Integer dataOptions = DataOption.READ_AND_USE.id();
 	private Integer manageOptions = ManageOption.NO_RIGHT.id();
 	
@@ -26,6 +27,12 @@ public class SharingTenantRequest {
 	}
 	public void setManageOptions(Integer manageOptions) {
 		this.manageOptions = manageOptions;
+	}
+	public String getTenantcode() {
+		return tenantcode;
+	}
+	public void setTenantcode(String tenantcode) {
+		this.tenantcode = tenantcode;
 	}
 
 }
