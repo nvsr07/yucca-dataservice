@@ -52,6 +52,7 @@ import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
+import org.csi.yucca.adminapi.request.PostValidateSiddhiQueriesRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
@@ -104,7 +105,47 @@ public class ManagementController extends YuccaController {
 
 	@Autowired
 	private DatasetService datasetService;
+	
+	
+	
+	
 
+	
+	//-------------------- NUOVA API ------------------------
+//	in api in input
+//	query
+//	internal stream
+//	e componenti
+//	l'api chiama un servizio esterno in POST  come è descritto nel xml:
+//	
+//	https://github.com/csipiemonte/yucca-fabriccontroller/blob/master/InternalAPI/InternalApiESB/src/main/synapse-config/api/YuccaInternalApiInternalStreams.xml
+//	
+//	WEBSERVERDELEGATE:
+//		https://github.com/csipiemonte/yucca-userportal/blob/master/userportal/src/main/java/org/csi/yucca/userportal/userportal/delegate/WebServiceDelegate.java
+//			
+//	nome api internalstreams/validate/
+	
+	
+//	{ inputStreamDefiniitons:  ["define stream input0 (meta_source string, time string  ,value float);",  "define stream outputStream(meta_source string, time string  ,value float);"], "queryExpressions":""}
+	@ApiOperation(value = M_INSERT_CSV_DATA, notes = M_INSERT_CSV_DATA_NOTES, response = Response.class)
+	@PostMapping("/validate/internalStream/query")
+	public ResponseEntity<Object> validateSiddhiQueries(
+			@RequestBody final PostValidateSiddhiQueriesRequest postValidateSiddhiQueriesRequest,			
+			final HttpServletRequest request) {
+
+		logger.info("validateSiddhiQueries");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return null;
+			}
+		}, logger);
+
+	}
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param action

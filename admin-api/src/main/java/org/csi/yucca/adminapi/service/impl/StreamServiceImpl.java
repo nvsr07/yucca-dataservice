@@ -27,9 +27,13 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
 
+import java.io.StringReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotAcceptableException;
@@ -70,6 +74,7 @@ import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
+import org.csi.yucca.adminapi.request.PostValidateSiddhiQueriesRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
@@ -92,10 +97,15 @@ import org.csi.yucca.adminapi.util.StreamAction;
 import org.csi.yucca.adminapi.util.Type;
 import org.csi.yucca.adminapi.util.Util;
 import org.csi.yucca.adminapi.util.Visibility;
+import org.csi.yucca.adminapi.util.WebServiceDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -142,7 +152,69 @@ public class StreamServiceImpl implements StreamService {
 
 	@Autowired
 	private MessageSender messageSender;
+	
+	@Override
+	public ServiceResponse validateSiddhiQueries(PostValidateSiddhiQueriesRequest request)
+			throws BadRequestException, NotFoundException, Exception {
+        		
+		String xmlInput =
+				    "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://admin.processor.event.carbon.wso2.org\">";
+		xmlInput += "   <soapenv:Header/>";
+		
+		xmlInput += "   <soapenv:Body>";
+		
+		xmlInput += "      <ser:validateSiddhiQueries>";
+	    xmlInput += "         <ser:queryExpressions>" + request.getQueryExpressions() + "</ser:queryExpressions>";
+	    xmlInput += "         <ser:inputStreamDefiniitons>" + request.getInputStreamDefiniitons() + "</ser:inputStreamDefiniitons>";
+		xmlInput += "      </ser:validateSiddhiQueries>";
+		
+		xmlInput += "   </soapenv:Body>";
+		xmlInput += "</soapenv:Envelope>";
+		
+		String SOAPAction    = "validateSiddhiQueries";
+		String webserviceUrl = "https://sdnet-mb1.sdp.csi.it:9446/wso003/services/EventProcessorAdminService.EventProcessorAdminServiceHttpsSoap11Endpoint/";
+		String user          = "";
+		String password      = "";
+		
+		String webServiceResponse = WebServiceDelegate.callWebService(
+											webserviceUrl, 
+											user, 
+											password, 
+											xmlInput, 
+											SOAPAction, 
+											"application/xml");
+		
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
+		InputSource inputSource = new InputSource(new StringReader(webServiceResponse));
+		Document document = documentBuilder.parse(inputSource);
+		
+		
+		NodeList nodeList = document.getFirstChild().getFirstChild().getFirstChild().getChildNodes();
+		
+		if (nodeList != null) {
+		
+			for (int i = 0; i < nodeList.getLength(); i++) {
+
+				Node node = nodeList.item(i);
+				String taxtContext = node.getTextContent();
+				
+//				permissions.add(permission);
+			}
+		}
+		
+		
+		
+		
+
+		
+		return null;
+	}
+	
+	
+	
+	
 	@Override
 	public ServiceResponse actionFeedback(ActionRequest actionRequest, Integer idStream)
 			throws BadRequestException, NotFoundException, Exception {
@@ -1557,5 +1629,6 @@ public class StreamServiceImpl implements StreamService {
 					listInternalStream));
 		}
 	}
+
 
 }
