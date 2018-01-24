@@ -277,7 +277,8 @@ public interface StreamMapper {
 		@Result(property = "idSoCategory", column = "id_so_category"), 
 		@Result(property = "sotypecode", column = "soTypeCode"),
 		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"), 
-		@Result(property = "idSoType", column = "id_so_type")
+		@Result(property = "idSoType", column = "id_so_type"),
+		@Result(property = "aliasName", column = "stream_alias")
       })	
 	@Select({"<script>", SELECT_INTERNAL_STREAM, "</script>"}) 
 	List<InternalDettaglioStream> selectInternalStream( @Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	

@@ -1,6 +1,43 @@
 package org.csi.yucca.adminapi.controller.v1;
 
-import static org.csi.yucca.adminapi.util.ApiDoc.*;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_STREAM;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_ACTION_ON_STREAM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_STREAM_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_CREATE_TENANT_SOCIAL_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_DELETE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_IMPORT_METADATA_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_IMPORT_METADATA_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_CSV_DATA;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_CSV_DATA_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_INSERT_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_DATA_SETS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECTS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_SMART_OBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAMS_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_ICON_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_STREAM_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_LOAD_TENANT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_DATASET;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_DATASET_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_SMARTOBJECT_NOTES;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_STREAM;
+import static org.csi.yucca.adminapi.util.ApiDoc.M_UPDATE_STREAM_NOTES;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +52,7 @@ import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
+import org.csi.yucca.adminapi.request.PostValidateSiddhiQueriesRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
@@ -26,7 +64,6 @@ import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.response.SmartobjectResponse;
-import org.csi.yucca.adminapi.response.StreamResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
@@ -68,7 +105,47 @@ public class ManagementController extends YuccaController {
 
 	@Autowired
 	private DatasetService datasetService;
+	
+	
+	
+	
 
+	
+	//-------------------- NUOVA API ------------------------
+//	in api in input
+//	query
+//	internal stream
+//	e componenti
+//	l'api chiama un servizio esterno in POST  come è descritto nel xml:
+//	
+//	https://github.com/csipiemonte/yucca-fabriccontroller/blob/master/InternalAPI/InternalApiESB/src/main/synapse-config/api/YuccaInternalApiInternalStreams.xml
+//	
+//	WEBSERVERDELEGATE:
+//		https://github.com/csipiemonte/yucca-userportal/blob/master/userportal/src/main/java/org/csi/yucca/userportal/userportal/delegate/WebServiceDelegate.java
+//			
+//	nome api internalstreams/validate/
+	
+	
+//	{ inputStreamDefiniitons:  ["define stream input0 (meta_source string, time string  ,value float);",  "define stream outputStream(meta_source string, time string  ,value float);"], "queryExpressions":""}
+	@ApiOperation(value = M_INSERT_CSV_DATA, notes = M_INSERT_CSV_DATA_NOTES, response = Response.class)
+	@PostMapping("/validate/internalStream/query")
+	public ResponseEntity<Object> validateSiddhiQueries(
+			@RequestBody final PostValidateSiddhiQueriesRequest postValidateSiddhiQueriesRequest,			
+			final HttpServletRequest request) {
+
+		logger.info("validateSiddhiQueries");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return null;
+			}
+		}, logger);
+
+	}
+	
+	
+	
+	
 	/**
 	 * 
 	 * @param action
@@ -95,7 +172,8 @@ public class ManagementController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
+
 	/**
 	 * 
 	 * @param file
@@ -111,20 +189,28 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_INSERT_CSV_DATA, notes = M_INSERT_CSV_DATA_NOTES, response = Response.class)
 	@PostMapping("/organizations/{organizationCode}/datasets/{idDataset}/addData")
-	public ResponseEntity<Object> addCSVData(@RequestParam("file") final MultipartFile file, @RequestParam("skipFirstRow") final Boolean skipFirstRow,
-			@RequestParam("encoding") final String encoding, @RequestParam("csvSeparator") final String csvSeparator, @PathVariable final String organizationCode,
-			@PathVariable final Integer idDataset, @RequestParam final String componentInfoRequests, final HttpServletRequest request) {
+	public ResponseEntity<Object> addCSVData(
+			@RequestParam("file") final MultipartFile file, 
+			@RequestParam("skipFirstRow") final Boolean skipFirstRow,
+			@RequestParam("encoding") final String encoding, 
+			@RequestParam("csvSeparator") final String csvSeparator, 
+			@PathVariable final String organizationCode,
+			@PathVariable final Integer idDataset, 
+			@RequestParam final String componentInfoRequests, 
+			final HttpServletRequest request,
+			@RequestParam(required = true) final String tenantCodeManager) {
 
 		logger.info("addCSVData");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.insertCSVData(file, skipFirstRow, encoding, csvSeparator, componentInfoRequests, organizationCode, idDataset, getAuthorizedUser(request));
+				return datasetService.insertCSVData(file, skipFirstRow, encoding, csvSeparator, componentInfoRequests, organizationCode, idDataset, tenantCodeManager, getAuthorizedUser(request));
 			}
 		}, logger);
 
 	}
-
+	
+	
 	/**
 	 * 
 	 * @param organizationCode

@@ -31,8 +31,8 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
-import org.csi.yucca.adminapi.delegate.StoreDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -102,6 +102,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 })
 public class DatasetServiceImpl implements DatasetService {
 
+	private static final Logger logger = Logger.getLogger(DatasetServiceImpl.class);
+	
 	@Autowired
 	private DatasetMapper datasetMapper;
 
@@ -155,8 +157,10 @@ public class DatasetServiceImpl implements DatasetService {
 	
 	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
-			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, JwtUser authorizedUser)
+			String csvSeparator, String componentInfoRequestsJson, String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception {
+		
+		logger.info("BEGIN: >>> insertCSVData <<<");
 		
 		List<ComponentInfoRequest> componentInfoRequests = Util.getComponentInfoRequests(componentInfoRequestsJson);
 		
@@ -172,18 +176,21 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 
 		List<String> csvRows = getCsvRows(file, skipFirstRow, components, componentInfoRequests, csvSeparator);
-		
 
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion());
-
-		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));
-
-		// invio api todo
+		logger.debug("tenantCodeManager: " + tenantCodeManager);
 		
+		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
+		
+		logger.debug(user != null ? "user: " + user.getUsername() : "user è nullo!");
+		
+		logger.debug("BEGIN: HttpDelegate.makeHttpPost");
+		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));	
+		
+		logger.info("END: >>> insertCSVData <<<");
         return ServiceResponse.build().object(invioCsvRequest);
 	}
 	

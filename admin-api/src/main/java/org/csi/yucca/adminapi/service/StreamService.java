@@ -5,6 +5,7 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
+import org.csi.yucca.adminapi.request.PostValidateSiddhiQueriesRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -32,4 +33,6 @@ public interface StreamService {
 
 	ServiceResponse selectStreamBySoCodeStreamCode(String soCode, String streamCode) throws BadRequestException, NotFoundException, Exception;
 
+	ServiceResponse validateSiddhiQueries(PostValidateSiddhiQueriesRequest postValidateSiddhiQueriesRequest) throws BadRequestException, NotFoundException, Exception;
+	
 }
