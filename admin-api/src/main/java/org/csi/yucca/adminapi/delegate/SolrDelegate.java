@@ -30,11 +30,11 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.util.Base64;
 import org.apache.solr.common.util.NamedList;
 import org.csi.yucca.adminapi.conf.Krb5HttpClientConfigurer;
-import org.csi.yucca.adminapi.model.Component;
-import org.csi.yucca.adminapi.model.Dcat;
+import org.csi.yucca.adminapi.model.ComponentJson;
+import org.csi.yucca.adminapi.model.DcatJson;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
-import org.csi.yucca.adminapi.model.Tag;
-import org.csi.yucca.adminapi.model.Tenant;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
+import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -135,22 +135,22 @@ public class SolrDelegate {
 		doc.addField("tenantDescription", dataset.getTenantDescription());
 
 		if (dataset.getSharingTenant() != null) {
-			List<Tenant> tenants = mapper.readValue(dataset.getComponents(), new TypeReference<List<Tenant>>() {
+			List<SharingTenantsJson> tenants = mapper.readValue(dataset.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {
 			});
 			List<String> tenantsCode = new LinkedList<String>();
-			for (Tenant tenant : tenants) {
+			for (SharingTenantsJson tenant : tenants) {
 				tenantsCode.add(tenant.getTenantcode());
 			}
 			doc.addField("tenantsCode", tenantsCode);
 		}
 
 		if (dataset.getTags() != null) {
-			List<Tag> tags = mapper.readValue(dataset.getTags(), new TypeReference<List<Tag>>() {
+			List<TagJson> tags = mapper.readValue(dataset.getTags(), new TypeReference<List<TagJson>>() {
 			});
 			List<String> tagCode = new LinkedList<String>();
 			List<String> tagLangEN = new LinkedList<String>();
 			List<String> tagLangIT = new LinkedList<String>();
-			for (Tag tag : tags) {
+			for (TagJson tag : tags) {
 				tagCode.add(tag.getTagcode());
 				tagLangEN.add(tag.getLangen());
 				tagLangIT.add(tag.getLangit());
@@ -162,7 +162,7 @@ public class SolrDelegate {
 		}
 
 		if (dataset.getDcat() != null) {
-			Dcat dcat = Util.getFromJsonString(dataset.getDcat(), Dcat.class);
+			DcatJson dcat = Util.getFromJsonString(dataset.getDcat(), DcatJson.class);
 			doc.addField("dcatDataUpdate", dcat.getDcatdataupdate());
 			doc.addField("dcatNomeOrg", dcat.getDcatnomeorg());
 			doc.addField("dcatEmailOrg", dcat.getDcatemailorg());
@@ -206,10 +206,10 @@ public class SolrDelegate {
 
 		doc.addField("jsonFields", dataset.getComponents());
 		if (dataset.getComponents() != null) {
-			List<Component> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<Component>>() {
+			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
 			});
 			List<String> sdpComponentsName = new LinkedList<String>();
-			for (Component component : components) {
+			for (ComponentJson component : components) {
 				sdpComponentsName.add(component.getName());
 			}
 			doc.addField("sdpComponentsName", sdpComponentsName);

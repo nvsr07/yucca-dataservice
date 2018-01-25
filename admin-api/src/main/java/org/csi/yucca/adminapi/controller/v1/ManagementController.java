@@ -127,6 +127,7 @@ public class ManagementController extends YuccaController {
 	
 	
 //	{ inputStreamDefiniitons:  ["define stream input0 (meta_source string, time string  ,value float);",  "define stream outputStream(meta_source string, time string  ,value float);"], "queryExpressions":""}
+
 	@ApiOperation(value = M_INSERT_CSV_DATA, notes = M_INSERT_CSV_DATA_NOTES, response = Response.class)
 	@PostMapping("/validate/internalStream/query")
 	public ResponseEntity<Object> validateSiddhiQueries(
@@ -142,7 +143,6 @@ public class ManagementController extends YuccaController {
 		}, logger);
 
 	}
-	
 	
 	
 	

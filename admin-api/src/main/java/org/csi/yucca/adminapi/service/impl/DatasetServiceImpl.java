@@ -31,8 +31,11 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
+import org.csi.yucca.adminapi.delegate.PublisherDelegate;
+import org.csi.yucca.adminapi.delegate.SolrDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -390,6 +393,42 @@ public class DatasetServiceImpl implements DatasetService {
 		
 		
 		// TODO vanno clonate le api?
+		if (!datasetRequest.getUnpublished()) {
+
+			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode());
+			String apiName = null;
+			
+			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
+
+			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+			// publisher
+			boolean update = false;
+			try {
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
+				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+			} catch (Exception duplicateException) {
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
+				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
+					try {
+						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
+						update = true;
+						PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+					} catch (Exception e) {
+						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
+						e.printStackTrace();
+					}
+				} else {
+					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
+					duplicateException.printStackTrace();
+				}
+			}
+			
+			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+			SolrDelegate.build().addDocument(dettaglioDataset);
+
+		}
+
 	}
 
 	/**
@@ -851,17 +890,39 @@ public class DatasetServiceImpl implements DatasetService {
 				DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);
 
 		// API
-		if(!postDatasetRequest.getUnpublished()){
-			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+		if (!postDatasetRequest.getUnpublished()) {
+
+			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode()).apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(idDataSource));
-			
-			//StoreDelegate.build().createApiForBulk(dataset);
+
+			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(dataset.getIddataset());
+			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+			// publisher
+			boolean update = false;
+			try {
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
+				PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+			} catch (Exception duplicateException) {
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
+				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
+					try {
+						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
+						update = true;
+						PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+					} catch (Exception e) {
+						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
+						e.printStackTrace();
+					}
+				} else {
+					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
+					duplicateException.printStackTrace();
+				}
+			}
+
+			SolrDelegate.build().addDocument(dettaglioDataset);
+
 		}
-		
-		
-		
-		
+
 		return dataset;
 	}
 

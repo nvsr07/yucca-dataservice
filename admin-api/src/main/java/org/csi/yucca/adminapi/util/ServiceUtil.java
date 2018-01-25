@@ -351,16 +351,17 @@ public class ServiceUtil {
 				// sono stati inseriti campi non modificabili
 				if(component.getIdComponent() != null){
 					for (Component cmp : alreadyPresentComponents) {
+						
 						if(component.getIdComponent().equals(cmp.getIdComponent())  &&
 								
 								(notEqual(component.getName(), cmp.getName()) ||
 								notEqual(component.getTolerance(), cmp.getTolerance()) ||  
 								notEqual(component.getIdPhenomenon(), cmp.getIdPhenomenon()) ||
 								notEqual(component.getIdDataType(), cmp.getIdDataType()) ||
-								notEqual(component.getIskey(), cmp.getIskey()) ||
+								notEqual(component.getIskey(), Util.intToBoolean(cmp.getIskey())) ||
 								notEqual(component.getSourcecolumn(), cmp.getSourcecolumn()) ||
 								notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname()) ||
-								notEqual(component.getRequired(), cmp.getRequired()))){
+								notEqual(component.getRequired(),  Util.intToBoolean(cmp.getRequired())))){
 							throw new BadRequestException(Errors.NOT_ACCEPTABLE, "The only field you can modify are: alias, inorder and idMeasureUnit");
 						}
 					}

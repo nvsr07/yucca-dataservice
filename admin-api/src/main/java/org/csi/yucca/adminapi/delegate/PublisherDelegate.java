@@ -10,6 +10,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.model.DettaglioDataset;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
+import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.util.Util;
@@ -17,6 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 @PropertySource(value = { "classpath:adminapi.properties" })
@@ -47,7 +53,8 @@ public class PublisherDelegate {
 	
 	
 	
-	
+	private ObjectMapper mapper = new ObjectMapper();
+
 	
 	
 
@@ -88,7 +95,7 @@ public class PublisherDelegate {
 
 	}
 
-	public String addApi(CloseableHttpClient httpclient, boolean update, /*IDataSourceRequest*/ DatasetRequest dataset) throws HttpException, IOException {
+	public String addApi(CloseableHttpClient httpclient, boolean update, /*IDataSourceRequest*/ DettaglioDataset dataset) throws HttpException, IOException {
 		logger.debug("[PublisherDelegate::addApi]");
 		List<NameValuePair> addApiParams = new LinkedList<NameValuePair>();
 		
@@ -101,7 +108,7 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("action", "addAPI"));
 		
 		
-		if("public".equals(dataset.getVisibility())){
+		if("public".equals(dataset.getDataSourceVisibility())){
 			addApiParams.add(new BasicNameValuePair("visibility", "public"));
 			addApiParams.add(new BasicNameValuePair("roles", ""));
 			addApiParams.add(new BasicNameValuePair("authType", "None"));
@@ -109,11 +116,15 @@ public class PublisherDelegate {
 		else{
 			addApiParams.add(new BasicNameValuePair("visibility", "restricted"));
 			String roles = "";
-			if(dataset.getSharingTenants()!=null){
-				for (SharingTenantRequest sharingTenant : dataset.getSharingTenants()) {
+
+			if(dataset.getSharingTenant()!=null){
+				List<SharingTenantsJson> tenants = mapper.readValue(dataset.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {
+				});
+				List<String> tenantsCode = new LinkedList<String>();
+				for (SharingTenantsJson tenant : tenants) {
 					if (!roles.equals(""))
 						roles += ",";
-					roles += sharingTenant.getTenantcode() + "_subscriber";
+					roles += tenant.getTenantcode() + "_subscriber";
 				}
 			}
 			addApiParams.add(new BasicNameValuePair("roles", roles));
@@ -133,12 +144,13 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("httpok", httpOk));
 		addApiParams.add(new BasicNameValuePair("ok", responseOk));
 
-		addApiParams.add(new BasicNameValuePair("apiVersion", "1.0"));
-		addApiParams.add(new BasicNameValuePair("apiName", apiFinalName));
-		addApiParams.add(new BasicNameValuePair("context", "/api/" + apiName));// ds_Voc_28;
+		addApiParams.add(new BasicNameValuePair("version", "1.0"));
+		addApiParams.add(new BasicNameValuePair("name", apiFinalName));
+		addApiParams.add(new BasicNameValuePair("context", "/api/" + apiName));
+
 		addApiParams.add(new BasicNameValuePair("P", ""));
 		addApiParams.add(new BasicNameValuePair("endpoint", endpoint));
-		addApiParams.add(new BasicNameValuePair("desc", dataset.getDescription() != null ? Util.safeSubstring( dataset.getDescription(), API_FIELD_MAX_LENGTH) : ""));
+		addApiParams.add(new BasicNameValuePair("description", dataset.getDescription() != null ? Util.safeSubstring( dataset.getDescription(), API_FIELD_MAX_LENGTH) : ""));
 
 
 		addApiParams.add(new BasicNameValuePair("extra_isApi", "false"));
@@ -147,26 +159,29 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("codiceStream", ""));
 		addApiParams.add(new BasicNameValuePair("nomeStream", ""));
 	//	addApiParams.add(new BasicNameValuePair("nomeTenant", dataset.getIdTenant() != null ? dataset.getIdTenant() : ""));
-		addApiParams.add(new BasicNameValuePair("licence", dataset.getLicense() != null && dataset.getLicense().getLicensecode() != null ? Util.safeSubstring(dataset.getLicense().getLicensecode(), API_FIELD_MAX_LENGTH) : ""));
-		addApiParams.add(new BasicNameValuePair("disclaimer", dataset.getDisclaimer() != null ? Util.safeSubstring(dataset.getDisclaimer(), API_FIELD_MAX_LENGTH) : ""));
+		addApiParams.add(new BasicNameValuePair("licence", dataset.getLicense() != null && dataset.getLicense() != null ? Util.safeSubstring(dataset.getLicense(), API_FIELD_MAX_LENGTH) : ""));
+		addApiParams.add(new BasicNameValuePair("disclaimer", dataset.getDataSourceDisclaimer() != null ? Util.safeSubstring(dataset.getDataSourceDisclaimer(), API_FIELD_MAX_LENGTH) : ""));
 		addApiParams.add(new BasicNameValuePair("virtualEntityName", ""));
 		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", ""));
 		
 		
-//		String tags = "";
-//		if (dataset.getDataDomain() != null) {
-//			tags += dataset.getDataDomain();
-//		}
-//		List<String> tagCodes = null;
-//		if (dataset.getTags() != null) {
-//			tagCodes = new LinkedList<String>();
-//			for (Integer t : dataset.getTags()) {
-//				tags += "," + t.getTagCode();
-//				tagCodes.add(t.getTagCode());
-//			}
-//		}
-
-//		addApiParams.add(new BasicNameValuePair("tags", Util.safeSubstring(tags, API_FIELD_MAX_LENGTH)));
+		String tags = "";
+		if (dataset.getDomDomainCode() != null) {
+			tags += dataset.getDomDomainCode();
+		}
+		
+		List<String> tagCodes = null;
+		if (dataset.getTags() != null) {
+			tagCodes = new LinkedList<String>();
+			List<TagJson> tagsJson = mapper.readValue(dataset.getTags(), new TypeReference<List<TagJson>>() {
+			});
+			tagCodes = new LinkedList<String>();
+			for (TagJson t : tagsJson) {
+				tags += "," + t.getTagcode();
+				tagCodes.add(t.getTagcode());
+			}
+		}
+		addApiParams.add(new BasicNameValuePair("tags", Util.safeSubstring(tags, API_FIELD_MAX_LENGTH)));
 		
 		
 		//nel file prop
@@ -176,14 +191,13 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("endpoint_config","{'production_endpoints':{'url':'"+endpoint+"','config':null},'endpoint_type':'address'}"));
 		addApiParams.add(new BasicNameValuePair("production_endpoints",endpoint));
 		addApiParams.add(new BasicNameValuePair("sandbox_endpoints","${sandbox}"));
-		addApiParams.add(new BasicNameValuePair("wsdl","${wsdl}"));
+		addApiParams.add(new BasicNameValuePair("wsdl",""));
 		addApiParams.add(new BasicNameValuePair("tier",""));
-		addApiParams.add(new BasicNameValuePair("FILE.apiThumb.name",dataset.getIcon()));
+		addApiParams.add(new BasicNameValuePair("FILE.apiThumb.name",dataset.getDataSourceIcon()));
 		addApiParams.add(new BasicNameValuePair("bizOwner","bizOwner"));
 		addApiParams.add(new BasicNameValuePair("bizOwnerMail","bizOwner@csi.it"));
 		addApiParams.add(new BasicNameValuePair("techOwner","tecnikus"));
 		addApiParams.add(new BasicNameValuePair("techOwnerMail","tecnikus@csi.it"));
-		addApiParams.add(new BasicNameValuePair("context","${context}"));
 		addApiParams.add(new BasicNameValuePair("tiersCollection","Unlimited"));
 		addApiParams.add(new BasicNameValuePair("resourceCount","0"));
 		addApiParams.add(new BasicNameValuePair("resourceMethod-0","GET"));
@@ -195,21 +209,22 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("https_checked","https"));
 		addApiParams.add(new BasicNameValuePair("default_version_checked","default_version"));
 		// EXTRA 
-//		addApiParams.add(new BasicNameValuePair("extra_isApi","${extra_isApi}"));
-//		addApiParams.add(new BasicNameValuePair("extra_codiceTenant","${codiceTenant}"));
-//		addApiParams.add(new BasicNameValuePair("extra_copyright","${copiright}"));
-//		addApiParams.add(new BasicNameValuePair("extra_codiceStream","${codiceStream}"));
-//		addApiParams.add(new BasicNameValuePair("extra_nomeStream","${nomeStream}"));
-//		addApiParams.add(new BasicNameValuePair("extra_nomeTenant","${nomeTenant}"));
-//		addApiParams.add(new BasicNameValuePair("extra_licence","${licence}"));
-//		addApiParams.add(new BasicNameValuePair("extra_virtualEntityName","${virtualEntityName}"));
-//		addApiParams.add(new BasicNameValuePair("extra_virtualEntityDescription","${virtualEntityDescription}"));
-//		addApiParams.add(new BasicNameValuePair("extra_disclaimer","${disclaimer}"));
-//		addApiParams.add(new BasicNameValuePair("extra_virtualEntityCode","${virtualEntityCode}"));
-//		addApiParams.add(new BasicNameValuePair("provider","admin"));
-//		addApiParams.add(new BasicNameValuePair("extra_apiDescription","${extra_apiDescription}"));
-//		addApiParams.add(new BasicNameValuePair("extra_latitude","${extra_latitude}"));
-//		addApiParams.add(new BasicNameValuePair("extra_longitude","${extra_longitude}"));
+		addApiParams.add(new BasicNameValuePair("extra_codiceTenant",""));
+		addApiParams.add(new BasicNameValuePair("extra_copyright",""));
+		addApiParams.add(new BasicNameValuePair("extra_codiceStream",""));
+		addApiParams.add(new BasicNameValuePair("extra_nomeStream",""));
+		addApiParams.add(new BasicNameValuePair("extra_nomeTenant",""));
+		addApiParams.add(new BasicNameValuePair("extra_licence",""));
+		addApiParams.add(new BasicNameValuePair("extra_virtualEntityName",""));
+		addApiParams.add(new BasicNameValuePair("extra_virtualEntityDescription",""));
+		addApiParams.add(new BasicNameValuePair("extra_disclaimer",""));
+		addApiParams.add(new BasicNameValuePair("extra_virtualEntityCode",""));//		addApiParams.add(new BasicNameValuePair("provider","admin"));
+		addApiParams.add(new BasicNameValuePair("extra_apiDescription",""));
+		addApiParams.add(new BasicNameValuePair("extra_latitude",""));
+		addApiParams.add(new BasicNameValuePair("extra_longitude",""));
+		
+
+
 		
 		
 		//String url = publisherUrl + "site/blocks/application/application-add/ajax/application-add.jag";
@@ -293,11 +308,13 @@ public class PublisherDelegate {
 		publishApi.add(new BasicNameValuePair("httpok", httpOk));
 		publishApi.add(new BasicNameValuePair("ok", responseOk));
 
-		publishApi.add(new BasicNameValuePair("publishStatus", "PUBLISHED"));
-		publishApi.add(new BasicNameValuePair("apiVersion", apiVersion));
-		publishApi.add(new BasicNameValuePair("apiName", apiName));
+		publishApi.add(new BasicNameValuePair("status", "PUBLISHED"));
+		publishApi.add(new BasicNameValuePair("version", apiVersion));
+		publishApi.add(new BasicNameValuePair("name", apiName));
 		publishApi.add(new BasicNameValuePair("provider", provider));
 		publishApi.add(new BasicNameValuePair("publishToGateway", "true"));
+		
+		
 		
 		//publishApi.add(new BasicNameValuePair("address",consoleAddress + "/publisher/site/blocks/item-add/ajax/add.jag"));
 		publishApi.add(new BasicNameValuePair("method","POST"));
