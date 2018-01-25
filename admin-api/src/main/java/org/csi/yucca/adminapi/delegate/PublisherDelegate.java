@@ -111,7 +111,7 @@ public class PublisherDelegate {
 		if("public".equals(dataset.getDataSourceVisibility())){
 			addApiParams.add(new BasicNameValuePair("visibility", "public"));
 			addApiParams.add(new BasicNameValuePair("roles", ""));
-			addApiParams.add(new BasicNameValuePair("authType", "None"));
+			addApiParams.add(new BasicNameValuePair("resourceMethodAuthType-0", "None"));
 		}
 		else{
 			addApiParams.add(new BasicNameValuePair("visibility", "restricted"));
@@ -128,7 +128,7 @@ public class PublisherDelegate {
 				}
 			}
 			addApiParams.add(new BasicNameValuePair("roles", roles));
-			addApiParams.add(new BasicNameValuePair("authType", "Application & Application User"));
+			addApiParams.add(new BasicNameValuePair("resourceMethodAuthType-0", "Application & Application User"));
 
 		}
 		
@@ -154,7 +154,7 @@ public class PublisherDelegate {
 
 
 		addApiParams.add(new BasicNameValuePair("extra_isApi", "false"));
-		addApiParams.add(new BasicNameValuePair("extra_apiDescription", dataset.getDatasetname() != null ? dataset.getDatasetname() : ""));
+	//	addApiParams.add(new BasicNameValuePair("extra_apiDescription", dataset.getDatasetname() != null ? dataset.getDatasetname() : ""));
 	//	addApiParams.add(new BasicNameValuePair("codiceTenant", dataset.getIdTenant() != null ? dataset.getIdTenant() : "");
 		addApiParams.add(new BasicNameValuePair("codiceStream", ""));
 		addApiParams.add(new BasicNameValuePair("nomeStream", ""));
@@ -190,7 +190,7 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("endpoint_type","address"));
 		addApiParams.add(new BasicNameValuePair("endpoint_config","{'production_endpoints':{'url':'"+endpoint+"','config':null},'endpoint_type':'address'}"));
 		addApiParams.add(new BasicNameValuePair("production_endpoints",endpoint));
-		addApiParams.add(new BasicNameValuePair("sandbox_endpoints","${sandbox}"));
+		addApiParams.add(new BasicNameValuePair("sandbox_endpoints",""));
 		addApiParams.add(new BasicNameValuePair("wsdl",""));
 		addApiParams.add(new BasicNameValuePair("tier",""));
 		addApiParams.add(new BasicNameValuePair("FILE.apiThumb.name",dataset.getDataSourceIcon()));
@@ -208,6 +208,18 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("http_checked","http"));
 		addApiParams.add(new BasicNameValuePair("https_checked","https"));
 		addApiParams.add(new BasicNameValuePair("default_version_checked","default_version"));
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// EXTRA 
 		addApiParams.add(new BasicNameValuePair("extra_codiceTenant",""));
 		addApiParams.add(new BasicNameValuePair("extra_copyright",""));
@@ -222,6 +234,9 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("extra_apiDescription",""));
 		addApiParams.add(new BasicNameValuePair("extra_latitude",""));
 		addApiParams.add(new BasicNameValuePair("extra_longitude",""));
+		
+		
+		
 		
 
 
