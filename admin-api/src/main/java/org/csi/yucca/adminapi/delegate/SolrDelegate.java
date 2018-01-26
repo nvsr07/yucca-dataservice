@@ -108,9 +108,13 @@ public class SolrDelegate {
 	}
 
 	public void addDocument(DettaglioDataset dettaglioDataset) throws Exception {
-
 		SolrInputDocument doc = createSolrDocument(dettaglioDataset);
 		addDocument(doc);
+	}
+	
+	public void removeDocument(String documentId) throws Exception {
+		solrClient.deleteById(solrCollection, documentId);
+		solrClient.commit();
 	}
 
 	private SolrInputDocument createSolrDocument(DettaglioDataset dataset) throws Exception {

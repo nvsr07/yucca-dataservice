@@ -35,6 +35,9 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.log4j.Logger;
+import org.csi.yucca.adminapi.delegate.PublisherDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotAcceptableException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -110,7 +113,9 @@ import org.xml.sax.InputSource;
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StreamServiceImpl implements StreamService {
+	private static final Logger logger = Logger.getLogger(StreamServiceImpl.class);
 
+	
 	@Autowired
 	private SequenceMapper sequenceMapper;
 
@@ -1500,6 +1505,48 @@ public class StreamServiceImpl implements StreamService {
 		Dataset dataset = updateDataSet(streamRequest, streamToUpdate, smartObject);
 
 		updateApi(streamRequest, streamToUpdate, smartObject, dataset);
+		
+		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+		if (!streamRequest.getUnpublished()) {
+			DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(smartObject.getSocode(), streamToUpdate.getStreamCode());
+
+			String apiName = null;
+			boolean update = false;
+			try {
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
+				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
+			} catch (Exception duplicateException) {
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
+				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
+					try {
+						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
+						update = true;
+						PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
+					} catch (Exception e) {
+						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
+						e.printStackTrace();
+					}
+				} else {
+					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
+					duplicateException.printStackTrace();
+				}
+			}
+			
+			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+			//quiiii SolrDelegate.build().addDocument(dettaglioStream);
+
+		}else {
+			logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + streamRequest.getStreamname());
+			try {
+				//quiiii  String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameForBulk(streamRequest.getDatasetcode()));
+				//logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+
+			} catch (Exception ex) {
+				logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + streamRequest.getStreamname() + " - " + ex.getMessage());
+			}
+			
+			//quiiii SolrDelegate.build().removeDocument(streamRequest.getDatasetcode());
+		}
 
 	}
 

@@ -393,15 +393,15 @@ public class DatasetServiceImpl implements DatasetService {
 		
 		
 		// TODO vanno clonate le api?
+		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		if (!datasetRequest.getUnpublished()) {
-
 			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode());
+
 			String apiName = null;
 			
 			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
 					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
 
-			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			// publisher
 			boolean update = false;
 			try {
@@ -427,6 +427,17 @@ public class DatasetServiceImpl implements DatasetService {
 			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			SolrDelegate.build().addDocument(dettaglioDataset);
 
+		}else {
+			logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + datasetRequest.getDatasetcode());
+			try {
+				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(datasetRequest.getDatasetcode()));
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+
+			} catch (Exception ex) {
+				logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + datasetRequest.getDatasetcode() + " - " + ex.getMessage());
+			}
+			
+			SolrDelegate.build().removeDocument(datasetRequest.getDatasetcode());
 		}
 
 	}
@@ -890,18 +901,20 @@ public class DatasetServiceImpl implements DatasetService {
 				DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);
 
 		// API
+		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		if (!postDatasetRequest.getUnpublished()) {
+			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(postDatasetRequest.getDatasetcode());
 
-			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode()).apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
-					.idDataSource(idDataSource));
+			String apiName = null;
+			
+			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(postDatasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
 
-			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(dataset.getIddataset());
-			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			// publisher
 			boolean update = false;
 			try {
 				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
-				PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
 			} catch (Exception duplicateException) {
 				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
 				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
@@ -918,10 +931,54 @@ public class DatasetServiceImpl implements DatasetService {
 					duplicateException.printStackTrace();
 				}
 			}
-
+			
+			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			SolrDelegate.build().addDocument(dettaglioDataset);
 
+		}else {
+			logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + postDatasetRequest.getDatasetcode());
+			try {
+				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(postDatasetRequest.getDatasetcode()));
+				logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+
+			} catch (Exception ex) {
+				logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
+			}
+			
+			SolrDelegate.build().removeDocument(postDatasetRequest.getDatasetcode());
 		}
+//		if (!postDatasetRequest.getUnpublished()) {
+//
+//			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode()).apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+//					.idDataSource(idDataSource));
+//
+//			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(dataset.getIddataset());
+//			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+//			// publisher
+//			boolean update = false;
+//			try {
+//				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
+//				PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+//			} catch (Exception duplicateException) {
+//				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
+//				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
+//					try {
+//						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
+//						update = true;
+//						PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+//					} catch (Exception e) {
+//						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
+//						e.printStackTrace();
+//					}
+//				} else {
+//					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
+//					duplicateException.printStackTrace();
+//				}
+//			}
+//
+//			SolrDelegate.build().addDocument(dettaglioDataset);
+//
+//		}
 
 		return dataset;
 	}
