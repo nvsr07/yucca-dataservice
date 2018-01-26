@@ -345,7 +345,11 @@ public class StreamServiceImpl implements StreamService {
 
 		checkIfFoundRecord(dettaglioStream);
 		checkMandatoryParameter(actionRequest.getAction(), "Action");
-		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+		
+		if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
+			checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+			checkMandatoryParameter(actionRequest.getEndStep(), "EndStep");
+		}
 
 		validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
 
