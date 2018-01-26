@@ -16,7 +16,8 @@ public enum Errors {
     INCORRECT_VALUE             ("E12", "Incorrect value"),
     ALPHANUMERIC_VALUE_REQUIRED ("E13", "Alphanumeric value required"),
     UNAUTHORIZED                ("E14", "Unauthorized"),
-    NOT_ACCEPTABLE              ("E15", "Not Acceptable");
+    NOT_ACCEPTABLE              ("E15", "Not Acceptable"),
+    NOT_VALID_SIDDHI_QUERY     ("E16", "Not Valid Siddhi Query")
     ;
 	
 	private String errorName;

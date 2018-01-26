@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.util;
 
 import static org.csi.yucca.adminapi.util.Util.notEqual;
 
+import java.io.StringReader;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -9,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -42,6 +46,10 @@ import org.csi.yucca.adminapi.request.SmartobjectRequest;
 import org.csi.yucca.adminapi.response.Response;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 public class ServiceUtil {
 
@@ -70,7 +78,79 @@ public class ServiceUtil {
 	public static final String API_CODE_PREFIX_WEBSOCKET = "ws_";
 	public static final String API_CODE_PREFIX_MQTT = "mqtt_";
 	public static final Integer MAXIMUM_ERRORS_ALLOWED = 20;
+	public static final String FAULT_STRING_CHILD_NODE_NAME = "faultstring";
+	public static final String FAULT_STRING_NODE_NAME = "soapenv:Fault";
+
 	
+	/**
+	 * 
+	 * @param nodeList
+	 * @return
+	 */
+	public static String getFaultString(NodeList nodeList){
+		if (nodeList != null) {
+			
+			for (int i = 0; i < nodeList.getLength(); i++) {
+
+				Node nodeItem = nodeList.item(i);
+				
+				if (FAULT_STRING_CHILD_NODE_NAME.equals(nodeItem.getNodeName())) {
+					return nodeItem.getTextContent();
+				}
+			}
+		}
+
+		return "";
+	}
+	
+	/**
+	 * 
+	 * @param node
+	 * @return
+	 */
+	public static String getFaultString(Node node){
+
+		if (node == null) {
+			return "";
+		}
+		
+		if (FAULT_STRING_NODE_NAME.equals(node.getNodeName())) {
+			return getFaultString(node.getChildNodes());
+		}
+		else{
+			return getFaultString(node.getFirstChild());
+		}
+		
+	}
+
+	/**
+	 * 
+	 * @param webServiceResponse
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getFaultString(WebServiceResponse webServiceResponse)throws Exception{
+		return getFaultString( getDocument(webServiceResponse).getFirstChild() );
+	}
+	
+	/**
+	 * 
+	 * @param webServiceResponse
+	 * @return
+	 * @throws Exception
+	 */
+	public static Document getDocument(WebServiceResponse webServiceResponse)throws Exception{
+		
+		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		
+		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+		
+		InputSource inputSource = new InputSource(new StringReader(webServiceResponse.getMessage()));
+		
+		Document document = documentBuilder.parse(inputSource);
+
+		return document;
+	}
 
 	/**
 	 * 
