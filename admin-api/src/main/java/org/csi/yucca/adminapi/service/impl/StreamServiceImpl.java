@@ -16,6 +16,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkVisibility;
+import static org.csi.yucca.adminapi.util.ServiceUtil.getFaultString;
 import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
 import static org.csi.yucca.adminapi.util.ServiceUtil.getTenantCodeListFromUser;
 import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataset;
@@ -27,17 +28,15 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
 
-import java.io.StringReader;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
+import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.PublisherDelegate;
+
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotAcceptableException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -86,6 +85,7 @@ import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
+import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
@@ -100,19 +100,16 @@ import org.csi.yucca.adminapi.util.StreamAction;
 import org.csi.yucca.adminapi.util.Type;
 import org.csi.yucca.adminapi.util.Util;
 import org.csi.yucca.adminapi.util.Visibility;
-import org.csi.yucca.adminapi.util.WebServiceDelegate;
+import org.csi.yucca.adminapi.util.WebServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class StreamServiceImpl implements StreamService {
+
 	private static final Logger logger = Logger.getLogger(StreamServiceImpl.class);
 
 	
@@ -157,69 +154,34 @@ public class StreamServiceImpl implements StreamService {
 
 	@Autowired
 	private MessageSender messageSender;
+
+	@Autowired
+	private WebServiceDelegate webServiceDelegate;
 	
+	/**
+	 * 
+	 */
 	@Override
 	public ServiceResponse validateSiddhiQueries(PostValidateSiddhiQueriesRequest request)
 			throws BadRequestException, NotFoundException, Exception {
-        		
-		String xmlInput =
-				    "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://admin.processor.event.carbon.wso2.org\">";
-		xmlInput += "   <soapenv:Header/>";
 		
-		xmlInput += "   <soapenv:Body>";
+		WebServiceResponse webServiceResponse = webServiceDelegate.validateSiddhiQueriesWebService(
+				request.getQueryExpressions(), request.getInputStreamDefiniitons());
 		
-		xmlInput += "      <ser:validateSiddhiQueries>";
-	    xmlInput += "         <ser:queryExpressions>" + request.getQueryExpressions() + "</ser:queryExpressions>";
-	    xmlInput += "         <ser:inputStreamDefiniitons>" + request.getInputStreamDefiniitons() + "</ser:inputStreamDefiniitons>";
-		xmlInput += "      </ser:validateSiddhiQueries>";
-		
-		xmlInput += "   </soapenv:Body>";
-		xmlInput += "</soapenv:Envelope>";
-		
-		String SOAPAction    = "validateSiddhiQueries";
-		String webserviceUrl = "https://sdnet-mb1.sdp.csi.it:9446/wso003/services/EventProcessorAdminService.EventProcessorAdminServiceHttpsSoap11Endpoint/";
-		String user          = "";
-		String password      = "";
-		
-		String webServiceResponse = WebServiceDelegate.callWebService(
-											webserviceUrl, 
-											user, 
-											password, 
-											xmlInput, 
-											SOAPAction, 
-											"application/xml");
-		
-		DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-
-		InputSource inputSource = new InputSource(new StringReader(webServiceResponse));
-		Document document = documentBuilder.parse(inputSource);
-		
-		
-		NodeList nodeList = document.getFirstChild().getFirstChild().getFirstChild().getChildNodes();
-		
-		if (nodeList != null) {
-		
-			for (int i = 0; i < nodeList.getLength(); i++) {
-
-				Node node = nodeList.item(i);
-				String taxtContext = node.getTextContent();
-				
-//				permissions.add(permission);
-			}
+		if (webServiceResponse.getStatusCode() != HttpStatus.SC_OK) {
+			
+			return ServiceResponse.build()
+					.object( new Response(Errors.NOT_VALID_SIDDHI_QUERY, getFaultString( webServiceResponse)))
+					.httpStatus(webServiceResponse.getStatusCode());
 		}
-		
-		
-		
-		
-
-		
-		return null;
+		else{
+			return ServiceResponse.build().OK();
+		}
 	}
-	
-	
-	
-	
+
+	/**
+	 * 
+	 */
 	@Override
 	public ServiceResponse actionFeedback(ActionRequest actionRequest, Integer idStream)
 			throws BadRequestException, NotFoundException, Exception {
@@ -390,7 +352,11 @@ public class StreamServiceImpl implements StreamService {
 
 		checkIfFoundRecord(dettaglioStream);
 		checkMandatoryParameter(actionRequest.getAction(), "Action");
-		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+		
+		if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
+			checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+			checkMandatoryParameter(actionRequest.getEndStep(), "EndStep");
+		}
 
 		validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
 

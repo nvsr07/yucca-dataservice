@@ -14,6 +14,24 @@ public class ServiceResponse {
 		this.httpStatus = HttpStatus.OK;
 		return this;
 	}
+
+	public ServiceResponse httpStatus(int status){
+
+		if(status == 400){
+			this.httpStatus = HttpStatus.BAD_REQUEST;
+		}
+		else if(status == 503){
+			this.httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+		}
+		else if(status == 408){
+			this.httpStatus = HttpStatus.REQUEST_TIMEOUT;
+		}
+		else{
+			this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+		}
+		
+		return this;
+	}
 	
 	public ServiceResponse NO_CONTENT(){
 		this.httpStatus = HttpStatus.NO_CONTENT;
