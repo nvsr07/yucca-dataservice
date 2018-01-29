@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -4573,6 +4574,47 @@ public class SDPDataApiMongoAccess {
 		return outres;
 	}			
 
+	
+	
+	private static ArrayList<Map<String, Object>>  ricorsione (int indiceArray,String[] campiGroupBy, String [] campiStats, List<SimpleOrderedMap<Object>> buckets, HashMap<String, Object> misura, int count,ArrayList<Map<String, Object>> ret ) {
+		HashMap<String, Object> misuraOrig=new HashMap<String, Object> ();
+		misuraOrig.putAll(misura);
+		
+		int countOrig=count;
+		if (buckets != null) {
+			for (SimpleOrderedMap<Object> bucket : buckets) {
+				Object val2 =  bucket.get("val");
+				int countlocal= count+((Integer)bucket.get("count")).intValue();
+				misura.put(campiGroupBy[indiceArray], val2); // TODO .cercare il tipo 
+				if (indiceArray==campiGroupBy.length-1) {
+					//ESTRARRE STATISTICHE
+					for (int i=0;i<campiStats.length;i++) {
+						//Double valore=(Double)bucket.get(campiStats[i].toLowerCase());
+						//misura.put(campiStats[i], valore);
+						misura.put(campiStats[i]+"_sts", bucket.get(campiStats[i]+"_sts"));
+					}
+					
+					misura.put("count", countlocal);
+					ret.add(misura);
+					misura=new HashMap<String, Object> ();
+					misura.putAll(misuraOrig);
+					count=countOrig;
+					
+				} else if (indiceArray<campiGroupBy.length-1) {
+					List<SimpleOrderedMap<Object>> nestedBuckets = (List<SimpleOrderedMap<Object>>) bucket.findRecursive(campiGroupBy[indiceArray+1].toLowerCase(), "buckets");
+					ret=ricorsione(indiceArray+1,campiGroupBy,campiStats,nestedBuckets,misura,countlocal,(ArrayList<Map<String, Object>>)ret);
+				}
+			}
+			
+
+
+
+
+		}
+		
+		return ret;
+	}	
+	
 	public SDPDataResult getMeasuresStatsPerStreamSolr(String codiceTenant, 
 			String nameSpace, 
 			EdmEntityContainer entityContainer,
@@ -4585,8 +4627,8 @@ public class SDPDataApiMongoAccess {
 			int limit,
 			String timeGroupByParam,
 			String timeGroupOperatorsParam,
-			Object groupOutQuery
-			) throws SDPCustomQueryOptionException{
+			Object groupOutQuery,
+			String elencoCampiGroup) throws SDPCustomQueryOptionException{
 		String collection=null;
 		//		String sensore=null;
 		//		String stream=null;
@@ -4608,6 +4650,7 @@ public class SDPDataApiMongoAccess {
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] datatType="+datatType);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] streamMetadata="+streamMetadata);
+			String codiceTenantOrig=codiceTenant;
 
 			List<Property> compPropsTot=new ArrayList<Property>();
 			List<Property> compPropsCur=new ArrayList<Property>();			
@@ -4633,6 +4676,45 @@ public class SDPDataApiMongoAccess {
 			 * ATTENZIONE!!!!!! datasetVersion sara un array da mettere in in
 			 */
 
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] ************** elencoCampiGroup="+elencoCampiGroup);
+			
+			
+			
+			
+			if (null==dbcfg || dbcfg.trim().length()<=0) {
+				DbConfDto tanantDbCfg=new DbConfDto();
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_MESURES_SOLR, codiceTenantOrig);
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_DATA_SOLR, codiceTenantOrig);
+				}  else if (DATA_TYPE_SOCIAL.equals(datatType)) {
+					tanantDbCfg=MongoTenantDbSingleton.getInstance().getDataDbConfiguration(MongoTenantDbSingleton.DB_SOCIAL_SOLR, codiceTenantOrig);
+
+				}
+
+				dbcfg=tanantDbCfg.getDataBase();
+				collection=tanantDbCfg.getCollection();
+			}
+
+
+			if (null==collection || collection.trim().length()<=0) {
+				//TODO aggoungere int per integrazione
+
+				collection="sdp_"+SDPDataApiConfig.getInstance().getSdpAmbiente()+codiceTenant;
+
+				if (DATA_TYPE_MEASURE.equals(datatType)) {
+					collection+="_measures";
+
+				} else if (DATA_TYPE_DATA.equals(datatType)) {
+					collection+="_data";
+				} else if (DATA_TYPE_SOCIAL.equals(datatType)) {
+					collection+="_social";
+				}
+
+			}			
+			
+			
 			datasetToFindVersion=takeNvlValues(streamMetadata.get("datasetVersion"));
 			//idDataset=takeNvlValues( ((DBObject)streamMetadata.get("configData")).get("idDataset") );
 
@@ -4735,7 +4817,7 @@ public class SDPDataApiMongoAccess {
 			jsonFacet+= "start : \"1900-01-01T00:00:00Z\",";
 			jsonFacet+= "end : \"3000-01-01T00:00:00Z\",";
 			jsonFacet+= "mincount : 1,";
-			
+			jsonFacet+= "type   :   range, field   : time_dt,"; 
 
 			String [] campiGroupBy=null;
 			int campiGruppoCnt=0;
@@ -4743,13 +4825,16 @@ public class SDPDataApiMongoAccess {
 				String constantValues="|year|month_year|dayofmonth_month_year|hour_dayofmonth_month_year|minute_hour_dayofmonth_month_year|iduser|retweetparentid";
 				String[] gruppoTmp=timeGroupByParam.split(",");
 				
-				campiGroupBy=new String[gruppoTmp.length-1];
+				//campiGroupBy=new String[gruppoTmp.length-1];
+				campiGroupBy=new String[gruppoTmp.length];
 				
 				
 				
 				for (int kk=0;kk<gruppoTmp.length;kk++) {
 					if (constantValues.indexOf(gruppoTmp[kk])!=-1) {
 						timeGroupByParam=gruppoTmp[kk];	
+						campiGroupBy[campiGruppoCnt]=gruppoTmp[kk];
+						campiGruppoCnt++;
 					} else {
 						campiGroupBy[campiGruppoCnt]=gruppoTmp[kk];
 						campiGruppoCnt++;
@@ -4765,23 +4850,23 @@ public class SDPDataApiMongoAccess {
 			int nfacet=0;
 			
 			if ("year".equals(timeGroupByParam)) {
-				jsonFacet+="gap : \"%2B1YEAR\", ";
+				jsonFacet+="gap : \"+1YEAR\", ";
 				nfacet++;
 			} else if ("month_year".equals(timeGroupByParam)) {
-				jsonFacet+="gap : \"%2B1MONTH\", ";
+				jsonFacet+="gap : \"+1MONTH\", ";
 				nfacet++;
 				
 			} else if ("dayofmonth_month_year".equals(timeGroupByParam)) {
 
-				jsonFacet+="gap : \"%2B1DAY\", ";
+				jsonFacet+="gap : \"+1DAY\", ";
 				nfacet++;
 
 
 			} else if ("hour_dayofmonth_month_year".equals(timeGroupByParam)) {
-				jsonFacet+="gap : \"%2B1HOUR\", ";
+				jsonFacet+="gap : \"+1HOUR\", ";
 				nfacet++;
 			} else if ("minute_hour_dayofmonth_month_year".equals(timeGroupByParam)) {
-				jsonFacet+="gap : \"%2B1MINUTE\", ";
+				jsonFacet+="gap : \"+1MINUTE\", ";
 				nfacet++;
 
 			} else if ("month".equals(timeGroupByParam)) {
@@ -4823,13 +4908,13 @@ public class SDPDataApiMongoAccess {
 //			}
 
 			
-			for (int kk=0;campiGroupBy!=null && kk<campiGroupBy.length;kk++) {
+			for (int kk=1;campiGroupBy!=null && kk<campiGroupBy.length;kk++) {
 				String campoCompleto=campiGroupBy[kk];
 				String suffisso=SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(campiGroupBy[kk]));
 				if (null!=suffisso) campoCompleto=campiGroupBy[kk]+suffisso;
 				else throw new SDPCustomQueryOptionException("invalid timeGroupBy value "+ campiGroupBy[kk], Locale.UK);
 				
-				jsonFacet+="facet: { " +campiGroupBy[kk]+" : { type:terms,field: "+campoCompleto+","; 
+				jsonFacet+="facet: { " +campiGroupBy[kk].toLowerCase()+" : { type:terms,field: "+campoCompleto.toLowerCase()+","; 
 				
 				nfacet++;
 				
@@ -4842,6 +4927,9 @@ public class SDPDataApiMongoAccess {
 			if (null==timeGroupOperatorsParam || timeGroupOperatorsParam.trim().length()<=0) throw new SDPCustomQueryOptionException("invalid timeGroupOperators value", Locale.UK);
 			StringTokenizer st=new StringTokenizer(timeGroupOperatorsParam,";",false);
 			HashMap<String, String> campoOperazione=new HashMap<String, String>();
+			
+			String [] campiStats = new String[st.countTokens()];
+			int cntSts=0;
 			while (st.hasMoreTokens()) {
 				String curOperator=st.nextToken();
 				StringTokenizer stDue=new StringTokenizer(curOperator,",",false);
@@ -4863,14 +4951,19 @@ public class SDPDataApiMongoAccess {
 
 				campoOperazione.put(field, opPhoenix);
 
-
 				String campoCompleto=field+SDPDataApiConstants.SDP_DATATYPE_SOLRSUFFIX.get(campoTipoMetadato.get(field));
+				//campiStats[cntSts]=campoCompleto+"_sts";
+				
+				campiStats[cntSts]=field;
+				
+				cntSts++;
+				
 				//campoCompleto="\""+campoCompleto.toUpperCase()+"\"";
 
 				if (lastFacet.length()>0) {
 					lastFacet+=",";
 				}
-				lastFacet+=campoCompleto+"_sts : \""+opPhoenix+"("+campoCompleto+")\"";
+				lastFacet+=field+"_sts : \""+opPhoenix+"("+campoCompleto.toLowerCase()+")\"";
 				
 //				groupbysleect+=", "+opPhoenix + "(";
 //				groupbysleect+=campoCompleto;
@@ -4896,6 +4989,52 @@ public class SDPDataApiMongoAccess {
 			
 
 			
+			//determino valori costanti per i raggruppamenti extra
+			StringTokenizer stG=new StringTokenizer(elencoCampiGroup != null ? elencoCampiGroup :"" ,"|",false);
+			Map<String, Object> misuraDefault = new HashMap<String, Object>();
+			while (stG.hasMoreElements()) {
+
+				String campoGroup=stG.nextToken();
+				
+				for (int i=0;i<compPropsTot.size();i++) {
+
+					String chiaveEdm=compPropsTot.get(i).getName();
+
+					if (campoGroup.equals(chiaveEdm)) {
+
+
+							if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Boolean)) {
+								misuraDefault.put(chiaveEdm, Boolean.valueOf(false));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
+								misuraDefault.put(chiaveEdm, "");
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
+								misuraDefault.put(chiaveEdm, -1);
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
+								misuraDefault.put(chiaveEdm, Long.parseLong("-1"));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
+								misuraDefault.put(chiaveEdm, Double.parseDouble("-1"));
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
+								//								Object dataObj=obj.get(chiave);
+								//								misura.put(chiave, dataObj);
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTime)) {
+								//								Object dataObj=obj.get(chiave);
+								//								misura.put(chiave, dataObj);
+								
+								misuraDefault.put(chiaveEdm, new Date());
+								
+							} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Decimal)) {
+								//misura.put(chiaveEdm, Double.parseDouble(valore.replace(',','.')));
+								misuraDefault.put(chiaveEdm, Double.parseDouble("-1"));
+
+							}					
+
+					}
+				}				
+				
+				
+			}
+
+			
 			SolrQuery solrQuery = new SolrQuery();
 			solrQuery.setQuery("*:*");
 			solrQuery.setFilterQueries(queryTotSolr);
@@ -4919,40 +5058,70 @@ public class SDPDataApiMongoAccess {
 			cnt=0;
 
 			boolean faceted = rsp.getResponse().get("facets")!=null;
+
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] RESPONSE --> "+rsp.getResponse().toString());
+			
 			JSONObject result = new JSONObject(); 
 			JSONObject facets_json = new JSONObject();
 			NamedList<Object> bucketList = rsp.getResponse();
 
+			ArrayList<Map<String, Object>> retTmp= new ArrayList<Map<String, Object>>();
 			if (faceted) {
-	            // notice "findRecursive" usage to get the buckets list
-	            List<SimpleOrderedMap<Object>> buckets = (List<SimpleOrderedMap<Object>>) bucketList.findRecursive("facets","timegroup", "buckets");
-	            if (buckets != null) {
-	                for (SimpleOrderedMap<Object> bucket : buckets) {
-	                	Date date = (Date) bucket.get("val");
-	                    // manufacturer's name and total of all prices for this manufacturer
-	                    // Notice "manu_level_price" that was specified in json.facet
-	                    System.out.println("val:"+date);
+				// notice "findRecursive" usage to get the buckets list
+				List<SimpleOrderedMap<Object>> buckets = (List<SimpleOrderedMap<Object>>) bucketList.findRecursive("facets","timegroup", "buckets");
+				if (buckets != null) {
+					for (SimpleOrderedMap<Object> bucket : buckets) {
+						int count=0;
+						Map<String, Object> misura = new HashMap<String, Object>();
+						Date date = (Date) bucket.get("val");
+						
+						SimpleDateFormat df = new SimpleDateFormat("yyyy");
+						SimpleDateFormat dfa = new SimpleDateFormat("MM");
+						SimpleDateFormat dfb = new SimpleDateFormat("dd");
+						SimpleDateFormat dfc = new SimpleDateFormat("hh");
+						SimpleDateFormat dfd = new SimpleDateFormat("mm");
+						
+						int year = Integer.parseInt(df.format(date));
+						int month = ( "year".equals(timeGroupByParam) ? -1 : Integer.parseInt(dfa.format(date)) );
+						int day = ( "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfb.format(date)) );
+						int hour = ( "dayofmonth_month_year".equals(timeGroupByParam) ||  "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfc.format(date)) );
+						int min = ( "hour_dayofmonth_month_year".equals(timeGroupByParam) || "dayofmonth_month_year".equals(timeGroupByParam) ||  "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfd.format(date)) );
 
-	                    List<SimpleOrderedMap<Object>> nestedBuckets = (List<SimpleOrderedMap<Object>>) bucket.findRecursive("codaero", "buckets");
-	                    if (nestedBuckets != null) {
-	                        for (SimpleOrderedMap<Object> bucket2 : nestedBuckets) {
-	                            String val2 = (String) bucket2.get("val");
-	                            Double FLAG_ENTRO_TARGET_I_sts = (Double) bucket2.get("FLAG_ENTRO_TARGET_I_sts");
-	                            // manufacturer's name and total of all prices for this manufacturer
-	                            // Notice "manu_level_price" that was specified in json.facet
-	                            System.out.println("   val2:"+val2);
-	                            System.out.println("   FLAG_ENTRO_TARGET_I_sts:"+FLAG_ENTRO_TARGET_I_sts);
-	                        }
-	                    }
+						count+=((Integer)bucket.get("count")).intValue();
+						
 
-	                
-	                }
-	                // Total prices of all manufacturers
-	                // notice "total_price" that was specified in json.facet and "findRecursive" usage
-	            }
-				
-				
-			}
+						misura.put("dayofmonth",  day);
+						misura.put("month",  month);
+						misura.put("year",  year);
+						misura.put("hour",  hour);
+						misura.put("minute",  min);
+						misura.put("dayofweek", -1 );
+
+						misura.putAll(misuraDefault);
+						//misura.put("Cod_ao_res", "");
+						
+						if (null!=campiGroupBy &&  campiGroupBy.length>1) {
+							List<SimpleOrderedMap<Object>> nestedBuckets = (List<SimpleOrderedMap<Object>>) bucket.findRecursive(campiGroupBy[1].toLowerCase(), "buckets");
+							retTmp=ricorsione(1,campiGroupBy,campiStats,nestedBuckets,(HashMap<String, Object>)misura,count,retTmp);
+						} else {
+							for (int i=0;i<campiStats.length;i++) {
+								//Double valore=(Double)bucket.get(campiStats[i].toLowerCase());
+								misura.put(campiStats[i]+"_sts", bucket.get(campiStats[i]+"_sts"));
+							}
+							misura.put("count", count);
+							retTmp.add(misura);
+						}
+
+
+						
+						
+
+					}
+
+				}
+			}			
+			
+			ret.addAll(retTmp);
 			
 			/*
 			while (rs.next()) {
@@ -5061,6 +5230,20 @@ public class SDPDataApiMongoAccess {
 			} catch (Exception e) {}
 			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] FETCH TIME ="+deltaTime);
 
+			
+//			for (int i=0;i<ret.size();i++) {
+//				Map<String,Object> cur= ret.get(i);
+//				Iterator<String> it=cur.keySet().iterator();
+//				log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] -------RESULT REC  ="+i);
+//				while (it.hasNext()) {
+//					String key=it.next();
+//					String val=""+cur.get(key);
+//					log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr]      "+key+"="+val);
+//					
+//				}
+//					
+//			}
+//			
 
 		} catch (Exception e) {
 			if (e instanceof SDPCustomQueryOptionException) {

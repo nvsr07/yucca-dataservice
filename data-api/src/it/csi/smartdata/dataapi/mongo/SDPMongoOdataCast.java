@@ -1195,7 +1195,21 @@ public class SDPMongoOdataCast {
 			
 			//List<DBObject> elencoDataset = orderNestDS(mongoDataAccess.getDatasetPerApi(codiceApi));
 			
-			List<DBObject> elencoDataset = orderNestDS(mongoDataAccess.getDatasetPerApi(codiceApi));
+			
+			List<DBObject> elencoDatasetFull = mongoDataAccess.getDatasetPerApi(codiceApi);
+			String elencoCampiGroup="";
+			for (int i=0;elencoDatasetFull!=null && i<elencoDatasetFull.size(); i++) {
+				try {
+				if ("1".equals(((DBObject)elencoDatasetFull.get(i).get("configData")).get("current").toString())) {
+					elencoCampiGroup=((DBObject)elencoDatasetFull.get(i).get("info")).get("groupFields").toString();
+				}
+				} catch (Exception e) {}
+			}			
+			
+			
+			
+			List<DBObject> elencoDataset = orderNestDS(elencoDatasetFull);
+			//List<DBObject> elencoDataset = orderNestDS(mongoDataAccess.getDatasetPerApi(codiceApi));
 			
 			// TODO YUCCA-74 odata evoluzione - dettaglio
 			/*
@@ -1221,11 +1235,13 @@ public class SDPMongoOdataCast {
 			
 			String dsCodes="|";
 			String tenantsCodes="|";
+			
 			for (int i=0;elencoDataset!=null && i<elencoDataset.size(); i++) {
 				String nameSpaceStrean=((DBObject)elencoDataset.get(i).get("configData")).get("entityNameSpace").toString();
 				String tenantStrean=((DBObject)elencoDataset.get(i).get("configData")).get("tenantCode").toString();
 				
 				String datasetCode=((DBObject)elencoDataset.get(i)).get("datasetCode").toString();
+				
 				
 				dsCodes+=datasetCode+"|";
 				tenantsCodes+=tenantStrean+"|";
@@ -1234,7 +1250,7 @@ public class SDPMongoOdataCast {
 				
 				
 				SDPDataResult cur=mongoDataAccess.getMeasuresStatsPerStreamSolr(tenantStrean,nameSpaceStrean,entityContainer,(DBObject)elencoDataset.get(i),internalId,dataType, userQuery
-						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery);
+						,userOrderBy,skip,limit,timeGroupByParam,timeGroupOperatorsParam,groupOutQuery,elencoCampiGroup);
 				
 				
 				List<Map<String, Object>> misureCur = cur.getDati();
