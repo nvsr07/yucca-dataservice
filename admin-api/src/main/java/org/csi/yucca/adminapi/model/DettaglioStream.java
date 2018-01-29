@@ -1,6 +1,5 @@
 package org.csi.yucca.adminapi.model;
 
-import java.sql.Timestamp;
 
 public class DettaglioStream extends Stream
 		implements IOrganization, ITenant, IStatus, IDomain, ISubdomain, ISoCategory, ISoType {
@@ -8,23 +7,6 @@ public class DettaglioStream extends Stream
 	
 	private Long usedInInternalCount;
 	private Long streamsCountBySO;
-	private String dataSourceCopyright;
-	private Integer dataSourceIsopendata;
-	private String dataSourceExternalReference;
-	private String dataSourceOpenDataAuthor;
-	private Timestamp dataSourceOpenDataUpdateDate;
-	private String dataSourceOpenDataLanguage;
-	private String dataSourceLastUpdate;
-	private String dataSourceDisclaimer;
-	private String dataSourceRequesterName;
-	private String dataSourceRequesterSurname;
-	private String dataSourceRequesterMail;
-	private Integer dataSourcePrivacyAcceptance;
-	private String dataSourceIcon;
-	private String dcat; // JSON
-	private String license; // JSON
-	private String components; // JSON
-	private String sharingTenant; // JSON
 	private String sotypecode;
 	private String dataSourceName;
 
@@ -41,14 +23,7 @@ public class DettaglioStream extends Stream
 	private String smartObjectTypeDescription;
 	private Integer idSoType;
 	
-	public String getDataSourceExternalReference() {
-		return dataSourceExternalReference;
-	}
-
-	public void setDataSourceExternalReference(String dataSourceExternalReference) {
-		this.dataSourceExternalReference = dataSourceExternalReference;
-	}
-
+	
 	public Long getUsedInInternalCount() {
 		return usedInInternalCount;
 	}
@@ -63,134 +38,6 @@ public class DettaglioStream extends Stream
 
 	public void setStreamsCountBySO(Long streamsCountBySO) {
 		this.streamsCountBySO = streamsCountBySO;
-	}
-
-	public String getDataSourceCopyright() {
-		return dataSourceCopyright;
-	}
-
-	public void setDataSourceCopyright(String dataSourceCopyright) {
-		this.dataSourceCopyright = dataSourceCopyright;
-	}
-
-	public Integer getDataSourceIsopendata() {
-		return dataSourceIsopendata;
-	}
-
-	public void setDataSourceIsopendata(Integer dataSourceIsopendata) {
-		this.dataSourceIsopendata = dataSourceIsopendata;
-	}
-
-	public String getDataSourceOpenDataAuthor() {
-		return dataSourceOpenDataAuthor;
-	}
-
-	public void setDataSourceOpenDataAuthor(String dataSourceOpenDataAuthor) {
-		this.dataSourceOpenDataAuthor = dataSourceOpenDataAuthor;
-	}
-
-	public Timestamp getDataSourceOpenDataUpdateDate() {
-		return dataSourceOpenDataUpdateDate;
-	}
-
-	public void setDataSourceOpenDataUpdateDate(Timestamp dataSourceOpenDataUpdateDate) {
-		this.dataSourceOpenDataUpdateDate = dataSourceOpenDataUpdateDate;
-	}
-
-	public String getDataSourceOpenDataLanguage() {
-		return dataSourceOpenDataLanguage;
-	}
-
-	public void setDataSourceOpenDataLanguage(String dataSourceOpenDataLanguage) {
-		this.dataSourceOpenDataLanguage = dataSourceOpenDataLanguage;
-	}
-
-	public String getDataSourceLastUpdate() {
-		return dataSourceLastUpdate;
-	}
-
-	public void setDataSourceLastUpdate(String dataSourceLastUpdate) {
-		this.dataSourceLastUpdate = dataSourceLastUpdate;
-	}
-
-	public String getDataSourceDisclaimer() {
-		return dataSourceDisclaimer;
-	}
-
-	public void setDataSourceDisclaimer(String dataSourceDisclaimer) {
-		this.dataSourceDisclaimer = dataSourceDisclaimer;
-	}
-
-	public String getDataSourceRequesterName() {
-		return dataSourceRequesterName;
-	}
-
-	public void setDataSourceRequesterName(String dataSourceRequesterName) {
-		this.dataSourceRequesterName = dataSourceRequesterName;
-	}
-
-	public String getDataSourceRequesterSurname() {
-		return dataSourceRequesterSurname;
-	}
-
-	public void setDataSourceRequesterSurname(String dataSourceRequesterSurname) {
-		this.dataSourceRequesterSurname = dataSourceRequesterSurname;
-	}
-
-	public String getDataSourceRequesterMail() {
-		return dataSourceRequesterMail;
-	}
-
-	public void setDataSourceRequesterMail(String dataSourceRequesterMail) {
-		this.dataSourceRequesterMail = dataSourceRequesterMail;
-	}
-
-	public Integer getDataSourcePrivacyAcceptance() {
-		return dataSourcePrivacyAcceptance;
-	}
-
-	public void setDataSourcePrivacyAcceptance(Integer dataSourcePrivacyAcceptance) {
-		this.dataSourcePrivacyAcceptance = dataSourcePrivacyAcceptance;
-	}
-
-	public String getDataSourceIcon() {
-		return dataSourceIcon;
-	}
-
-	public void setDataSourceIcon(String dataSourceIcon) {
-		this.dataSourceIcon = dataSourceIcon;
-	}
-
-	public String getDcat() {
-		return dcat;
-	}
-
-	public void setDcat(String dcat) {
-		this.dcat = dcat;
-	}
-
-	public String getLicense() {
-		return license;
-	}
-
-	public void setLicense(String license) {
-		this.license = license;
-	}
-
-	public String getComponents() {
-		return components;
-	}
-
-	public void setComponents(String components) {
-		this.components = components;
-	}
-
-	public String getSharingTenant() {
-		return sharingTenant;
-	}
-
-	public void setSharingTenant(String sharingTenant) {
-		this.sharingTenant = sharingTenant;
 	}
 
 	public String getSotypecode() {

@@ -1,9 +1,18 @@
 package org.csi.yucca.adminapi.model;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 
+import org.csi.yucca.adminapi.util.Constants;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Dettaglio {
-	
+
+	private Integer idDataSource;
+	private Integer datasourceversion;
 	private String dataSourceVisibility;
 	private Integer dataSourceUnpublished;
 	private Timestamp dataSourceRegistrationDate;
@@ -30,6 +39,176 @@ public class Dettaglio {
 	private String tenantDescription;
 	private Integer idTenant;
 	private String tags;
+
+	private String dataSourceCopyright;
+	private Integer dataSourceIsopendata;
+	private String dataSourceExternalReference;
+	private String dataSourceOpenDataAuthor;
+	private Timestamp dataSourceOpenDataUpdateDate;
+	private String dataSourceOpenDataLanguage;
+	private String dataSourceLastUpdate;
+	private String dataSourceDisclaimer;
+	private String dataSourceRequesterName;
+	private String dataSourceRequesterSurname;
+	private String dataSourceRequesterMail;
+	private Integer dataSourcePrivacyAcceptance;
+	private String dataSourceIcon;
+	private String dcat; // JSON
+	private String license; // JSON
+	private String components; // JSON
+	private String sharingTenant; // JSON
+
+	public String getDataSourceCopyright() {
+		return dataSourceCopyright;
+	}
+
+	public void setDataSourceCopyright(String dataSourceCopyright) {
+		this.dataSourceCopyright = dataSourceCopyright;
+	}
+
+	public Integer getDataSourceIsopendata() {
+		return dataSourceIsopendata;
+	}
+
+	public void setDataSourceIsopendata(Integer dataSourceIsopendata) {
+		this.dataSourceIsopendata = dataSourceIsopendata;
+	}
+
+	public String getDataSourceExternalReference() {
+		return dataSourceExternalReference;
+	}
+
+	public void setDataSourceExternalReference(String dataSourceExternalReference) {
+		this.dataSourceExternalReference = dataSourceExternalReference;
+	}
+
+	public String getDataSourceOpenDataAuthor() {
+		return dataSourceOpenDataAuthor;
+	}
+
+	public void setDataSourceOpenDataAuthor(String dataSourceOpenDataAuthor) {
+		this.dataSourceOpenDataAuthor = dataSourceOpenDataAuthor;
+	}
+
+	public Timestamp getDataSourceOpenDataUpdateDate() {
+		return dataSourceOpenDataUpdateDate;
+	}
+
+	public void setDataSourceOpenDataUpdateDate(Timestamp dataSourceOpenDataUpdateDate) {
+		this.dataSourceOpenDataUpdateDate = dataSourceOpenDataUpdateDate;
+	}
+
+	public String getDataSourceOpenDataLanguage() {
+		return dataSourceOpenDataLanguage;
+	}
+
+	public void setDataSourceOpenDataLanguage(String dataSourceOpenDataLanguage) {
+		this.dataSourceOpenDataLanguage = dataSourceOpenDataLanguage;
+	}
+
+	public String getDataSourceLastUpdate() {
+		return dataSourceLastUpdate;
+	}
+
+	public void setDataSourceLastUpdate(String dataSourceLastUpdate) {
+		this.dataSourceLastUpdate = dataSourceLastUpdate;
+	}
+
+	public String getDataSourceDisclaimer() {
+		return dataSourceDisclaimer;
+	}
+
+	public void setDataSourceDisclaimer(String dataSourceDisclaimer) {
+		this.dataSourceDisclaimer = dataSourceDisclaimer;
+	}
+
+	public String getDataSourceRequesterName() {
+		return dataSourceRequesterName;
+	}
+
+	public void setDataSourceRequesterName(String dataSourceRequesterName) {
+		this.dataSourceRequesterName = dataSourceRequesterName;
+	}
+
+	public String getDataSourceRequesterSurname() {
+		return dataSourceRequesterSurname;
+	}
+
+	public void setDataSourceRequesterSurname(String dataSourceRequesterSurname) {
+		this.dataSourceRequesterSurname = dataSourceRequesterSurname;
+	}
+
+	public String getDataSourceRequesterMail() {
+		return dataSourceRequesterMail;
+	}
+
+	public void setDataSourceRequesterMail(String dataSourceRequesterMail) {
+		this.dataSourceRequesterMail = dataSourceRequesterMail;
+	}
+
+	public Integer getDataSourcePrivacyAcceptance() {
+		return dataSourcePrivacyAcceptance;
+	}
+
+	public void setDataSourcePrivacyAcceptance(Integer dataSourcePrivacyAcceptance) {
+		this.dataSourcePrivacyAcceptance = dataSourcePrivacyAcceptance;
+	}
+
+	public String getDataSourceIcon() {
+		return dataSourceIcon;
+	}
+
+	public void setDataSourceIcon(String dataSourceIcon) {
+		this.dataSourceIcon = dataSourceIcon;
+	}
+
+	public String getDcat() {
+		return dcat;
+	}
+
+	public void setDcat(String dcat) {
+		this.dcat = dcat;
+	}
+
+	public String getLicense() {
+		return license;
+	}
+
+	public void setLicense(String license) {
+		this.license = license;
+	}
+
+	public String getComponents() {
+		return components;
+	}
+
+	public void setComponents(String components) {
+		this.components = components;
+	}
+
+	public String getSharingTenant() {
+		return sharingTenant;
+	}
+
+	public void setSharingTenant(String sharingTenant) {
+		this.sharingTenant = sharingTenant;
+	}
+
+	public Integer getIdDataSource() {
+		return idDataSource;
+	}
+
+	public void setIdDataSource(Integer idDataSource) {
+		this.idDataSource = idDataSource;
+	}
+
+	public Integer getDatasourceversion() {
+		return datasourceversion;
+	}
+
+	public void setDatasourceversion(Integer datasourceversion) {
+		this.datasourceversion = datasourceversion;
+	}
 
 	public String getDataSourceVisibility() {
 		return dataSourceVisibility;
@@ -221,6 +400,22 @@ public class Dettaglio {
 
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+	public Component[] deserializeComponents() throws JsonParseException, JsonMappingException, IOException {
+		Component[] deserializedComponents = null;
+		if (getComponents() != null) {
+
+			ObjectMapper mapper = new ObjectMapper();
+			deserializedComponents = mapper.readValue(getComponents(), Component[].class);
+
+		}
+		return deserializedComponents;
+
+	}
+
+	public static String generateNameSpace(String tenantCode, String datasetcode) {
+		return Constants.API_NAMESPACE_BASE + "." + tenantCode + "." + datasetcode;
 	}
 
 }

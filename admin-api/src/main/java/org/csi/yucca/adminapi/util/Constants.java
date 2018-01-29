@@ -62,5 +62,8 @@ public class Constants {
 	public static Integer ADMINAPI_DATA_TYPE_LONGITUDE = 8;
 	public static Integer ADMINAPI_DATA_TYPE_LATITUDE = 9;
 	public static Integer ADMINAPI_DATA_TYPE_BINARY = 10;
+	
+	public static final String API_NAMESPACE_BASE = "it.csi.smartdata.odata";
+
 
 }

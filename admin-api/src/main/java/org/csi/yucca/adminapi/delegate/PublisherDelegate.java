@@ -92,7 +92,7 @@ public class PublisherDelegate {
 	public static final String createApiNameOData(String datasetCode) {
 		return datasetCode + "_odata";
 	}
-
+	
 	public String addApi(CloseableHttpClient httpclient, boolean update, DettaglioStream stream, String datasetcode) throws HttpException, IOException, Exception {
 		logger.debug("[PublisherDelegate::addApi] STREAM");
 

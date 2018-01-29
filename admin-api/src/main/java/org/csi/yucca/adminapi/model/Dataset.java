@@ -8,8 +8,6 @@ public class Dataset extends Dettaglio implements IOrganization, IStatus, IDomai
 
 	private Integer isactive; 
 	private Integer ismanager; 
-	private Integer idDataSource;
-	private Integer datasourceversion;
 	private Integer iddataset;
 	private String datasetcode;
 	private String datasetname;
@@ -87,22 +85,6 @@ public class Dataset extends Dettaglio implements IOrganization, IStatus, IDomai
 
 	public void setDatasetSubtypeDescription(String datasetSubtypeDescription) {
 		this.datasetSubtypeDescription = datasetSubtypeDescription;
-	}
-
-	public Integer getIdDataSource() {
-		return idDataSource;
-	}
-
-	public void setIdDataSource(Integer idDataSource) {
-		this.idDataSource = idDataSource;
-	}
-
-	public Integer getDatasourceversion() {
-		return datasourceversion;
-	}
-
-	public void setDatasourceversion(Integer datasourceversion) {
-		this.datasourceversion = datasourceversion;
 	}
 
 	public Integer getIddataset() {

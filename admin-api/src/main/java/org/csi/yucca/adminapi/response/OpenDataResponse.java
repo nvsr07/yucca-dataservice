@@ -32,7 +32,7 @@ public class OpenDataResponse extends Response {
 		this.opendataupdatedate = dettaglioDataset.getDataSourceOpenDataUpdateDate();
 		this.opendatalanguage = dettaglioDataset.getDataSourceOpenDataLanguage();
 		this.lastupdate = dettaglioDataset.getDataSourceLastUpdate();
-		this.isOpenData = Util.intToBoolean(dettaglioDataset.getDataSourceIsOpendata());
+		this.isOpenData = Util.intToBoolean(dettaglioDataset.getDataSourceIsopendata());
 	}
 
 	public OpenDataResponse() {

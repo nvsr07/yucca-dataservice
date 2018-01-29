@@ -31,10 +31,14 @@ import org.apache.solr.common.util.Base64;
 import org.apache.solr.common.util.NamedList;
 import org.csi.yucca.adminapi.conf.Krb5HttpClientConfigurer;
 import org.csi.yucca.adminapi.model.ComponentJson;
+import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DcatJson;
+import org.csi.yucca.adminapi.model.Dettaglio;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
+import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.TagJson;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -107,21 +111,105 @@ public class SolrDelegate {
 
 	}
 
+	public static final String createIdForStream(DettaglioStream dettaglioStream){
+		return 	dettaglioStream.getTenantCode() + "_" + dettaglioStream.getSharingTenant() + "_" + dettaglioStream.getStreamcode();
+	}
+
 	public void addDocument(DettaglioDataset dettaglioDataset) throws Exception {
 		SolrInputDocument doc = createSolrDocument(dettaglioDataset);
 		addDocument(doc);
 	}
-	
+
+	public void addDocument(DettaglioStream dettaglioStream, DettaglioSmartobject dettaglioSmartobject, Dataset dataset) throws Exception {
+		SolrInputDocument doc = createSolrDocument(dettaglioStream, dettaglioSmartobject, dataset);
+		addDocument(doc);
+	}
+
 	public void removeDocument(String documentId) throws Exception {
 		solrClient.deleteById(solrCollection, documentId);
 		solrClient.commit();
 	}
 
 	private SolrInputDocument createSolrDocument(DettaglioDataset dataset) throws Exception {
-		SolrInputDocument doc = new SolrInputDocument();
+		SolrInputDocument doc = createSolrDocumentFromDettaglio(dataset);
 
+		doc.addField("id", dataset.getDatasetcode());
 		doc.addField("entityType", new ArrayList<String>(Arrays.asList("dataset")));
 		doc.addField("name", dataset.getDatasetname());
+		doc.addField("datasetCode", dataset.getDatasetcode());
+		doc.addField("datasetDescription", dataset.getDescription());
+		doc.addField("datasetType", dataset.getDatasetType());
+		doc.addField("datasetSubtype", dataset.getDatasetSubtype());
+		doc.addField("importFileType", dataset.getImportfiletype());
+
+		return doc;
+	}
+
+	private SolrInputDocument createSolrDocument(DettaglioStream stream, DettaglioSmartobject smartobject, Dataset dataset) throws Exception {
+		SolrInputDocument doc = createSolrDocumentFromDettaglio(stream);
+		List<String> entityTypes = Arrays.asList("stream");
+		if (stream.getSavedata() == 1) {
+			entityTypes.add("dataset");
+			doc.addField("datasetCode", dataset.getDatasetcode());
+			String namespace = Dettaglio.generateNameSpace(stream.getTenantCode(), dataset.getDatasetcode());
+		}
+		
+		doc.addField("id", createIdForStream(stream));
+		doc.addField("entityType", entityTypes);
+		doc.addField("streamCode", stream.getStreamcode());
+		doc.addField("twtQuery", stream.getTwtquery());
+		doc.addField("twtGeolocLat", stream.getTwtgeoloclat());
+		doc.addField("twtGeolocLon", stream.getTwtgeoloclon());
+		doc.addField("twtGeolocRadius", stream.getTwtgeolocradius());
+		doc.addField("twtGeolocUnit", stream.getTwtgeolocunit());
+		doc.addField("twtLang", stream.getTwtlang());
+		doc.addField("twtLocale", stream.getTwtlocale());
+		doc.addField("twtCount", stream.getTwtcount());
+		doc.addField("twtResultType", stream.getTwtresulttype());
+		doc.addField("twtUntil", stream.getTwtuntil());
+		doc.addField("twtRatePercentage", stream.getTwtratepercentage());
+		doc.addField("twtLastSearchId", stream.getTwtlastsearchid());
+		doc.addField("soCode", stream.getSmartObjectCode());
+		doc.addField("soName", stream.getSmartObjectName());
+		doc.addField("soType", stream.getSoTypeCode());
+		doc.addField("soCategory", stream.getSmartObjectCategoryDescription());
+		doc.addField("soDescription", stream.getSmartObjectDescription());
+
+		if (smartobject.getLat() != null && smartobject.getLon() != null) {
+			doc.addField("lat", smartobject.getLat());
+			doc.addField("lon", smartobject.getLon());
+			if (smartobject.getLat() >= -90 && smartobject.getLat() <= 90 && smartobject.getLat() >= -180 && smartobject.getLon() <= 180)
+				doc.addField("geogeo", smartobject.getLat() + "," + smartobject.getLon());
+
+			String jsonSo = "{\"position\":[{";
+			if (smartobject.getLat() != null)
+				jsonSo += "\"lat\":" + smartobject.getLat() + ",";
+			if (smartobject.getLon() != null)
+				jsonSo += "\"lon\":" + smartobject.getLon() + ",";
+			if (smartobject.getElevation() != null)
+				jsonSo += "\"elevation\":" + smartobject.getElevation() + ",";
+			if (smartobject.getFloor() != null)
+				jsonSo += "\"floor\":" + smartobject.getFloor() + ",";
+			if (smartobject.getBuilding() != null)
+				jsonSo += "\"building\":\"" + smartobject.getBuilding() + "\",";
+			if (smartobject.getRoom() != null)
+				jsonSo += "\"room\":\"" + smartobject.getRoom() + "\",";
+
+			if (jsonSo.endsWith(","))
+				jsonSo = jsonSo.substring(0, jsonSo.length() - 1);
+
+			jsonSo += "}]}";
+			doc.addField("jsonSo", jsonSo);
+
+		}
+
+		return doc;
+	}
+
+	private SolrInputDocument createSolrDocumentFromDettaglio(Dettaglio dataset) throws Exception {
+		SolrInputDocument doc = new SolrInputDocument();
+
+		doc.addField("version", dataset.getDatasourceversion());
 		doc.addField("visibility", dataset.getDataSourceVisibility());
 		doc.addField("copyright", dataset.getDataSourceCopyright());
 		doc.addField("organizationCode", dataset.getOrganizationCode());
@@ -178,62 +266,33 @@ public class SolrDelegate {
 			doc.addField("dcatRightsHolderId", dcat.getDcatrightsholderid());
 			doc.addField("dcatReady", dcat.getDcatready());
 		}
-		doc.addField("datasetCode", dataset.getDatasetcode());
-		doc.addField("datasetDescription", dataset.getDescription());
-		doc.addField("version", dataset.getDatasourceversion());
-		doc.addField("datasetType", dataset.getDatasetType());
-		doc.addField("datasetSubtype", dataset.getDatasetSubtype());
-
-		// doc.addField("streamCode", dataset.streamCode);
-		// doc.addField("twtQuery", dataset.twtQuery);
-		// doc.addField("twtGeolocLat", dataset.twtGeolocLat);
-		// doc.addField("twtGeolocLon", dataset.twtGeolocLon);
-		// doc.addField("twtGeolocRadius", dataset.twtGeolocRadius);
-		// doc.addField("twtGeolocUnit", dataset.twtGeolocUnit);
-		// doc.addField("twtLang", dataset.twtLang);
-		// doc.addField("twtLocale", dataset.twtLocale);
-		// doc.addField("twtCount", dataset.twtCount);
-		// doc.addField("twtResultType", dataset.twtResultType);
-		// doc.addField("twtUntil", dataset.twtUntil);
-		// doc.addField("twtRatePercentage", dataset.twtRatePercentage);
-		// doc.addField("twtLastSearchId", dataset.twtLastSearchId);
-		// doc.addField("soCode", dataset.soCode);
-		// doc.addField("soName", dataset.soName);
-		// doc.addField("soType", dataset.soType);
-		// doc.addField("soCategory", dataset.soCategory);
-		// doc.addField("soDescription", dataset.soDescription);
-		// doc.addField("jsonSo", dataset.jsonSo);
-		// doc.addField("lat", dataset.lat);
-		// doc.addField("lon", dataset.lon);
-		// doc.addField("phenomenon", dataset. phenomenon );
-		// doc.addField("geogeo", dataset. geogeo);
 
 		doc.addField("jsonFields", dataset.getComponents());
 		if (dataset.getComponents() != null) {
 			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
 			});
 			List<String> sdpComponentsName = new LinkedList<String>();
+			List<String> phenomenonList = new LinkedList<String>();
 			for (ComponentJson component : components) {
 				sdpComponentsName.add(component.getName());
+				phenomenonList.add(component.getPhenomenonname());
 			}
 			doc.addField("sdpComponentsName", sdpComponentsName);
+			doc.addField("phenomenon", phenomenonList);
 		}
 
-		if (dataset.getDataSourceIsOpendata() == 1) {
+		if (dataset.getDataSourceIsopendata() == 1) {
 			doc.addField("opendataAuthor", dataset.getDataSourceOpenDataAuthor());
 			doc.addField("opendataLanguage", dataset.getDataSourceOpenDataLanguage());
-			// doc.addField("opendataMetaUpdateDate", dataset.
-			// opendataMetaUpdateDate );//FIXME manca il campo
+			// doc.addField("opendataMetaUpdateDate",
+			// dataset.opendataMetaUpdateDate );//FIXME manca il campo
 			doc.addField("opendataUpdateDate", dataset.getDataSourceOpenDataUpdateDate());
 			doc.addField("isOpendata", true);
 		}
 
 		doc.addField("registrationDate", formatDate(dataset.getDataSourceRegistrationDate()));
-		doc.addField("importFileType", dataset.getImportfiletype());
 		doc.addField("isCurrent", "1");
 		doc.addField("externalReference", dataset.getDataSourceExternalReference());
-
-		doc.addField("id", dataset.getDatasetcode());
 
 		return doc;
 	}

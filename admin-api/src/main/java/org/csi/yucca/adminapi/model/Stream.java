@@ -1,9 +1,7 @@
 package org.csi.yucca.adminapi.model;
 
-public class Stream extends Dettaglio{
-	
-	private Integer idDataSource;
-	private Integer datasourceversion;
+public class Stream extends Dettaglio {
+
 	private Integer idstream;
 	private String streamcode;
 	private String streamname;
@@ -24,22 +22,6 @@ public class Stream extends Dettaglio{
 	private Integer twtratepercentage;
 	private Long twtlastsearchid;
 	private Integer idSmartObject;
-
-	public Integer getIdDataSource() {
-		return idDataSource;
-	}
-
-	public void setIdDataSource(Integer idDataSource) {
-		this.idDataSource = idDataSource;
-	}
-
-	public Integer getDatasourceversion() {
-		return datasourceversion;
-	}
-
-	public void setDatasourceversion(Integer datasourceversion) {
-		this.datasourceversion = datasourceversion;
-	}
 
 	public Integer getIdstream() {
 		return idstream;
