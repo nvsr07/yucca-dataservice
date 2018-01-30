@@ -1,0 +1,834 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: Smart Data Platform Metadata Api 
+  description: |
+        # Search metadata API
+        To view the metadata of private stream/dataset, is necessary authenticate the call with a token oAuth, adding in the **HTTP header** the attribute 
+        `Authorization`  `Bearer myTokenOauth`
+        Is possible to use any token recovered from Userportal to find private stream / dataset visible from the user owner of the token.
+        The oAuth token are avaible in the section Subscriptions in the [Userportal](https://userportal.smartdatanet.it/userportal) (visible only if logged in)
+        More details on the [Developer Center](http://developer.smartdatanet.it/docs/utilizzo-dello-store-e-dei-token-oauth-2/) in the section **Come accedere ai servizi di lettura autenticandosi con Oauth**
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
+  contact:
+    name: Yucca Smart Data Platform
+    email: smartdatanet@csi.it
+    url: http://www.smartdatanet.it
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+host: api.smartdatanet.it
+basePath: /metadataapi
+
+schemes:
+ - https
+ 
+consumes:
+  - application/json
+produces:
+  - application/json
+
+tags:
+- name: metadata
+  description: Metadata Api
+- name: ckan
+  description: Metadata Api in the ckan standard
+- name: dcat
+  description: Api related in the dcat standard
+
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+
+paths:
+  /api/search/full:
+    get: 
+      tags: 
+        - metadata
+      summary: search metadata
+      operationId: searchMetadata
+      description: |
+        Search metadata
+        For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
+      security:
+        - Bearer: []
+      parameters:
+      - $ref: '#/parameters/q'
+      - $ref: '#/parameters/tenant'
+      - $ref: '#/parameters/domain'
+      - $ref: '#/parameters/opendata'
+      - $ref: '#/parameters/start'
+      - $ref: '#/parameters/end'
+      - $ref: '#/parameters/lang'
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+             $ref: '#/definitions/MetadataCollection'
+
+  /api/ckan/2/package_list:
+    get: 
+      tags: 
+        - ckan
+      summary: search metadata using the ckan standard
+      operationId: searchMetadataCkan
+      description: |
+        Search metadata using the ckan standard
+        For private dataset use the oauth token (top of the page for details)
+      parameters:
+      - $ref: '#/parameters/q'
+      - $ref: '#/parameters/tenant'
+      - $ref: '#/parameters/domain'
+      - $ref: '#/parameters/opendata'
+      - $ref: '#/parameters/start'
+      - $ref: '#/parameters/end'
+      - $ref: '#/parameters/lang'
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+             $ref: '#/definitions/CkanPackageList'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/GenericError'
+
+  /api/dcat/dataset_list:
+    get: 
+      tags: 
+        - dcat
+      summary: search metadata using the dcat standard
+      operationId: searchMetadataDcat
+      description: |
+        Search metadata using the dcat standard
+        For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
+      parameters:
+      - $ref: '#/parameters/q'
+      - $ref: '#/parameters/tenant'
+      - $ref: '#/parameters/domain'
+      - $ref: '#/parameters/opendata'
+      - $ref: '#/parameters/start'
+      - $ref: '#/parameters/end'
+      - $ref: '#/parameters/lang'
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+             $ref: '#/definitions/DcatMetadataCollection'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/GenericError'
+
+  /api/detail/{tenantCode}/{smartobjectCode}/{streamCode}:
+    get: 
+      tags: 
+        - metadata
+      summary: load the detail of the stream metadata indetified by tenant code, smartobject code and stream code
+      operationId: streamMetadataDetail
+      description: |
+        load the detail of the stream metadata indetified by tenant code, smartobject code and stream code
+        For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
+      parameters:
+      - $ref: '#/parameters/tenantCode'
+      - $ref: '#/parameters/smartobjectCode'
+      - $ref: '#/parameters/streamCode'
+      responses:
+        200:
+          description: Detail of the Metadata
+          schema:
+             $ref: '#/definitions/Metadata'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/GenericError'
+
+  /api/detail/{tenantCode}/{datasetCode}:
+    get: 
+      tags: 
+        - metadata
+      summary: load the detail of the dataset metadata indetified by tenant code  and  dataset code 
+      operationId: datasetMetadataDetail
+      description: |
+        load the detail of the dataset metadata indetified by tenant code  and  dataset code 
+        For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
+      parameters:
+      - $ref: '#/parameters/tenantCode'
+      - $ref: '#/parameters/datasetCode'
+      responses:
+        200:
+          description: Detail of the Metadata
+          schema:
+             $ref: '#/definitions/Metadata'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/GenericError'
+             
+  /ckan/2/package_list/{packageId}:
+    get: 
+      tags: 
+        - ckan
+      summary: load the detail of the dataset metadata indetified by the packageId using the ckan standard
+      operationId: metadataDetailCkan
+      description: |
+       load the detail of the dataset metadata indetified by the packageId using the ckan standard
+        For private dataset use the oauth token (top of the page for details)
+        All library clients can be generated from the [swagger yaml file](https://github.com/csipiemonte/yucca-dataservice/blob/master/metadata-api/src/main/swagger/v01/yaml/swagger.yaml)
+      parameters:
+      - $ref: '#/parameters/ckanPackageId'
+      responses:
+        200:
+          description: Detail of the Metadata
+          schema:
+             $ref: '#/definitions/CkanPackage'
+        500: 
+          description: Unexpected Error
+          schema:
+             $ref: '#/definitions/GenericError'
+
+             
+definitions:
+    MetadataCollectionItem:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: integer
+          format: int32
+        code:
+          type: string
+        description:
+          type: string
+        domain:
+          type: string
+          description: domain in the language requested by the parametr lang (default italian)
+        subdomain:
+          type: string
+          description: subdomain in the language requested by the parametr lang (default italian)
+        tenantCode:
+          type: string
+        tenantName:
+          type: string
+        tagCodes: 
+          type: array
+          items: 
+              type: string  
+        tags: 
+          type: array
+          items: 
+              type: string  
+          description: tags in the language requested by the parametr lang (default italian)
+        icon:
+          type: string
+          description: url of the icon
+        visibility:
+          type: string
+          enum:
+            - public
+            - private
+        sharedtenants:
+          type: array
+          items: 
+            type: string  
+          description: codes of authorized tenants
+        isOpendata:
+          type: boolean
+        author:
+          type: string
+        language:
+          type: string
+        registrationDate:
+          type: string
+        externalreference:
+          type: string
+          description: optional reference to other system identifier
+        license:
+          type: string
+        disclaimer:
+          type: string
+        copyright:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        stream:
+          type: object
+          properties:
+            smartobject:
+              type: object
+              properties:
+               name:
+                 type: string
+               code:
+                 type: string
+               description:
+                 type: string
+               latitude:
+                 type: number
+                 format: double
+               longitude:
+                 type: number
+                 format: double
+
+           
+        dataset:
+          type: object
+          properties:
+               datasetId:
+                   type: number
+                   format: int64
+        detailUrl:
+          type: string
+
+    Metadata:
+      type: object
+      properties:
+        name:
+          type: string
+        version:
+          type: integer
+          format: int32
+        code:
+          type: string
+        description:
+          type: string
+        domain:
+          type: string
+          description: domain in the language requested by the parametr lang (default italian)
+        subdomain:
+          type: string
+          description: subdomain in the language requested by the parametr lang (default italian)
+        tenantCode:
+          type: string
+        tenantName:
+          type: string
+        tagCodes: 
+          type: array
+          items: 
+            type: string  
+        tags: 
+          type: array
+          items: 
+            type: string  
+          description: tags in the language requested by the parametr lang (default italian)
+        icon:
+          type: string
+          description: url of the icon
+        visibility:
+          type: string
+          enum:
+            - public
+            - private
+        sharedtenants:
+          type: array
+          items: 
+            type: string  
+          description: codes of authorized tenants
+        isopendata:
+          type: boolean
+        author:
+          type: string
+        language:
+          type: string
+        registrationDate:
+          type: string
+        externalreference:
+          type: string
+          description: optional reference to other system identifier
+        license:
+          type: string
+        disclaimer:
+          type: string
+        copyright:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        stream:
+           $ref: '#/definitions/Stream'
+        dataset:
+           $ref: '#/definitions/Dataset'
+        opendata:
+           $ref: '#/definitions/Opendata'
+       
+       
+    Smartobject:
+       type: object
+       properties:
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        type:
+          type: string
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        altitude:
+          type: number
+          format: double
+        building:
+          type: string
+        floor:
+          type: string
+        room:
+          type: string
+        twtCount:
+          type: number
+          format: int32
+        twtGeolocLat:
+          type: number
+          format: double
+        twtGeolocLon:
+          type: number
+          format: double
+        twtGeolocRadius:
+          type: number
+          format: double
+        twtRatePercentage:
+          type: number
+          format: int32
+        twtMaxStreamsOfVE:
+          type: number
+          format: int32
+        twtQuery:
+          type: string
+        twtLang:
+          type: string
+          
+
+    Stream:
+       type: object
+       properties:
+        name:
+          type: string
+        code:
+          type: string
+        fps:
+          type: number
+          format: double
+        saveData:
+          type: boolean
+        smartobject:
+            $ref: '#/definitions/Smartobject'
+        components:
+            type: array
+            items:
+                $ref: '#/definitions/Component'
+            
+    Component:
+       type: object
+       properties:
+        name:
+          type: string
+        dataType:
+          type: string
+        measureUnit:
+          type: string
+        phenomenon:
+          type: string
+        tolerance:
+          type: string
+
+    Dataset:
+       type: object
+       properties:
+        name:
+          type: string
+        tyoe:
+          type: string
+        columns:
+            type: array
+            items:
+                $ref: '#/definitions/Column'
+
+    Column:
+       type: object
+       properties:
+        name:
+          type: string
+        dataType:
+          type: string
+        measureUnit:
+          type: string
+        alias:
+          type: string
+        isKey:
+          type: boolean
+
+    Opendata:
+       type: object
+       properties:
+        author:
+          type: string
+        dataUpdateDate:
+          type: integer
+          format: int64
+        language:
+          type: string
+        metadaUpdateDate:
+          type: string
+          format: date-time
+    
+    MetadataCollection:
+        type: object
+        properties:
+            count:
+                type: integer
+            result:
+                type: array
+                items:
+                      $ref: '#/definitions/MetadataCollection'
+                      
+                      
+    #Ckan
+    CkanPackageList:
+      type: array
+      items: 
+          type: string  
+          
+    CkanPackage:
+        type: object
+        properties:
+          id:
+              type: string
+          name:
+              type: string
+          title:
+              type: string
+          revision_id:
+              type: string
+          maintainer:
+              type: string
+          maintainer_email:
+              type: string
+          license_id:
+              type: string
+          license:
+              type: string
+          license_title:
+              type: string
+          license_url:
+              type: string
+          metadata_created:
+              type: string
+          metadata_modified:
+              type: string
+          author:
+              type: string
+          author_email:
+              type: string
+          download_url:
+              type: string
+          state:
+              type: string
+          version:
+              type: string
+          type:
+              type: string
+          notes:
+              type: string
+          notes_rendered:
+              type: string
+          isopen:
+              type: boolean
+          tags:
+              type: array
+              items:
+                  type: string  
+          resources:
+              type: array
+              items:
+                type: object
+                properties:
+                   id:
+                       type: string  
+                   resource_group_id:
+                       type: string  
+                   name:
+                       type: string  
+                   description:
+                       type: string  
+                   created:
+                       type: string  
+                   url:
+                       type: string  
+                   webstore_url:
+                       type: string  
+                   cache_last_updated:
+                       type: string  
+                   package_id:
+                       type: string  
+                   webstore_last_updated:
+                       type: string  
+                   size:
+                       type: integer  
+                   position:
+                       type: integer  
+                   resource_type:
+                       type: string  
+                   last_modified:
+                       type: string  
+                   hash:
+                       type: string  
+                   format:
+                       type: string  
+                   mimetype:
+                       type: string  
+                   mimetype_inner:
+                       type: string  
+                   cache_url:
+                       type: string  
+          url:
+              type: string
+          ckan_url:
+              type: string
+          extras:
+              type: array
+              items:
+                type: object
+                properties:
+                   package_id:
+                       type: string  
+                   topic:
+                       type: string  
+                   hidden_field:
+                       type: string  
+                   metadata_created:
+                       type: string  
+                   metadata_modified:
+                       type: string  
+                   package_created:
+                       type: string  
+                   package_modified:
+                       type: string  
+                   tag:
+                       type: string  
+                   title:
+                       type: string  
+                   description:
+                       type: string  
+                   license_id:
+                       type: string  
+                   package_type:
+                       type: string  
+                   resource:
+                       type: array
+                       items:
+                           type: string  
+                   extrasList:
+                       type: object
+                       properties:
+                           resource:
+                               type: array
+                               items:
+                                  type: string  
+
+    #Dcat
+    DcatMetadataCollection:
+        type: object
+        properties:
+            "@context": 
+                type: string
+            "@id":
+                type: string
+            
+            "@type":
+                type: string
+            description: 
+                type: string
+            title:
+                type: string
+            homepage:
+                type: string
+            language: 
+                type: string
+            modified: 
+                type: string
+            themes: 
+                type: string
+            spatial: 
+                type: string
+            license: 
+                type: object
+                properties:
+                    licenseType:
+                        type: string
+                    name:
+                        type: string
+            publisher:
+                    type: object
+                    properties:
+                        name:
+                            type: string
+                        "@type":
+                            type: string
+                        "@id":
+                            type: string
+                        publisherType:
+                            type: string
+            dataset: 
+                type: array
+                items:
+                  type: object
+                  properties:
+                    description: 
+                        type: string
+                    title: 
+                        type: string
+                    contactPoint: 
+                        type: object
+                        properties:
+                          "@type":
+                            type: string
+                          hasEmail:
+                            type: string
+                          hasTelephone:
+                            type: string
+                    keyword: 
+                        type: array
+                        items:
+                            type: string
+                    creator:
+                      type: object
+                      properties:
+                          name:
+                              type: string
+                          "@type":
+                              type: string
+                          "@id":
+                              type: string
+                    theme: 
+                        type: string
+                    accessRights: 
+                        type: string
+                    accrualPeriodicity: 
+                        type: string
+                    identifier: 
+                        type: string
+                    "@type": 
+                        type: string
+                    versionInfo: 
+                        type: string
+                    rightsHolder:
+                      type: object
+                      properties:
+                          name:
+                              type: string
+                          "@type":
+                              type: string
+                          "@id":
+                              type: string
+                    distribution:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                              accessURL:
+                                  type: string
+                              format:
+                                  type: string
+                              license:
+                                  type: object
+                                  properties:
+                                      name:
+                                          type: string
+                    downloadURL:
+                        type: string
+                    language:
+                        type: string
+
+    GenericError:
+      type: object
+      properties:
+       errorCode:
+         type: string
+       message:
+         type: string
+
+parameters:   
+   q:
+      name: "q"
+      in: "query"
+      description: "search query, free text"
+      type: "string"
+   tenant:
+      name: "tenant"
+      in: "query"
+      description: "tenant code of the owner of the stream/dataset"
+      type: "string"
+   domain:
+      name: "domain"
+      in: "query"
+      description: "Domain code of the stream/dataset"
+      type: "string"
+   opendata:
+      name: "opendata"
+      in: "query"
+      description: "Properties of the dataset/stream to be opendata"
+      type: "string"
+   start:
+      name: "start"
+      in: "query"
+      description: "Pagination: first row that will be extract"
+      type: "integer"
+   end:
+      name: "end"
+      in: "query"
+      description: "Pagination: number of row that will be extract"
+      type: "integer"       
+   lang:
+      name: "lang"
+      in: "query"
+      description: "Lang for the domain and tags of the dataset/stream. Language managed: italian (lang=it), english(lang=en)"
+      type: "string"
+      
+   tenantCode:
+      name: "tenantCode"
+      in: "path"
+      description: "Tenant code of the owner of the stream"
+      type: "string"
+   smartobjectCode:
+      name: "smartobjectCode"
+      in: "path"
+      description: "Smart Object code used by the stream"
+      type: "string"
+   streamCode:
+      name: "streamCode"
+      in: "path"
+      description: "Code of the stream"
+      type: "string"            
+   datasetCode:
+      name: "datasetCode"
+      in: "path"
+      description: "Code of the dataset"
+      type: "string"
+   ckanPackageId:
+      name: "ckanPackageId"
+      in: "path"
+      description: "Package id of the dataset"
+      type: "string"
+                  

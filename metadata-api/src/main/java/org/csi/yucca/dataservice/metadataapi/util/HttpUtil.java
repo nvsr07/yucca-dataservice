@@ -1,12 +1,26 @@
 package org.csi.yucca.dataservice.metadataapi.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Map;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+//import org.apache.commons.httpclient.HttpClient;
+//import org.apache.commons.httpclient.HttpMethod;
+//import org.apache.commons.httpclient.UsernamePasswordCredentials;
+//import org.apache.commons.httpclient.auth.AuthScope;
+//import org.apache.commons.httpclient.methods.GetMethod;
+//import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 
@@ -39,16 +53,38 @@ public class HttpUtil {
 		int resultCode = -1;
 		try {
 
-			HttpMethod httpMethod = prepareCall(method, targetUrl, contentType, characterEncoding, parameters);
+			HttpRequestBase httpRequestBase = prepareCall(method, targetUrl, contentType, characterEncoding, parameters);
 
-			HttpClient httpclient = new HttpClient();
-			try {
-				resultCode = httpclient.executeMethod(httpMethod);
-				log.debug("[AbstractService::doPost] - get result: " + resultCode);
-				result = httpMethod.getResponseBodyAsString();
-			} finally {
-				httpMethod.releaseConnection();
+			// auth
+			CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+			credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(Config.getInstance().getSolrUsername(), Config.getInstance().getSolrPassword()));
+			CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultCredentialsProvider(credentialsProvider).build();
+
+			CloseableHttpResponse response = httpClient.execute(httpRequestBase);
+
+			StringBuffer buffer = new StringBuffer();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+			String dataLine = null;
+			while ((dataLine = reader.readLine()) != null) {
+				buffer.append(dataLine);
 			}
+			result = buffer.toString();
+
+			// HttpClient httpclient = new HttpClient();
+			// httpclient.getState().setCredentials(new
+			// AuthScope(AuthScope.ANY),
+			// new
+			// UsernamePasswordCredentials(Config.getInstance().getSolrUsername(),
+			// Config.getInstance().getSolrPassword()));
+			// httpMethod.setDoAuthentication(true);
+			// try {
+			// resultCode = httpclient.executeMethod(httpMethod);
+			// log.debug("[AbstractService::doPost] - get result: " +
+			// resultCode);
+			// result = httpMethod.getResponseBodyAsString();
+			// } finally {
+			// httpMethod.releaseConnection();
+			// }
 
 		} catch (IOException e) {
 			log.error("[AbstractService::doPost] ERROR IOException: " + e.getMessage());
@@ -62,7 +98,7 @@ public class HttpUtil {
 		return result;
 	}
 
-	private HttpMethod prepareCall(String method, String targetUrl, String contentType, String characterEncoding, Map<String, String> parameters) {
+	private HttpRequestBase prepareCall(String method, String targetUrl, String contentType, String characterEncoding, Map<String, String> parameters) {
 
 		if (contentType == null)
 			contentType = "application/json";
@@ -73,16 +109,25 @@ public class HttpUtil {
 
 		if (parameters != null) {
 			for (String key : parameters.keySet()) {
-				targetUrl += key + "=" + parameters.get(key) + "&";
+				// targetUrl += key + "=" + parameters.get(key) + "&";
+				// post.addParameter(key, parameters.get(key));
+				targetUrl += key
+						+ "="
+						+ parameters.get(key).replaceAll("  ", " ").replaceAll(" ", "%20").replaceAll("\\[", "%5B").replaceAll("\\]", "%5D").replaceAll(">", "%3E")
+								.replaceAll("<", "%3C") + "&";
+
 			}
 		}
 
-		HttpMethod httpMethod = new GetMethod(targetUrl);
+		HttpRequestBase httpRequestBase = new HttpGet(targetUrl);
+
+		// HttpMethod httpMethod = new GetMethod(targetUrl);
 		if (method.equals("POST"))
-			httpMethod = new PostMethod(targetUrl);
+			httpRequestBase = new HttpPost(targetUrl);
+		// httpMethod = new PostMethod(targetUrl);
 
-		httpMethod.setRequestHeader("Content-Type", contentType);
+		httpRequestBase.setHeader("Content-Type", contentType);
 
-		return httpMethod;
+		return httpRequestBase;
 	}
 }

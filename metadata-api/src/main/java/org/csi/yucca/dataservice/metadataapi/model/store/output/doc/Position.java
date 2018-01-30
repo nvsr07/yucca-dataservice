@@ -7,7 +7,7 @@ public class Position {
 	private Double elevation;
 	private Integer floor;
 	private String building;
-	private Integer room;
+	private String room;
 
 	public Position() {
 	}
@@ -52,11 +52,11 @@ public class Position {
 		this.building = building;
 	}
 
-	public Integer getRoom() {
+	public String getRoom() {
 		return room;
 	}
 
-	public void setRoom(Integer room) {
+	public void setRoom(String room) {
 		this.room = room;
 	}
 

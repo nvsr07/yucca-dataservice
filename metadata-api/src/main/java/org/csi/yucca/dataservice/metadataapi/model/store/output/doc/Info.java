@@ -9,19 +9,29 @@ public class Info {
 	private String description;
 	private String license;
 	private String disclaimer;
-	private String visibility;
 	private String copyright;
+	private String visibility;
 	private Date registrationDate;
 	private String requestorName;
 	private String requestorSurname;
 	private String requestornEmail;
-	private String dataDomain;
+	private String dataDomain; 
+	private String codSubDomain;
+	private Double fps;
+	private String externalReference;
+
+	private Date startIngestionDate;
+	private Date endIngestionDate;
 	private String importFileType;
 	private String icon;
+
+	private Long binaryIdDataset;
+	private Integer binaryDatasetVersion;
 
 	private List<Tag> tags;
 	private List<Field> fields;
 	private Tenantssharing tenantssharing;
+	private List<String> fileNames;
 
 	public Info() {
 	}
@@ -152,6 +162,70 @@ public class Info {
 
 	public void setCopyright(String copyright) {
 		this.copyright = copyright;
+	}
+
+	public String getCodSubDomain() {
+		return codSubDomain;
+	}
+
+	public void setCodSubDomain(String codSubDomain) {
+		this.codSubDomain = codSubDomain;
+	}
+
+	public Double getFps() {
+		return fps;
+	}
+
+	public void setFps(Double fps) {
+		this.fps = fps;
+	}
+
+	public String getExternalReference() {
+		return externalReference;
+	}
+
+	public void setExternalReference(String externalReference) {
+		this.externalReference = externalReference;
+	}
+
+	public Date getStartIngestionDate() {
+		return startIngestionDate;
+	}
+
+	public void setStartIngestionDate(Date startIngestionDate) {
+		this.startIngestionDate = startIngestionDate;
+	}
+
+	public Date getEndIngestionDate() {
+		return endIngestionDate;
+	}
+
+	public void setEndIngestionDate(Date endIngestionDate) {
+		this.endIngestionDate = endIngestionDate;
+	}
+
+	public Long getBinaryIdDataset() {
+		return binaryIdDataset;
+	}
+
+	public void setBinaryIdDataset(Long binaryIdDataset) {
+		this.binaryIdDataset = binaryIdDataset;
+	}
+
+	public Integer getBinaryDatasetVersion() {
+		return binaryDatasetVersion;
+	}
+
+	public void setBinaryDatasetVersion(Integer binaryDatasetVersion) {
+		this.binaryDatasetVersion = binaryDatasetVersion;
+	}
+
+	public List<String> getFileNames() {
+		return fileNames;
+	}
+
+	public void setFileNames(List<String> fileNames) {
+		this.fileNames = fileNames;
 	}
 
 }

@@ -26,6 +26,12 @@ public class Constants {
 	}
 	
 	public static final String OUTPUT_FORMAT_CKAN = "ckan"; 
+	public static final String OUTPUT_FORMAT_JSON = "json";
+	public static final String OUTPUT_FORMAT_V01_STREAM = "v01_STREAM"; 
+	public static final String OUTPUT_FORMAT_V01_DATASET = "v01_DATASET"; 
+	public static final String OUTPUT_FORMAT_V01_LIST = "v01_LIST"; 
+
+
 
 	public static void main(String[] args) {
 		System.out.println(DEFAULT_FIELD_DATE_FORMAT);
