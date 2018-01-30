@@ -4576,16 +4576,24 @@ public class SDPDataApiMongoAccess {
 
 	
 	
-	private static ArrayList<Map<String, Object>>  ricorsione (int indiceArray,String[] campiGroupBy, String [] campiStats, List<SimpleOrderedMap<Object>> buckets, HashMap<String, Object> misura, int count,ArrayList<Map<String, Object>> ret ) {
+	private static ArrayList<Map<String, Object>>  ricorsione (int indiceArray,String[] campiGroupBy, String [] campiStats, List<SimpleOrderedMap<Object>> buckets, HashMap<String, Object> misura, long count,ArrayList<Map<String, Object>> ret ) {
 		HashMap<String, Object> misuraOrig=new HashMap<String, Object> ();
 		misuraOrig.putAll(misura);
 		
-		int countOrig=count;
+		long countOrig=count;
 		if (buckets != null) {
 			for (SimpleOrderedMap<Object> bucket : buckets) {
 				Object val2 =  bucket.get("val");
-				int countlocal= count+((Integer)bucket.get("count")).intValue();
-				misura.put(campiGroupBy[indiceArray], val2); // TODO .cercare il tipo 
+				long countlocal= count;
+				
+				if (bucket.get("count") instanceof Long) {
+					countlocal+=((Long)bucket.get("count")).longValue();
+				} else if (bucket.get("count") instanceof Integer) {
+					countlocal+=((Integer)bucket.get("count")).intValue();
+				} 
+				
+				
+				if (null!= val2 ) misura.put(campiGroupBy[indiceArray], val2); // TODO .cercare il tipo 
 				if (indiceArray==campiGroupBy.length-1) {
 					//ESTRARRE STATISTICHE
 					for (int i=0;i<campiStats.length;i++) {
@@ -4602,6 +4610,14 @@ public class SDPDataApiMongoAccess {
 					
 				} else if (indiceArray<campiGroupBy.length-1) {
 					List<SimpleOrderedMap<Object>> nestedBuckets = (List<SimpleOrderedMap<Object>>) bucket.findRecursive(campiGroupBy[indiceArray+1].toLowerCase(), "buckets");
+					if (null==nestedBuckets || nestedBuckets.size()<=0) {
+						SimpleOrderedMap<Object> missing=(SimpleOrderedMap)bucket.findRecursive(campiGroupBy[indiceArray+1].toLowerCase(), "missing");
+						if (null!=missing) {
+							nestedBuckets= new ArrayList<SimpleOrderedMap<Object>>();
+							nestedBuckets.add(missing);
+						}
+					}
+					
 					ret=ricorsione(indiceArray+1,campiGroupBy,campiStats,nestedBuckets,misura,countlocal,(ArrayList<Map<String, Object>>)ret);
 				}
 			}
@@ -4614,6 +4630,8 @@ public class SDPDataApiMongoAccess {
 		
 		return ret;
 	}	
+	
+	
 	
 	public SDPDataResult getMeasuresStatsPerStreamSolr(String codiceTenant, 
 			String nameSpace, 
@@ -4642,14 +4660,16 @@ public class SDPDataApiMongoAccess {
 		Connection conn = null;
 
 		try {
-			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] BEGIN");
-			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] codiceTenant="+codiceTenant);
-			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] nameSpace="+nameSpace);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] BEGIN");
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] codiceTenant="+codiceTenant);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] nameSpace="+nameSpace);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] entityContainer="+entityContainer);
-			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] internalId="+internalId);
-			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] datatType="+datatType);
-			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] userQuery="+userQuery);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] internalId="+internalId);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] datatType="+datatType);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] userQuery="+userQuery);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] streamMetadata="+streamMetadata);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] timeGroupByParam="+timeGroupByParam);
+			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] timeGroupOperatorsParam="+timeGroupOperatorsParam);
 			String codiceTenantOrig=codiceTenant;
 
 			List<Property> compPropsTot=new ArrayList<Property>();
@@ -4848,7 +4868,8 @@ public class SDPDataApiMongoAccess {
 			
 			
 			int nfacet=0;
-			
+			String firstBucket="timegroup"; 
+
 			if ("year".equals(timeGroupByParam)) {
 				jsonFacet+="gap : \"+1YEAR\", ";
 				nfacet++;
@@ -4886,20 +4907,24 @@ public class SDPDataApiMongoAccess {
 			} else if ("retweetparentid".equals(timeGroupByParam)) {
 
 				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: retweetparentid aggregations is aveailable only for social dataset", Locale.UK);
-				jsonFacet="{ retweetparentid : { type:terms,field: retweetParentId_l,"; 
+				jsonFacet="{ retweetparentid : { type:terms,field: retweetparentid_l,   "; 
+				firstBucket="retweetparentid";
 				nfacet++;
 			} else if ("iduser".equals(timeGroupByParam)) {
 				//YUCCA-388
 
 				if (!("socialDataset".equalsIgnoreCase(streamSubtype))) throw new SDPCustomQueryOptionException("invalid timeGroupBy value: iduser aggregations is aveailable only for social dataset", Locale.UK);
 
-				jsonFacet="{ iduser : { type:terms,field: userId_l,"; 
+				jsonFacet="{ iduser : { type:terms,field: userid_l,"; 
+				firstBucket="iduser";
 				nfacet++;
 
 			} else {
 				throw new SDPCustomQueryOptionException("invalid timeGroupBy value", Locale.UK);
 			}			
 
+			
+			jsonFacet+= " missing:true, limit : 1000, ";
 //			if (groupbysleect.indexOf("userId_l")==-1 && "socialDataset".equalsIgnoreCase(streamSubtype)) {
 //				groupbysleect+=", -1 as userId_l";
 //			}
@@ -4914,7 +4939,7 @@ public class SDPDataApiMongoAccess {
 				if (null!=suffisso) campoCompleto=campiGroupBy[kk]+suffisso;
 				else throw new SDPCustomQueryOptionException("invalid timeGroupBy value "+ campiGroupBy[kk], Locale.UK);
 				
-				jsonFacet+="facet: { " +campiGroupBy[kk].toLowerCase()+" : { type:terms,field: "+campoCompleto.toLowerCase()+","; 
+				jsonFacet+="facet: { " +campiGroupBy[kk].toLowerCase()+" : { missing:true, limit:1000, type:terms,field: "+campoCompleto.toLowerCase()+","; 
 				
 				nfacet++;
 				
@@ -4940,8 +4965,8 @@ public class SDPDataApiMongoAccess {
 				String opPhoenix=null;
 				boolean extraOp=false;
 				if ("avg".equals(op)) opPhoenix="avg";
-				else if ("first".equals(op)) {opPhoenix="FIRST_VALUE"; extraOp=true; }
-				else if ("last".equals(op)) {opPhoenix="LAST_VALUE"; extraOp=true; }
+				//else if ("first".equals(op)) {opPhoenix="FIRST_VALUE"; extraOp=true; }
+				//else if ("last".equals(op)) {opPhoenix="LAST_VALUE"; extraOp=true; }
 				else if ("sum".equals(op)) opPhoenix="sum";
 				else if ("max".equals(op)) opPhoenix="max";
 				else if ("min".equals(op)) opPhoenix="min";
@@ -5068,26 +5093,47 @@ public class SDPDataApiMongoAccess {
 			ArrayList<Map<String, Object>> retTmp= new ArrayList<Map<String, Object>>();
 			if (faceted) {
 				// notice "findRecursive" usage to get the buckets list
-				List<SimpleOrderedMap<Object>> buckets = (List<SimpleOrderedMap<Object>>) bucketList.findRecursive("facets","timegroup", "buckets");
+				List<SimpleOrderedMap<Object>> buckets = (List<SimpleOrderedMap<Object>>) bucketList.findRecursive("facets",firstBucket, "buckets");
 				if (buckets != null) {
 					for (SimpleOrderedMap<Object> bucket : buckets) {
-						int count=0;
+						long count=0;
 						Map<String, Object> misura = new HashMap<String, Object>();
-						Date date = (Date) bucket.get("val");
 						
-						SimpleDateFormat df = new SimpleDateFormat("yyyy");
-						SimpleDateFormat dfa = new SimpleDateFormat("MM");
-						SimpleDateFormat dfb = new SimpleDateFormat("dd");
-						SimpleDateFormat dfc = new SimpleDateFormat("hh");
-						SimpleDateFormat dfd = new SimpleDateFormat("mm");
 						
-						int year = Integer.parseInt(df.format(date));
-						int month = ( "year".equals(timeGroupByParam) ? -1 : Integer.parseInt(dfa.format(date)) );
-						int day = ( "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfb.format(date)) );
-						int hour = ( "dayofmonth_month_year".equals(timeGroupByParam) ||  "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfc.format(date)) );
-						int min = ( "hour_dayofmonth_month_year".equals(timeGroupByParam) || "dayofmonth_month_year".equals(timeGroupByParam) ||  "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfd.format(date)) );
-
-						count+=((Integer)bucket.get("count")).intValue();
+						int year = -1;
+						int month = -1;
+						int day = -1;
+						int hour = -1;
+						int min = -1;
+						long iduser=-1;
+						long retweetparentid=-1;
+						if (timeGroupByParam.equals("iduser") ) {
+							iduser=Long.parseLong(    ((Object)bucket.get("val")).toString()   );
+						} else if (timeGroupByParam.equals("retweetparentid") ) {
+							retweetparentid=Long.parseLong(    ((Object)bucket.get("val")).toString()   );
+							
+						} else {
+							Date date = (Date) bucket.get("val");
+							
+							SimpleDateFormat df = new SimpleDateFormat("yyyy");
+							SimpleDateFormat dfa = new SimpleDateFormat("MM");
+							SimpleDateFormat dfb = new SimpleDateFormat("dd");
+							SimpleDateFormat dfc = new SimpleDateFormat("hh");
+							SimpleDateFormat dfd = new SimpleDateFormat("mm");
+							
+							 year = Integer.parseInt(df.format(date));
+							 month = ( "year".equals(timeGroupByParam) ? -1 : Integer.parseInt(dfa.format(date)) );
+							 day = ( "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfb.format(date)) );
+							 hour = ( "dayofmonth_month_year".equals(timeGroupByParam) ||  "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfc.format(date)) );
+							 min = ( "hour_dayofmonth_month_year".equals(timeGroupByParam) || "dayofmonth_month_year".equals(timeGroupByParam) ||  "month_year".equals(timeGroupByParam) || "year".equals(timeGroupByParam)  ? -1 : Integer.parseInt(dfd.format(date)) );
+						}
+						
+						if (bucket.get("count") instanceof Long) {
+							count+=((Long)bucket.get("count")).longValue();
+						} else if (bucket.get("count") instanceof Integer) {
+							count+=((Integer)bucket.get("count")).intValue();
+						}
+						
 						
 
 						misura.put("dayofmonth",  day);
@@ -5096,17 +5142,27 @@ public class SDPDataApiMongoAccess {
 						misura.put("hour",  hour);
 						misura.put("minute",  min);
 						misura.put("dayofweek", -1 );
+						misura.put("retweetparentid", retweetparentid );
+						misura.put("iduser", iduser );
 
 						misura.putAll(misuraDefault);
 						//misura.put("Cod_ao_res", "");
 						
 						if (null!=campiGroupBy &&  campiGroupBy.length>1) {
 							List<SimpleOrderedMap<Object>> nestedBuckets = (List<SimpleOrderedMap<Object>>) bucket.findRecursive(campiGroupBy[1].toLowerCase(), "buckets");
-							retTmp=ricorsione(1,campiGroupBy,campiStats,nestedBuckets,(HashMap<String, Object>)misura,count,retTmp);
+							if (null==nestedBuckets || nestedBuckets.size()<=0) {
+								SimpleOrderedMap<Object> missing=(SimpleOrderedMap)bucket.findRecursive(campiGroupBy[1].toLowerCase(), "missing");
+								if (null!=missing) {
+									nestedBuckets= new ArrayList<SimpleOrderedMap<Object>>();
+									nestedBuckets.add(missing);
+								}
+							}
+								retTmp=ricorsione(1,campiGroupBy,campiStats,nestedBuckets,(HashMap<String, Object>)misura,count,retTmp);
 						} else {
 							for (int i=0;i<campiStats.length;i++) {
 								//Double valore=(Double)bucket.get(campiStats[i].toLowerCase());
-								misura.put(campiStats[i]+"_sts", bucket.get(campiStats[i]+"_sts"));
+								String valore=((Object)bucket.get(campiStats[i]+"_sts")).toString();
+								misura.put(campiStats[i]+"_sts", Double.parseDouble(valore.replace(',','.')));
 							}
 							misura.put("count", count);
 							retTmp.add(misura);
