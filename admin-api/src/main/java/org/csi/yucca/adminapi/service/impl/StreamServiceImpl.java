@@ -420,7 +420,7 @@ public class StreamServiceImpl implements StreamService {
 					try {
 						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
 						update = true;
-						PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
+						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
 					} catch (Exception e) {
 						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
 						e.printStackTrace();

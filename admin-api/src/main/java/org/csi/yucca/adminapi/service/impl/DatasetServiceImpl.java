@@ -413,7 +413,7 @@ public class DatasetServiceImpl implements DatasetService {
 					try {
 						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
 						update = true;
-						PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
 					} catch (Exception e) {
 						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
 						e.printStackTrace();
@@ -921,7 +921,7 @@ public class DatasetServiceImpl implements DatasetService {
 					try {
 						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
 						update = true;
-						PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
 					} catch (Exception e) {
 						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
 						e.printStackTrace();
