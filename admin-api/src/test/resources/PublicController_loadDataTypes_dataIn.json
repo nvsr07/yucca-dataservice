@@ -1,0 +1,17 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_loadDataTypes_dataIn: deve restituire http status 200!",
+    	"adminapi.entityset": "data_types",
+    	"adminapi.sort": "description",
+		"expected.httpStatus.response":200
+     },
+     {
+		"test-name": "PublicController_loadDataTypes_dataIn: viene passata come sort una property inesitente!",
+    	"adminapi.entityset": "data_types",
+    	"adminapi.sort": "nome_campo_inesistente",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Property not found: nome_campo_inesistente"
+     }
+	]
+}

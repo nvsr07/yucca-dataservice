@@ -1,0 +1,12 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_loadTags_dataIn: deve restituire http status 200!",
+    	"adminapi.entityset": "tags",
+    	"adminapi.sort": "idTag-",
+    	"adminapi.lang": "langEN",
+    	"adminapi.ecosystemCode":"eco111",
+		"expected.httpStatus.response":200
+     }
+	]
+}

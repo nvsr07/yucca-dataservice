@@ -1,0 +1,12 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_loadSubDomains_dataIn: deve restituire http status 200!",
+    	"adminapi.entityset": "subdomains",
+    	"adminapi.sort": "idSubdomain",
+    	"adminapi.domainCode": "dom004",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":200
+     }
+	]
+}

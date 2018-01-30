@@ -1,0 +1,30 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_tag_dataIn: deve restituire http status 200!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "tags",
+		"adminapi.id-generated": "idTag",
+        "adminapi.message" : "{\"tagcode\": \"newtagcode99999\",\"langit\": \"new-tag-code_99999-it\",\"langen\": \"new-tag-code_99999-en\"}",
+        "adminapi.message.update" : "{\"tagcode\": \"updtagcode99999\",\"langit\": \"upd-tag-code_99999-it\",\"langen\": \"upd-tag-code_99999-en\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+	 {
+    	"test-name": "BackOfficeController_tag_dataIn: campo mandatario non presente",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "tags",
+		"adminapi.id-generated": "idTag",
+        "adminapi.message" : "{\"langit\": \"new-tag-code_99999-it\",\"langen\": \"new-tag-code_99999-en\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Mandatory parameter"
+     }
+     
+]
+}

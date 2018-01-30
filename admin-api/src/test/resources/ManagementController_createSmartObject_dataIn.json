@@ -1,0 +1,163 @@
+{
+"data" : [
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 404 error ==> tenant inesistente!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.idTenant": 688888,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 404,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: tipo device il pattern socode e di tipo UUID!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 1,  
+		"adminapi.twtusername":"null",
+		"adminapi.socode": "cc1bfe50-491c-560d-a235-0e4134bbdc23",
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 200,		
+		"expected.httpStatus.delete-response" : 204,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: tipo device il pattern socode NON è di tipo UUID!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 1,  
+		"adminapi.twtusername":"null",
+		"adminapi.socode": "cc1bfe50-491c-560d-a235-0e4134bbdc23jjjjjjjjj",
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> NO DEVICE TYPE SOCODE ERRATO",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.socode": "ssss-,001",
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },                              
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> mandatory twtuserid if tweet type!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> mandatory twtname if tweet type!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> mandatory twttokensecret if tweet type!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> mandatory twtusertoken if tweet type!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> mandatory twtmaxsearchinterval if tweet type!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: 400 ==> mandatory twtmaxstreams if tweet type!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: BadRequest 400 ==> Informazione di tipo Tweet presente ma soType diverso da tre!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 2,
+		"adminapi.message" : "{\"twtmaxsearchnumber\":1, \"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: BadRequest 400 ==> For device type the socode must have UUID pattern!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 1,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: BadRequest 400 ==> idSoCategory mandatory if idSoType is not 3",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 2,
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: BadRequest 400 ==> slug not alphanumeric!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{ \"slug\":\"code,,slug\", \"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: deve restituire http status 200!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,  
+		"adminapi.message" : "{\"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 200,		
+		"expected.httpStatus.delete-response" : 204,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: BadReqest 400 ==> white space in socode!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"socode\":\"gh ghghjhj\", \"position\":{\"lat\":0, \"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     },
+     {
+    	"test-name": "ManagementController_createSmartObject_dataIn: BadRequest 400 ==> lon mandatory!",
+		"adminapi.apicode": "management",
+		"adminapi.idSoType": 3,
+		"adminapi.message" : "{\"position\":{\"lon\":7511974,\"elevation\":247,\"room\": 22,\"building\":\"CSI PIEM\",\"floor\":33,\"address\":\"Corso Unione\",\"city\":\"Turin\",\"country\":\"Piemonte\",\"placegeometry\":\"aaa\"},\"name\":\"name_1\",\"description\" : \"description\",\"urladmin\" : \"urladmin\",\"fbcoperationfeedback\" : \"fbcoperationfeedback\",\"swclientversion\" : \"swclie\",\"version\" : 1,\"model\" : \"model\",\"deploymentversion\" : 1,\"sostatus\" : \"sostatus\",\"twtmaxsearchnumber\" : 1,\"twtmaxsearchinterval\" : 1,\"twtusertoken\" : \"twtusertoken\",\"twttokensecret\" : \"twttokensecret\",\"twtname\" : \"twtname\",\"twtuserid\" : 1,\"twtmaxstreams\" : 1,\"idLocationType\" : 1,\"idExposureType\" : 1,\"idSupplyType\" : 1,\"idSoCategory\" : 1,\"idStatus\" : 1}",
+        "expected.httpStatus.response" : 400,		
+		"expected.httpStatus.delete-response" : 404,		
+		"adminapi.id-generated": "idSmartObject"		
+     }
+]
+}

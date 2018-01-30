@@ -1,0 +1,56 @@
+{
+"data" : [
+    {
+        "test-name": "BackOfficeController_organization_dataIns: deve restituire http status 200!",
+        "adminapi.apicode": "backoffice",
+        "adminapi.entityset": "organizations",
+        "adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"organizationcode\": \"testorg333\",\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[1],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}",
+        "adminapi.message.update" : "{\"organizationcode\": \"testupdateorg44444\",\"description\": \"desc_test_update_org_1\",\"ecosystemCodeList\":[1],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 200,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     },
+     {
+        "test-name": "BackOfficeController_organization_dataIns: mandatario lang en!",
+        "adminapi.apicode": "backoffice",
+        "adminapi.entityset": "organizations",
+        "adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[1],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}",
+        "adminapi.message.update" : "{\"organizationcode\": \"testupdateorg1\",\"description\": \"desc_test_update_org_1\",\"ecosystemCodeList\":[1],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.httpStatus.update-response" : 400,
+        "expected.httpStatus.delete-response" : 204,
+        "expected.update-errorName" : "Mandatory parameter"
+     },
+     {
+        "test-name": "BackOfficeController_organization_dataIns: ecosystem non presente",
+        "adminapi.apicode": "backoffice",
+        "adminapi.entityset": "organizations",
+        "adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"organizationcode\": \"testorg1\",\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[7777],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.errorName": "Integrity violation"
+     },
+    {
+        "test-name": "BackOfficeController_organization_dataIns: 400 ! - socialphoenixschemaname mancante",
+        "adminapi.apicode": "backoffice",
+        "adminapi.entityset": "organizations",
+        "adminapi.id-generated": "idOrganization",
+        "adminapi.message" : "{\"organizationcode\": \"testorg333\",\"description\": \"desc_test_org_1\",\"ecosystemCodeList\":[1],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\"}",
+        "adminapi.message.update" : "{\"organizationcode\": \"testupdateorg44444\",\"description\": \"desc_test_update_org_1\",\"ecosystemCodeList\":[1],\"datasolrcollectionname\":\"DATA_SOLR_COLLECTION_NAME_1\",\"measuresolrcollectionname\":\"MEASURE_SOLR_COLLECTION_NAME_1\",\"mediasolrcollectionname\":\"MEDIA_SOLR_COLLECTION_NAME_1\",\"socialsolrcollectionname\":\"SOCIAL_SOLR_COLLECTION_NAME_1\",\"dataphoenixtablename\":\"DATA_PHOENIX_TABLE_NAME_1\",\"dataphoenixschemaname\":\"DATA_PHOENIX_SCHEMA_NAME_1\",\"measuresphoenixtablename\":\"MEASURES_PHOENIX_TABLE_NAME_1\",\"measuresphoenixschemaname\":\"MEASURES_PHOENIX_SCHEMA_NAME_1\",\"mediaphoenixtablename\":\"MEDIA_PHOENIX_TABLE_NAME_1\",\"mediaphoenixschemaname\":\"MEDIA_PHOENIX_SCHEMA_NAME_1\",\"socialphoenixtablename\":\"SOCIAL_PHOENIX_TABLE_NAME_1\",\"socialphoenixschemaname\":\"SOCIAL_PHOENIX_SCHEMA_NAME_1\"}",
+        "adminapi.username" : "",
+        "adminapi.password" : "",
+        "expected.httpStatus.response" : 400,
+        "expected.httpStatus.update-response" : 200,
+        "expected.httpStatus.delete-response" : 204
+     }
+     
+]
+}

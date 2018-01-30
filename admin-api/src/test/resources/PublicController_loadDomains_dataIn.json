@@ -1,0 +1,48 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_loadDomains_dataIns: deve restituire http status 200!",
+    	"adminapi.entityset": "domains",
+    	"adminapi.sort": "domaincode",
+    	"adminapi.ecosystemCode": "eco111",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":200
+     },
+    {
+		"test-name": "PublicController_loadDomains_dataIns: non viene passato parametro mandatario [ecosystemCode]",
+    	"adminapi.entityset": "domains",
+    	"adminapi.sort": "domaincode",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Mandatory parameter: ecosystemCode"
+     },
+     
+     { 
+     	"test-name": "PublicController_loadDomains_dataIns: record not found, ecosysteCode non presente in sistema!",
+    	"adminapi.entityset": "domains",
+    	"adminapi.sort": "domaincode",
+    	"adminapi.ecosystemCode": "ghgj",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":404,
+		"expected.errorName": "Record not found"    
+     },
+     {
+		"test-name": "PublicController_loadDomains_dataIns: viene passata come sort una property inesitente!",
+    	"adminapi.entityset": "domains",
+    	"adminapi.sort": "nome_campo_inesistente",
+    	"adminapi.ecosystemCode": "eco111",
+    	"adminapi.lang": "langEN",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Property not found: nome_campo_inesistente"
+     },
+    {
+		"test-name": "PublicController_loadDomains_dataIns: viene passaata come lang una lingua non supportata!",
+    	"adminapi.entityset": "domains",
+    	"adminapi.sort": "domaincode",
+    	"adminapi.ecosystemCode": "eco111",
+    	"adminapi.lang": "lingua_non_supportata",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Language not supported: lingua_non_supportata"
+     }          
+	]
+}

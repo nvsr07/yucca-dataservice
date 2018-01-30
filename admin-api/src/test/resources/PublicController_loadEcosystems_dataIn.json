@@ -1,0 +1,12 @@
+{
+"data" : [
+    {
+    	"test-name": "PublicController_loadEcosystem_dataIns: deve restituire http status 200!",
+    	"adminapi.entityset": "ecosystems",
+    	"adminapi.sort": "idEcosystem-",
+    	"adminapi.organizationCode": "PROVAPWD09",
+		"expected.httpStatus.response":200
+		
+     }
+	]
+}

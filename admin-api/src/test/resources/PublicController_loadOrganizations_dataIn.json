@@ -1,0 +1,34 @@
+{
+"data" : [
+    {
+		"test-name": "PublicController_loadOrganizations_dataIns: deve restituire http status 200!",
+    	"adminapi.entityset": "organizations",
+    	"adminapi.sort": "idOrganization",
+    	"adminapi.ecosystemCode": "eco111",
+		"expected.httpStatus.response":200
+     },
+    {
+		"test-name": "PublicController_loadOrganizations_dataIns: non viene passato parametro mandatario [ecosystemCode]",
+    	"adminapi.entityset": "organizations",
+    	"adminapi.sort": "idOrganization",
+		"expected.httpStatus.response":400,
+        "expected.errorName": "Mandatory parameter: ecosystemCode"
+     },    
+     { 
+     	"test-name": "PublicController_loadOrganizations_dataIns: record not found, ecosysteCode non presente in sistema!",
+    	"adminapi.entityset": "organizations",
+    	"adminapi.sort": "idOrganization",
+    	"adminapi.ecosystemCode": "eco111333",
+		"expected.httpStatus.response":404,
+		"expected.errorName": "Record not found"    
+     },
+     {
+		"test-name": "PublicController_loadOrganizations_dataIns: viene passata come sort una property inesitente!",
+    	"adminapi.entityset": "organizations",
+    	"adminapi.sort": "nome_campo_inesistente",
+    	"adminapi.ecosystemCode": "eco111",
+		"expected.httpStatus.response":400,
+		"expected.errorName": "Property not found: nome_campo_inesistente"
+     }          
+	]
+}

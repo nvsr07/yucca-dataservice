@@ -1,0 +1,20 @@
+{
+"data" : [
+
+    {
+    	"test-name": "BackOfficeController_get api!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "api",
+		"adminapi.additionalpath": "ds_TrFl_3",
+        "expected.httpStatus.response" : 200
+     },
+         {
+    	"test-name": "BackOfficeController_get api!",
+		"adminapi.apicode": "backoffice",
+		"adminapi.entityset": "api",
+		"adminapi.additionalpath": "aa",
+        "expected.httpStatus.response" : 404
+     }
+     
+]
+}
