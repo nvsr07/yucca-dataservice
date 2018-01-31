@@ -415,7 +415,7 @@ public class DatasetServiceImpl implements DatasetService {
 						update = true;
 						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
 					} catch (Exception e) {
-						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
+						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + e.getMessage());
 						e.printStackTrace();
 					}
 				} else {
