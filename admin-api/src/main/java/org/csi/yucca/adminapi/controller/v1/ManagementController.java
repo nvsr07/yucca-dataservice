@@ -210,17 +210,6 @@ public class ManagementController extends YuccaController {
 	}
 
 	/**
-<<<<<<< HEAD
-=======
-	 * <<<<<<< HEAD
-	 * 
-	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/
-	 * Inserimento_Dataset
-	 * 
-	 * ======= >>>>>>> branch 'master' of
-	 * https://github.com/csipiemonte/yucca-dataservice.git
-	 * 
->>>>>>> branch 'master' of https://github.com/csipiemonte/yucca-dataservice.git
 	 * @param organizationCode
 	 * @param file
 	 * @param dataset
