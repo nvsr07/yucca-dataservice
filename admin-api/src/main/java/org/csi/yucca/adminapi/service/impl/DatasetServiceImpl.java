@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.Constants.*;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
 import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
 import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
@@ -414,7 +415,7 @@ public class DatasetServiceImpl implements DatasetService {
 					.apiname(dettaglioDataset.getDatasetname())
 					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(dettaglioDataset.getIdDataSource())
-					.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
 					);
 
 			// publisher
@@ -937,7 +938,7 @@ public class DatasetServiceImpl implements DatasetService {
 					.apiname(dettaglioDataset.getDatasetname())
 					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(dettaglioDataset.getIdDataSource())
-					.maxOdataResultperpage(bundles.getMaxOdataResultperpage()));
+					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE ));
 
 			// publisher
 			apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
