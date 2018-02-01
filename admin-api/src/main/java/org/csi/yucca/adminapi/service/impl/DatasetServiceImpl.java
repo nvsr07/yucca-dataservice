@@ -42,6 +42,7 @@ import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.importmetadata.DatabaseReader;
 import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.mapper.ApiMapper;
+import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.ComponentMapper;
 import org.csi.yucca.adminapi.mapper.DataSourceMapper;
 import org.csi.yucca.adminapi.mapper.DatasetMapper;
@@ -55,6 +56,7 @@ import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
 import org.csi.yucca.adminapi.model.Api;
+import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
@@ -145,6 +147,9 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	private SmartobjectMapper smartobjectMapper;
+
+	@Autowired
+	private BundlesMapper bundlesMapper;
 	
 	@Value("${hive.jdbc.user}")
 	private String hiveUser;
@@ -366,7 +371,7 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @param datasetRequest
 	 * @throws Exception
 	 */
-	private void updateDatasetTransaction(DatasetRequest datasetRequest) throws Exception {
+	private void updateDatasetTransaction(DatasetRequest datasetRequest, String tenantCodeManager) throws Exception {
 		
 		// dcat
 		Long idDcat = insertDcat(datasetRequest.getDcat(), dcatMapper);
@@ -395,12 +400,22 @@ public class DatasetServiceImpl implements DatasetService {
 		// TODO vanno clonate le api?
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		if (!datasetRequest.getUnpublished()) {
+			
 			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode());
 
 			String apiName = null;
 			
-			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
-					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
+			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
+			
+			apiMapper.insertApi(
+					
+					Api.buildOutput(datasetRequest.getNewDataSourceVersion())
+					.apicode(datasetRequest.getDatasetcode())
+					.apiname(dettaglioDataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(dettaglioDataset.getIdDataSource())
+					.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+					);
 
 			// publisher
 			boolean update = false;
@@ -445,11 +460,17 @@ public class DatasetServiceImpl implements DatasetService {
 	/**
 	 * 
 	 */
-	public ServiceResponse updateDataset(String organizationCode, Integer idDataset, DatasetRequest datasetRequest,  String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+	@Override
+	public ServiceResponse updateDataset(
+			String organizationCode, 
+			Integer idDataset, 
+			DatasetRequest datasetRequest,  
+			String tenantCodeManager, 
+			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
 		updateDatasetValidation(datasetRequest, authorizedUser, organizationCode, idDataset, tenantCodeManager);
 		
-		updateDatasetTransaction(datasetRequest);
+		updateDatasetTransaction(datasetRequest, tenantCodeManager);
 		
 		return ServiceResponse.build().object(PostDatasetResponse.build(idDataset)
 				.datasetcode(datasetRequest.getDatasetcode()).datasetname(datasetRequest.getDatasetname()));
@@ -907,8 +928,15 @@ public class DatasetServiceImpl implements DatasetService {
 
 			String apiName = null;
 			
-			apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(postDatasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
-					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
+			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+			
+			apiMapper.insertApi(
+					Api.buildOutput(DATASOURCE_VERSION)
+					.apicode(postDatasetRequest.getDatasetcode())
+					.apiname(dettaglioDataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(dettaglioDataset.getIdDataSource())
+					.maxOdataResultperpage(bundles.getMaxOdataResultperpage()));
 
 			// publisher
 			boolean update = false;

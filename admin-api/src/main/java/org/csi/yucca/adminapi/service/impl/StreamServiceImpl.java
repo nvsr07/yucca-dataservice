@@ -286,6 +286,7 @@ public class StreamServiceImpl implements StreamService {
 		return actionOnStream(dettaglioStream, actionRequest, apiUserType);
 	}
 
+	
 	/**
 	 * 
 	 * @param dettaglioStream
@@ -334,6 +335,19 @@ public class StreamServiceImpl implements StreamService {
 		// datasourceversion
 		datasetMapper.cloneDataset(newVersion, dettaglioStream.getDatasourceversion(),
 				dettaglioStream.getIdDataSource());
+
+		// api: socket, mqtt
+		insertApi(dettaglioStream.getStreamname(), Util.intToBoolean(dettaglioStream.getSavedata()), 
+				dettaglioStream.getSmartObjectCode(), dettaglioStream.getIdDataSource(),
+				dettaglioStream.getStreamcode(), newVersion);
+		
+		// clone api odata
+		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioStream.getTenantCode());
+		apiMapper.cloneApi( newVersion, 
+							dettaglioStream.getDatasourceversion(), 
+							dettaglioStream.getIdDataSource(), 
+							Api.API_TYPE, API_SUBTYPE_ODATA, 
+							bundles.getMaxOdataResultperpage() );
 
 	}
 
@@ -732,18 +746,66 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void insertApi(StreamRequest request, Smartobject smartobject, Dataset dataset, Integer idDataSource,
 			String streamCode, Integer dataSourceVersion) {
-		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
-				.apicode(API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
-				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
+		insertApi(request.getStreamname(), request.getSavedata(), smartobject.getSocode(), dataset, idDataSource, streamCode, dataSourceVersion);
+	}
+
+	/**
+	 * 
+	 * @param streamName
+	 * @param saveData
+	 * @param soCode
+	 * @param idDataSource
+	 * @param streamCode
+	 * @param dataSourceVersion
+	 */
+	private void insertApi(String streamName, Boolean saveData, String soCode, Integer idDataSource,
+			String streamCode, Integer dataSourceVersion) {
+		insertApi(streamName, saveData, soCode, null, idDataSource, streamCode, dataSourceVersion);
+	}
+
+	/**
+	 * 
+	 * @param streamName
+	 * @param saveData
+	 * @param soCode
+	 * @param dataset
+	 * @param idDataSource
+	 * @param streamCode
+	 * @param dataSourceVersion
+	 */
+	private void insertApi(String streamName, Boolean saveData, String soCode, Dataset dataset, Integer idDataSource,
+			String streamCode, Integer dataSourceVersion) {
+		
+		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+		
+		apiMapper.insertApi(
+				Api.buildOutput(dataSourceVersion)
+				.apicode(API_CODE_PREFIX_WEBSOCKET + soCode + streamCode)
+				.apiname(streamName)
+				.apisubtype(API_SUBTYPE_WEBSOCKET)
+				.idDataSource(idDataSource)
+				.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+				);
 
 		apiMapper.insertApi(
-				Api.buildOutput(dataSourceVersion).apicode(API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
-						.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_MQTT).idDataSource(idDataSource));
+				Api.buildOutput(dataSourceVersion)
+				.apicode(API_CODE_PREFIX_MQTT + soCode + streamCode)
+				.apiname(streamName)
+				.apisubtype(API_SUBTYPE_MQTT)
+				.idDataSource(idDataSource)
+				.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+				);
 
-		if (request.getSavedata() && dataset != null) {
-			apiMapper.insertApi(Api.buildOutput(dataSourceVersion).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA).idDataSource(idDataSource)
-					.entitynamespace("it.csi.smartdata.odata." + dataset.getDatasetcode()));
+		if (saveData && dataset != null) {
+			apiMapper.insertApi(
+				Api.buildOutput(dataSourceVersion)
+				.apicode(dataset.getDatasetcode())
+				.apiname(dataset.getDatasetname())
+				.apisubtype(API_SUBTYPE_ODATA)
+				.idDataSource(idDataSource)
+				.entitynamespace( Api.ENTITY_NAMESPACE + dataset.getDatasetcode())
+				.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+				);
 		}
 	}
 
@@ -1536,11 +1598,17 @@ public class StreamServiceImpl implements StreamService {
 	private void updateApi(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject,
 			Dataset dataset) throws Exception {
 
+		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+		
 		if (streamRequest.getSavedata().booleanValue() && streamToUpdate.getSaveData().intValue() == 0
 				&& dataset != null) {
-			apiMapper.insertApi(Api.buildOutput(streamToUpdate.getDataSourceVersion()).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+			apiMapper.insertApi(
+					Api.buildOutput(streamToUpdate.getDataSourceVersion())
+					.apicode(dataset.getDatasetcode())
+					.apiname(dataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(streamToUpdate.getIdDataSource())
+					.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
 					.entitynamespace("it.csi.smartdata.odata." + dataset.getDatasetcode()));
 		}
 		if (streamRequest.getSavedata().booleanValue() == false && streamToUpdate.getSaveData().intValue() >= 1) {

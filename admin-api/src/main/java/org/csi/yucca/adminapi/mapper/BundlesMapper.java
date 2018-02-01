@@ -40,6 +40,25 @@ public interface BundlesMapper {
 	public static final String DELETE_BUNDLES = "DELETE FROM " + BUNDLES_TABLE + " WHERE id_bundles = #{idBundles}";
 	@Delete(DELETE_BUNDLES)
 	int deleteBundles(int idBundles);	
+	
+	/*************************************************************************
+	 * 
+	 * 					SELECT BUNDLES BY CODE TENANT
+	 * 
+	 * ***********************************************************************/
+	public static final String SELECT_BUNDLES_BY_TENANT_CODE =
+	" SELECT BUNDLES.id_bundles, maxdatasetnum, maxstreamsnum, hasstage, max_odata_resultperpage, " + 
+	" zeppelin FROM " + BUNDLES_TABLE
+	+ " BUNDLES, " + R_TENANT_BUNDLES_TABLE + " TENANT_BUNDLES, " + TenantMapper.TENANT_TABLE + " TENANT" 
+	+ " WHERE TENANT_BUNDLES.id_tenant = TENANT.id_tenant  AND " 
+	+ " TENANT.tenantcode = #{tenantCode} AND " 
+	+ " BUNDLES.id_bundles = TENANT_BUNDLES.id_bundles "; 
+	@Results({
+        @Result(property = "idBundles", column = "id_bundles"),
+        @Result(property = "maxOdataResultperpage", column = "max_odata_resultperpage")
+      })
+	@Select(SELECT_BUNDLES_BY_TENANT_CODE) 
+	Bundles selectBundlesByTenantCode(@Param("tenantCode") String tenantCode);
 
 	
 	/*************************************************************************

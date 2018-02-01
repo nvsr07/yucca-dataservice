@@ -4,15 +4,13 @@ import org.csi.yucca.adminapi.model.Api;
 
 public class BackofficeDettaglioApiResponse {
 
-
 	private Integer idapi;
 	private String apicode;
 	private String apiname;
 	private String apitype;
 	private String apisubtype;
 	private String entitynamespace;
-	
-	
+	private Integer maxOdataResultperpage;
 	
 	private BackofficeDettaglioStreamDatasetResponse backofficeDettaglioStreamDatasetResponse;
 	
@@ -21,6 +19,7 @@ public class BackofficeDettaglioApiResponse {
 	}
 
 	public BackofficeDettaglioApiResponse(Api api, BackofficeDettaglioStreamDatasetResponse dettaglioStreamDatasetResponse) {
+		this.maxOdataResultperpage = api.getMaxOdataResultperpage();
 		this.idapi = api.getIdapi();
 		this.apicode = api.getApicode();
 		this.apiname = api.getApiname();
@@ -85,6 +84,14 @@ public class BackofficeDettaglioApiResponse {
 	public void setDettaglioStreamDatasetResponse(
 			BackofficeDettaglioStreamDatasetResponse dettaglioStreamDatasetResponse) {
 		this.backofficeDettaglioStreamDatasetResponse = dettaglioStreamDatasetResponse;
+	}
+
+	public Integer getMaxOdataResultperpage() {
+		return maxOdataResultperpage;
+	}
+
+	public void setMaxOdataResultperpage(Integer maxOdataResultperpage) {
+		this.maxOdataResultperpage = maxOdataResultperpage;
 	}
 	
 }
