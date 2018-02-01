@@ -407,37 +407,23 @@ public class StreamServiceImpl implements StreamService {
 		Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		if (dettaglioStream.getDataSourceUnpublished()!=1) {
 			DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-
-			String apiName = null;
-			boolean update = false;
-			try {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
-				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
-			} catch (Exception duplicateException) {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
-				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
-					try {
-						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
-						update = true;
-						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
-					} catch (Exception e) {
-						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
-						e.printStackTrace();
-					}
-				} else {
-					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
-					duplicateException.printStackTrace();
-				}
+			
+			String apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream);
+			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+			if(dettaglioStream.getSavedata()==1){
+				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream, dataset.getDatasetcode());
+				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			}
 			
-			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			SolrDelegate.build().addDocument(dettaglioStream, dettaglioSmartobject, dataset);
 
 		}else {
 			logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + dettaglioStream.getStreamname());
 			try {
-				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode()));
+				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameTopic(dettaglioStream));
+				if(dettaglioStream.getSavedata()==1)
+				 removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode()));
+
 				logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
 
 			} catch (Exception ex) {

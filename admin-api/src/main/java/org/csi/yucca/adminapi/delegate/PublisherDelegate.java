@@ -31,6 +31,8 @@ public class PublisherDelegate {
 	private static final Logger logger = Logger.getLogger(PublisherDelegate.class);
 
 	public static final int API_FIELD_MAX_LENGTH = 600;
+	public static final String API_TYPE_ODATA = "api_odata";
+	public static final String API_TYPE_TOPIC = "api_topic";
 
 	private static PublisherDelegate publisherDelegate;
 
@@ -94,36 +96,72 @@ public class PublisherDelegate {
 		return datasetCode + "_odata";
 	}
 
-	public String addApi(CloseableHttpClient httpclient, boolean update, DettaglioStream stream, String datasetcode) throws HttpException, IOException, Exception {
+	public static final String createApiNameTopic(DettaglioStream dettaglioStream) {
+		return dettaglioStream.getTenantCode() + "." + dettaglioStream.getSmartObjectCode() + "_" + dettaglioStream.getStreamcode() + "_stream";
+	}
+
+	public String addApi(CloseableHttpClient httpclient, DettaglioStream stream) throws HttpException, IOException, Exception {
 		logger.debug("[PublisherDelegate::addApi] STREAM");
 
 		List<NameValuePair> addApiParams = new LinkedList<NameValuePair>();
 
-		String apiName = datasetcode;
 		addApiParams.add(new BasicNameValuePair("description", stream.getStreamname() != null ? Util.safeSubstring(stream.getStreamname(), API_FIELD_MAX_LENGTH) : ""));
 		addApiParams.add(new BasicNameValuePair("codiceStream", stream.getStreamcode() != null ? stream.getStreamcode() : ""));
 		addApiParams.add(new BasicNameValuePair("nomeStream", stream.getStreamname() != null ? stream.getStreamname() : ""));
-		addApiParams.add(new BasicNameValuePair("virtualEntityName", stream.getSmartObjectCode() != null ? stream.getSmartObjectCode() : ""));
+		addApiParams.add(new BasicNameValuePair("virtualEntityCode", stream.getSmartObjectCode() != null ? stream.getSmartObjectCode() : ""));
 		addApiParams.add(new BasicNameValuePair("virtualEntityName", stream.getSmartObjectName() != null ? stream.getSmartObjectName() : ""));
 		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", stream.getSmartObjectDescription() != null ? Util.safeSubstring(stream.getSmartObjectDescription(),
 				API_FIELD_MAX_LENGTH) : ""));
 
-		return addApi(httpclient, update, addApiParams, apiName, stream.getDataSourceVisibility(), stream.getSharingTenant(), stream.getDomDomainCode(), stream.getTags(),
-				stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName());
+		String apiName = createApiNameTopic(stream);
+		String apiContext = "/api/topic/output." + stream.getTenantCode() + "." + stream.getSmartObjectCode() + "_" + stream.getStreamcode();
+		String endpoint = "http://api.smartdatanet.it/dammiInfo";
+		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, stream.getDataSourceVisibility(), stream.getSharingTenant(), stream.getDomDomainCode(),
+				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName());
+	}
+
+	public String addApi(CloseableHttpClient httpclient, DettaglioStream stream, String datasetcode) throws HttpException, IOException, Exception {
+		logger.debug("[PublisherDelegate::addApi] STREAM");
+
+		List<NameValuePair> addApiParams = new LinkedList<NameValuePair>();
+
+		addApiParams.add(new BasicNameValuePair("description", stream.getStreamname() != null ? Util.safeSubstring(stream.getStreamname(), API_FIELD_MAX_LENGTH) : ""));
+		addApiParams.add(new BasicNameValuePair("codiceStream", stream.getStreamcode() != null ? stream.getStreamcode() : ""));
+		addApiParams.add(new BasicNameValuePair("nomeStream", stream.getStreamname() != null ? stream.getStreamname() : ""));
+		addApiParams.add(new BasicNameValuePair("virtualEntityCode", stream.getSmartObjectCode() != null ? stream.getSmartObjectCode() : ""));
+		addApiParams.add(new BasicNameValuePair("virtualEntityName", stream.getSmartObjectName() != null ? stream.getSmartObjectName() : ""));
+		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", stream.getSmartObjectDescription() != null ? Util.safeSubstring(stream.getSmartObjectDescription(),
+				API_FIELD_MAX_LENGTH) : ""));
+
+		String apiName = createApiNameOData(datasetcode);
+		String endpoint = baseApiUrl + apiName;
+		String apiContext = "/api/" + datasetcode;
+		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, stream.getDataSourceVisibility(), stream.getSharingTenant(), stream.getDomDomainCode(),
+				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName());
 
 	}
 
-	private String addApi(CloseableHttpClient httpclient, boolean update, List<NameValuePair> addApiParams, String apiName, String visibility, String sharingTenant,
-			String domainCode, String tags, String icon, String license, String disclaimer, String tenantcode, String tenantname) throws Exception {
+	public String addApi(CloseableHttpClient httpclient, DettaglioDataset dataset) throws HttpException, IOException, Exception {
+		logger.debug("[PublisherDelegate::addApi] DATASET");
+		List<NameValuePair> addApiParams = new LinkedList<NameValuePair>();
 
+		// addApiParams.add(new BasicNameValuePair("action", "addAPI"));
+		addApiParams.add(new BasicNameValuePair("description", dataset.getDescription() != null ? Util.safeSubstring(dataset.getDescription(), API_FIELD_MAX_LENGTH) : ""));
+		addApiParams.add(new BasicNameValuePair("codiceStream", ""));
+		addApiParams.add(new BasicNameValuePair("nomeStream", ""));
+		addApiParams.add(new BasicNameValuePair("virtualEntityName", ""));
+		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", ""));
+
+		String apiName = createApiNameOData(dataset.getDatasetcode());
 		String endpoint = baseApiUrl + apiName;
-		String apiFinalName = createApiNameOData(apiName);
+		String apiContext = "/api/" + apiName;
+		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, dataset.getDataSourceVisibility(), dataset.getSharingTenant(), dataset.getDomDomainCode(),
+				dataset.getTags(), dataset.getDataSourceIcon(), dataset.getLicense(), dataset.getDataSourceDisclaimer(), dataset.getTenantCode(), dataset.getTenantName());
 
-		if (update) {
-			addApiParams.add(new BasicNameValuePair("action", "updateAPI"));
-		} else {
-			addApiParams.add(new BasicNameValuePair("action", "addAPI"));
-		}
+	}
+
+	private String addApi(CloseableHttpClient httpclient, List<NameValuePair> addApiParams, String apiName, String endpoint, String apiContext, String visibility,
+			String sharingTenant, String domainCode, String tags, String icon, String license, String disclaimer, String tenantcode, String tenantname) throws Exception {
 
 		if ("public".equals(visibility)) {
 			addApiParams.add(new BasicNameValuePair("visibility", "public"));
@@ -155,8 +193,6 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("ok", responseOk));
 
 		addApiParams.add(new BasicNameValuePair("version", "1.0"));
-		addApiParams.add(new BasicNameValuePair("name", apiFinalName));
-		addApiParams.add(new BasicNameValuePair("context", "/api/" + apiName));
 		addApiParams.add(new BasicNameValuePair("P", ""));
 		addApiParams.add(new BasicNameValuePair("endpoint", endpoint));
 
@@ -229,35 +265,32 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("extra_longitude", ""));
 
 		String url = publisherUrl + "site/blocks/item-add/ajax/add.jag";
+
+
+		addApiParams.add(new BasicNameValuePair("name", apiName));
+		addApiParams.add(new BasicNameValuePair("context", apiContext));
+
+		addApiParams.add(0, new BasicNameValuePair("action", "addAPI"));
 		String response = HttpDelegate.makeHttpPost(httpclient, url, addApiParams);
 		if (response != null) {
 			StoreResponse publisherResponse = mapper.readValue(response, StoreResponse.class);
-			if (publisherResponse.getError())
-				throw new Exception(publisherResponse.getMessage());
+			if (publisherResponse.getError()) {
+				logger.info("[PublisherDelegate::addApi] - ERROR " + publisherResponse.getMessage());
+				if (publisherResponse.getMessage() != null && publisherResponse.getMessage().toLowerCase().contains("duplicate")) {
+					addApiParams.set(0, new BasicNameValuePair("action", "updateAPI"));
+					response = HttpDelegate.makeHttpPost(httpclient, url, addApiParams);
+					publisherResponse = mapper.readValue(response, StoreResponse.class);
+					if (publisherResponse.getError())
+						throw new Exception(publisherResponse.getMessage());
+				} else
+					throw new Exception(publisherResponse.getMessage());
+			}
 		}
 
 		// response {"error" : true, "message" :
 		// " Error occurred while adding the API. A duplicate API already exists for ProvaConErrori4_3070_odata-1.0"}
 		logger.debug("[PublisherDelegate::addApi] response " + response);
-		return apiFinalName;
-
-	}
-
-	public String addApi(CloseableHttpClient httpclient, boolean update, DettaglioDataset dataset) throws HttpException, IOException, Exception {
-		logger.debug("[PublisherDelegate::addApi] DATASET");
-		List<NameValuePair> addApiParams = new LinkedList<NameValuePair>();
-
-		String apiName = dataset.getDatasetcode();
-
-		// addApiParams.add(new BasicNameValuePair("action", "addAPI"));
-		addApiParams.add(new BasicNameValuePair("description", dataset.getDescription() != null ? Util.safeSubstring(dataset.getDescription(), API_FIELD_MAX_LENGTH) : ""));
-		addApiParams.add(new BasicNameValuePair("codiceStream", ""));
-		addApiParams.add(new BasicNameValuePair("nomeStream", ""));
-		addApiParams.add(new BasicNameValuePair("virtualEntityName", ""));
-		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", ""));
-
-		return addApi(httpclient, update, addApiParams, apiName, dataset.getDataSourceVisibility(), dataset.getSharingTenant(), dataset.getDomDomainCode(), dataset.getTags(),
-				dataset.getDataSourceIcon(), dataset.getLicense(), dataset.getDataSourceDisclaimer(), dataset.getTenantCode(), dataset.getTenantName());
+		return apiName;
 
 	}
 

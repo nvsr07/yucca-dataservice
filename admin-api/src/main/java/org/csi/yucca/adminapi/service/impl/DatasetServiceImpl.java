@@ -403,27 +403,28 @@ public class DatasetServiceImpl implements DatasetService {
 					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
 
 			// publisher
-			boolean update = false;
-			try {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
-				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
-			} catch (Exception duplicateException) {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
-				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
-					try {
-						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
-						update = true;
-						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
-					} catch (Exception e) {
-						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + e.getMessage());
-						e.printStackTrace();
-					}
-				} else {
-					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
-					duplicateException.printStackTrace();
-				}
-			}
-			
+			apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
+//			boolean update = false;
+//			try {
+//				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
+//				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+//			} catch (Exception duplicateException) {
+//				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
+//				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
+//					try {
+//						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
+//						update = true;
+//						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+//					} catch (Exception e) {
+//						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + e.getMessage());
+//						e.printStackTrace();
+//					}
+//				} else {
+//					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
+//					duplicateException.printStackTrace();
+//				}
+//			}
+//			
 			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			SolrDelegate.build().addDocument(dettaglioDataset);
 
@@ -911,26 +912,28 @@ public class DatasetServiceImpl implements DatasetService {
 					.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()));
 
 			// publisher
-			boolean update = false;
-			try {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
-				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
-			} catch (Exception duplicateException) {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
-				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
-					try {
-						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
-						update = true;
-						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
-					} catch (Exception e) {
-						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
-						e.printStackTrace();
-					}
-				} else {
-					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
-					duplicateException.printStackTrace();
-				}
-			}
+			apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
+
+//			boolean update = false;
+//			try {
+//				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
+//				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+//			} catch (Exception duplicateException) {
+//				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
+//				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
+//					try {
+//						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
+//						update = true;
+//						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioDataset);
+//					} catch (Exception e) {
+//						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
+//						e.printStackTrace();
+//					}
+//				} else {
+//					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
+//					duplicateException.printStackTrace();
+//				}
+//			}
 			
 			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			SolrDelegate.build().addDocument(dettaglioDataset);
