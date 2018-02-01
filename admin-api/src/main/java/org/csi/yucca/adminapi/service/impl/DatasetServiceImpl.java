@@ -391,24 +391,7 @@ public class DatasetServiceImpl implements DatasetService {
 			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			if (!datasetRequest.getUnpublished()) {
 
-<<<<<<< HEAD
 				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode());
-=======
-			String apiName = null;
-			
-			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
-			
-			apiMapper.insertApi(
-					
-					Api.buildOutput(datasetRequest.getNewDataSourceVersion())
-					.apicode(datasetRequest.getDatasetcode())
-					.apiname(dettaglioDataset.getDatasetname())
-					.apisubtype(API_SUBTYPE_ODATA)
-					.idDataSource(dettaglioDataset.getIdDataSource())
-					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
-					);
->>>>>>> branch 'oData-phoenix-admin' of https://github.com/csipiemonte/yucca-dataservice.git
-
 				String apiName = null;
 
 				Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
@@ -416,7 +399,8 @@ public class DatasetServiceImpl implements DatasetService {
 				apiMapper.insertApi(
 
 				Api.buildOutput(datasetRequest.getNewDataSourceVersion()).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
-						.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()).maxOdataResultperpage(bundles.getMaxOdataResultperpage()));
+						.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource())
+						.maxOdataResultperpage(bundles != null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE));
 
 				// publisher
 				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
@@ -521,9 +505,8 @@ public class DatasetServiceImpl implements DatasetService {
 
 		insertDatasetValidation(postDatasetRequest, authorizedUser, organizationCode, organization);
 
-
 		PostDatasetResponse response = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization);
-		return  ServiceResponse.build().object(response);
+		return ServiceResponse.build().object(response);
 	}
 
 	/**
@@ -866,12 +849,9 @@ public class DatasetServiceImpl implements DatasetService {
 			if (!postDatasetRequest.getUnpublished()) {
 				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(dataset.getDatasetcode());
 
-<<<<<<< HEAD
-				String apiName = null;
-=======
 			String apiName = null;
 			
-			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioDataset.getTenantCode());
 			
 			apiMapper.insertApi(
 					Api.buildOutput(DATASOURCE_VERSION)
@@ -880,13 +860,6 @@ public class DatasetServiceImpl implements DatasetService {
 					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(dettaglioDataset.getIdDataSource())
 					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE ));
->>>>>>> branch 'oData-phoenix-admin' of https://github.com/csipiemonte/yucca-dataservice.git
-
-				Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioDataset.getTenantCode());
-
-				apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode()).apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
-						.idDataSource(dataset.getIdDataSource()).maxOdataResultperpage(bundles.getMaxOdataResultperpage()));
-
 				// publisher
 				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
 				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
