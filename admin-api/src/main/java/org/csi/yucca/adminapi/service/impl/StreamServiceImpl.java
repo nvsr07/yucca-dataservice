@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.Constants.*;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_MQTT;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_WEBSOCKET;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
@@ -770,7 +771,7 @@ public class StreamServiceImpl implements StreamService {
 				.apiname(streamName)
 				.apisubtype(API_SUBTYPE_WEBSOCKET)
 				.idDataSource(idDataSource)
-				.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+				.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
 				);
 
 		apiMapper.insertApi(
@@ -779,7 +780,7 @@ public class StreamServiceImpl implements StreamService {
 				.apiname(streamName)
 				.apisubtype(API_SUBTYPE_MQTT)
 				.idDataSource(idDataSource)
-				.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+				.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
 				);
 
 		if (saveData && dataset != null) {
@@ -790,7 +791,7 @@ public class StreamServiceImpl implements StreamService {
 				.apisubtype(API_SUBTYPE_ODATA)
 				.idDataSource(idDataSource)
 				.entitynamespace( Api.ENTITY_NAMESPACE + dataset.getDatasetcode())
-				.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
+				.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
 				);
 		}
 	}
@@ -1594,8 +1595,8 @@ public class StreamServiceImpl implements StreamService {
 					.apiname(dataset.getDatasetname())
 					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(streamToUpdate.getIdDataSource())
-					.maxOdataResultperpage(bundles.getMaxOdataResultperpage())
-					.entitynamespace("it.csi.smartdata.odata." + dataset.getDatasetcode()));
+					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
+					.entitynamespace(API_NAMESPACE_BASE + dataset.getDatasetcode()));
 		}
 		if (streamRequest.getSavedata().booleanValue() == false && streamToUpdate.getSaveData().intValue() >= 1) {
 			apiMapper.deleteApi(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(),

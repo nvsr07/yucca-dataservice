@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.Constants.*;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
 import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
 import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
@@ -390,7 +391,23 @@ public class DatasetServiceImpl implements DatasetService {
 			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			if (!datasetRequest.getUnpublished()) {
 
+<<<<<<< HEAD
 				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode());
+=======
+			String apiName = null;
+			
+			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
+			
+			apiMapper.insertApi(
+					
+					Api.buildOutput(datasetRequest.getNewDataSourceVersion())
+					.apicode(datasetRequest.getDatasetcode())
+					.apiname(dettaglioDataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(dettaglioDataset.getIdDataSource())
+					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
+					);
+>>>>>>> branch 'oData-phoenix-admin' of https://github.com/csipiemonte/yucca-dataservice.git
 
 				String apiName = null;
 
@@ -849,7 +866,21 @@ public class DatasetServiceImpl implements DatasetService {
 			if (!postDatasetRequest.getUnpublished()) {
 				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(dataset.getDatasetcode());
 
+<<<<<<< HEAD
 				String apiName = null;
+=======
+			String apiName = null;
+			
+			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+			
+			apiMapper.insertApi(
+					Api.buildOutput(DATASOURCE_VERSION)
+					.apicode(postDatasetRequest.getDatasetcode())
+					.apiname(dettaglioDataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA)
+					.idDataSource(dettaglioDataset.getIdDataSource())
+					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE ));
+>>>>>>> branch 'oData-phoenix-admin' of https://github.com/csipiemonte/yucca-dataservice.git
 
 				Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioDataset.getTenantCode());
 
