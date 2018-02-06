@@ -211,11 +211,13 @@ public class StreamServiceImpl implements StreamService {
 			if (Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.INSTALLED.id(), dettaglioStream.getIdDataSource(),
 						dettaglioStream.getDatasourceversion());
+				publishStream(dettaglioStream);
 				return ServiceResponse.build().OK();
 			}
 			if (Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(),
 						dettaglioStream.getDatasourceversion());
+				publishStream(dettaglioStream);
 				return ServiceResponse.build().OK();
 			}
 		}
@@ -409,7 +411,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(),
 				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
-		publishStream(dettaglioStream);
+		
 		
 		return ServiceResponse.build().OK();
 	}
@@ -428,7 +430,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	private void publishStream(DettaglioStream dettaglioStream) throws Exception{
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-		if (dettaglioStream.getDataSourceUnpublished()!=1) {
+		if (dettaglioStream.getDataSourceUnpublished()!=1 && dettaglioStream.getIdStatus() == Status.INSTALLED.id()) {
 			DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
 			
 			String apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream);
