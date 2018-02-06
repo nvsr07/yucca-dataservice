@@ -88,6 +88,7 @@ import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.Response;
+import org.csi.yucca.adminapi.service.MailService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
@@ -159,6 +160,9 @@ public class StreamServiceImpl implements StreamService {
 
 	@Autowired
 	private WebServiceDelegate webServiceDelegate;
+	
+	@Autowired
+	private MailService mailService;
 	
 	/**
 	 * 
@@ -236,7 +240,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	private void validateActionOnStream(String statusCode, String action, ApiUserType apiUserType)
+	private boolean validateActionOnStream(String statusCode, String action, ApiUserType apiUserType)
 			throws BadRequestException, NotFoundException, Exception {
 
 		if (Status.DRAFT.code().equals(statusCode) && (!StreamAction.REQUEST_INSTALLATION.code().equals(action)
@@ -274,6 +278,8 @@ public class StreamServiceImpl implements StreamService {
 				&& !StreamAction.REQUEST_UNINSTALLATION.code().equals(action)) {
 			badRequestActionOnStream();
 		}
+		
+		return true;
 	}
 
 	/**
@@ -284,7 +290,7 @@ public class StreamServiceImpl implements StreamService {
 			throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
-
+		
 		return actionOnStream(dettaglioStream, actionRequest, apiUserType);
 	}
 
@@ -355,69 +361,70 @@ public class StreamServiceImpl implements StreamService {
 	}
 
 	/**
-	 * 
-	 * @param dettaglioStream
-	 * @param actionRequest
-	 * @param apiUserType
-	 * @return
-	 * @throws BadRequestException
-	 * @throws NotFoundException
-	 * @throws Exception
-	 */
-	private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRequest actionRequest,
-			ApiUserType apiUserType) throws BadRequestException, NotFoundException, Exception {
+ * 
+ * @param dettaglioStream
+ * @param actionRequest
+ * @param apiUserType
+ * @return
+ * @throws BadRequestException
+ * @throws NotFoundException
+ * @throws Exception
+ */
+private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRequest actionRequest,
+		ApiUserType apiUserType) throws BadRequestException, NotFoundException, Exception {
 
-		checkIfFoundRecord(dettaglioStream);
-		checkMandatoryParameter(actionRequest.getAction(), "Action");
-		
-		if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
-			checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
-			checkMandatoryParameter(actionRequest.getEndStep(), "EndStep");
-		}
-
-		validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
-
-		// REQUEST INSTALLATION (ONLY MANAGEMENT)
-		if (StreamAction.REQUEST_INSTALLATION.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.REQUEST_INSTALLATION.id(), dettaglioStream.getIdDataSource(),
-					dettaglioStream.getDatasourceversion());
-			return ServiceResponse.build().OK();
-		}
-
-		// NEW VERSION (ONLY MANAGEMENT)
-		if (StreamAction.NEW_VERSION.code().equals(actionRequest.getAction())) {
-			newVersionStream(dettaglioStream);
-			return ServiceResponse.build().OK();
-		}
-
-		// REQUEST UNINSTALLATION (ONLY MANAGEMENT)
-		if (StreamAction.REQUEST_UNINSTALLATION.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.REQUEST_UNINSTALLATION.id(),
-					dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-			return ServiceResponse.build().OK();
-		}
-
-		// INSTALLATION or UPGRADE (ONLY BACK OFFICE)
-		if (StreamAction.INSTALLATION.code().equals(actionRequest.getAction())
-				|| StreamAction.UPGRADE.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(),
-					dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
-			publishStream(dettaglioStream);
-			
-			return ServiceResponse.build().OK();
-		}
-
-		// UNINSTALLATION (ONLY BACK OFFICE)
-		if (StreamAction.DELETE.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(),
-					dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
-			return ServiceResponse.build().OK();
-		}
-
-		return ServiceResponse.build().NO_CONTENT();
+	boolean hasBeenValidated = false;
+	
+	checkIfFoundRecord(dettaglioStream);
+	checkMandatoryParameter(actionRequest.getAction(), "Action");
+	
+	if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
+		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+		checkMandatoryParameter(actionRequest.getEndStep(), "EndStep");
 	}
+	
+	hasBeenValidated = validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
+	
+	// REQUEST INSTALLATION (ONLY MANAGEMENT)
+	if (hasBeenValidated && StreamAction.REQUEST_INSTALLATION.code().equals(actionRequest.getAction())) {
+		dataSourceMapper.updateDataSourceStatus(Status.REQUEST_INSTALLATION.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		mailService.sendStreamRequestInstallationEmail(dettaglioStream);
+		return ServiceResponse.build().OK();
+	}
+
+	// NEW VERSION (ONLY MANAGEMENT)
+	if (hasBeenValidated && StreamAction.NEW_VERSION.code().equals(actionRequest.getAction())) {
+		newVersionStream(dettaglioStream);
+		return ServiceResponse.build().OK();
+	}
+
+	// REQUEST UNINSTALLATION (ONLY MANAGEMENT)
+	if (hasBeenValidated && StreamAction.REQUEST_UNINSTALLATION.code().equals(actionRequest.getAction())) {
+		dataSourceMapper.updateDataSourceStatus(Status.REQUEST_UNINSTALLATION.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		mailService.sendStreamRequestUninstallationEmail(dettaglioStream);
+		return ServiceResponse.build().OK();
+	}
+
+	// INSTALLATION or UPGRADE (ONLY BACK OFFICE)
+	if ( hasBeenValidated && (StreamAction.INSTALLATION.code().equals(actionRequest.getAction()) || StreamAction.UPGRADE.code().equals(actionRequest.getAction()))) {
+		dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(),
+				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
+		publishStream(dettaglioStream);
+		
+		return ServiceResponse.build().OK();
+	}
+
+	// UNINSTALLATION (ONLY BACK OFFICE)
+	if (hasBeenValidated && StreamAction.DELETE.code().equals(actionRequest.getAction())) {
+		dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(),
+				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
+		return ServiceResponse.build().OK();
+	}
+
+	return ServiceResponse.build().NO_CONTENT();
+}
 	
 	private void publishStream(DettaglioStream dettaglioStream) throws Exception{
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();

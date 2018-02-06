@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.conf;
 
+import java.util.Properties;
+
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
@@ -12,6 +14,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -61,6 +65,58 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
 
 		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+	}
+
+	@Bean
+	public JavaMailSender getMailSender() {
+		JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+
+		/*
+		
+		<parameter name="mail.smtp.host">
+			mailfarm-app.csi.it
+		</parameter> 
+		<parameter name="mail.smtp.port">
+			25
+		</parameter> 
+		<parameter name="mail.smtp.starttls.enable">
+			true
+		</parameter> 
+		<parameter name="mail.smtp.auth">
+			false
+		</parameter> 
+
+		<parameter 
+		<a href="mailto:name="mail.smtp.user">
+			claudio.parodi@csi.it">name="mail.smtp.user">
+			claudio.parodi@csi.it
+		</a>
+		</parameter> 
+		
+		<parameter name="mail.smtp.password">
+			mailpassword
+		</parameter> 
+		
+		<parameter <a href="mailto:name="mail.smtp.from">claudio.parodi@csi.it">name="mail.smtp.from">claudio.parodi@csi.it</a></parameter>		
+		
+		*/
+		
+		
+		// Using gmail
+		mailSender.setHost("mailfarm-app.csi.it");
+		mailSender.setPort(25);
+		
+		mailSender.setUsername("claudio.parodi@csi.it");
+//		mailSender.setPassword("mailpassword");
+		
+		Properties javaMailProperties = new Properties();
+		javaMailProperties.put("mail.smtp.starttls.enable", "true");
+		javaMailProperties.put("mail.smtp.auth", "false");
+		javaMailProperties.put("mail.transport.protocol", "smtp");
+		javaMailProperties.put("mail.debug", "true");
+
+		mailSender.setJavaMailProperties(javaMailProperties);
+		return mailSender;
 	}
 
 	// @Override
@@ -118,7 +174,7 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
 	}
-	
+
 	@Bean
 	public MultipartResolver multipartResolver() {
 		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
