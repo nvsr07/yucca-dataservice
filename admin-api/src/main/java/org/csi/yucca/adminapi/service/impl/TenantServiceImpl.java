@@ -374,15 +374,25 @@ public class TenantServiceImpl implements TenantService {
 	 * @param idTenantType
 	 * @return
 	 */
-	private int getProgressivo(Integer idTenantType) {
+	private String getProgressivo(Integer idTenantType) {
 
+		String progressivo = "";
+		
 		if (TenantType.PERSONAL.id() == idTenantType) {
-			return sequenceMapper.selectPersonalTenantsSequence();
+			progressivo = sequenceMapper.selectPersonalTenantsSequence()+"";
+		}
+		else{
+			progressivo = sequenceMapper.selectTrialTenantsSequence()+""; 
 		}
 
-		return sequenceMapper.selectTrialTenantsSequence();
+		while(progressivo.length() < 4 ){
+			progressivo = "0" + progressivo; 
+		}
+		
+		return progressivo;
 	}
 
+	
 	/**
 	 * 
 	 * @param tenantRequest
