@@ -1,12 +1,9 @@
 package org.csi.yucca.adminapi.model;
 
-import java.io.IOException;
 import java.sql.Timestamp;
 
 import org.csi.yucca.adminapi.util.Constants;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Dettaglio {
@@ -55,7 +52,8 @@ public class Dettaglio {
 	private String dataSourceIcon;
 	private String dcat; // JSON
 	private String license; // JSON
-	private String components; // JSON
+	private ComponentJson[] components; // JSON
+	private String componentsString; // JSON
 	private String sharingTenant; // JSON
 
 	public String getDataSourceCopyright() {
@@ -178,11 +176,11 @@ public class Dettaglio {
 		this.license = license;
 	}
 
-	public String getComponents() {
+	public ComponentJson[] getComponents() {
 		return components;
 	}
 
-	public void setComponents(String components) {
+	public void setComponents(ComponentJson[] components) {
 		this.components = components;
 	}
 
@@ -402,20 +400,38 @@ public class Dettaglio {
 		this.tags = tags;
 	}
 
-	public Component[] deserializeComponents() throws JsonParseException, JsonMappingException, IOException {
-		Component[] deserializedComponents = null;
-		if (getComponents() != null) {
-
-			ObjectMapper mapper = new ObjectMapper();
-			deserializedComponents = mapper.readValue(getComponents(), Component[].class);
-
-		}
-		return deserializedComponents;
-
-	}
+	// public Component[] deserializeComponents() throws JsonParseException,
+	// JsonMappingException, IOException {
+	// Component[] deserializedComponents = null;
+	// if (getComponents() != null) {
+	//
+	// ObjectMapper mapper = new ObjectMapper();
+	// deserializedComponents = mapper.readValue(getComponents(),
+	// Component[].class);
+	//
+	// }
+	// return deserializedComponents;
+	//
+	// }
 
 	public static String generateNameSpace(String tenantCode, String datasetcode) {
 		return Constants.API_NAMESPACE_BASE + "." + tenantCode + "." + datasetcode;
+	}
+
+	public String getComponentsString() {
+		return componentsString;
+	}
+
+	public void setComponentsString(String componentsString) {
+		this.componentsString = componentsString;
+		if (componentsString != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				setComponents(mapper.readValue(componentsString, ComponentJson[].class));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

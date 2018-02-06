@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import static org.csi.yucca.adminapi.util.Constants.*;
+import static org.csi.yucca.adminapi.util.Constants.MAX_ODATA_RESULT_PER_PAGE;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
 import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
 import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
@@ -58,6 +58,7 @@ import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
@@ -72,8 +73,6 @@ import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.request.InvioCsvRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
-import org.csi.yucca.adminapi.response.ComponentResponse;
-import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
@@ -171,16 +170,16 @@ public class DatasetServiceImpl implements DatasetService {
 
 		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
 		checkIfFoundRecord(dataset);
-		List<ComponentResponse> components = Util.getComponents(dataset.getComponents());
+		//List<ComponentResponse> components = Util.getComponents(dataset.getComponents());
 
-		checkComponentsSize(components, componentInfoRequests);
+		checkComponentsSize(dataset.getComponents(), componentInfoRequests);
 
-		List<String> errors = checkCsvFile(file, skipFirstRow, csvSeparator, components, componentInfoRequests);
+		List<String> errors = checkCsvFile(file, skipFirstRow, csvSeparator, dataset.getComponents(), componentInfoRequests);
 		if (!errors.isEmpty()) {
 			return ServiceResponse.build().object(errors);
 		}
 
-		List<String> csvRows = getCsvRows(file, skipFirstRow, components, componentInfoRequests, csvSeparator);
+		List<String> csvRows = getCsvRows(file, skipFirstRow, dataset.getComponents(), componentInfoRequests, csvSeparator);
 
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
 
@@ -199,7 +198,7 @@ public class DatasetServiceImpl implements DatasetService {
 		return ServiceResponse.build().object(invioCsvRequest);
 	}
 
-	private String getCsvRow(String row, String csvSeparator, List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests) {
+	private String getCsvRow(String row, String csvSeparator, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests) {
 
 		StringBuilder resultRow = new StringBuilder();
 
@@ -208,14 +207,14 @@ public class DatasetServiceImpl implements DatasetService {
 		for (int c = 0; c < columns.length; c++) {
 
 			ComponentInfoRequest info = getInfoByNumColumn(c, componentInfoRequests);
-			ComponentResponse component = getComponentResponseById(info.getIdComponent(), components);
+			ComponentJson component = getComponentResponseById(info.getIdComponent(), components);
 
 			if (info.isSkipColumn())
 				continue;
 
 			String doubleQuote = "";
 
-			if (DataType.STRING.id().equals(component.getDataType().getIdDataType()) || DataType.DATE_TIME.id().equals(component.getDataType().getIdDataType())) {
+			if (DataType.STRING.id().equals(component.getDt_id_data_type()) || DataType.DATE_TIME.id().equals(component.getDt_id_data_type())) {
 				doubleQuote = "\"";
 			}
 
@@ -228,7 +227,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 	}
 
-	private List<String> getCsvRows(MultipartFile file, boolean skipFirstRow, List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests,
+	private List<String> getCsvRows(MultipartFile file, boolean skipFirstRow, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests,
 			String csvSeparator) throws Exception {
 
 		String[] rows = Util.getCsvRows(file, skipFirstRow);
@@ -256,7 +255,7 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, List<ComponentResponse> components,
+	private List<String> checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, ComponentJson[] components,
 			List<ComponentInfoRequest> componentInfoRequests) throws Exception {
 
 		checkComponentsSize(components, componentInfoRequests);
@@ -283,16 +282,16 @@ public class DatasetServiceImpl implements DatasetService {
 					break;
 
 				ComponentInfoRequest info = getInfoByNumColumn(c, componentInfoRequests);
-				ComponentResponse component = getComponentResponseById(info.getIdComponent(), components);
+				ComponentJson component = getComponentResponseById(info.getIdComponent(), components);
 
-				if (info.isSkipColumn() || DataType.STRING.id().equals(component.getDataType().getIdDataType())) {
+				if (info.isSkipColumn() || DataType.STRING.id().equals(component.getDt_id_data_type())) {
 					continue;
 				}
 
 				String column = columns[c];
-				DataTypeResponse typeResponse = component.getDataType();
+				//DataTypeResponse typeResponse = component.getDataType();
 				for (DataType dateType : DataType.values()) {
-					if (dateType.id().equals(typeResponse.getIdDataType())) {
+					if (dateType.id().equals(component.getDt_id_data_type())) {
 						try {
 
 							if (DataType.DATE_TIME == dateType) {
@@ -910,11 +909,11 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @param list
 	 * @return
 	 */
-	private ComponentResponse getComponentResponseById(Integer idComponent, List<ComponentResponse> list) {
-		for (ComponentResponse componentResponse : list) {
+	private ComponentJson getComponentResponseById(Integer idComponent, ComponentJson[] components) {
+		for (ComponentJson component : components) {
 
-			if (componentResponse.getIdComponent().equals(idComponent)) {
-				return componentResponse;
+			if (component.getId_component().equals(idComponent)) {
+				return component;
 			}
 		}
 		return null;
@@ -926,13 +925,13 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @param componentInfoRequests
 	 * @throws Exception
 	 */
-	private void checkComponentsSize(List<ComponentResponse> components, List<ComponentInfoRequest> componentInfoRequests) throws Exception {
+	private void checkComponentsSize(ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests) throws Exception {
 		int columnCount = 0;
 		for (ComponentInfoRequest info : componentInfoRequests) {
 			if (!info.isSkipColumn())
 				columnCount++;
 		}
-		if (columnCount != components.size()) {
+		if (columnCount != components.length) {
 			throw new BadRequestException(Errors.NOT_ACCEPTABLE);
 		}
 	}

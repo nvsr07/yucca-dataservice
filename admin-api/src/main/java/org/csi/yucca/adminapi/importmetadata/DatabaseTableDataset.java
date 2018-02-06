@@ -3,7 +3,7 @@ package org.csi.yucca.adminapi.importmetadata;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.csi.yucca.adminapi.model.Component;
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
 
 public class DatabaseTableDataset {
@@ -16,7 +16,7 @@ public class DatabaseTableDataset {
 	private String status;
 	private Dataset dataset;
 	private List<String> warnings;
-	private List<Component> newComponents;
+	private List<ComponentJson> newComponents;
 
 	public DatabaseTableDataset() {
 		super();
@@ -38,11 +38,11 @@ public class DatabaseTableDataset {
 		this.dataset = dataset;
 	}
 
-	public List<Component> getNewComponents() {
+	public List<ComponentJson> getNewComponents() {
 		return newComponents;
 	}
 
-	public void setNewComponents(List<Component> newComponents) {
+	public void setNewComponents(List<ComponentJson> newComponents) {
 		this.newComponents = newComponents;
 	}
 

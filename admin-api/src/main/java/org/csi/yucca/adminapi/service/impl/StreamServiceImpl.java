@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import static org.csi.yucca.adminapi.util.Constants.*;
+import static org.csi.yucca.adminapi.util.Constants.API_NAMESPACE_BASE;
+import static org.csi.yucca.adminapi.util.Constants.MAX_ODATA_RESULT_PER_PAGE;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_MQTT;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_WEBSOCKET;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
@@ -60,6 +61,7 @@ import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
@@ -82,7 +84,6 @@ import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
-import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
@@ -318,10 +319,11 @@ public class StreamServiceImpl implements StreamService {
 		// duplicare tutti i record su yucca_component relativi al
 		// datasource/datasourceversion di interesse ma mettendo nuova
 		// datasourceversion
-		List<ComponentResponse> listCompinent = Util.getComponents(dettaglioStream.getComponents());
+		//List<ComponentResponse> listCompinent = Util.getComponents(dettaglioStream.getComponents());
+
 		List<Integer> listIdComponent = new ArrayList<Integer>();
-		for (ComponentResponse componentResponse : listCompinent) {
-			listIdComponent.add(componentResponse.getIdComponent());
+		for (ComponentJson componentJson : dettaglioStream.getComponents()) {
+			listIdComponent.add(componentJson.getId_component());
 		}
 		componentMapper.cloneComponent(newVersion, listIdComponent);
 

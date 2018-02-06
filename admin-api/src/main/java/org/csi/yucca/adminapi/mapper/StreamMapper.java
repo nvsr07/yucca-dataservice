@@ -235,7 +235,7 @@ public interface StreamMapper {
 			" where " +
 			" yucca_data_source.id_data_source = yucca_component.id_data_source AND " +
 			" yucca_data_source.datasourceversion = yucca_component.datasourceversion) comp " +
-			" ) components " +  
+			" ) componentsString " +  
 			" from " +  STREAM_INTERNAL_TABLE + " yucca_r_stream_internal " + 
 			" JOIN " + STREAM_TABLE + " yucca_stream ON yucca_r_stream_internal.idstream = yucca_stream.idstream " +
 			" JOIN " + DataSourceMapper.DATA_SOURCE_TABLE + " yucca_data_source ON yucca_data_source.id_data_source = yucca_stream.id_data_source " +
@@ -385,7 +385,7 @@ public interface StreamMapper {
 			" LEFT JOIN " +  MeasureUnitMapper.MEASURE_UNIT_TABLE + " yucca_d_measure_unit ON yucca_component.id_measure_unit = yucca_d_measure_unit.id_measure_unit " +
 			" where yucca_data_source.id_data_source = yucca_component.id_data_source AND " +
 			" yucca_data_source.datasourceversion = yucca_component.datasourceversion) comp " +
-			" ) components, " +
+			" ) componentsString, " +
 				
 			" (select array_to_json(array_agg(row_to_json(tenantshr))) from " + 
 			" ( select yucca_tenant.id_tenant, yucca_tenant.tenantcode, yucca_tenant.name, yucca_tenant.description, yucca_r_tenant_data_source.dataoptions, " + 
