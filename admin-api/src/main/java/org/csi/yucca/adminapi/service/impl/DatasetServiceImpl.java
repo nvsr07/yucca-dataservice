@@ -854,7 +854,7 @@ public class DatasetServiceImpl implements DatasetService {
 			
 			apiMapper.insertApi(
 					Api.buildOutput(DATASOURCE_VERSION)
-					.apicode(postDatasetRequest.getDatasetcode())
+					.apicode(dataset.getDatasetcode())
 					.apiname(dettaglioDataset.getDatasetname())
 					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(dettaglioDataset.getIdDataSource())

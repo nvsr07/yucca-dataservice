@@ -114,7 +114,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class StreamServiceImpl implements StreamService {
 
 	private static final Logger logger = Logger.getLogger(StreamServiceImpl.class);
-
 	
 	@Autowired
 	private SequenceMapper sequenceMapper;
@@ -442,16 +441,16 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 			SolrDelegate.build().addDocument(dettaglioStream, dettaglioSmartobject, dataset);
 
 		}else {
-			logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + dettaglioStream.getStreamname());
+			logger.info("[StreamServiceImpl::publishStream] - unpublish datasetcode: " + dettaglioStream.getStreamname());
 			try {
 				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameTopic(dettaglioStream));
 				if(dettaglioStream.getSavedata()==1)
 				 removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode()));
 
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+				logger.info("[StreamServiceImpl::publishStream] - unpublish removeApi: " + removeApiResponse);
 
 			} catch (Exception ex) {
-				logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + dettaglioStream.getStreamname() + " - " + ex.getMessage());
+				logger.error("[StreamServiceImpl::publishStream] unpublish removeApi ERROR" + dettaglioStream.getStreamname() + " - " + ex.getMessage());
 			}
 			
 			SolrDelegate.build().removeDocument(SolrDelegate.createIdForStream(dettaglioStream));
