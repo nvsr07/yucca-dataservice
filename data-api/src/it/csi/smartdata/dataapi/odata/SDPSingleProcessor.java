@@ -348,11 +348,19 @@ public class SDPSingleProcessor extends ODataSingleProcessor {
 							log.debug("[SDPSingleProcessor::readEntitySet] userSourceEntityQuery="+userSourceEntityQuery);
 							
 							
-							SDPPhoenixExpressionVisitor evp=new SDPPhoenixExpressionVisitor();
-							evp.setEntitySetName(entitySet.getName());
-							evp.setMappaCampi(mappaCampi);
-							userQueryPhoneix = feStats.accept(evp);
-							log.debug("[SDPSingleProcessor::readEntitySet] userQueryPhoneix="+userQueryPhoneix);
+//							SDPPhoenixExpressionVisitor evp=new SDPPhoenixExpressionVisitor();
+//							evp.setEntitySetName(entitySet.getName());
+//							evp.setMappaCampi(mappaCampi);
+//							userQueryPhoneix = feStats.accept(evp);
+//							log.debug("[SDPSingleProcessor::readEntitySet] userQueryPhoneix="+userQueryPhoneix);
+							
+							SDPSolrExpressionVisitor evs = new SDPSolrExpressionVisitor();
+							evs.setEntitySetName(entitySet.getName());
+							evs.setMappaCampi(mappaCampi);
+							userQueryPhoneix = feStats.accept(evs);
+							log.debug("[SDPSingleProcessor::readEntitySet] userQuerySolr="+userQueryPhoneix);
+							
+							
 							
 						}
 						

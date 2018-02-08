@@ -4405,9 +4405,13 @@ public class SDPDataApiMongoAccess {
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.String)) {
 									misura.put(chiave, valore);
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int32)) {
-									misura.put(chiave, Integer.parseInt(valore));
+									int valInt=(new Double(valore)).intValue();
+									if (valInt <(new Double(valore))) throw new NumberFormatException("incompatible types (require int found double)");
+									misura.put(chiave, valInt);
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Int64)) {
-									misura.put(chiave, Long.parseLong(valore));
+									long valInt=(new Double(valore)).longValue();
+									if (valInt <(new Double(valore))) throw new NumberFormatException("incompatible types (require long found double)");
+									misura.put(chiave, valInt);
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.Double)) {
 									misura.put(chiave, Double.parseDouble(valore));
 								} else if (((SimpleProperty)compPropsTot.get(i)).getType().equals(EdmSimpleTypeKind.DateTimeOffset)) {
@@ -4671,7 +4675,7 @@ public class SDPDataApiMongoAccess {
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] timeGroupByParam="+timeGroupByParam);
 			log.debug("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] timeGroupOperatorsParam="+timeGroupOperatorsParam);
 			String codiceTenantOrig=codiceTenant;
-
+			long starTtimetot=System.currentTimeMillis();
 			List<Property> compPropsTot=new ArrayList<Property>();
 			List<Property> compPropsCur=new ArrayList<Property>();			
 
@@ -5076,7 +5080,7 @@ public class SDPDataApiMongoAccess {
 			try {
 				deltaTime=System.currentTimeMillis()-starTtime;
 			} catch (Exception e) {}
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] total data query executed in --> "+deltaTime);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] PERFORMANCE total data query executed in --> "+deltaTime);
 			
 			
 			int cntRet=1;
@@ -5089,7 +5093,7 @@ public class SDPDataApiMongoAccess {
 			JSONObject result = new JSONObject(); 
 			JSONObject facets_json = new JSONObject();
 			NamedList<Object> bucketList = rsp.getResponse();
-
+			starTtime=System.currentTimeMillis();
 			ArrayList<Map<String, Object>> retTmp= new ArrayList<Map<String, Object>>();
 			if (faceted) {
 				// notice "findRecursive" usage to get the buckets list
@@ -5284,8 +5288,15 @@ public class SDPDataApiMongoAccess {
 			try {
 				deltaTime=System.currentTimeMillis()-starTtime;
 			} catch (Exception e) {}
-			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] FETCH TIME ="+deltaTime);
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] PERFORMANCE  FETCH TIME ="+deltaTime);
 
+			try {
+				deltaTime=System.currentTimeMillis()-starTtimetot;
+			} catch (Exception e) {}
+			log.info("[SDPDataApiMongoAccess::getMeasuresStatsPerStreamSolr] PERFORMANCE TOTAL METHOD ELAPSED ="+deltaTime);
+			
+			
+						
 			
 //			for (int i=0;i<ret.size();i++) {
 //				Map<String,Object> cur= ret.get(i);

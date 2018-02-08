@@ -772,12 +772,25 @@ public class SDPSolrExpressionVisitor implements ExpressionVisitor {
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".time" ,"time_dt");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".idDataset" ,"idDataset_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES+".datasetVersion" ,"datasetVersion_l");
+
+		
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_MEASURES_STATS+".datasetVersion" ,"datasetVersion_l");
+		
 		
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".internalId" ,"id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".idDataset" ,"idDataset_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".time" ,"time_dt");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL+".datasetVersion" ,"datasetVersion_l");
 
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".internalId" ,"id");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".idDataset" ,"idDataset_l");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".time" ,"time_dt");
+		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_SOCIAL_STATS+".datasetVersion" ,"datasetVersion_l");
+		
+		
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".internalId" ,"id");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".idDataset" ,"idDataset_l");
 		fieldAppendMap.put(SDPDataApiConstants.ENTITY_SET_NAME_UPLOADDATA+".datasetVersion" ,"datasetVersion_l");
