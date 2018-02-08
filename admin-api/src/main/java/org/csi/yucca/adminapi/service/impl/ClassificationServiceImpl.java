@@ -84,7 +84,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 
 	@Autowired
 	private SmartObjectService smartObjectService;
-
+	
 	/**
 	 * SELECT SUBDOMAIN
 	 */
@@ -607,6 +607,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 	/**
 	 * SELECT LICENSE
 	 */
+	@Override
 	public ServiceResponse selectLicense(String sort) throws BadRequestException, NotFoundException, Exception{
 		
 		List<String> sortList = ServiceUtil.getSortList(sort, License.class);

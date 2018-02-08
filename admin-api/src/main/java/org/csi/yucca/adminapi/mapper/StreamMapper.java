@@ -50,7 +50,7 @@ public interface StreamMapper {
             " twtgeoloclon, twtgeolocradius, twtgeolocunit, twtlang, twtlocale," + 
             " twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid," + 
             " id_smart_object ) " +
-	" SELECT id_data_source, #{newDataSourceVersion}, , idstream, streamcode, streamname," + 
+	" SELECT id_data_source, #{newDataSourceVersion}, idstream, streamcode, streamname," + 
             " publishstream, savedata, fps, internalquery, twtquery, twtgeoloclat," + 
             " twtgeoloclon, twtgeolocradius, twtgeolocunit, twtlang, twtlocale," + 
             " twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid," + 
