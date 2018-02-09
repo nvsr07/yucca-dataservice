@@ -36,12 +36,12 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-					<warSourceDirectory>WebContent</warSourceDirectory>
+					<warSourceDirectory>${project.base.dir}/WebContent</warSourceDirectory>
 					<!-- <outputDirectory>D:\jboss-eap-6.0\standalone\deployments</outputDirectory> -->
 					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
 
 					<!-- <warName>DataApi</warName> -->
-					<failOnMissingWebXml>false</failOnMissingWebXml>
+					<webXml>${project.base.dir}/WebContent/web.xml</webXml>
 				</configuration>
 			</plugin>
 			<plugin>
