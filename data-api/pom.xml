@@ -41,7 +41,7 @@
 					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
 
 					<!-- <warName>DataApi</warName> -->
-					<webXml>${project.base.dir}/WebContent/web.xml</webXml>
+					<webXml>WebContent/web.xml</webXml>
 				</configuration>
 			</plugin>
 			<plugin>
