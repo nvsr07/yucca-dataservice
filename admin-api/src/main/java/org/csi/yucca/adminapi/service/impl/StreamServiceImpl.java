@@ -381,7 +381,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	
 	if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
 		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
-		checkMandatoryParameter(actionRequest.getEndStep(), "EndStep");
+//		checkMandatoryParameter(actionRequest.getEndStep(), "EndStep"); //YUCCA-1486 Il campo EndStep nell'ActionOnStream (backoffice) non deve essere obbligatorio
 	}
 	
 	hasBeenValidated = validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
