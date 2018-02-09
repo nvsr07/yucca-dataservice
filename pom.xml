@@ -25,12 +25,14 @@
 		<version.log4j>1.2.17</version.log4j>
 	</properties>
 
-<!-- 
 	<modules>
-		<module>adminapi</module>
+		<module>admin-api</module>
+		<module>metadata-api</module>
 		<module>insertdata-api</module>
+		<module>data-api</module>
+		<module>binary-api</module>
 	</modules>
- -->
+	
 	<dependencies>
 		<!-- we can regard logging as ubiquitous -->
 		<dependency>
@@ -278,12 +280,22 @@
 			<url>http://dist.wso2.org/maven2</url>
 		</repository>
 
+<!-- 
 		<repository>
 			<id>apache-maven2-repo</id>
 			<name>Apache Maven2 Repository</name>
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
-
+ -->		
+	    <repository>
+	      <id>central</id>
+	      <snapshots>
+	        <enabled>false</enabled>
+	      </snapshots>
+	      <name>Central Repository</name>
+	      <url>https://repo.maven.apache.org/maven2</url>
+	    </repository>
+    
 		<repository>
 			<id>HDPReleases</id>
 			<name>HDP Releases</name>
