@@ -325,6 +325,41 @@
 			</build>
 		</profile>
 		<profile>
+			<id>int</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/dataapi/resources/int</directory>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/dataapi/test/pochdp</directory>
+					</testResource>
+				</testResources>
+
+			</build>
+		</profile>
+		<profile>
 			<id>integsolrolddriver</id>
 			<build>
 				<plugins>
