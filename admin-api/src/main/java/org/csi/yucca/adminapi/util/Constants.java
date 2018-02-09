@@ -65,5 +65,5 @@ public class Constants {
 	
 	public static final String API_NAMESPACE_BASE = "it.csi.smartdata.odata";
 
-
+	public static Integer MAX_ODATA_RESULT_PER_PAGE = 1000;
 }

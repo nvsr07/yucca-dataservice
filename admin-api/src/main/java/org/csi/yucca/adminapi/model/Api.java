@@ -2,6 +2,10 @@ package org.csi.yucca.adminapi.model;
 
 public class Api {
 
+	public static final String API_TYPE = "output"; 
+	public static final String ENTITY_NAMESPACE = "it.csi.smartdata.odata.";
+	
+	private Integer maxOdataResultperpage;
 	private Integer idapi;
 	private String apicode;
 	private String apiname;
@@ -13,11 +17,14 @@ public class Api {
 
 	public static Api buildOutput(Integer datasourceversion){
 		Api out = new Api();
-		out.setApitype("output");
+		out.setApitype(API_TYPE);
 		out.setDatasourceversion(datasourceversion);
 		return out;
 	}
-
+	public Api maxOdataResultperpage (Integer maxOdataResultperpage){
+		this.maxOdataResultperpage = maxOdataResultperpage;
+		return this;
+	}
 	public Api apicode (String apicode){
 		this.apicode = apicode;
 		return this;
@@ -109,6 +116,12 @@ public class Api {
 
 	public void setEntitynamespace(String entitynamespace) {
 		this.entitynamespace = entitynamespace;
+	}
+	public Integer getMaxOdataResultperpage() {
+		return maxOdataResultperpage;
+	}
+	public void setMaxOdataResultperpage(Integer maxOdataResultperpage) {
+		this.maxOdataResultperpage = maxOdataResultperpage;
 	}
 
 }

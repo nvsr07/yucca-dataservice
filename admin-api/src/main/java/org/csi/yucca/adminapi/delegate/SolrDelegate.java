@@ -269,11 +269,11 @@ public class SolrDelegate {
 
 		doc.addField("jsonFields", dataset.getComponents());
 		if (dataset.getComponents() != null) {
-			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
-			});
+//			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
+//			});
 			List<String> sdpComponentsName = new LinkedList<String>();
 			List<String> phenomenonList = new LinkedList<String>();
-			for (ComponentJson component : components) {
+			for (ComponentJson component : dataset.getComponents()) {
 				sdpComponentsName.add(component.getName());
 				phenomenonList.add(component.getPhenomenonname());
 			}

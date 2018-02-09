@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import static org.csi.yucca.adminapi.util.Constants.API_NAMESPACE_BASE;
+import static org.csi.yucca.adminapi.util.Constants.MAX_ODATA_RESULT_PER_PAGE;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_MQTT;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_WEBSOCKET;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
@@ -59,6 +61,7 @@ import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.Component;
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
@@ -81,11 +84,11 @@ import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.StreamRequest;
 import org.csi.yucca.adminapi.request.TwitterInfoRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
-import org.csi.yucca.adminapi.response.ComponentResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.Response;
+import org.csi.yucca.adminapi.service.MailService;
 import org.csi.yucca.adminapi.service.StreamService;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
@@ -111,7 +114,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class StreamServiceImpl implements StreamService {
 
 	private static final Logger logger = Logger.getLogger(StreamServiceImpl.class);
-
 	
 	@Autowired
 	private SequenceMapper sequenceMapper;
@@ -157,6 +159,9 @@ public class StreamServiceImpl implements StreamService {
 
 	@Autowired
 	private WebServiceDelegate webServiceDelegate;
+	
+	@Autowired
+	private MailService mailService;
 	
 	/**
 	 * 
@@ -206,11 +211,13 @@ public class StreamServiceImpl implements StreamService {
 			if (Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.INSTALLED.id(), dettaglioStream.getIdDataSource(),
 						dettaglioStream.getDatasourceversion());
+				publishStream(dettaglioStream);
 				return ServiceResponse.build().OK();
 			}
 			if (Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(),
 						dettaglioStream.getDatasourceversion());
+				publishStream(dettaglioStream);
 				return ServiceResponse.build().OK();
 			}
 		}
@@ -234,7 +241,7 @@ public class StreamServiceImpl implements StreamService {
 	 * @throws NotFoundException
 	 * @throws Exception
 	 */
-	private void validateActionOnStream(String statusCode, String action, ApiUserType apiUserType)
+	private boolean validateActionOnStream(String statusCode, String action, ApiUserType apiUserType)
 			throws BadRequestException, NotFoundException, Exception {
 
 		if (Status.DRAFT.code().equals(statusCode) && (!StreamAction.REQUEST_INSTALLATION.code().equals(action)
@@ -272,6 +279,8 @@ public class StreamServiceImpl implements StreamService {
 				&& !StreamAction.REQUEST_UNINSTALLATION.code().equals(action)) {
 			badRequestActionOnStream();
 		}
+		
+		return true;
 	}
 
 	/**
@@ -282,10 +291,11 @@ public class StreamServiceImpl implements StreamService {
 			throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
-
+		
 		return actionOnStream(dettaglioStream, actionRequest, apiUserType);
 	}
 
+	
 	/**
 	 * 
 	 * @param dettaglioStream
@@ -316,10 +326,11 @@ public class StreamServiceImpl implements StreamService {
 		// duplicare tutti i record su yucca_component relativi al
 		// datasource/datasourceversion di interesse ma mettendo nuova
 		// datasourceversion
-		List<ComponentResponse> listCompinent = Util.getComponents(dettaglioStream.getComponents());
+		//List<ComponentResponse> listCompinent = Util.getComponents(dettaglioStream.getComponents());
+
 		List<Integer> listIdComponent = new ArrayList<Integer>();
-		for (ComponentResponse componentResponse : listCompinent) {
-			listIdComponent.add(componentResponse.getIdComponent());
+		for (ComponentJson componentJson : dettaglioStream.getComponents()) {
+			listIdComponent.add(componentJson.getId_component());
 		}
 		componentMapper.cloneComponent(newVersion, listIdComponent);
 
@@ -335,113 +346,113 @@ public class StreamServiceImpl implements StreamService {
 		datasetMapper.cloneDataset(newVersion, dettaglioStream.getDatasourceversion(),
 				dettaglioStream.getIdDataSource());
 
+		// api: socket, mqtt
+		insertApi(dettaglioStream.getStreamname(), Util.intToBoolean(dettaglioStream.getSavedata()), 
+				dettaglioStream.getSmartObjectCode(), dettaglioStream.getIdDataSource(),
+				dettaglioStream.getStreamcode(), newVersion);
+		
+		// clone api odata
+		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioStream.getTenantCode());
+		apiMapper.cloneApi( newVersion, 
+							dettaglioStream.getDatasourceversion(), 
+							dettaglioStream.getIdDataSource(), 
+							Api.API_TYPE, API_SUBTYPE_ODATA, 
+							bundles.getMaxOdataResultperpage() );
+
 	}
 
 	/**
-	 * 
-	 * @param dettaglioStream
-	 * @param actionRequest
-	 * @param apiUserType
-	 * @return
-	 * @throws BadRequestException
-	 * @throws NotFoundException
-	 * @throws Exception
-	 */
-	private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRequest actionRequest,
-			ApiUserType apiUserType) throws BadRequestException, NotFoundException, Exception {
+ * 
+ * @param dettaglioStream
+ * @param actionRequest
+ * @param apiUserType
+ * @return
+ * @throws BadRequestException
+ * @throws NotFoundException
+ * @throws Exception
+ */
+private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRequest actionRequest,
+		ApiUserType apiUserType) throws BadRequestException, NotFoundException, Exception {
 
-		checkIfFoundRecord(dettaglioStream);
-		checkMandatoryParameter(actionRequest.getAction(), "Action");
-		
-		if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
-			checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
-			checkMandatoryParameter(actionRequest.getEndStep(), "EndStep");
-		}
-
-		validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
-
-		// REQUEST INSTALLATION (ONLY MANAGEMENT)
-		if (StreamAction.REQUEST_INSTALLATION.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.REQUEST_INSTALLATION.id(), dettaglioStream.getIdDataSource(),
-					dettaglioStream.getDatasourceversion());
-			return ServiceResponse.build().OK();
-		}
-
-		// NEW VERSION (ONLY MANAGEMENT)
-		if (StreamAction.NEW_VERSION.code().equals(actionRequest.getAction())) {
-			newVersionStream(dettaglioStream);
-			return ServiceResponse.build().OK();
-		}
-
-		// REQUEST UNINSTALLATION (ONLY MANAGEMENT)
-		if (StreamAction.REQUEST_UNINSTALLATION.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.REQUEST_UNINSTALLATION.id(),
-					dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-			return ServiceResponse.build().OK();
-		}
-
-		// INSTALLATION or UPGRADE (ONLY BACK OFFICE)
-		if (StreamAction.INSTALLATION.code().equals(actionRequest.getAction())
-				|| StreamAction.UPGRADE.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(),
-					dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
-			publishStream(dettaglioStream);
-			
-			return ServiceResponse.build().OK();
-		}
-
-		// UNINSTALLATION (ONLY BACK OFFICE)
-		if (StreamAction.DELETE.code().equals(actionRequest.getAction())) {
-			dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(),
-					dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-			sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
-			return ServiceResponse.build().OK();
-		}
-
-		return ServiceResponse.build().NO_CONTENT();
+	boolean hasBeenValidated = false;
+	
+	checkIfFoundRecord(dettaglioStream);
+	checkMandatoryParameter(actionRequest.getAction(), "Action");
+	
+	if (ApiUserType.BACK_OFFICE.equals(apiUserType)) {
+		checkMandatoryParameter(actionRequest.getStartStep(), "StartStep");
+//		checkMandatoryParameter(actionRequest.getEndStep(), "EndStep"); //YUCCA-1486 Il campo EndStep nell'ActionOnStream (backoffice) non deve essere obbligatorio
 	}
+	
+	hasBeenValidated = validateActionOnStream(dettaglioStream.getStatusCode(), actionRequest.getAction(), apiUserType);
+	
+	// REQUEST INSTALLATION (ONLY MANAGEMENT)
+	if (hasBeenValidated && StreamAction.REQUEST_INSTALLATION.code().equals(actionRequest.getAction())) {
+		dataSourceMapper.updateDataSourceStatus(Status.REQUEST_INSTALLATION.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		mailService.sendStreamRequestInstallationEmail(dettaglioStream);
+		return ServiceResponse.build().OK();
+	}
+
+	// NEW VERSION (ONLY MANAGEMENT)
+	if (hasBeenValidated && StreamAction.NEW_VERSION.code().equals(actionRequest.getAction())) {
+		newVersionStream(dettaglioStream);
+		return ServiceResponse.build().OK();
+	}
+
+	// REQUEST UNINSTALLATION (ONLY MANAGEMENT)
+	if (hasBeenValidated && StreamAction.REQUEST_UNINSTALLATION.code().equals(actionRequest.getAction())) {
+		dataSourceMapper.updateDataSourceStatus(Status.REQUEST_UNINSTALLATION.id(), dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		mailService.sendStreamRequestUninstallationEmail(dettaglioStream);
+		return ServiceResponse.build().OK();
+	}
+
+	// INSTALLATION or UPGRADE (ONLY BACK OFFICE)
+	if ( hasBeenValidated && (StreamAction.INSTALLATION.code().equals(actionRequest.getAction()) || StreamAction.UPGRADE.code().equals(actionRequest.getAction()))) {
+		dataSourceMapper.updateDataSourceStatus(Status.INSTALLATION_IN_PROGRESS.id(),
+				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
+		
+		
+		return ServiceResponse.build().OK();
+	}
+
+	// UNINSTALLATION (ONLY BACK OFFICE)
+	if (hasBeenValidated && StreamAction.DELETE.code().equals(actionRequest.getAction())) {
+		dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(),
+				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
+		return ServiceResponse.build().OK();
+	}
+
+	return ServiceResponse.build().NO_CONTENT();
+}
 	
 	private void publishStream(DettaglioStream dettaglioStream) throws Exception{
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-		if (dettaglioStream.getDataSourceUnpublished()!=1) {
+		if (dettaglioStream.getDataSourceUnpublished()!=1 && dettaglioStream.getIdStatus() == Status.INSTALLED.id()) {
 			DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-
-			String apiName = null;
-			boolean update = false;
-			try {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - add");
-				apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
-			} catch (Exception duplicateException) {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR " + duplicateException.getMessage());
-				if (duplicateException.getMessage() != null && duplicateException.getMessage().toLowerCase().contains("duplicate")) {
-					try {
-						logger.info("[DatasetServiceImpl::insertDatasetTransaction] Publish API - update");
-						update = true;
-						apiName = PublisherDelegate.build().addApi(httpclient, update, dettaglioStream, dataset.getDatasetcode());
-					} catch (Exception e) {
-						logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on update" + duplicateException.getMessage());
-						e.printStackTrace();
-					}
-				} else {
-					logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - ERROR on add not duplicate" + duplicateException.getMessage());
-					duplicateException.printStackTrace();
-				}
+			
+			String apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream);
+			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+			if(dettaglioStream.getSavedata()==1){
+				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream, dataset.getDatasetcode());
+				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			}
 			
-			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
 			SolrDelegate.build().addDocument(dettaglioStream, dettaglioSmartobject, dataset);
 
 		}else {
-			logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + dettaglioStream.getStreamname());
+			logger.info("[StreamServiceImpl::publishStream] - unpublish datasetcode: " + dettaglioStream.getStreamname());
 			try {
-				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode()));
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+				String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameTopic(dettaglioStream));
+				if(dettaglioStream.getSavedata()==1)
+				 removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(dataset.getDatasetcode()));
+
+				logger.info("[StreamServiceImpl::publishStream] - unpublish removeApi: " + removeApiResponse);
 
 			} catch (Exception ex) {
-				logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + dettaglioStream.getStreamname() + " - " + ex.getMessage());
+				logger.error("[StreamServiceImpl::publishStream] unpublish removeApi ERROR" + dettaglioStream.getStreamname() + " - " + ex.getMessage());
 			}
 			
 			SolrDelegate.build().removeDocument(SolrDelegate.createIdForStream(dettaglioStream));
@@ -732,18 +743,66 @@ public class StreamServiceImpl implements StreamService {
 	 */
 	private void insertApi(StreamRequest request, Smartobject smartobject, Dataset dataset, Integer idDataSource,
 			String streamCode, Integer dataSourceVersion) {
-		apiMapper.insertApi(Api.buildOutput(dataSourceVersion)
-				.apicode(API_CODE_PREFIX_WEBSOCKET + smartobject.getSocode() + streamCode)
-				.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_WEBSOCKET).idDataSource(idDataSource));
+		insertApi(request.getStreamname(), request.getSavedata(), smartobject.getSocode(), dataset, idDataSource, streamCode, dataSourceVersion);
+	}
+
+	/**
+	 * 
+	 * @param streamName
+	 * @param saveData
+	 * @param soCode
+	 * @param idDataSource
+	 * @param streamCode
+	 * @param dataSourceVersion
+	 */
+	private void insertApi(String streamName, Boolean saveData, String soCode, Integer idDataSource,
+			String streamCode, Integer dataSourceVersion) {
+		insertApi(streamName, saveData, soCode, null, idDataSource, streamCode, dataSourceVersion);
+	}
+
+	/**
+	 * 
+	 * @param streamName
+	 * @param saveData
+	 * @param soCode
+	 * @param dataset
+	 * @param idDataSource
+	 * @param streamCode
+	 * @param dataSourceVersion
+	 */
+	private void insertApi(String streamName, Boolean saveData, String soCode, Dataset dataset, Integer idDataSource,
+			String streamCode, Integer dataSourceVersion) {
+		
+		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+		
+		apiMapper.insertApi(
+				Api.buildOutput(dataSourceVersion)
+				.apicode(API_CODE_PREFIX_WEBSOCKET + soCode + streamCode)
+				.apiname(streamName)
+				.apisubtype(API_SUBTYPE_WEBSOCKET)
+				.idDataSource(idDataSource)
+				.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
+				);
 
 		apiMapper.insertApi(
-				Api.buildOutput(dataSourceVersion).apicode(API_CODE_PREFIX_MQTT + smartobject.getSocode() + streamCode)
-						.apiname(request.getStreamname()).apisubtype(API_SUBTYPE_MQTT).idDataSource(idDataSource));
+				Api.buildOutput(dataSourceVersion)
+				.apicode(API_CODE_PREFIX_MQTT + soCode + streamCode)
+				.apiname(streamName)
+				.apisubtype(API_SUBTYPE_MQTT)
+				.idDataSource(idDataSource)
+				.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
+				);
 
-		if (request.getSavedata() && dataset != null) {
-			apiMapper.insertApi(Api.buildOutput(dataSourceVersion).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA).idDataSource(idDataSource)
-					.entitynamespace("it.csi.smartdata.odata." + dataset.getDatasetcode()));
+		if (saveData && dataset != null) {
+			apiMapper.insertApi(
+				Api.buildOutput(dataSourceVersion)
+				.apicode(dataset.getDatasetcode())
+				.apiname(dataset.getDatasetname())
+				.apisubtype(API_SUBTYPE_ODATA)
+				.idDataSource(idDataSource)
+				.entitynamespace( Api.ENTITY_NAMESPACE + dataset.getDatasetcode())
+				.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
+				);
 		}
 	}
 
@@ -1536,12 +1595,18 @@ public class StreamServiceImpl implements StreamService {
 	private void updateApi(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject,
 			Dataset dataset) throws Exception {
 
+		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dataset.getTenantCode());
+		
 		if (streamRequest.getSavedata().booleanValue() && streamToUpdate.getSaveData().intValue() == 0
 				&& dataset != null) {
-			apiMapper.insertApi(Api.buildOutput(streamToUpdate.getDataSourceVersion()).apicode(dataset.getDatasetcode())
-					.apiname(dataset.getDatasetname()).apisubtype(API_SUBTYPE_ODATA)
+			apiMapper.insertApi(
+					Api.buildOutput(streamToUpdate.getDataSourceVersion())
+					.apicode(dataset.getDatasetcode())
+					.apiname(dataset.getDatasetname())
+					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(streamToUpdate.getIdDataSource())
-					.entitynamespace("it.csi.smartdata.odata." + dataset.getDatasetcode()));
+					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE )
+					.entitynamespace(API_NAMESPACE_BASE + dataset.getDatasetcode()));
 		}
 		if (streamRequest.getSavedata().booleanValue() == false && streamToUpdate.getSaveData().intValue() >= 1) {
 			apiMapper.deleteApi(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion(),

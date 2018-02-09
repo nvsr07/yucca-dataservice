@@ -41,6 +41,7 @@ import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.adminapi.response.TenantTypeResponse;
 import org.csi.yucca.adminapi.service.ClassificationService;
+import org.csi.yucca.adminapi.service.MailService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.TenantService;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
@@ -104,6 +105,9 @@ public class TenantServiceImpl implements TenantService {
 	@Autowired
 	private MessageSender messageSender;
 
+	@Autowired
+	private MailService mailService;
+	
 	@Override
 	public ServiceResponse insertTenantSocial(PostTenantSocialRequest request) throws BadRequestException, NotFoundException, Exception {
 
@@ -116,8 +120,12 @@ public class TenantServiceImpl implements TenantService {
 		BundlesRequest bundlesRequest = new BundlesRequest();
 		bundlesRequest.setMaxdatasetnum(Constants.INSTALLATION_TENANT_MAX_DATASET_NUM);
 		bundlesRequest.setMaxstreamsnum(Constants.INSTALLATION_TENANT_MAX_STREAMS_NUM);
-
-		return insertTenant(request, bundlesRequest);
+		
+		ServiceResponse serviceResponse = insertTenant(request, bundlesRequest);
+		
+		mailService.sendTenantRequestInstallationEmail(request);
+		
+		return serviceResponse;
 	}
 
 	private ServiceResponse insertTenant(TenantRequest request, BundlesRequest bundlesRequest) throws BadRequestException, NotFoundException, Exception {
@@ -366,15 +374,25 @@ public class TenantServiceImpl implements TenantService {
 	 * @param idTenantType
 	 * @return
 	 */
-	private int getProgressivo(Integer idTenantType) {
+	private String getProgressivo(Integer idTenantType) {
 
+		String progressivo = "";
+		
 		if (TenantType.PERSONAL.id() == idTenantType) {
-			return sequenceMapper.selectPersonalTenantsSequence();
+			progressivo = sequenceMapper.selectPersonalTenantsSequence()+"";
+		}
+		else{
+			progressivo = sequenceMapper.selectTrialTenantsSequence()+""; 
 		}
 
-		return sequenceMapper.selectTrialTenantsSequence();
+		while(progressivo.length() < 4 ){
+			progressivo = "0" + progressivo; 
+		}
+		
+		return progressivo;
 	}
 
+	
 	/**
 	 * 
 	 * @param tenantRequest

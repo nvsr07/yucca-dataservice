@@ -15,6 +15,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.model.Component;
+import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.util.Constants;
@@ -166,7 +167,7 @@ public class DatabaseReader {
 				// System.out.println("tableType:" + tableType +
 				// ", tableSchema: " + tableSchema + ", tableName: " + tableName
 				// + " tableCat: " + tableCat);
-				Component[] components = new Component[0];
+				ComponentJson[] components = new ComponentJson[0];
 				if (!dbType.equals(DatabaseConfiguration.DB_TYPE_ORACLE)) {
 					try {
 						loadFk(meta, tableName);
@@ -192,7 +193,7 @@ public class DatabaseReader {
 					}
 				}
 
-				for (Component component : components) {
+				for (ComponentJson component : components) {
 					if (fkMap.containsKey(tableName + "." + component.getName())) {
 						component.setForeignkey(fkMap.get(tableName + "." + component.getName()));
 					}
@@ -207,8 +208,8 @@ public class DatabaseReader {
 					String description = "Imported from " + dbName + " " + tableName + (tableComment != null ? " - " + tableComment : "");
 					metadata.setDescription(description);
 
-					String componentsJson = mapper.writeValueAsString(components);
-					metadata.setComponents(componentsJson);
+					//String componentsJson = mapper.writeValueAsString(components);
+					metadata.setComponents(components);
 
 					metadata.getComponents();
 
@@ -223,10 +224,10 @@ public class DatabaseReader {
 					table.setStatus(DatabaseTableDataset.DATABASE_TABLE_DATASET_STATUS_EXISTING);
 					table.setTableType(tableType);
 
-					List<Component> newComponents = new LinkedList<Component>();
-					Component[] existingComponents = metadata.deserializeComponents();
+					List<ComponentJson> newComponents = new LinkedList<ComponentJson>();
+					ComponentJson[] existingComponents = metadata.getComponents();
 					for (int i = 0; i < components.length; i++) {
-						Component existingComponent = findExistingComponentFromSourceColumnName(components[i].getSourcecolumnname(), existingComponents);
+						ComponentJson existingComponent = findExistingComponentFromSourceColumnName(components[i].getSourcecolumnname(), existingComponents);
 						if (existingComponent == null) {
 							newComponents.add(components[i]);
 						} else {
@@ -250,9 +251,9 @@ public class DatabaseReader {
 						// newComponentsArray[counter] = component;
 						// counter++;
 						// }
-						String componentsJson = mapper.writeValueAsString(components);
+						//String componentsJson = mapper.writeValueAsString(components);
 
-						metadata.setComponents(componentsJson);
+						metadata.setComponents(components);
 						table.setNewComponents(newComponents);
 					}
 				}
@@ -278,10 +279,10 @@ public class DatabaseReader {
 		return json;
 	}
 
-	private Component findExistingComponentFromSourceColumnName(String sourcecolumnname, Component[] existingComponents) {
-		Component foundedComponent = null;
+	private ComponentJson findExistingComponentFromSourceColumnName(String sourcecolumnname, ComponentJson[] existingComponents) {
+		ComponentJson foundedComponent = null;
 		if (existingComponents != null) {
-			for (Component component : existingComponents) {
+			for (ComponentJson component : existingComponents) {
 				if (component.getSourcecolumnname() != null && sourcecolumnname != null && component.getSourcecolumnname().equals(sourcecolumnname)) {
 					foundedComponent = component;
 					break;
@@ -309,15 +310,15 @@ public class DatabaseReader {
 
 	}
 
-	private Component[] loadColumns(DatabaseMetaData metaData, String tableName, String tableSchema) throws SQLException {
-		List<Component> components = new LinkedList<Component>();
+	private ComponentJson[] loadColumns(DatabaseMetaData metaData, String tableName, String tableSchema) throws SQLException {
+		List<ComponentJson> components = new LinkedList<ComponentJson>();
 
 		ResultSet columnsResultSet = null;
 		try {
 			columnsResultSet = metaData.getColumns(null, tableSchema, tableName, null);
 			int columnCounter = 1;
 			while (columnsResultSet.next()) {
-				Component component = new Component();
+				ComponentJson component = new ComponentJson();
 				String columnName = columnsResultSet.getString("COLUMN_NAME");
 				component.setName(columnName);
 				if (columnsResultSet.getString("REMARKS") != null)
@@ -327,13 +328,13 @@ public class DatabaseReader {
 
 				String columnType = columnsResultSet.getString("TYPE_NAME");
 				if (columnType != null)
-					component.setIdDataType(databaseConfiguation.getTypesMap().get(columnType));
+					component.setDataType(org.csi.yucca.adminapi.util.DataType.getFromId(databaseConfiguation.getTypesMap().get(columnType)));
 				else {
 					if (!columnWarnings.containsKey(tableName))
 						columnWarnings.put(tableName, new LinkedList<String>());
 					columnWarnings.get(tableName).add("Unkonwn data type for column " + columnName + ": " + columnType);
 					log.warn("[DatabaseReader::loadColumns] unkonwn data type  " + columnType + " for table " + tableName + " column " + columnName);
-					component.setIdDataType(Constants.ADMINAPI_DATA_TYPE_STRING);
+					component.setDataType(org.csi.yucca.adminapi.util.DataType.getFromId(Constants.ADMINAPI_DATA_TYPE_STRING));
 				}
 				component.setSourcecolumn(columnCounter);
 				component.setSourcecolumnname(columnName);
@@ -342,7 +343,7 @@ public class DatabaseReader {
 				columnCounter++;
 			}
 
-			Component[] componentsArr = new Component[components.size()];
+			ComponentJson[] componentsArr = new ComponentJson[components.size()];
 			componentsArr = components.toArray(componentsArr);
 
 			return componentsArr;
@@ -400,30 +401,27 @@ public class DatabaseReader {
 		}
 	}
 
-	private Component[] loadColumnsOracle(Connection conn, String tableName, String tableSchema) throws SQLException {
-		List<Component> components = new LinkedList<Component>();
+	private ComponentJson[] loadColumnsOracle(Connection conn, String tableName, String tableSchema) throws SQLException {
+		List<ComponentJson> components = new LinkedList<ComponentJson>();
 		try {
 			List<String> columns = componentsMetadata.get(tableName);
 			int counter = 0;
 			for (String columnData : columns) {
 				String[] columnDataSplitted = columnData.split("[|]");
 
-				Component component = new Component();
+				ComponentJson component = new ComponentJson();
 				component.setName(columnDataSplitted[0]);
 				component.setAlias(columnDataSplitted[1]);
-				component.setIdDataType(Integer.parseInt(columnDataSplitted[2]));
-
+				component.setDataType( org.csi.yucca.adminapi.util.DataType.getFromId(Integer.parseInt(columnDataSplitted[2])));
 				component.setSourcecolumn(counter);
-
 				component.setSourcecolumnname(columnDataSplitted[0]);
-
 				components.add(component);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		Component[] componentsArr = new Component[components.size()];
+		ComponentJson[] componentsArr = new ComponentJson[components.size()];
 		componentsArr = components.toArray(componentsArr);
 		return componentsArr;
 
@@ -493,13 +491,13 @@ public class DatabaseReader {
 
 	}
 
-	private void loadPk(DatabaseMetaData metaData, String tableName, Component[] components) throws SQLException {
+	private void loadPk(DatabaseMetaData metaData, String tableName, ComponentJson[] components) throws SQLException {
 		ResultSet primaryKeys = null;
 		try {
 			primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
 			while (primaryKeys.next()) {
 				String pkColumnName = primaryKeys.getString("COLUMN_NAME");
-				for (Component component : components) {
+				for (ComponentJson component : components) {
 					if (component.getName().equals(pkColumnName))
 						component.setIskey(Util.booleanToInt(true));
 				}

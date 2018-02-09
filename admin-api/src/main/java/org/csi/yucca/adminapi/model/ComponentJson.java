@@ -210,4 +210,12 @@ public class ComponentJson {
 		this.measureunitcategory = measureunitcategory;
 	}
 
+	public void setDataType(DataType dataType) {
+		if (dataType != null) {
+			this.dt_id_data_type = dataType.getIdDataType();
+			this.dt_datatypecode = dataType.getDatatypecode();
+			this.dt_description = dataType.getDescription();
+		}
+	}
+
 }

@@ -209,7 +209,7 @@ public interface DatasetMapper {
 			"         where yucca_data_source.id_data_source = yucca_component.id_data_source AND  " +
 			"         yucca_data_source.datasourceversion = yucca_component.datasourceversion " +
 			" ) comp  " +
-			" ) components, " +
+			" ) componentsString, " +
 			// SHARING TENANTS
 			" ( select array_to_json(array_agg(row_to_json(tenantshr))) " + 
 			" from ( select yucca_tenant.id_tenant, " +

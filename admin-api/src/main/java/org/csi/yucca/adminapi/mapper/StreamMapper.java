@@ -50,7 +50,7 @@ public interface StreamMapper {
             " twtgeoloclon, twtgeolocradius, twtgeolocunit, twtlang, twtlocale," + 
             " twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid," + 
             " id_smart_object ) " +
-	" SELECT id_data_source, #{newDataSourceVersion}, , idstream, streamcode, streamname," + 
+	" SELECT id_data_source, #{newDataSourceVersion}, idstream, streamcode, streamname," + 
             " publishstream, savedata, fps, internalquery, twtquery, twtgeoloclat," + 
             " twtgeoloclon, twtgeolocradius, twtgeolocunit, twtlang, twtlocale," + 
             " twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid," + 
@@ -235,7 +235,7 @@ public interface StreamMapper {
 			" where " +
 			" yucca_data_source.id_data_source = yucca_component.id_data_source AND " +
 			" yucca_data_source.datasourceversion = yucca_component.datasourceversion) comp " +
-			" ) components " +  
+			" ) componentsString " +  
 			" from " +  STREAM_INTERNAL_TABLE + " yucca_r_stream_internal " + 
 			" JOIN " + STREAM_TABLE + " yucca_stream ON yucca_r_stream_internal.idstream = yucca_stream.idstream " +
 			" JOIN " + DataSourceMapper.DATA_SOURCE_TABLE + " yucca_data_source ON yucca_data_source.id_data_source = yucca_stream.id_data_source " +
@@ -268,14 +268,14 @@ public interface StreamMapper {
         //@Result(property = "streamSaveData", column = "savedata"),
         //@Result(property = "dataSourceVersion", column = "datasourceversion"), 
 		@Result(property = "idSmartObject", column = "id_smart_object"), 
-		@Result(property = "socode", column = "smartObjectCode"),
+		@Result(property = "smartObjectCode", column = "socode"),
 		@Result(property = "smartObjectName", column = "smart_object_name"), 
 		@Result(property = "smartObjectSlug", column = "smart_object_slug"), 
 		@Result(property = "smartObjectDescription", column = "smart_object_description"), 
 		@Result(property = "smartObjectCategoryCode", column = "smart_object_category_code"),  
 		@Result(property = "smartObjectCategoryDescription", column = "smart_object_category_description"), 
 		@Result(property = "idSoCategory", column = "id_so_category"), 
-		@Result(property = "sotypecode", column = "soTypeCode"),
+		@Result(property = "soTypeCode", column = "sotypecode"),
 		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"), 
 		@Result(property = "idSoType", column = "id_so_type"),
 		@Result(property = "aliasName", column = "stream_alias")
@@ -385,7 +385,7 @@ public interface StreamMapper {
 			" LEFT JOIN " +  MeasureUnitMapper.MEASURE_UNIT_TABLE + " yucca_d_measure_unit ON yucca_component.id_measure_unit = yucca_d_measure_unit.id_measure_unit " +
 			" where yucca_data_source.id_data_source = yucca_component.id_data_source AND " +
 			" yucca_data_source.datasourceversion = yucca_component.datasourceversion) comp " +
-			" ) components, " +
+			" ) componentsString, " +
 				
 			" (select array_to_json(array_agg(row_to_json(tenantshr))) from " + 
 			" ( select yucca_tenant.id_tenant, yucca_tenant.tenantcode, yucca_tenant.name, yucca_tenant.description, yucca_r_tenant_data_source.dataoptions, " + 

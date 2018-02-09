@@ -10,6 +10,7 @@ import org.csi.yucca.adminapi.util.Util;
 public class InternalStreamDettaglioResponse extends StreamDettaglioResponse{
 
 	private String streamalias;
+	private String tenantCode;
 	private List<ComponentResponse> components = new ArrayList<ComponentResponse>();
 	
 	public InternalStreamDettaglioResponse(InternalDettaglioStream dettaglioStream)throws Exception{
@@ -18,6 +19,7 @@ public class InternalStreamDettaglioResponse extends StreamDettaglioResponse{
 		this.setStreamname(dettaglioStream.getStreamname());
 		this.setStreamalias(dettaglioStream.getAliasName());
 		Util.addComponents(dettaglioStream.getComponents(), this.components);
+		this.setTenantCode(dettaglioStream.getTenantCode());
 		this.setSmartobject(new DettaglioSmartobjectResponse(dettaglioStream));
 	}
 
@@ -39,6 +41,18 @@ public class InternalStreamDettaglioResponse extends StreamDettaglioResponse{
 	public void setComponents(List<ComponentResponse> components) {
 		this.components = components;
 	}
+
+
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
+	}
+	
+	
 
 
 	

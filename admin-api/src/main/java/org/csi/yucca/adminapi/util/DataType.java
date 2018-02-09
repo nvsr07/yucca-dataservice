@@ -47,6 +47,16 @@ public enum DataType {
 		}
 	}
 	
+	public static org.csi.yucca.adminapi.model.DataType getFromId(Integer idDataType){
+		org.csi.yucca.adminapi.model.DataType result = null;
+		for (DataType dt : DataType.values()) {
+			if(idDataType == dt.id()){
+				result = new org.csi.yucca.adminapi.model.DataType(dt.id(), dt.code(), dt.description());
+			}
+		}
+		return result;
+	}
+	
 	
 	
 }
