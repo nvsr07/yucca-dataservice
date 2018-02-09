@@ -41,7 +41,6 @@
 					<!-- <outputDirectory>${project.build.directory}/${project.activeProfiles[0].id}</outputDirectory> -->
 
 					<!-- <warName>DataApi</warName> -->
-					<failOnMissingWebXml>false</failOnMissingWebXml>
 					<webXml>WebContent/WEB-INF/web.xml</webXml>
 				</configuration>
 			</plugin>
@@ -330,7 +329,6 @@
 			<id>int</id>
 			<build>
 				<plugins>
-<!-- 				
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-scm-plugin</artifactId>
@@ -348,7 +346,6 @@
 							</execution>
 						</executions>
 					</plugin>
- -->					
 				</plugins>
 				<resources>
 					<resource>
