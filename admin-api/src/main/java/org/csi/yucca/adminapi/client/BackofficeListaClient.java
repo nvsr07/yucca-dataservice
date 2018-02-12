@@ -12,5 +12,6 @@ public class BackofficeListaClient {
 			String adminApiBaseUrl, String logger) throws AdminApiClientException {
 		return CacheUtil.getTenants(new KeyCache(adminApiBaseUrl, logger));
 	}
+
 	
 }
