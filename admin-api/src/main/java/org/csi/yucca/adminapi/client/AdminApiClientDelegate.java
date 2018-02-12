@@ -3,6 +3,7 @@ package org.csi.yucca.adminapi.client;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -25,45 +26,126 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class AdminApiClientDelegate {
 
-	public static <T> T getFromAdminApi(String url, final Class<T> cl, String loggerName, 
-			Map<String, String> params) throws AdminApiClientException {
+	private static <T> ResponseHandler<T> getResponseHandler(final Class<T> cl){
+		
+		ResponseHandler<T> responseHandler = new ResponseHandler<T>() {
 
-		CloseableHttpClient httpClient = Singleton.Client.get();
-		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
-		try {
-			URIBuilder urib = new URIBuilder(url);
-			if (params != null && !params.isEmpty()) {
-				Iterator<Entry<String, String>> iter = params.entrySet()
-						.iterator();
-				while (iter.hasNext()) {
-					Entry<String, String> valore = iter.next();
-					urib.addParameter(valore.getKey(), valore.getValue());
+			ObjectMapper mapper = new ObjectMapper();
+
+			@Override
+			public T handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+
+				int status = response.getStatusLine().getStatusCode();
+				
+				if (status >= 200 && status < 300) {
+					HttpEntity entity = response.getEntity();
+					return entity != null ? mapper.readValue(EntityUtils.toString(entity), cl) : null;
+				} 
+				else {
+					throw new ClientProtocolException("Unexpected response status: " + status);
 				}
 			}
+			
+		};
 
-			HttpGet httpGet = new HttpGet(urib.build());
+		return responseHandler;
+	}
 
-			ResponseHandler<T> responseHandler = new ResponseHandler<T>() {
+	
+	private static <T> ResponseHandler<List<T>> getListResponseHandler(final Class<T> cl){
 
-				ObjectMapper mapper = new ObjectMapper();
+		ResponseHandler<List<T>> responseHandler = new ResponseHandler<List<T>>() {
 
-				@Override
-				public T handleResponse(final HttpResponse response)
-						throws ClientProtocolException, IOException {
+			ObjectMapper mapper = new ObjectMapper();
 
-					int status = response.getStatusLine().getStatusCode();
-					if (status >= 200 && status < 300) {
-						HttpEntity entity = response.getEntity();
-						return entity != null ? mapper.readValue(
-								EntityUtils.toString(entity), cl) : null;
-					} else {
-						throw new ClientProtocolException(
-								"Unexpected response status: " + status);
-					}
+			@Override
+			public List<T> handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+
+				int status = response.getStatusLine().getStatusCode();
+				
+				if (status >= 200 && status < 300) {
+
+					HttpEntity entity = response.getEntity();
+					
+					List<T> myObjects = mapper.readValue(EntityUtils.toString(entity), mapper.getTypeFactory().constructCollectionType(List.class, cl));
+
+					return myObjects != null ? myObjects : null;
+					
+				} 
+				else {
+					throw new ClientProtocolException("Unexpected response status: " + status);
 				}
-			};
+			}
+			
+		};
+		
+		return responseHandler;
+	}
+
+//	private static <T> ResponseHandler<List<Object>> getListResponseHandler(final Class<T> cl){
+//
+//		ResponseHandler<List<Object>> responseHandler = new ResponseHandler<List<Object>>() {
+//
+//			ObjectMapper mapper = new ObjectMapper();
+//
+//			@Override
+//			public List<Object> handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+//
+//				int status = response.getStatusLine().getStatusCode();
+//				
+//				if (status >= 200 && status < 300) {
+//
+//					HttpEntity entity = response.getEntity();
+//					
+//					List<Object> myObjects = mapper.readValue(EntityUtils.toString(entity), mapper.getTypeFactory().constructCollectionType(List.class, cl));
+//
+//					return myObjects != null ? myObjects : null;
+//					
+//				} 
+//				else {
+//					throw new ClientProtocolException("Unexpected response status: " + status);
+//				}
+//			}
+//			
+//		};
+//		
+//		return responseHandler;
+//	}
+
+	
+	private static HttpGet getHttpGet(String url, Map<String, String> params) throws URISyntaxException {
+		
+		URIBuilder urib = new URIBuilder(url);
+		
+		if (params != null && !params.isEmpty()) {
+			Iterator<Entry<String, String>> iter = params.entrySet().iterator();
+			while (iter.hasNext()) {
+				Entry<String, String> valore = iter.next();
+				urib.addParameter(valore.getKey(), valore.getValue());
+			}
+		}
+
+		HttpGet httpGet = new HttpGet(urib.build());
+
+		return httpGet;
+	}
+
+	public static <T> List<T> getListFromAdminApi(String url, final Class<T> cl, String loggerName, Map<String, String> params) throws AdminApiClientException {
+
+		CloseableHttpClient httpClient = Singleton.Client.get();
+		
+		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
+		
+		try {
+
+			HttpGet httpGet = getHttpGet(url, params);
+			
+			ResponseHandler<List<T>> responseHandler = getListResponseHandler(cl);
+			
 			return httpClient.execute(httpGet, responseHandler);
-		} catch (URISyntaxException e) {
+
+		} 
+		catch (URISyntaxException e) {
 			logger.error("Error during calls", e);
 			throw new AdminApiClientException(e);
 		}
@@ -74,7 +156,63 @@ public class AdminApiClientDelegate {
 			logger.error("Error during calls", e);
 			throw new AdminApiClientException(e);
 		}
+	}
+	
+//	public static <T> List<Object> getListFromAdminApi(String url, final Class<T> cl, String loggerName, Map<String, String> params) throws AdminApiClientException {
+//
+//		CloseableHttpClient httpClient = Singleton.Client.get();
+//		
+//		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
+//		
+//		try {
+//
+//			HttpGet httpGet = getHttpGet(url, params);
+//			
+//			ResponseHandler<List<Object>> responseHandler = getListResponseHandler(cl);
+//			
+//			return httpClient.execute(httpGet, responseHandler);
+//
+//		} 
+//		catch (URISyntaxException e) {
+//			logger.error("Error during calls", e);
+//			throw new AdminApiClientException(e);
+//		}
+//		catch (ClientProtocolException e) {
+//			logger.error("Error during calls", e);
+//			throw new AdminApiClientException(e);
+//		} catch (IOException e) {
+//			logger.error("Error during calls", e);
+//			throw new AdminApiClientException(e);
+//		}
+//	}
+	
+	public static <T> T getFromAdminApi(String url, final Class<T> cl, String loggerName, 
+			Map<String, String> params) throws AdminApiClientException {
 
+		CloseableHttpClient httpClient = Singleton.Client.get();
+		
+		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
+		
+		try {
+
+			HttpGet httpGet = getHttpGet(url, params);
+			
+			ResponseHandler<T> responseHandler = getResponseHandler(cl);
+			
+			return httpClient.execute(httpGet, responseHandler);
+
+		} 
+		catch (URISyntaxException e) {
+			logger.error("Error during calls", e);
+			throw new AdminApiClientException(e);
+		}
+		catch (ClientProtocolException e) {
+			logger.error("Error during calls", e);
+			throw new AdminApiClientException(e);
+		} catch (IOException e) {
+			logger.error("Error during calls", e);
+			throw new AdminApiClientException(e);
+		}
 	}
 
 	private static enum Singleton {

@@ -11,6 +11,11 @@ public class BundlesResponse extends Response{
 	private String hasstage;
 	private Integer maxOdataResultperpage;
 	private String zeppelin;
+	
+	public BundlesResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public BundlesResponse(TenantManagement tenantManagement) {
 		super();

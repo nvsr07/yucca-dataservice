@@ -12,6 +12,11 @@ public class TenantTypeResponse extends Response{
 
 	private String description;
 	
+	public TenantTypeResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public TenantTypeResponse(TenantManagement tenantManagement) {
 		super();
 		this.idTenantType = tenantManagement.getIdTenantType();

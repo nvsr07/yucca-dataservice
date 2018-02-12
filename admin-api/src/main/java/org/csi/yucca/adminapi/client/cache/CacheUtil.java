@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.client.cache;
 
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,7 @@ import org.csi.yucca.adminapi.client.cache.key.StreamDatasetBySoCodeStreamCodeKe
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
+import org.csi.yucca.adminapi.response.TenantManagementResponse;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -30,6 +32,7 @@ public class CacheUtil {
 	private static final String BACK_OFFICE_DATASETS_DATASETCODE = "/1/backoffice/datasets/datasetCode=";
 	private static final String BACK_OFFICE_MEASURE_UNITS = "/1/backoffice/measure_units/";
 	private static final String BACK_OFFICE_API = "/1/backoffice/api/";
+	private static final String BACK_OFFICE_TENANTS = "/1/backoffice/tenants";
 	
 	private static LoadingCache<KeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeCache;
 	private static LoadingCache<StreamDatasetByDatasetCodeDatasetVersionKeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeDatasetVersionCache;	
@@ -39,6 +42,30 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetCache;
 	private static LoadingCache<KeyCache, BackofficeDettaglioApiResponse> dettaglioApiCache;
 	private static LoadingCache<KeyCache, MeasureUnitResponse> measureUnitCache;
+	private static LoadingCache<KeyCache, List<TenantManagementResponse>> tenantListCache;
+	
+	
+	static {
+		tenantListCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
+				.build(new CacheLoader<KeyCache, List<TenantManagementResponse>>() {
+					@Override
+					public List<TenantManagementResponse> load(KeyCache key) throws Exception {
+						return (List<TenantManagementResponse>) getList(BACK_OFFICE_TENANTS, key, TenantManagementResponse.class);
+					}
+					
+					@Override
+					public ListenableFuture<List<TenantManagementResponse>> reload(final KeyCache key, List<TenantManagementResponse> oldValue) throws Exception {
+						
+						ListenableFutureTask <List<TenantManagementResponse>> task = ListenableFutureTask.create(new Callable<List<TenantManagementResponse>>() {
+							public List<TenantManagementResponse> call() throws Exception{
+								return (List<TenantManagementResponse>) getList(BACK_OFFICE_DATASETS_DATASETCODE, key, TenantManagementResponse.class);
+							}
+						});
+						Executors.newSingleThreadExecutor().execute(task);
+						return task;
+					}
+				});
+	}
 	
 	static {
 		dettaglioStreamDatasetByDatasetCodeCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
@@ -229,6 +256,24 @@ public class CacheUtil {
 		}
 	}
 	
+	public static List<TenantManagementResponse> getTenants(KeyCache keyCache) throws AdminApiClientException {
+		try {
+			
+			String stop = "";
+			stop = "";
+			
+			Object obj = tenantListCache.get(keyCache);
+			
+			
+			stop = "";
+			
+			return tenantListCache.get(keyCache);	
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
+	}
+	
 	/**
 	 * 
 	 * @param keyCache
@@ -345,6 +390,15 @@ public class CacheUtil {
 	@SuppressWarnings("unchecked")
 	private static Object get(String url, KeyCache keyCache, @SuppressWarnings("rawtypes") Class clazz )throws Exception{
 		return AdminApiClientDelegate.getFromAdminApi(
+				keyCache.getAdminBaseUrl() + url + keyCache.getKeyUrl(),
+				clazz,
+				keyCache.getLogger(), 
+				null);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private static Object getList(String url, KeyCache keyCache, @SuppressWarnings("rawtypes") Class clazz )throws Exception{
+		return AdminApiClientDelegate.getListFromAdminApi(
 				keyCache.getAdminBaseUrl() + url + keyCache.getKeyUrl(),
 				clazz,
 				keyCache.getLogger(), 

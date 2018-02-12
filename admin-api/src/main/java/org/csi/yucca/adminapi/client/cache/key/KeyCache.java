@@ -59,10 +59,16 @@ public class KeyCache implements Serializable{
 	}
 	
 	public String getKeyUrl(){
+		
 		if (id != null) {
 			return Integer.toString(id);	
 		}
-		return code;
+	
+		if (code != null) {
+			return code;
+		}
+		
+		return "";
 	}
 	
 	@Override

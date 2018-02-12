@@ -11,6 +11,11 @@ public class TenantStatusResponse extends Response{
 
 	private String description;
 	
+	public TenantStatusResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public TenantStatusResponse(TenantManagement tenantManagement) {
 		super();
 		this.idTenantStatus = tenantManagement.getIdTenantStatus();
@@ -24,9 +29,6 @@ public class TenantStatusResponse extends Response{
 		this.tenantstatuscode = dettaglioTenant.getTenantstatuscode();
 		this.description = dettaglioTenant.getTenantstatusdescription();
 	}
-
-	
-	
 	
 	public Integer getIdTenantStatus() {
 		return idTenantStatus;

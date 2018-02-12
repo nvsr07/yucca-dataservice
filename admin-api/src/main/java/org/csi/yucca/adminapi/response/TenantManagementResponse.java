@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.join.TenantManagement;
+import org.csi.yucca.adminapi.util.Errors;
 
 public class TenantManagementResponse extends Response{
 
@@ -36,7 +37,16 @@ public class TenantManagementResponse extends Response{
 	
 	private ShareTypeResponse shareType;
 	
-	
+	public TenantManagementResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public TenantManagementResponse(Errors errors, String arg) {
+		super(errors, arg);
+		// TODO Auto-generated constructor stub
+	}
+
 	public TenantManagementResponse(TenantManagement tenantManagement) {
 		super();
 		this.username = tenantManagement.getUsername();

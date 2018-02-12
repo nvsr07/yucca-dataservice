@@ -9,6 +9,11 @@ public class ShareTypeResponse extends Response{
 
 	private String description;
 	
+	public ShareTypeResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public ShareTypeResponse(TenantManagement tenantManagement) {
 		super();
 		this.idShareType = tenantManagement.getIdShareType();
