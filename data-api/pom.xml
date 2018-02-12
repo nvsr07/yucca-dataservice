@@ -173,6 +173,7 @@
 			<classifier>client</classifier>
 			<version>1.0.0-001</version>
 			<scope>compile</scope>
+			<type>jar</type>
 		</dependency>
 
 		<!--  scope related deps -->	

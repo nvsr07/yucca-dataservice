@@ -49,6 +49,7 @@
 			<classifier>client</classifier>
 			<!-- <version>${pom.version}</version> -->
 			<version>1.0.0-001</version>
+			<type>jar</type>
 		</dependency>
 
 		<dependency>
