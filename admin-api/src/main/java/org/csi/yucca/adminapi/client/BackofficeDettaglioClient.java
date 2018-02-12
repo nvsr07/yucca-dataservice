@@ -11,8 +11,7 @@ import org.csi.yucca.adminapi.response.MeasureUnitResponse;
 
 public class BackofficeDettaglioClient {
 	
-	public static BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetByDatasetCode(
-			String adminApiBaseUrl, String datasetCode, String logger) throws AdminApiClientException {
+	public static BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetByDatasetCode(String adminApiBaseUrl, String datasetCode, String logger) throws AdminApiClientException {
 		return CacheUtil.getDettaglioStreamDatasetByDatasetCode(new KeyCache(adminApiBaseUrl, logger).code(datasetCode));
 	}
 	
