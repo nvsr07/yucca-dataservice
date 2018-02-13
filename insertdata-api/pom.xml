@@ -237,14 +237,12 @@
 		<profile>
 			<id>int</id>
 			<build>
-<!-- 			
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-scm-plugin</artifactId>
 					</plugin>
  				</plugins>
--->					
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/insertdataapi/resources/int</directory>
