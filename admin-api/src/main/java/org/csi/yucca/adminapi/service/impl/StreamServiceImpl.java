@@ -197,7 +197,7 @@ public class StreamServiceImpl implements StreamService {
 
 		checkMandatoryParameter(actionRequest.getStatus(), "status");
 
-		ServiceUtil.checkValue("status", actionRequest.getStatus(), FeedbackStatus.OK.code(), FeedbackStatus.KO.code());
+		ServiceUtil.checkValue("status", actionRequest.getStatus(),"ok", "ko");
 
 		if (!Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())
 				|| !Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
