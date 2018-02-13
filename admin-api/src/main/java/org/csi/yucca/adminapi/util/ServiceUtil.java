@@ -1120,11 +1120,11 @@ public class ServiceUtil {
 	 * @return
 	 */
 	public static List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
+		
+		if(authorizedUser == null || authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return null;
 
 		List<String> tenantCodeList = new ArrayList<>();
 		
-		if(authorizedUser == null || authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return tenantCodeList;
-
 		for (String role : authorizedUser.getRoles()) {
 			if(role.contains("_subscriber")){
 				tenantCodeList.add(role.substring(0, role.lastIndexOf("_")));

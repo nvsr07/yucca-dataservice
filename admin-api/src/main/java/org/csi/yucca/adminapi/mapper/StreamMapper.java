@@ -435,11 +435,23 @@ public interface StreamMapper {
 			" WHERE yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant " + 
 			" AND yucca_r_tenant_data_source.id_data_source = yucca_data_source.id_data_source AND " +
 			" yucca_r_tenant_data_source.datasourceversion = yucca_data_source.datasourceversion AND " +
-			" yucca_r_tenant_data_source.isactive = 1 AND tenantcode IN ("
+			" yucca_r_tenant_data_source.isactive = 1 " +
+			
+			"<if test=\"userAuthorizedTenantCodeList != null\">" +
+			" AND tenantcode IN (" 
+			
 			+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
 			+ "#{authorizedTenantCode}"
-			+ " </foreach>"
-			+ ") " + 
+			+ " </foreach>"	
+			+ ") " +
+			"</if>" +
+			
+//			" yucca_r_tenant_data_source.isactive = 1 AND tenantcode IN ("
+//			+ " <foreach item=\"authorizedTenantCode\" separator=\",\" index=\"index\" collection=\"userAuthorizedTenantCodeList\">"
+//			+ "#{authorizedTenantCode}"
+//			+ " </foreach>"
+//			+ ") " + 
+			
 			" ) " +
 			" ) ";
 	
