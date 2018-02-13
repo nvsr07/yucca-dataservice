@@ -1121,6 +1121,26 @@ public class ServiceUtil {
 	 * @return
 	 */
 	public static List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
+		
+		if(authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return null;
+
+		List<String> tenantCodeList = new ArrayList<>();
+		for (String role : authorizedUser.getRoles()) {
+			if(role.contains("_subscriber")){
+				tenantCodeList.add(role.substring(0, role.lastIndexOf("_")));
+			}
+		}
+		
+		return tenantCodeList;
+	}
+
+	
+	/**
+	 * 
+	 * @param authorizedUser
+	 * @return
+	 */
+	public static List<String> getTenantCodeListFromUser_old(JwtUser authorizedUser){
 
 		List<String> tenantCodeList = new ArrayList<>();
 		
