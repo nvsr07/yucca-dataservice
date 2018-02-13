@@ -280,12 +280,14 @@
 			<url>http://dist.wso2.org/maven2</url>
 		</repository>
 
-<!-- 
+<!--	
+		was declared by adminapi, but not really needed 
 		<repository>
 			<id>apache-maven2-repo</id>
 			<name>Apache Maven2 Repository</name>
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
+		
  -->		
 	    <repository>
 	      <id>central</id>
@@ -316,10 +318,11 @@
 		</repository>
 
 		<!-- should we leave this in charge to single modules ? NO, goal is to 
-			use private repo private project repository -->
+			use private repo private project repository
+			 
 		<repository>
 			<id>local-maven-repo</id>
-			<url>file:///${project.basedir}/../../yucca-dataservice/admin-api/target/libs</url>
+			<url>file:///${project.basedir}/../../repo</url>
 			<releases>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
@@ -329,6 +332,7 @@
 				<updatePolicy>always</updatePolicy>
 			</snapshots>
 		</repository>
+		-->
 	</repositories>
 
 	<profiles>

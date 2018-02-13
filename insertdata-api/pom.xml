@@ -45,11 +45,8 @@
 
 		<dependency>
 			<groupId>org.csi.yucca.adminapi</groupId>
-			<artifactId>adminapi</artifactId>
-			<classifier>client</classifier>
-			<!-- <version>${pom.version}</version> -->
-			<version>1.0.0-001</version>
-			<type>jar</type>
+			<artifactId>adminapi-client</artifactId>
+			<version>1.0.0-001</version>			
 		</dependency>
 
 		<dependency>
@@ -116,6 +113,7 @@
 			<artifactId>json-path</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+		<!--  -->		
 		<dependency>
 			<groupId>net.minidev</groupId>
 			<artifactId>json-smart</artifactId>
@@ -239,12 +237,14 @@
 		<profile>
 			<id>int</id>
 			<build>
+<!-- 			
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-scm-plugin</artifactId>
 					</plugin>
-				</plugins>
+ 				</plugins>
+-->					
 				<resources>
 					<resource>
 						<directory>${project.build.directory}/checkout/insertdataapi/resources/int</directory>
