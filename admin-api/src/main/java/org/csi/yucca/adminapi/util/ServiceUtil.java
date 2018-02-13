@@ -1122,6 +1122,7 @@ public class ServiceUtil {
 	 */
 	public static List<String> getTenantCodeListFromUser(JwtUser authorizedUser){
 		
+		
 		if(authorizedUser.getRoles() == null || authorizedUser.getRoles().isEmpty()) return null;
 
 		List<String> tenantCodeList = new ArrayList<>();
