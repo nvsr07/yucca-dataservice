@@ -29,5 +29,4 @@ public interface SDPInsertMetadataApiAccess {
 	public abstract CollectionConfDto getCollectionInfo(String tenant,
 			long idDatasetTrovato, long datasetVersionTrovato,
 			String datasetType);
-
 }

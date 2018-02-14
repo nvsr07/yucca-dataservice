@@ -92,7 +92,6 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		for (TenantManagementResponse tenant : tenants) {
 			tenantsCode.add(tenant.getTenantcode());
 		}
-		
 		return tenantsCode;
 	}
 
