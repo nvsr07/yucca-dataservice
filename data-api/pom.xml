@@ -62,12 +62,18 @@
 	
 		<dependency>
 			<groupId>org.csi.yucca.adminapi</groupId>
+			<artifactId>adminapi-client</artifactId>
+			<version>1.0.0-001</version>			
+		</dependency>
+	<!-- 
+		<dependency>
+			<groupId>org.csi.yucca.adminapi</groupId>
 			<artifactId>adminapi</artifactId>
-			<classifier>client</classifier>
+			<classifier>client-</classifier>
 			<version>1.0.0-001</version>
 			<scope>compile</scope>
 		</dependency>
-		
+ 	-->		
 		
 		<dependency>
 			<groupId>org.apache.solr</groupId>

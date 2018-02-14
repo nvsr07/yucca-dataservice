@@ -1,6 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
+	
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.csi.yucca.adminapi</groupId>
 	<artifactId>adminapi</artifactId>
@@ -23,29 +24,6 @@
 	</properties>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/libs/org/csi/yucca/adminapi/${version}</outputDirectory>
-							<classifier>client</classifier>
-							<includes>
-								<include>**/adminapi/util/**/*</include>
-								<include>**/adminapi/model/**/*</include>
-								<include>**/adminapi/client/*</include>
-								<include>**/adminapi/response/*</include>
-							</includes>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -109,6 +87,11 @@
 			<url>http://repo.hortonworks.com/content/repositories/releases/</url>
 			<layout>default</layout>
 		</repository>
+<!-- 		
+		<repository>
+			<id>local-workspace</id>			
+		</repository>
+ -->		
 	</repositories>
 
 
@@ -342,6 +325,62 @@
 
 	</dependencies>
 	<profiles>
+		<profile>
+			<id>client</id>
+			<activation>
+				<property>
+					<name>!skipClientJar</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>3.0.2</version>
+						<executions>
+							<execution>
+								<phase>package</phase>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+								<configuration>
+									<outputDirectory>target/client/</outputDirectory>
+									<classifier>client</classifier>
+									<includes>
+										<include>**/adminapi/util/**/*</include>
+										<include>**/adminapi/model/**/*</include>
+										<include>**/adminapi/client/*</include>
+										<include>**/adminapi/response/*</include>
+									</includes>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						 <artifactId>maven-install-plugin</artifactId>
+						 <executions>
+						 	<execution>
+						 		<id>install-clientjar</id>
+						 		<phase>package</phase>
+						 		<goals>
+						 			<goal>install-file</goal>
+						 		</goals>
+						 		<configuration>
+						 			<file>target/client/${artifactId}-${version}-client.jar</file>
+						 			<groupId>${project.groupId}</groupId>
+						 			<artifactId>adminapi-client</artifactId>
+						 			<version>${project.version}</version>
+						 			<packaging>jar</packaging>
+						 			<generatePom>true</generatePom>
+						 		</configuration>
+						 	</execution>
+						 </executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		
 		<profile>
 			<id>int</id>
 			<build>

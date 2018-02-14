@@ -98,7 +98,7 @@ public class BackOfficeController extends YuccaController {
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.actionOnStream(actionRequest, idStream, ApiUserType.BACK_OFFICE);
+				return streamService.actionFeedback(actionRequest, idStream);
 			}
 		}, logger);
 	}
