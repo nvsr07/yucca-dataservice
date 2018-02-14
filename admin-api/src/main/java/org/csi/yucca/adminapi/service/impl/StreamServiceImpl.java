@@ -213,15 +213,14 @@ public class StreamServiceImpl implements StreamService {
 			if (Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.INSTALLED.id(), dettaglioStream.getIdDataSource(),
 						dettaglioStream.getDatasourceversion());
-				publishStream(dettaglioStream);
 				return ServiceResponse.build().OK();
 			}
 			if (Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(),
-						dettaglioStream.getDatasourceversion());
-				publishStream(dettaglioStream);
+						dettaglioStream.getDatasourceversion());			
 				return ServiceResponse.build().OK();
 			}
+			publishStream(dettaglioStream);
 		}
 
 		// FAIL
