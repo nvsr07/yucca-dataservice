@@ -1,25 +1,23 @@
 package org.csi.yucca.dataservice.insertdataapi.adminapi;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.csi.yucca.adminapi.client.AdminApiClientException;
 import org.csi.yucca.adminapi.client.BackofficeDettaglioClient;
+import org.csi.yucca.adminapi.client.BackofficeListaClient;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
+import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
-import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
 import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMetadataApiAccess;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.StreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.TenantInfo;
 import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
-
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 
 public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("org.csi.yucca.datainsert");
@@ -85,9 +83,17 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	}
 
 	@Override
-	public Set<String> getTenantList() throws MongoAccessException {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<String> getTenantList() throws Exception { 
+		
+		List<TenantManagementResponse> tenants = BackofficeListaClient.getTenants(SDPInsertApiConfig.getInstance().getAdminApiUrl(), log.getName());
+		
+		Set<String> tenantsCode = new HashSet<String>();
+		
+		for (TenantManagementResponse tenant : tenants) {
+			tenantsCode.add(tenant.getTenantcode());
+		}
+		
+		return tenantsCode;
 	}
 
 	public ArrayList<StreamInfo> getStreamInfo(String tenant, String streamApplication, String sensor) {
