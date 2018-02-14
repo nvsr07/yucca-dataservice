@@ -202,7 +202,7 @@ public class StreamServiceImpl implements StreamService {
 		logger.info("STATUS FEEDBACK: " + dettaglioStream.getStatusCode());
 
 		if (!Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())
-				|| !Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
+				&& !Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 			badRequestActionOnStream("No action accepted for current status different from "
 					+ Status.INSTALLATION_IN_PROGRESS.description() + " and "
 					+ Status.UNINSTALLATION_IN_PROGRESS.description());
