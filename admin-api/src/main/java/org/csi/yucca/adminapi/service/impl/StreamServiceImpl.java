@@ -213,10 +213,11 @@ public class StreamServiceImpl implements StreamService {
 			if (Status.INSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.INSTALLED.id(), dettaglioStream.getIdDataSource(),
 						dettaglioStream.getDatasourceversion());
+				dettaglioStream.setStatusCode(Status.INSTALLED.code());
 			}
 			if (Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
 				dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(),
-						dettaglioStream.getDatasourceversion());			
+						dettaglioStream.getDatasourceversion());	
 			}
 			
 			publishStream(dettaglioStream);
@@ -429,6 +430,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 }
 	
 	private void publishStream(DettaglioStream dettaglioStream) throws Exception{
+		logger.info("StreamServiceImpl- UNPUBLISHED:"+dettaglioStream.getDataSourceUnpublished());
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		Dataset dataset = datasetMapper.selectDataSet(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		if (dettaglioStream.getDataSourceUnpublished()!=1 && dettaglioStream.getIdStatus() == Status.INSTALLED.id()) {
