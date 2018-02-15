@@ -575,10 +575,10 @@ public class ServiceUtil {
 	 * @param tenantMapper
 	 * @throws Exception
 	 */
-	public static void insertTenantDataSource(Integer idTenant, Integer idDataSource, Timestamp now, TenantMapper tenantMapper)throws Exception {
+	public static void insertTenantDataSource(Integer idTenant, Integer idDataSource, Integer dataSourceVersion, Timestamp now, TenantMapper tenantMapper)throws Exception {
 		TenantDataSource tenantDataSource = new TenantDataSource();
 		tenantDataSource.setIdDataSource(idDataSource);
-		tenantDataSource.setDatasourceversion(ServiceUtil.DATASOURCE_VERSION);
+		tenantDataSource.setDatasourceversion(dataSourceVersion);
 		tenantDataSource.setIdTenant(idTenant);
 		tenantDataSource.setIsactive(Util.booleanToInt(true));
 		tenantDataSource.setIsmanager(Util.booleanToInt(true));

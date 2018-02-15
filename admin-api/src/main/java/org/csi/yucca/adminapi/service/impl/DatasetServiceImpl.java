@@ -384,6 +384,10 @@ public class DatasetServiceImpl implements DatasetService {
 
 		// sharing tenants
 		updateSharingTenants(datasetRequest);
+		
+		// TENANT-DATASOURCE
+		insertTenantDataSource(datasetRequest.getIdTenant(), datasetRequest.getIdDataSource(),datasetRequest.getNewDataSourceVersion(), Util.getNow(), tenantMapper);
+
 
 		// TODO vanno clonate le api?
 		try {
@@ -836,7 +840,7 @@ public class DatasetServiceImpl implements DatasetService {
 		insertComponents(postDatasetRequest.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, Util.booleanToInt(true), componentMapper);
 
 		// TENANT-DATASOURCE
-		insertTenantDataSource(postDatasetRequest.getIdTenant(), idDataSource, Util.getNow(), tenantMapper);
+		insertTenantDataSource(postDatasetRequest.getIdTenant(), idDataSource, ServiceUtil.DATASOURCE_VERSION, Util.getNow(), tenantMapper);
 
 		// SHARING TENANT
 		insertSharingTenants(postDatasetRequest.getSharingTenants(), idDataSource, Util.getNow(), DataOption.READ_AND_USE.id(), ManageOption.NO_RIGHT.id(), tenantMapper);

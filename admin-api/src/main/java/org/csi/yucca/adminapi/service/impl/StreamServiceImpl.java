@@ -721,7 +721,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		insertTweetComponents(request, smartobject);
 
-		insertTenantDataSource(request.getIdTenant(), idDataSource, now, tenantMapper);
+		insertTenantDataSource(request.getIdTenant(), idDataSource, ServiceUtil.DATASOURCE_VERSION,  now, tenantMapper);
 
 		insertSharingTenants(request, idDataSource, now);
 
