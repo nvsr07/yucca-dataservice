@@ -147,7 +147,9 @@ public class SolrDelegate {
 
 	private SolrInputDocument createSolrDocument(DettaglioStream stream, DettaglioSmartobject smartobject, Dataset dataset) throws Exception {
 		SolrInputDocument doc = createSolrDocumentFromDettaglio(stream);
-		List<String> entityTypes = Arrays.asList("stream");
+		List<String> entityTypes = new LinkedList<String>();
+		entityTypes.add("stream");
+		
 		if (stream.getSavedata() == 1) {
 			entityTypes.add("dataset");
 			doc.addField("datasetCode", dataset.getDatasetcode());
