@@ -5,6 +5,14 @@ import org.csi.yucca.adminapi.util.Errors;
 
 public class TenantManagementResponse extends Response{
 
+	private String dataSolrCollectionName; 
+	
+	private String measureSolrCollectionName; 
+	
+	private String mediaSolrCollectionName;
+	
+	private String socialSolrCollectionName;
+	
 	private Integer idTenant;
 
 	private String description;
@@ -49,6 +57,12 @@ public class TenantManagementResponse extends Response{
 
 	public TenantManagementResponse(TenantManagement tenantManagement) {
 		super();
+		
+		this.dataSolrCollectionName = tenantManagement.getDataSolrCollectionName(); 
+		this.measureSolrCollectionName = tenantManagement.getMeasureSolrCollectionName(); 
+		this.mediaSolrCollectionName = tenantManagement.getMediaSolrCollectionName();
+		this.socialSolrCollectionName = tenantManagement.getSocialSolrCollectionName();
+		
 		this.username = tenantManagement.getUsername();
 		this.bundles = new BundlesResponse(tenantManagement);
 		this.ecosystem = new EcosystemResponse(tenantManagement);
@@ -66,6 +80,38 @@ public class TenantManagementResponse extends Response{
 		this.userfirstname = tenantManagement.getUserfirstname();
 		this.userlastname = tenantManagement.getUserlastname();
 		this.usertypeauth = tenantManagement.getUsertypeauth();
+	}
+
+	public String getDataSolrCollectionName() {
+		return dataSolrCollectionName;
+	}
+
+	public void setDataSolrCollectionName(String dataSolrCollectionName) {
+		this.dataSolrCollectionName = dataSolrCollectionName;
+	}
+
+	public String getMeasureSolrCollectionName() {
+		return measureSolrCollectionName;
+	}
+
+	public void setMeasureSolrCollectionName(String measureSolrCollectionName) {
+		this.measureSolrCollectionName = measureSolrCollectionName;
+	}
+
+	public String getMediaSolrCollectionName() {
+		return mediaSolrCollectionName;
+	}
+
+	public void setMediaSolrCollectionName(String mediaSolrCollectionName) {
+		this.mediaSolrCollectionName = mediaSolrCollectionName;
+	}
+
+	public String getSocialSolrCollectionName() {
+		return socialSolrCollectionName;
+	}
+
+	public void setSocialSolrCollectionName(String socialSolrCollectionName) {
+		this.socialSolrCollectionName = socialSolrCollectionName;
 	}
 
 	public String getUsername() {

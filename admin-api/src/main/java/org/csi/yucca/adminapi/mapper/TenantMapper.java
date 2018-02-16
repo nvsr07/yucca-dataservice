@@ -133,7 +133,6 @@ public interface TenantMapper {
 	@Select(SELECT_DETTAGLIO_TENANT) 
 	DettaglioTenantBackoffice selectDettaglioTenant(@Param("tenantcode") String tenantcode);
 	
-	
 	/*************************************************************************
 	 * 
 	 * 					SELECT ALL TENANT
@@ -142,6 +141,8 @@ public interface TenantMapper {
 	public static final String SELECT_ALL_TENANTS_JOIN = 	
 			
 	" SELECT TENANT.username, " +
+	
+	" TENANT.datasolrcollectionname, TENANT.measuresolrcollectionname, TENANT.mediasolrcollectionname, TENANT.socialsolrcollectionname, " + 
 	
 	" BUNDLES.id_bundles, BUNDLES.maxdatasetnum, BUNDLES.maxstreamsnum, BUNDLES.hasstage, BUNDLES.max_odata_resultperpage, BUNDLES.zeppelin, " +
 	
@@ -179,9 +180,7 @@ public interface TenantMapper {
         @Result(property = "idTenant",              column = "id_tenant")
       })	
 	@Select({"<script>",SELECT_ALL_TENANTS_JOIN,"</script>"}) 
-	List<TenantManagement> selectAllTenant(@Param("sortList") List<String> sortList);
-	
-	
+	List<TenantManagement> selectAllTenant(@Param("sortList") List<String> sortList);	
 	/*************************************************************************
 	 * 
 	 * 					SELECT TENANT BY TENANT CODE
