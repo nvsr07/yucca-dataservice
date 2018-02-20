@@ -158,7 +158,9 @@ public class TenantServiceImpl implements TenantService {
 		// false
 		Smartobject internalSmartObject = smartObjectService.selectSmartObjectByOrganizationAndSoType(request.getIdOrganization(), Type.INTERNAL.id());
 		smartObjectService.insertNotManagerTenantSmartobject(tenant.getIdTenant(), internalSmartObject.getIdSmartObject(), new Timestamp(System.currentTimeMillis()));
-
+		
+		mailService.sendTenantCreationEmail(request);
+		
 		return ServiceResponse.build().object(new TenantResponse(tenant));
 	}
 
