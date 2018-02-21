@@ -82,7 +82,22 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private ApiService apiService;
+	
+	
+	@ApiOperation(value = BO_LOAD_TENANT, notes = BO_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer = "List")
+	@GetMapping("/mail/{tenantcode}")
+	public ResponseEntity<Object> loadMail(@PathVariable final String tenantcode) {
+		logger.info("loadTenant");
 
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.selectMail(tenantcode);
+			}
+		}, logger);
+	}
+
+	
+	
 	/**
 	 * 
 	 * @param actionRequest
