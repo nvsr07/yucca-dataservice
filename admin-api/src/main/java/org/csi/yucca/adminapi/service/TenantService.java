@@ -32,4 +32,7 @@ public interface TenantService {
 
 	ServiceResponse selectTenantTypes() throws BadRequestException, NotFoundException, Exception;
 
+	ServiceResponse selectMail(String tenantcode) throws BadRequestException, NotFoundException, Exception;
+
+	
 }

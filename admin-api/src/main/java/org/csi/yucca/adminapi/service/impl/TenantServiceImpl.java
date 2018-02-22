@@ -15,6 +15,7 @@ import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
 import org.csi.yucca.adminapi.mapper.FunctionMapper;
+import org.csi.yucca.adminapi.mapper.MailTemplatesMapper;
 import org.csi.yucca.adminapi.mapper.OrganizationMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
@@ -22,6 +23,7 @@ import org.csi.yucca.adminapi.mapper.TenantTypeMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
 import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Bundles;
+import org.csi.yucca.adminapi.model.Mailtemplates;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
@@ -36,6 +38,7 @@ import org.csi.yucca.adminapi.request.PostTenantRequest;
 import org.csi.yucca.adminapi.request.PostTenantSocialRequest;
 import org.csi.yucca.adminapi.request.TenantRequest;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioTenantResponse;
+import org.csi.yucca.adminapi.response.EmailTenantResponse;
 import org.csi.yucca.adminapi.response.FabricResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
@@ -97,6 +100,9 @@ public class TenantServiceImpl implements TenantService {
 	private FunctionMapper functionMapper;
 
 	@Autowired
+	private MailTemplatesMapper mailTemplatesMapper;
+
+	@Autowired
 	private ClassificationService classificationService;
 
 	@Autowired
@@ -107,6 +113,23 @@ public class TenantServiceImpl implements TenantService {
 
 	@Autowired
 	private MailService mailService;
+	
+	@Override
+	public ServiceResponse selectMail(String tenantcode) throws BadRequestException, NotFoundException, Exception {
+		
+		DettaglioTenantBackoffice tenant = tenantMapper.selectDettaglioTenant(tenantcode);
+		
+		ServiceUtil.checkIfFoundRecord(tenant);
+		
+		Mailtemplates mailtemplates = mailTemplatesMapper.selectBundlesByIdTenantType(tenant.getIdTenantType());
+		
+		EmailTenantResponse response = EmailTenantResponse.build(tenantcode, tenant.getPassword())
+				.destinatario(tenant.getUseremail())
+				.soggetto(mailtemplates.getMailobject())
+				.testo(mailtemplates.getMailbody());
+
+		return ServiceResponse.build().object(response);
+	}
 	
 	@Override
 	public ServiceResponse insertTenantSocial(PostTenantSocialRequest request) throws BadRequestException, NotFoundException, Exception {
@@ -158,7 +181,9 @@ public class TenantServiceImpl implements TenantService {
 		// false
 		Smartobject internalSmartObject = smartObjectService.selectSmartObjectByOrganizationAndSoType(request.getIdOrganization(), Type.INTERNAL.id());
 		smartObjectService.insertNotManagerTenantSmartobject(tenant.getIdTenant(), internalSmartObject.getIdSmartObject(), new Timestamp(System.currentTimeMillis()));
-
+		
+		mailService.sendTenantCreationEmail(request);
+		
 		return ServiceResponse.build().object(new TenantResponse(tenant));
 	}
 
@@ -592,5 +617,6 @@ public class TenantServiceImpl implements TenantService {
 			return ServiceResponse.build().object(new FabricResponse(0, "Error: " + e.getMessage()));
 		}
 	}
+
 
 }
