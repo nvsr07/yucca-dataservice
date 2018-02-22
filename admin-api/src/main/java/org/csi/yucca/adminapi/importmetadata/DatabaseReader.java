@@ -16,8 +16,10 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.ComponentJson;
+import org.csi.yucca.adminapi.model.DataType;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.Util;
 
@@ -194,8 +196,8 @@ public class DatabaseReader {
 				}
 
 				for (ComponentJson component : components) {
-					if (fkMap.containsKey(tableName + "." + component.getName())) {
-						component.setForeignkey(fkMap.get(tableName + "." + component.getName()));
+					if (fkMap.containsKey(tableName + "." + component.getSourcecolumnname())) {
+						component.setForeignkey(fkMap.get(tableName + "." + component.getSourcecolumnname()));
 					}
 				}
 
@@ -260,14 +262,19 @@ public class DatabaseReader {
 
 				loadPk(meta, tableName, components);
 
-				table.setDataset(metadata);
 
 				if (columnWarnings.containsKey(table.getTableName())) {
 					for (String warning : columnWarnings.get(table.getTableName())) {
 						table.addWarning(warning);
 					}
 				}
-				tables.add(table);
+				try {
+					table.setDataset(new DettaglioStreamDatasetResponse(metadata));
+					tables.add(table);
+				} catch (Exception e) {
+					e.printStackTrace();
+					log.error("[DatabaseReader::loadSchema] error while adding  of table " + tableName + " - message: " + e.getMessage());
+				}
 			}
 
 		}
@@ -320,22 +327,27 @@ public class DatabaseReader {
 			while (columnsResultSet.next()) {
 				ComponentJson component = new ComponentJson();
 				String columnName = columnsResultSet.getString("COLUMN_NAME");
-				component.setName(columnName);
+				component.setName(Util.camelcasefy(columnName,"_"));
 				if (columnsResultSet.getString("REMARKS") != null)
 					component.setAlias(columnsResultSet.getString("REMARKS"));
 				else
 					component.setAlias(columnName.replace("_", " "));
 
 				String columnType = columnsResultSet.getString("TYPE_NAME");
+				
+				DataType dataType = null;
 				if (columnType != null)
-					component.setDataType(org.csi.yucca.adminapi.util.DataType.getFromId(databaseConfiguation.getTypesMap().get(columnType)));
+					dataType = org.csi.yucca.adminapi.util.DataType.getFromId(databaseConfiguation.getTypesMap().get(columnType));
 				else {
 					if (!columnWarnings.containsKey(tableName))
 						columnWarnings.put(tableName, new LinkedList<String>());
 					columnWarnings.get(tableName).add("Unkonwn data type for column " + columnName + ": " + columnType);
 					log.warn("[DatabaseReader::loadColumns] unkonwn data type  " + columnType + " for table " + tableName + " column " + columnName);
-					component.setDataType(org.csi.yucca.adminapi.util.DataType.getFromId(Constants.ADMINAPI_DATA_TYPE_STRING));
+					dataType = org.csi.yucca.adminapi.util.DataType.getFromId(Constants.ADMINAPI_DATA_TYPE_STRING);
 				}
+				component.setDataType(dataType);
+
+				component.setInorder(columnCounter);
 				component.setSourcecolumn(columnCounter);
 				component.setSourcecolumnname(columnName);
 
@@ -410,10 +422,12 @@ public class DatabaseReader {
 				String[] columnDataSplitted = columnData.split("[|]");
 
 				ComponentJson component = new ComponentJson();
-				component.setName(columnDataSplitted[0]);
+				component.setName(Util.camelcasefy(columnDataSplitted[0],"_"));
 				component.setAlias(columnDataSplitted[1]);
-				component.setDataType( org.csi.yucca.adminapi.util.DataType.getFromId(Integer.parseInt(columnDataSplitted[2])));
+				DataType dataType = org.csi.yucca.adminapi.util.DataType.getFromId(Integer.parseInt(columnDataSplitted[2]));
+				component.setDataType(dataType);
 				component.setSourcecolumn(counter);
+				component.setInorder(counter);
 				component.setSourcecolumnname(columnDataSplitted[0]);
 				components.add(component);
 			}
@@ -435,7 +449,7 @@ public class DatabaseReader {
 			ResultSetMetaData statementMetaData = statement.getMetaData();
 			for (int i = 1; i < statementMetaData.getColumnCount() + 1; i++) {
 				Component component = new Component();
-				String columnName = statementMetaData.getColumnName(i);
+				String columnName = Util.camelcasefy(statementMetaData.getColumnName(i),"_");
 				component.setName(columnName);
 
 				if (statementMetaData.getColumnLabel(i) != null)
@@ -451,6 +465,8 @@ public class DatabaseReader {
 					component.setIdDataType(Constants.ADMINAPI_DATA_TYPE_STRING);
 				}
 				component.setSourcecolumn(i - 1);
+				component.setInorder(i - 1);
+
 
 				component.setSourcecolumnname(columnName);
 
@@ -498,7 +514,7 @@ public class DatabaseReader {
 			while (primaryKeys.next()) {
 				String pkColumnName = primaryKeys.getString("COLUMN_NAME");
 				for (ComponentJson component : components) {
-					if (component.getName().equals(pkColumnName))
+					if (component.getSourcecolumnname().equals(pkColumnName))
 						component.setIskey(Util.booleanToInt(true));
 				}
 			}

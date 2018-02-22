@@ -13,7 +13,7 @@ public class MeasureUnitResponse extends Response{
 	public MeasureUnitResponse(ComponentJson componentJson) {
 		super();
 		if (componentJson != null) {
-			this.idMeasureUnit = componentJson.getId_measure_unit();
+			this.idMeasureUnit = componentJson.getIdMeasureUnit();
 			this.measureunit = componentJson.getMeasureunit()!=null?String.valueOf(componentJson.getMeasureunit()):null;
 			this.measureunitcategory = componentJson.getMeasureunitcategory();			
 		}

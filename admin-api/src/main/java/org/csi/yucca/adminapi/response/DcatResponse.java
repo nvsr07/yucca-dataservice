@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
+import org.csi.yucca.adminapi.model.Dcat;
 import org.csi.yucca.adminapi.model.DcatJson;
 import org.csi.yucca.adminapi.util.Util;
 
@@ -44,8 +45,22 @@ public class DcatResponse extends Response {
 
 	public DcatResponse() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
+
+	public DcatResponse(Dcat dcat) {
+		super();
+		if (dcat != null) {
+			this.idDcat = dcat.getIdDcat();
+			this.dcatdataupdate = "" + dcat.getDcatdataupdate();
+			this.dcatnomeorg = dcat.getDcatnomeorg();
+			this.dcatemailorg = dcat.getDcatemailorg();
+			this.dcatcreatorname = dcat.getDcatcreatorname();
+			this.dcatcreatortype = dcat.getDcatcreatortype();
+			this.dcatcreatorid = dcat.getDcatcreatorid();
+			this.dcatrightsholdername = dcat.getDcatrightsholdername();
+			this.dcatrightsholdertype = dcat.getDcatrightsholdertype();
+			this.dcatrightsholderid = dcat.getDcatrightsholderid();			
+		}	}
 
 	public Integer getIdDcat() {
 		return idDcat;

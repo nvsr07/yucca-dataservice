@@ -214,7 +214,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 			String doubleQuote = "";
 
-			if (DataType.STRING.id().equals(component.getDt_id_data_type()) || DataType.DATE_TIME.id().equals(component.getDt_id_data_type())) {
+			if (DataType.STRING.id().equals(component.getIdDataType()) || DataType.DATE_TIME.id().equals(component.getIdDataType())) {
 				doubleQuote = "\"";
 			}
 
@@ -284,14 +284,14 @@ public class DatasetServiceImpl implements DatasetService {
 				ComponentInfoRequest info = getInfoByNumColumn(c, componentInfoRequests);
 				ComponentJson component = getComponentResponseById(info.getIdComponent(), components);
 
-				if (info.isSkipColumn() || DataType.STRING.id().equals(component.getDt_id_data_type())) {
+				if (info.isSkipColumn() || DataType.STRING.id().equals(component.getIdDataType())) {
 					continue;
 				}
 
 				String column = columns[c];
 				//DataTypeResponse typeResponse = component.getDataType();
 				for (DataType dateType : DataType.values()) {
-					if (dateType.id().equals(component.getDt_id_data_type())) {
+					if (dateType.id().equals(component.getIdDataType())) {
 						try {
 
 							if (DataType.DATE_TIME == dateType) {
@@ -363,7 +363,7 @@ public class DatasetServiceImpl implements DatasetService {
 	private void updateDatasetTransaction(DatasetRequest datasetRequest, String tenantCodeManager) throws Exception {
 
 		// dcat
-		Long idDcat = insertDcat(datasetRequest.getDcat(), dcatMapper);
+		Integer idDcat = insertDcat(datasetRequest.getDcat(), dcatMapper);
 
 		// license
 		Integer idLicense = insertLicense(datasetRequest.getLicense(), licenseMapper);
@@ -820,7 +820,7 @@ public class DatasetServiceImpl implements DatasetService {
 		Integer idLicense = insertLicense(postDatasetRequest.getLicense(), licenseMapper);
 
 		// INSERT DCAT:
-		Long idDcat = insertDcat(postDatasetRequest.getDcat(), dcatMapper);
+		Integer idDcat = insertDcat(postDatasetRequest.getDcat(), dcatMapper);
 
 		// INSERT DATA SOURCE:
 		Integer idDataSource = insertDataSource(postDatasetRequest.idSubdomain(idSubdomain), organization.getIdOrganization(), idDcat, idLicense, Status.INSTALLED.id(),
@@ -837,7 +837,7 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 
 		// COMPONENT
-		insertComponents(postDatasetRequest.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, Util.booleanToInt(true), componentMapper);
+		insertComponents(postDatasetRequest.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, ServiceUtil.DATASOURCE_VERSION, componentMapper);
 
 		// TENANT-DATASOURCE
 		insertTenantDataSource(postDatasetRequest.getIdTenant(), idDataSource, ServiceUtil.DATASOURCE_VERSION, Util.getNow(), tenantMapper);
@@ -885,7 +885,7 @@ public class DatasetServiceImpl implements DatasetService {
 			logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - error " + e.getMessage());
 			e.printStackTrace();
 			response.addWarning(" An error occurred during the publication of the API, please try to save again");
-			//throw new BadRequestException(Errors.INTERNAL_SERVER_ERROR, " An error occurred during the publication of the API, please try to save again");
+			throw new BadRequestException(Errors.INTERNAL_SERVER_ERROR, " An error occurred during the publication of the API, please try to save again");
 		}
 		
 		response.setDatasetcode(dataset.getDatasetcode());
@@ -942,11 +942,14 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, String tenantCodeManager, JwtUser authorizedUser)
+	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest,  JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception {
 
 		List<DettaglioDataset> existingMedatataList = datasetMapper.selectDatasetFromJdbc(importMetadataRequest.getJdbcHostname(), importMetadataRequest.getJdbcDbname(),
-				importMetadataRequest.getDbType(), importMetadataRequest.getTenantCode(), organizationCode, tenantCodeManager, getTenantCodeListFromUser(authorizedUser));
+				importMetadataRequest.getDbType(), importMetadataRequest.getTenantCode(), organizationCode, getTenantCodeListFromUser(authorizedUser));
+		
+		//DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
+
 
 		DatabaseReader databaseReader = new DatabaseReader(organizationCode, importMetadataRequest.getTenantCode(), importMetadataRequest.getDbType(),
 				importMetadataRequest.getJdbcHostname(), importMetadataRequest.getJdbcDbname(), importMetadataRequest.getJdbcUsername(), importMetadataRequest.getJdbcPassword(),

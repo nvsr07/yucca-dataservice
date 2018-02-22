@@ -32,14 +32,12 @@ import org.apache.solr.common.util.NamedList;
 import org.csi.yucca.adminapi.conf.Krb5HttpClientConfigurer;
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
-import org.csi.yucca.adminapi.model.DcatJson;
 import org.csi.yucca.adminapi.model.Dettaglio;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
-import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -256,17 +254,17 @@ public class SolrDelegate {
 		}
 
 		if (dataset.getDcat() != null) {
-			DcatJson dcat = Util.getFromJsonString(dataset.getDcat(), DcatJson.class);
-			doc.addField("dcatDataUpdate", dcat.getDcatdataupdate());
-			doc.addField("dcatNomeOrg", dcat.getDcatnomeorg());
-			doc.addField("dcatEmailOrg", dcat.getDcatemailorg());
-			doc.addField("dcatCreatorName", dcat.getDcatcreatorname());
-			doc.addField("dcatCreatorType", dcat.getDcatcreatortype());
-			doc.addField("dcatCreatorId", dcat.getDcatcreatorid());
-			doc.addField("dcatRightsHolderName", dcat.getDcatrightsholdername());
-			doc.addField("dcatRightsHolderType", dcat.getDcatrightsholdertype());
-			doc.addField("dcatRightsHolderId", dcat.getDcatrightsholderid());
-			doc.addField("dcatReady", dcat.getDcatready());
+			//DcatJson dcat = Util.getFromJsonString(dataset.getDcat(), DcatJson.class);
+			doc.addField("dcatDataUpdate", dataset.getDcat().getDcatdataupdate());
+			doc.addField("dcatNomeOrg", dataset.getDcat().getDcatnomeorg());
+			doc.addField("dcatEmailOrg", dataset.getDcat().getDcatemailorg());
+			doc.addField("dcatCreatorName", dataset.getDcat().getDcatcreatorname());
+			doc.addField("dcatCreatorType", dataset.getDcat().getDcatcreatortype());
+			doc.addField("dcatCreatorId", dataset.getDcat().getDcatcreatorid());
+			doc.addField("dcatRightsHolderName", dataset.getDcat().getDcatrightsholdername());
+			doc.addField("dcatRightsHolderType", dataset.getDcat().getDcatrightsholdertype());
+			doc.addField("dcatRightsHolderId", dataset.getDcat().getDcatrightsholderid());
+			doc.addField("dcatReady", dataset.getDcat().getDcatready());
 		}
 
 		doc.addField("jsonFields", dataset.getComponents());

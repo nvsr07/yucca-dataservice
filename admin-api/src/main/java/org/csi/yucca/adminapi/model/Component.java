@@ -223,5 +223,23 @@ public class Component {
 		this.required = required;
 		return this;
 	}
+	
+	public void setIskey(Boolean iskey) {
+		this.iskey = iskey==null? 0: (iskey?1:0);
+	}
+
+	public void setRequired(Boolean required) {
+		this.required = required==null? 0: (required?1:0);
+	}
+
+	
+	public void iskey(Boolean iskey) {
+		this.iskey = iskey==null? 0: (iskey?1:0);
+	}
+
+	public void required(Boolean required) {
+		this.required = required==null? 0: (required?1:0);
+	}
+
 
 }

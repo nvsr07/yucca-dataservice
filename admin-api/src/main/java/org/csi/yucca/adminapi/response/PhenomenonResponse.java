@@ -13,7 +13,7 @@ public class PhenomenonResponse extends Response{
 	public PhenomenonResponse(ComponentJson componentJson) {
 		super();
 		if (componentJson != null) {
-			this.idPhenomenon = componentJson.getId_phenomenon();
+			this.idPhenomenon = componentJson.getIdPhenomenon();
 			this.phenomenonname = componentJson.getPhenomenonname();
 			this.phenomenoncetegory = componentJson.getPhenomenoncetegory();
 		}

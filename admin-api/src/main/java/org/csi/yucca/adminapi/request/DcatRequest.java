@@ -2,7 +2,7 @@ package org.csi.yucca.adminapi.request;
 
 public class DcatRequest {
 	
-	private Long idDcat; 
+	private Integer idDcat; 
 //	private Timestamp dcatdataupdate;
 	private String dcatdataupdate;
 	private String dcatnomeorg;
@@ -14,7 +14,7 @@ public class DcatRequest {
 	private String dcatrightsholdertype;			
 	private String dcatrightsholderid;
 	
-	public Long getIdDcat() {
+	public Integer getIdDcat() {
 		return idDcat;
 	}
 	public String getDcatdataupdate() {
@@ -53,7 +53,7 @@ public class DcatRequest {
 		if(idDcat != null)return null;
 		return dcatrightsholderid;
 	}
-	public void setIdDcat(Long idDcat) {
+	public void setIdDcat(Integer idDcat) {
 		this.idDcat = idDcat;
 	}
 	public void setDcatdataupdate(String dcatdataupdate) {

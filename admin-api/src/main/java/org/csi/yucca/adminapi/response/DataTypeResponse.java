@@ -14,9 +14,9 @@ public class DataTypeResponse extends Response{
 		super();
 		
 		if (componentJson != null) {
-			this.idDataType = componentJson.getDt_id_data_type();
-			this.datatypecode = componentJson.getDt_datatypecode();
-			this.description = componentJson.getDt_description();			
+			this.idDataType = componentJson.getIdDataType();
+			this.datatypecode = componentJson.getDatatypecode();
+			this.description = componentJson.getDatatypedescription();			
 		}
 	}
 

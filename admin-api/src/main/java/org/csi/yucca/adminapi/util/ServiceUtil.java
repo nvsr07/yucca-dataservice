@@ -230,7 +230,7 @@ public class ServiceUtil {
 	 * @return
 	 * @throws Exception
 	 */
-	public static int updateDataSource(IDataSourceRequest streamRequest, Long idDcat, 
+	public static int updateDataSource(IDataSourceRequest streamRequest, Integer idDcat, 
 			Integer idLicense, Integer idDataSource, Integer dataSourceVersion, DataSourceMapper dataSourceMapper) throws Exception{
 		
 		DataSource dataSource = new DataSource();
@@ -600,7 +600,7 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static void insertComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, 
-			Integer datasourceVersion, Integer sinceVersion, Boolean isKey, ComponentMapper componentMapper)throws Exception{
+			Integer datasourceVersion, Integer sinceVersion, ComponentMapper componentMapper)throws Exception{
 		
 		for (ComponentRequest componentRequest : listComponentRequest) {
 
@@ -615,8 +615,8 @@ public class ServiceUtil {
 				component.idMeasureUnit(componentRequest.getIdMeasureUnit());
 				component.sourcecolumn(componentRequest.getSourcecolumn());
 				component.sourcecolumnname(componentRequest.getSourcecolumnname());
-				component.required(Util.booleanToInt(componentRequest.getRequired()));
-				component.setIskey(Util.booleanToInt(isKey));
+				component.required(componentRequest.getRequired());
+				component.setIskey(componentRequest.getIskey());
 				component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
 				component.setIdDataSource(idDataSource);
 				component.setDatasourceversion(datasourceVersion);
@@ -625,20 +625,20 @@ public class ServiceUtil {
 		}
 	}
 
-	/**
-	 * 
-	 * @param listComponentRequest
-	 * @param idDataSource
-	 * @param datasourceVersion
-	 * @param sinceVersion
-	 * @param componentMapper
-	 * @throws Exception
-	 */
-	public static void insertComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, 
-			Integer datasourceVersion, Integer sinceVersion, ComponentMapper componentMapper)throws Exception{
-		insertComponents(listComponentRequest, idDataSource, datasourceVersion, sinceVersion, null, componentMapper);
-
-	}
+//	/**
+//	 * 
+//	 * @param listComponentRequest
+//	 * @param idDataSource
+//	 * @param datasourceVersion
+//	 * @param sinceVersion
+//	 * @param componentMapper
+//	 * @throws Exception
+//	 */
+//	public static void insertComponents(List<ComponentRequest> listComponentRequest, Integer idDataSource, 
+//			Integer datasourceVersion, Integer sinceVersion, ComponentMapper componentMapper)throws Exception{
+//		insertComponents(listComponentRequest, idDataSource, datasourceVersion, sinceVersion, null, componentMapper);
+//
+//	}
 
 	
 	/**
@@ -798,7 +798,10 @@ public class ServiceUtil {
 
 			dataset.setIdDataSourceBinary(idDataSourceBinary);
 			dataset.setDatasourceversionBinary(dataSourceVersionBinary);
-			
+			dataset.setJdbcdburl(jdbcdburl);
+			dataset.setJdbcdbname(jdbcdbname);
+			dataset.setJdbcdbtype(jdbcdbtype);
+			dataset.setJdbctablename(jdbctablename);
 			
 			datasetMapper.insertDataset(dataset);
 			return dataset;
@@ -849,7 +852,7 @@ public class ServiceUtil {
 	 * @param dcatRequest
 	 * @return
 	 */
-	public static Long insertDcat(DcatRequest dcatRequest, DcatMapper dcatMapper) throws Exception{
+	public static Integer insertDcat(DcatRequest dcatRequest, DcatMapper dcatMapper) throws Exception{
 
 		if (dcatRequest == null)
 			return null;
@@ -926,7 +929,7 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static Integer insertDataSource(IDataSourceRequest request, Integer idOrganization, 
-			Long idDcat, Integer idLicense, Integer idStatus, DataSourceMapper dataSourceMapper) throws Exception{
+			Integer idDcat, Integer idLicense, Integer idStatus, DataSourceMapper dataSourceMapper) throws Exception{
 		
 		DataSource dataSource = new DataSource();
 		dataSource.setDatasourceversion(DATASOURCE_VERSION);

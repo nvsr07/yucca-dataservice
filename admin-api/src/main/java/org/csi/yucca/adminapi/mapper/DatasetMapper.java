@@ -142,7 +142,7 @@ public interface DatasetMapper {
 	/******************************************************************
 	 * 				SELECT DETTAGLIO DATSET
 	 ******************************************************************/
-	public static final String SELECT_DETTAGLIO_DATASET = 
+	public static final String SELECT_DETTAGLIO_DATASET_CAMPI = 
 		    " SELECT " + 
 		     " case yucca_d_dataset_subtype.dataset_subtype " +   
 			  "	when 'bulkDataset' then coalesce(yucca_dataset.solrcollectionname, yucca_organization.datasolrcollectionname) " +
@@ -189,19 +189,36 @@ public interface DatasetMapper {
 			" ( select (row_to_json(yucca_dcat)) " + 
 			" from " + DcatMapper.DCAT_TABLE  + " yucca_dcat " + 
 			" where yucca_dcat.id_dcat = yucca_data_source.id_dcat " +
-			" ) dcat, " +
+			" ) dcatString, " +
 			// COMPONENTS
 			" ( select (row_to_json(yucca_d_license)) " + 
 			" from " + LicenseMapper.LICENSE_TABLE  + " yucca_d_license " + 
 			" where yucca_d_license.id_license = yucca_data_source.id_license " +
 			" ) license, " +
 			" ( select array_to_json(array_agg(row_to_json(comp))) " + 
-			" from ( select yucca_component.*, " +
-			"        		yucca_d_phenomenon.*, " +
-			"         		yucca_d_data_type.id_data_type dt_id_data_type, " +
-			"         		yucca_d_data_type.datatypecode dt_datatypecode, " +
-			"         		yucca_d_data_type.description dt_description, " +
-			"         		yucca_d_measure_unit.*  " +
+			" from ( select yucca_component.id_component, " +
+			"        		yucca_component.name, " +
+			"        		yucca_component.alias, " +
+			"        		yucca_component.inorder, " +
+			"        		yucca_component.tolerance, " +
+			"        		yucca_component.since_version, " +
+			"        		yucca_component.id_measure_unit \"idMeasureUnit\", " +
+			"        		yucca_component.iskey, " +
+			"        		yucca_component.id_data_source, " +
+			"        		yucca_component.datasourceversion, " +
+			"        		yucca_component.sourcecolumn, " +
+			"        		yucca_component.sourcecolumnname, " +
+			"        		yucca_component.required, " +
+			"        		yucca_component.foreignkey, " +
+			"         		yucca_d_phenomenon.id_phenomenon \"idPhenomenon\", " +
+			"         		yucca_d_phenomenon.phenomenonname phenomenonname, " +
+			"         		yucca_d_phenomenon.phenomenoncetegory phenomenoncetegory, " +
+			"         		yucca_d_data_type.id_data_type \"idDataType\", " +
+			"         		yucca_d_data_type.datatypecode datatypecode, " +
+			"         		yucca_d_data_type.description datatypedescription, " +
+			"         		yucca_d_measure_unit.id_measure_unit \"idMeasureUnit\", " +
+			"         		yucca_d_measure_unit.measureunit, " +
+			"         		yucca_d_measure_unit.measureunitcategory " +
 			"          from " + ComponentMapper.COMPONENT_TABLE  + " yucca_component " + 
 			"  	  LEFT JOIN " + PhenomenonMapper.PHENOMENON_TABLE  + " yucca_d_phenomenon ON yucca_component.id_phenomenon = yucca_d_phenomenon.id_phenomenon " + 
 			"     LEFT JOIN " +  DataTypeMapper.DATA_TYPE_TABLE  + " yucca_d_data_type ON yucca_component.id_data_type = yucca_d_data_type.id_data_type  " +
@@ -226,7 +243,9 @@ public interface DatasetMapper {
 			" yucca_r_tenant_data_source.isactive = 1 AND  " +
 			" yucca_r_tenant_data_source.ismanager = 0  " +
 			" ) tenantshr  " +
-			" ) sharing_tenant " + 
+			" ) sharing_tenant ";
+	
+	public static final String SELECT_DETTAGLIO_DATASET_FROM = 
 			// FROM
 			" FROM " +  DatasetMapper.DATASET_TABLE  + " yucca_dataset  " +
 			" INNER JOIN " + DataSourceMapper.DATA_SOURCE_TABLE  + " yucca_data_source ON yucca_dataset.id_data_source = yucca_data_source.id_data_source AND  " +
@@ -255,7 +274,11 @@ public interface DatasetMapper {
 			" LEFT JOIN " + TenantMapper.TENANT_TABLE  + " yucca_tenant ON yucca_tenant.id_tenant = yucca_r_tenant_data_source.id_tenant "; 
 
 	
-	
+	public static final String SELECT_DETTAGLIO_DATASET = SELECT_DETTAGLIO_DATASET_CAMPI + SELECT_DETTAGLIO_DATASET_FROM;
+	public static final String SELECT_DETTAGLIO_DATASET_CON_JDBC = SELECT_DETTAGLIO_DATASET_CAMPI + 	
+			", yucca_dataset.jdbcdburl, yucca_dataset.jdbcdbname, yucca_dataset.jdbcdbtype,  yucca_dataset.jdbctablename "
+			 + SELECT_DETTAGLIO_DATASET_FROM;
+
 	public static final String WHERE_DETTAGLIO_DATASET_START = " WHERE 1=1 ";
 	
 	public static final String WHERE_DETTAGLIO_DATASET_MAX_VERSION =
@@ -296,7 +319,7 @@ public interface DatasetMapper {
 
 	public static final String WHERE_DETTAGLIO_DATASET_DATASETCODE = " AND yucca_dataset.datasetcode = #{datasetCode} ";
 
-	
+	public static final String WHERE_DETTAGLIO_DATASET_JDBC_PARAMS = "AND jdbcdburl=#{jdbcdburl} and jdbcdbname=#{jdbcdbname} and jdbcdbtype=#{jdbcdbtype} AND yucca_data_source.id_status!=5  ";
 	
 	
 	@Results({
@@ -641,6 +664,69 @@ public interface DatasetMapper {
 			  @Param("datasetCode")  String datasetCode, @Param("dataSourceVersion") Integer dataSourceVersion);	
 	
 	
+	@Results({
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"),
+		@Result(property = "idDataSource", column = "id_data_source"),
+		@Result(property = "description", column = "dataset_description"),
+		@Result(property = "idDatasetType", column = "id_dataset_type"),	
+		@Result(property = "idDatasetSubtype", column = "id_dataset_subtype"),
+	    @Result(property = "idDataSourceBinary", column = "id_data_source_binary"),
+	    @Result(property = "datasourceversionBinary", column = "datasourceversion_binary"),	
+	    @Result(property = "dataSourceVisibility", column = "data_source_visibility"),	
+	    @Result(property = "dataSourceUnpublished", column = "data_source_unpublished"),	
+	    @Result(property = "dataSourceRegistrationDate", column = "data_source_registration_date"),
+	    @Result(property = "statusCode", column = "statuscode"),
+	    @Result(property = "statusDescription", column = "status_description"),
+	    @Result(property = "idStatus", column = "id_status"),
+	    @Result(property = "domIdDomain", column = "dom_id_domain"),
+	    @Result(property = "domLangEn", column = "dom_langen"),
+	    @Result(property = "domLangIt", column = "dom_langit"),
+	    @Result(property = "domDomainCode", column = "dom_domaincode"),
+		@Result(property = "subIdSubDomain", column = "sub_id_subdomain"),
+		@Result(property = "subSubDomainCode", column = "sub_subdomaincode"),
+		@Result(property = "subLangIt", column = "sub_lang_it"),
+		@Result(property = "subLangEn", column = "sub_lang_en"),
+		@Result(property = "organizationCode", column = "organizationcode"),
+		@Result(property = "organizationDescription", column = "organization_description"),
+		@Result(property = "idOrganization", column = "id_organization"),
+		@Result(property = "dataSourceIsActive", column = "isactive"),
+		@Result(property = "dataSourceIsManager", column = "ismanager"),
+		@Result(property = "tenantCode", column = "tenantcode"),
+		@Result(property = "tenantName", column = "tenant_name"),
+		@Result(property = "tenantDescription", column = "tenant_description"),
+		@Result(property = "idTenant", column = "id_tenant"),
+		@Result(property = "datasetType", column = "dataset_type"),
+		@Result(property = "datasetTypeDescription", column = "dataset_type_description"),
+		@Result(property = "datasetSubtype", column = "dataset_subtype"), 	
+		@Result(property = "datasetSubtypeDescription", column = "dataset_subtype_description"), 
+		@Result(property = "dataSourceCopyright", column = "data_source_copyright"), 	
+		@Result(property = "dataSourceIsopendata", column = "data_source_is_opendata"), 
+		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"), 
+		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"), 
+		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"), 
+		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"), 
+		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"), 
+		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"), 
+		@Result(property = "dataSourceRequesterName", column = "data_source_requester_name"), 
+		@Result(property = "dataSourceRequesterSurname", column = "data_source_requester_surname"), 
+		@Result(property = "dataSourceRequesterMail", column = "data_source_requester_mail"), 
+		@Result(property = "dataSourcePrivacyAcceptance", column = "data_source_privacy_acceptance"), 
+		@Result(property = "dataSourceIcon", column = "data_source_icon"), 
+		@Result(property = "sharingTenant", column = "sharing_tenant")
+		
+      })		
+	@Select({"<script>", SELECT_DETTAGLIO_DATASET_CON_JDBC,WHERE_DETTAGLIO_DATASET_START + WHERE_DETTAGLIO_DATASET_MAX_VERSION 
+		+ WHERE_DETTAGLIO_DATASET_TENANT_MANAGER_CODE  
+		+ WHERE_DETTAGLIO_DATASET_ORGANIZATION_CODE
+		+ WHERE_DETTAGLIO_DATASET_TENANT_VISIBILITY
+		+ WHERE_DETTAGLIO_DATASET_JDBC_PARAMS,  "</script>"}) 
+	List<DettaglioDataset> selectDatasetFromJdbc(@Param("jdbcdburl") String jdbcdburl, 
+									@Param("jdbcdbname") String jdbcdbname, 
+									@Param("jdbcdbtype") String jdbcdbtype, 
+									@Param("tenantCodeManager") String tenantCodeManager,
+								    @Param("organizationCode") String organizationcode,
+								    @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
+
 	
 	
 	/********************************************************************************************
@@ -897,7 +983,11 @@ public interface DatasetMapper {
 	" yucca_tenant.description tenant_description, " + 
 	" yucca_tenant.id_tenant, " +
 	" yucca_data_source.id_subdomain, " +
-	" yucca_d_subdomain.id_domain " +
+	" yucca_d_subdomain.id_domain, " +
+	" yucca_dataset.jdbcdburl,"+
+	" yucca_dataset.jdbcdbname,"+
+	" yucca_dataset.jdbcdbtype, "+
+	" yucca_dataset.jdbctablename" +
 	" FROM " +  DATASET_TABLE + " yucca_dataset " + 
 	" INNER JOIN " + DataSourceMapper.DATA_SOURCE_TABLE  + " yucca_data_source ON yucca_dataset.id_data_source = yucca_data_source.id_data_source AND yucca_dataset.datasourceversion = yucca_data_source.datasourceversion " +
 	" INNER JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " yucca_organization ON  yucca_data_source.id_organization = yucca_organization.id_organization " +
@@ -946,7 +1036,7 @@ public interface DatasetMapper {
 		@Result(property = "domIdDomain", column = "id_domain") 
       })		
 	@Select({"<script>", SELECT_DATASET_FROM_JDBC, "</script>"}) 
-	List<DettaglioDataset> selectDatasetFromJdbc(@Param("jdbcdburl") String jdbcdburl, @Param("jdbcdbname") String jdbcdbname, @Param("jdbcdbtype") String jdbcdbtype, 
+	List<DettaglioDataset> selectDatasetFromJdbc_old(@Param("jdbcdburl") String jdbcdburl, @Param("jdbcdbname") String jdbcdbname, @Param("jdbcdbtype") String jdbcdbtype, 
 			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode, @Param("tenantCodeManager") String  tenantCodeManager, @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);
 
 

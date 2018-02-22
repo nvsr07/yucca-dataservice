@@ -675,8 +675,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	private void insertComponents(PostStreamRequest request, Smartobject smartobject, Integer idDataSource)
 			throws Exception {
 		if (Type.FEED_TWEET.id() != smartobject.getIdSoType()) {
-			ServiceUtil.insertComponents(request.getComponents(), idDataSource, DATASOURCE_VERSION, SINCE_VERSION,
-					false, componentMapper);
+			ServiceUtil.insertComponents(request.getComponents(), idDataSource, DATASOURCE_VERSION, SINCE_VERSION, componentMapper);
 		}
 	}
 
@@ -705,7 +704,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		Timestamp now = Util.getNow();
 		Integer idLicense = null;
 
-		Long idDcat = insertDcat(request.getDcat(), dcatMapper);
+		Integer idDcat = insertDcat(request.getDcat(), dcatMapper);
 
 		if (Visibility.PUBLIC.code().equals(request.getVisibility())) {
 			idLicense = insertLicense(request.getLicense(), licenseMapper);
@@ -1439,8 +1438,8 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 				component.setIdPhenomenon(componentRequest.getIdPhenomenon());
 				component.setIdDataType(componentRequest.getIdDataType());
 				component.setIdMeasureUnit(componentRequest.getIdMeasureUnit());
-				component.setRequired(Util.booleanToInt(true));
-				component.setIskey(Util.booleanToInt(false));
+				component.setRequired(true);
+				component.setIskey(false);
 				componentMapper.insertComponent(component);
 			}
 		}
@@ -1560,7 +1559,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		Timestamp now = Util.getNow();
 
-		Long idDcat = insertDcat(streamRequest.getDcat(), dcatMapper);
+		Integer idDcat = insertDcat(streamRequest.getDcat(), dcatMapper);
 		Integer idLicense = insertLicense(streamRequest.getLicense(), licenseMapper);
 
 		updateDataSource(streamRequest, idDcat, idLicense, streamToUpdate.getIdDataSource(),

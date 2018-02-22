@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 
 public class Dcat {
 
-	private Long idDcat;
+	private Integer idDcat;
 	private Timestamp dcatdataupdate;
 	private String dcatnomeorg;
 	private String dcatemailorg;
@@ -16,10 +16,10 @@ public class Dcat {
 	private String dcatrightsholderid;
 	private Integer dcatready;
 	
-	public Long getIdDcat() {
+	public Integer getIdDcat() {
 		return idDcat;
 	}
-	public void setIdDcat(Long idDcat) {
+	public void setIdDcat(Integer idDcat) {
 		this.idDcat = idDcat;
 	}
 	public Timestamp getDcatdataupdate() {

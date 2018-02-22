@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.csi.yucca.adminapi.model.ComponentJson;
 import org.csi.yucca.adminapi.model.Dataset;
+import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 
 public class DatabaseTableDataset {
 
@@ -14,7 +15,7 @@ public class DatabaseTableDataset {
 	private String tableName;
 	private String tableType;
 	private String status;
-	private Dataset dataset;
+	private DettaglioStreamDatasetResponse dataset;
 	private List<String> warnings;
 	private List<ComponentJson> newComponents;
 
@@ -30,11 +31,11 @@ public class DatabaseTableDataset {
 		this.tableName = tableName;
 	}
 
-	public Dataset getDataset() {
+	public DettaglioStreamDatasetResponse getDataset() {
 		return dataset;
 	}
 
-	public void setDataset(Dataset dataset) {
+	public void setDataset(DettaglioStreamDatasetResponse dataset) {
 		this.dataset = dataset;
 	}
 

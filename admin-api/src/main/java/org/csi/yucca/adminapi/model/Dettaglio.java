@@ -50,7 +50,8 @@ public class Dettaglio {
 	private String dataSourceRequesterMail;
 	private Integer dataSourcePrivacyAcceptance;
 	private String dataSourceIcon;
-	private String dcat; // JSON
+	private Dcat dcat; // JSON
+	private String dcatString; // JSON
 	private String license; // JSON
 	private ComponentJson[] components; // JSON
 	private String componentsString; // JSON
@@ -160,11 +161,11 @@ public class Dettaglio {
 		this.dataSourceIcon = dataSourceIcon;
 	}
 
-	public String getDcat() {
+	public Dcat getDcat() {
 		return dcat;
 	}
 
-	public void setDcat(String dcat) {
+	public void setDcat(Dcat dcat) {
 		this.dcat = dcat;
 	}
 
@@ -428,6 +429,23 @@ public class Dettaglio {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				setComponents(mapper.readValue(componentsString, ComponentJson[].class));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public String getDcatString() {
+		return dcatString;
+	}
+
+	public void setDcatString(String dcatString) {
+		this.dcatString = dcatString;
+		if (dcatString != null) {
+			dcatString = dcatString.replaceAll("id_dcat", "idDcat");
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				setDcat(mapper.readValue(dcatString, Dcat.class));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

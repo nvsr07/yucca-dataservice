@@ -28,7 +28,7 @@ public class DataSource {
 	private String fbcoperationfeedback;
 	private Integer idOrganization;
 	private Integer idSubdomain;
-	private Long idDcat;
+	private Integer idDcat;
 	private Integer idLicense;
 	private Integer idStatus;
 
@@ -226,11 +226,11 @@ public class DataSource {
 		this.idSubdomain = idSubdomain;
 	}
 
-	public Long getIdDcat() {
+	public Integer getIdDcat() {
 		return idDcat;
 	}
 
-	public void setIdDcat(Long idDcat) {
+	public void setIdDcat(Integer idDcat) {
 		this.idDcat = idDcat;
 	}
 

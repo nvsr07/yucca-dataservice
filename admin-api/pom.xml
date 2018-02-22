@@ -303,6 +303,12 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/hive-jdbc/hive-jdbc-1.2.1.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.6</version>
+		</dependency>
+		
 
 		<!-- <dependency> -->
 		<!-- <groupId>junit</groupId> -->

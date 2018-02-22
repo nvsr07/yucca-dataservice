@@ -8,24 +8,27 @@ public class ComponentJson {
 	private Integer inorder;
 	private Double tolerance;
 	private Integer since_version;
-	private Integer id_phenomenon;
-	private Integer id_data_type;
-	private Integer id_measure_unit;
+	// private Integer id_data_type;
 	private Integer id_data_source;
 	private Integer datasourceversion;
 	private Integer iskey;
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
 	private Integer required;
+	private String foreignkey;
+	private Integer idPhenomenon;
 	private String phenomenonname;
 	private String phenomenoncetegory;
-	private Integer dt_id_data_type;
-	private String dt_datatypecode;
-	private String dt_description;
+	private Integer idDataType;
+	private String datatypecode;
+	private String datatypedescription;
+	// private Integer dt_id_data_type;
+	// private String dt_datatypecode;
+	// private String dt_description;
+	private Integer idMeasureUnit;
 	private String measureunit;
 	private String measureunitcategory;
-	private String foreignkey;
-
+	
 	public String getForeignkey() {
 		return foreignkey;
 	}
@@ -82,28 +85,28 @@ public class ComponentJson {
 		this.since_version = since_version;
 	}
 
-	public Integer getId_phenomenon() {
-		return id_phenomenon;
+	public Integer getIdPhenomenon() {
+		return idPhenomenon;
 	}
 
-	public void setId_phenomenon(Integer id_phenomenon) {
-		this.id_phenomenon = id_phenomenon;
+	public void setIdPhenomenon(Integer idPhenomenon) {
+		this.idPhenomenon = idPhenomenon;
 	}
 
-	public Integer getId_data_type() {
-		return id_data_type;
+	// public Integer getId_data_type() {
+	// return id_data_type;
+	// }
+	//
+	// public void setId_data_type(Integer id_data_type) {
+	// this.id_data_type = id_data_type;
+	// }
+
+	public Integer getIdMeasureUnit() {
+		return idMeasureUnit;
 	}
 
-	public void setId_data_type(Integer id_data_type) {
-		this.id_data_type = id_data_type;
-	}
-
-	public Integer getId_measure_unit() {
-		return id_measure_unit;
-	}
-
-	public void setId_measure_unit(Integer id_measure_unit) {
-		this.id_measure_unit = id_measure_unit;
+	public void setIdMeasureUnit(Integer idMeasureUnit) {
+		this.idMeasureUnit = idMeasureUnit;
 	}
 
 	public Integer getId_data_source() {
@@ -170,29 +173,29 @@ public class ComponentJson {
 		this.phenomenoncetegory = phenomenoncetegory;
 	}
 
-	public Integer getDt_id_data_type() {
-		return dt_id_data_type;
-	}
-
-	public void setDt_id_data_type(Integer dt_id_data_type) {
-		this.dt_id_data_type = dt_id_data_type;
-	}
-
-	public String getDt_datatypecode() {
-		return dt_datatypecode;
-	}
-
-	public void setDt_datatypecode(String dt_datatypecode) {
-		this.dt_datatypecode = dt_datatypecode;
-	}
-
-	public String getDt_description() {
-		return dt_description;
-	}
-
-	public void setDt_description(String dt_description) {
-		this.dt_description = dt_description;
-	}
+	// public Integer getDt_id_data_type() {
+	// return dt_id_data_type;
+	// }
+	//
+	// public void setDt_id_data_type(Integer dt_id_data_type) {
+	// this.dt_id_data_type = dt_id_data_type;
+	// }
+	//
+	// public String getDt_datatypecode() {
+	// return dt_datatypecode;
+	// }
+	//
+	// public void setDt_datatypecode(String dt_datatypecode) {
+	// this.dt_datatypecode = dt_datatypecode;
+	// }
+	//
+	// public String getDt_description() {
+	// return dt_description;
+	// }
+	//
+	// public void setDt_description(String dt_description) {
+	// this.dt_description = dt_description;
+	// }
 
 	public String getMeasureunit() {
 		return measureunit;
@@ -210,11 +213,35 @@ public class ComponentJson {
 		this.measureunitcategory = measureunitcategory;
 	}
 
+	public Integer getIdDataType() {
+		return idDataType;
+	}
+
+	public void setIdDataType(Integer idDataType) {
+		this.idDataType = idDataType;
+	}
+
+	public String getDatatypecode() {
+		return datatypecode;
+	}
+
+	public void setDatatypecode(String datatypecode) {
+		this.datatypecode = datatypecode;
+	}
+
+	public String getDatatypedescription() {
+		return datatypedescription;
+	}
+
+	public void setDatatypedescription(String datatypedescription) {
+		this.datatypedescription = datatypedescription;
+	}
+
 	public void setDataType(DataType dataType) {
 		if (dataType != null) {
-			this.dt_id_data_type = dataType.getIdDataType();
-			this.dt_datatypecode = dataType.getDatatypecode();
-			this.dt_description = dataType.getDescription();
+			this.idDataType = dataType.getIdDataType();
+			this.datatypecode = dataType.getDatatypecode();
+			this.datatypedescription = dataType.getDescription();
 		}
 	}
 
