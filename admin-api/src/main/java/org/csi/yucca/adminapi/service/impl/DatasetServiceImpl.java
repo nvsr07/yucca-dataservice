@@ -161,6 +161,21 @@ public class DatasetServiceImpl implements DatasetService {
 	private String datainsertBaseUrl;
 
 	@Override
+	public ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception {
+		
+		List<BackofficeDettaglioStreamDatasetResponse> response = new ArrayList<>();
+
+		List<DettaglioDataset> listDettaglioDataset = datasetMapper.selectListaDettaglioDatasetByOrganizationCode(organizationCode);
+
+		checkList(listDettaglioDataset);
+		
+		for (DettaglioDataset dettaglioDataset : listDettaglioDataset) {
+			response.add(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));
+		}
+		return buildResponse(response);
+	}
+	
+	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding, String csvSeparator, String componentInfoRequestsJson, String organizationCode,
 			Integer idDataset, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
@@ -574,34 +589,13 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Override
 	public ServiceResponse selectDatasetByDatasetCodeDatasetVersion(String datasetCode, Integer datasetVersion) throws BadRequestException, NotFoundException, Exception {
-		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
-
+	
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCodeDatasourceVersion(datasetCode, datasetVersion);
 
 		checkIfFoundRecord(dettaglioDataset);
-
-		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype())) {
-
-			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-			if (dettaglioStream != null) {
-
-				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-
-				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-			}
-		}
-
-		DettaglioDataset dettaglioBinary = null;
-
-		if (dettaglioDataset.getIdDataSourceBinary() != null) {
-			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioDataset.getIdDataSourceBinary(), dettaglioDataset.getDatasourceversionBinary());
-		}
-
-		dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
-
-		return buildResponse(dettaglio);
+		
+		return buildResponse(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));	
+	
 	}
 
 	@Override
@@ -959,4 +953,27 @@ public class DatasetServiceImpl implements DatasetService {
 		return buildResponse(schema);
 	}
 
+	private BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset) throws Exception{
+
+		if (dettaglioDataset.getIdDataSourceBinary() != null) {
+			DettaglioDataset dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioDataset.getIdDataSourceBinary(), dettaglioDataset.getDatasourceversionBinary());
+			return new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+		}
+		
+		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype())) {
+
+			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			if (dettaglioStream != null) {
+
+				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+
+				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+
+				return new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+			}
+		}
+
+		return null;
+	}
+	
 }

@@ -9,7 +9,9 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface DatasetService {
-
+	
+	ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 

@@ -129,6 +129,9 @@ public class ApiDoc {
 	public static final String BO_GENERETATE_ADMIN_KEY_TENANT = " GENERETATE ADMIN KEY TENANT";
 	public static final String BO_GENERETATE_ADMIN_KEY_TENANT_NOTES = "Generate admin key for tenant.";
 	
+	public static final String BO_LOAD_MAIL = "LOAD MAIL";
+	public static final String BO_LOAD_MAIL_NOTES = "Load Mail subject and text by tenantcode.";
+	
 	public static final String BO_LOAD_TENANTS = "LOAD TENANTS";
 	public static final String BO_LOAD_TENANTS_NOTES = "Load all Tenants in the System.";
 
@@ -272,4 +275,8 @@ public class ApiDoc {
 
 	public static final String BO_LOAD_DATASET_BY_DATASETCODE = "LOAD LOAD DATASET BY DATASETCODE ";
 	public static final String BO_LOAD_DATASET_BY_DATASETCODE_NOTES = "Load dataset from datatsetcode current with all details.";
+	
+	public static final String BO_LOAD_DATASETS_BY_ORGANIZATION_CODE = "LOAD DATASETS BY ORGANIZATION CODE";
+	public static final String BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES = "Load datasets by organization code with all details.";
+
 }

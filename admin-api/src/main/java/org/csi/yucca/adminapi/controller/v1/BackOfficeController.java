@@ -24,9 +24,11 @@ import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
+import org.csi.yucca.adminapi.response.EmailTenantResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
@@ -73,7 +75,7 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private TenantService tenantService;
-	
+
 	@Autowired
 	private StreamService streamService;
 
@@ -82,12 +84,29 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private ApiService apiService;
-	
-	
-	@ApiOperation(value = BO_LOAD_TENANT, notes = BO_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer = "List")
+
+	@ApiOperation(value = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE, notes = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
+	@GetMapping("/datasets/organizationCode={organizationCode}")
+	public ResponseEntity<Object> loadDatasetsByOrganizationCode(@PathVariable final String organizationCode) {
+
+		logger.info("loadDatasetsByOrganizationCode");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.selectDatasetByOrganizationCode(organizationCode);
+			}
+		}, logger);
+	}
+
+	/**
+	 * 
+	 * @param tenantcode
+	 * @return
+	 */
+	@ApiOperation(value = BO_LOAD_MAIL, notes = BO_LOAD_MAIL_NOTES, response = EmailTenantResponse.class)
 	@GetMapping("/mail/{tenantcode}")
-	public ResponseEntity<Object> loadMail(@PathVariable final String tenantcode) {
-		logger.info("loadTenant");
+	public ResponseEntity<Object> loadTenantEmail(@PathVariable final String tenantcode) {
+		logger.info("loadTenantEmail");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
@@ -96,8 +115,6 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
-	
-	
 	/**
 	 * 
 	 * @param actionRequest
@@ -106,8 +123,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_STREAM, notes = BO_ACTION_ON_STREAM_NOTES, response = ServiceResponse.class)
 	@PutMapping("/streams/{idStream}/actionfeedback")
-	public ResponseEntity<Object> actionFeedback(
-			@RequestBody final ActionRequest actionRequest, 
+	public ResponseEntity<Object> actionFeedback(@RequestBody final ActionRequest actionRequest,
 			@PathVariable final Integer idStream) {
 		logger.info("actionFeedback");
 
@@ -117,8 +133,7 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
-	
+
 	/**
 	 * 
 	 * @param actionRequest
@@ -127,7 +142,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_STREAM, notes = BO_ACTION_ON_STREAM_NOTES, response = ServiceResponse.class)
 	@PutMapping("/streams/{idStream}/action")
-	public ResponseEntity<Object> actionOnStream(@RequestBody final ActionRequest actionRequest, 
+	public ResponseEntity<Object> actionOnStream(@RequestBody final ActionRequest actionRequest,
 			@PathVariable final Integer idStream) {
 		logger.info("actionOnStream");
 
@@ -137,7 +152,7 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * 
 	 * @param actionOnTenantRequest
@@ -145,7 +160,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
 	@PutMapping("/tenants/{tenantcode}/action")
-	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionRequest actionOnTenantRequest, @PathVariable final String tenantcode) {
+	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionRequest actionOnTenantRequest,
+			@PathVariable final String tenantcode) {
 		logger.info("actionOnTenant");
 
 		return run(new ApiCallable() {
@@ -164,7 +180,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ADD_ADMIN_APPLICATION_TENANT, notes = BO_ADD_ADMIN_APPLICATION_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/addAdminApplication")
-	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
+	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantCode,
+			@RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
 
@@ -184,7 +201,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT, notes = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/subscribeAdminApi")
-	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
+	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantCode,
+			@RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("subscribeAdminApiInStore");
 
@@ -204,7 +222,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_GENERETATE_ADMIN_KEY_TENANT, notes = BO_GENERETATE_ADMIN_KEY_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/generetateAdminKey")
-	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
+	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantCode,
+			@RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
 
@@ -222,7 +241,9 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
 	@PutMapping("/tenants/{tenantcode}/actionfeedback")
-	public ResponseEntity<Object> actionfeedbackOnTenant(@RequestBody final ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest, @PathVariable final String tenantcode) {
+	public ResponseEntity<Object> actionfeedbackOnTenant(
+			@RequestBody final ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest,
+			@PathVariable final String tenantcode) {
 		logger.info("actionfeedbackOnTenant");
 
 		return run(new ApiCallable() {
@@ -279,8 +300,9 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_LOAD_TENANTS, notes = BO_LOAD_TENANTS_NOTES, response = DomainResponse.class, responseContainer = "List")
 	@GetMapping("/tenants")
-	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip, @RequestParam(required = false) final Integer limit,
-			@RequestParam(required = false) final String fields, @RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
+	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip,
+			@RequestParam(required = false) final Integer limit, @RequestParam(required = false) final String fields,
+			@RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
 		logger.info("loadTenants");
 
 		return run(new ApiCallable() {
@@ -327,7 +349,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_DATA_TYPE, notes = BO_UPDATE_DATA_TYPE_NOTES, response = DataTypeResponse.class)
 	@PutMapping("/data_types/{idDataType}")
-	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest, @PathVariable final Integer idDataType) {
+	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest,
+			@PathVariable final Integer idDataType) {
 		logger.info("updateDataType");
 
 		return run(new ApiCallable() {
@@ -441,7 +464,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_PHENOMENON, notes = BO_UPDATE_PHENOMENON_NOTES, response = PhenomenonResponse.class)
 	@PutMapping("/phenomenons/{idPhenomenon}")
-	public ResponseEntity<Object> updatePhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest, @PathVariable final Integer idPhenomenon) {
+	public ResponseEntity<Object> updatePhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest,
+			@PathVariable final Integer idPhenomenon) {
 		logger.info("updatePhenomenon");
 
 		return run(new ApiCallable() {
@@ -509,7 +533,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_MEASURE_UNIT, notes = BO_UPDATE_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class)
 	@PutMapping("/measure_units/{idMeasureUnit}")
-	public ResponseEntity<Object> updateMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest, @PathVariable final Integer idMeasureUnit) {
+	public ResponseEntity<Object> updateMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest,
+			@PathVariable final Integer idMeasureUnit) {
 		logger.info("updateMeasureUnit");
 
 		return run(new ApiCallable() {
@@ -673,7 +698,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_SUBDOMAIN, notes = BO_UPDATE_SUBDOMAIN_NOTES, response = SubdomainResponse.class)
 	@PutMapping("/subdomains/{idSubdomain}")
-	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest, @PathVariable final Integer idSubdomain) {
+	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest,
+			@PathVariable final Integer idSubdomain) {
 		logger.info("updateSubdomain");
 
 		return run(new ApiCallable() {
@@ -713,7 +739,8 @@ public class BackOfficeController extends YuccaController {
 
 	@ApiOperation(value = BO_UPDATE_TAG, notes = BO_UPDATE_TAG_NOTES, response = TagResponse.class)
 	@PutMapping("/tags/{idTag}")
-	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest, @PathVariable final Integer idTag) {
+	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest,
+			@PathVariable final Integer idTag) {
 		logger.info("updateTag");
 
 		return run(new ApiCallable() {
@@ -749,7 +776,8 @@ public class BackOfficeController extends YuccaController {
 
 	@ApiOperation(value = BO_UPDATE_LICENSE, notes = BO_UPDATE_LICENSE_NOTES, response = LicenseResponse.class)
 	@PutMapping("/licenses/{idLicense}")
-	public ResponseEntity<Object> updateLicense(@RequestBody final LicenseRequest licenseRequest, @PathVariable final Integer idLicense) {
+	public ResponseEntity<Object> updateLicense(@RequestBody final LicenseRequest licenseRequest,
+			@PathVariable final Integer idLicense) {
 		logger.info("updateLicense");
 
 		return run(new ApiCallable() {
@@ -777,7 +805,8 @@ public class BackOfficeController extends YuccaController {
 
 	@ApiOperation(value = BO_UPDATE_ORGANIZATION, notes = BO_UPDATE_ORGANIZATION_NOTES, response = BackOfficeOrganizationResponse.class)
 	@PutMapping("/organizations/{idOrganization}")
-	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest, @PathVariable final Integer idOrganization) {
+	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest,
+			@PathVariable final Integer idOrganization) {
 		logger.info("updateOrganization");
 
 		return run(new ApiCallable() {
@@ -859,7 +888,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_ECOSYSTEM, notes = BO_UPDATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PutMapping("/ecosystems/{idEcosystem}")
-	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest, @PathVariable final Integer idEcosystem) {
+	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest,
+			@PathVariable final Integer idEcosystem) {
 		logger.info("updateEcosystem");
 
 		return run(new ApiCallable() {
@@ -910,7 +940,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_DOMAIN, notes = BO_UPDATE_DOMAIN_NOTES, response = DomainResponse.class)
 	@PutMapping("/domains/{idDomain}")
-	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest, @PathVariable final Integer idDomain) {
+	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest,
+			@PathVariable final Integer idDomain) {
 		logger.info("updateDomain");
 
 		return run(new ApiCallable() {
@@ -919,16 +950,17 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * LOAD ALL STREAMS
-	 * @param sort	 
+	 * 
+	 * @param sort
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAMS, notes = BO_LOAD_STREAMS_NOTES, response = ListStreamResponse.class, responseContainer = "List")
 	@GetMapping("/streams")
-	public ResponseEntity<Object> loadStreams(
-			@RequestParam(required = false) final String sort, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStreams(@RequestParam(required = false) final String sort,
+			final HttpServletRequest request) {
 		logger.info("loadStreams");
 
 		return run(new ApiCallable() {
@@ -937,7 +969,7 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * 
 	 * @param organizationCode
@@ -947,7 +979,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/streams/{idstream}/icon")
-	public void loadStreamIcon(@RequestParam(required = true) final  String organizationCode, @PathVariable final Integer idstream, final HttpServletRequest request,
+	public void loadStreamIcon(@RequestParam(required = true) final String organizationCode,
+			@PathVariable final Integer idstream, final HttpServletRequest request,
 			final HttpServletResponse response) {
 
 		logger.info("loadStreamIcon");
@@ -963,7 +996,7 @@ public class BackOfficeController extends YuccaController {
 				responseOutputStream.write(imgByte);
 				responseOutputStream.flush();
 				responseOutputStream.close();
-			} else 
+			} else
 				response.sendRedirect(Util.defaultIconPath(request, "stream"));
 		} catch (Exception e) {
 			logger.info("loadStreamIcon ERROR: " + e.getMessage());
@@ -973,14 +1006,13 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * LOAD API 
-	 * 	 
+	 * LOAD API
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_API, notes = BO_LOAD_API_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/api/{apiCode}")
-	public ResponseEntity<Object> loadApi(
-			@PathVariable final String apiCode, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadApi(@PathVariable final String apiCode, final HttpServletRequest request) {
 		logger.info("loadApi");
 
 		return run(new ApiCallable() {
@@ -989,17 +1021,16 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
-	
+
 	/**
 	 * LOAD Stream by IdStream
-	 * 	 
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_IDSTREAM, notes = BO_LOAD_STREAM_BY_IDSTREAM_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/streams/{idStream}")
-	public ResponseEntity<Object> loadStreamByIdStream(
-			@PathVariable final Integer idStream, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStreamByIdStream(@PathVariable final Integer idStream,
+			final HttpServletRequest request) {
 		logger.info("loadStreamByIdStream");
 
 		return run(new ApiCallable() {
@@ -1008,16 +1039,16 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * LOAD Dataset by IdDataset
-	 * 	 
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_IDDATASET, notes = BO_LOAD_DATASET_BY_IDDATASET_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/{idDataset}")
-	public ResponseEntity<Object> loadDatasetByIdDataset(
-			@PathVariable final Integer idDataset, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadDatasetByIdDataset(@PathVariable final Integer idDataset,
+			final HttpServletRequest request) {
 		logger.info("loadDatasetByIdDataset");
 
 		return run(new ApiCallable() {
@@ -1026,17 +1057,16 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * LOAD Dataset by IdDataset datasetVersion
-	 * 	 
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_IDDATASET_DATASETVERSION, notes = BO_LOAD_DATASET_BY_IDDATASET_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/{idDataset}/{datasetVersion}")
-	public ResponseEntity<Object> loadDatasetByIdDatasetDatasetVersion(
-			@PathVariable final Integer idDataset,
-			@PathVariable final Integer datasetVersion,final HttpServletRequest request) {
+	public ResponseEntity<Object> loadDatasetByIdDatasetDatasetVersion(@PathVariable final Integer idDataset,
+			@PathVariable final Integer datasetVersion, final HttpServletRequest request) {
 		logger.info("loadDatasetByIdDataset");
 
 		return run(new ApiCallable() {
@@ -1045,17 +1075,16 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * LOAD Dataset by IdDataset datasetVersion
-	 * 	 
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION, notes = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}/{datasetVersion}")
-	public ResponseEntity<Object> loadDatasetByDatasetCodeDatasetVersion(
-			@PathVariable final String datasetCode,
-			@PathVariable final Integer datasetVersion,final HttpServletRequest request) {
+	public ResponseEntity<Object> loadDatasetByDatasetCodeDatasetVersion(@PathVariable final String datasetCode,
+			@PathVariable final Integer datasetVersion, final HttpServletRequest request) {
 		logger.info("loadDatasetByDatasetCodeDatasetVersion");
 
 		return run(new ApiCallable() {
@@ -1064,11 +1093,10 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}")
-	public ResponseEntity<Object> loadDatasetByDatasetCode(
-			@PathVariable final String datasetCode,
+	public ResponseEntity<Object> loadDatasetByDatasetCode(@PathVariable final String datasetCode,
 			final HttpServletRequest request) {
 		logger.info("loadDatasetByDatasetCode");
 
@@ -1078,18 +1106,16 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	/**
 	 * LOAD Stream by IdStream
-	 * 	 
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE, notes = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/streams/{soCode}/{streamCode}")
-	public ResponseEntity<Object> loadStreamBySoCodeStreamCode(
-			@PathVariable final String  soCode, 
-			@PathVariable final String  streamCode,
-			final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStreamBySoCodeStreamCode(@PathVariable final String soCode,
+			@PathVariable final String streamCode, final HttpServletRequest request) {
 		logger.info("loadStreamBySoCodeStreamCode");
 
 		return run(new ApiCallable() {
