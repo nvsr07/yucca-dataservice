@@ -1,7 +1,6 @@
 package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.DettaglioDataset;
-import org.csi.yucca.adminapi.util.Util;
 
 public class BackofficeDatasetDettaglioResponse extends DatasetDettaglioResponse {
 

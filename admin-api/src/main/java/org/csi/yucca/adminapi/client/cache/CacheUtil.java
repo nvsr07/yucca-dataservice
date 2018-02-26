@@ -33,7 +33,8 @@ public class CacheUtil {
 	private static final String BACK_OFFICE_MEASURE_UNITS = "/1/backoffice/measure_units/";
 	private static final String BACK_OFFICE_API = "/1/backoffice/api/";
 	private static final String BACK_OFFICE_TENANTS = "/1/backoffice/tenants";
-	
+	private static final String BACK_OFFICE_DATASETS_ORGANIZATION_CODE = "/1/backoffice/datasets/organizationCode=";
+
 	private static LoadingCache<KeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeCache;
 	private static LoadingCache<StreamDatasetByDatasetCodeDatasetVersionKeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeDatasetVersionCache;	
 	private static LoadingCache<StreamDatasetByIdDatasetDatasetVersionKeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByIdDatasetDatasetVersionCache;
@@ -44,10 +45,36 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, MeasureUnitResponse> measureUnitCache;
 	private static LoadingCache<KeyCache, List<TenantManagementResponse>> tenantListCache;
 	
+	private static LoadingCache<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>> listaStreamDatasetByOrganizationCodeCache;
+	
+	static {
+		listaStreamDatasetByOrganizationCodeCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
+				.build(new CacheLoader<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>>() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public List<BackofficeDettaglioStreamDatasetResponse> load(KeyCache key) throws Exception {
+						return (List<BackofficeDettaglioStreamDatasetResponse>) getList(BACK_OFFICE_DATASETS_ORGANIZATION_CODE, key, BackofficeDettaglioStreamDatasetResponse.class);
+					}
+					
+					@Override
+					public ListenableFuture<List<BackofficeDettaglioStreamDatasetResponse>> reload(final KeyCache key, List<BackofficeDettaglioStreamDatasetResponse> oldValue) throws Exception {
+						
+						ListenableFutureTask <List<BackofficeDettaglioStreamDatasetResponse>> task = ListenableFutureTask.create(new Callable<List<BackofficeDettaglioStreamDatasetResponse>>() {
+							@SuppressWarnings("unchecked")
+							public List<BackofficeDettaglioStreamDatasetResponse> call() throws Exception{
+								return (List<BackofficeDettaglioStreamDatasetResponse>) getList(BACK_OFFICE_DATASETS_ORGANIZATION_CODE, key, BackofficeDettaglioStreamDatasetResponse.class);
+							}
+						});
+						Executors.newSingleThreadExecutor().execute(task);
+						return task;
+					}
+				});
+	}
 	
 	static {
 		tenantListCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
 				.build(new CacheLoader<KeyCache, List<TenantManagementResponse>>() {
+					@SuppressWarnings("unchecked")
 					@Override
 					public List<TenantManagementResponse> load(KeyCache key) throws Exception {
 						return (List<TenantManagementResponse>) getList(BACK_OFFICE_TENANTS, key, TenantManagementResponse.class);
@@ -57,6 +84,7 @@ public class CacheUtil {
 					public ListenableFuture<List<TenantManagementResponse>> reload(final KeyCache key, List<TenantManagementResponse> oldValue) throws Exception {
 						
 						ListenableFutureTask <List<TenantManagementResponse>> task = ListenableFutureTask.create(new Callable<List<TenantManagementResponse>>() {
+							@SuppressWarnings("unchecked")
 							public List<TenantManagementResponse> call() throws Exception{
 								return (List<TenantManagementResponse>) getList(BACK_OFFICE_DATASETS_DATASETCODE, key, TenantManagementResponse.class);
 							}
@@ -258,15 +286,6 @@ public class CacheUtil {
 	
 	public static List<TenantManagementResponse> getTenants(KeyCache keyCache) throws AdminApiClientException {
 		try {
-			
-			String stop = "";
-			stop = "";
-			
-			Object obj = tenantListCache.get(keyCache);
-			
-			
-			stop = "";
-			
 			return tenantListCache.get(keyCache);	
 		} 
 		catch (Exception e) {
@@ -378,6 +397,21 @@ public class CacheUtil {
 			throw new AdminApiClientException(e);
 		}
 	}
+
+	/**
+	 * 
+	 * @param keyCache
+	 * @return
+	 * @throws AdminApiClientException
+	 */
+	public static List<BackofficeDettaglioStreamDatasetResponse> getListStreamDataset(KeyCache keyCache) throws AdminApiClientException {
+		try {
+			return listaStreamDatasetByOrganizationCodeCache.get(keyCache);	
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
+	}
 	
 	/**
 	 * 
@@ -398,11 +432,13 @@ public class CacheUtil {
 	
 	@SuppressWarnings("unchecked")
 	private static Object getList(String url, KeyCache keyCache, @SuppressWarnings("rawtypes") Class clazz )throws Exception{
+
 		return AdminApiClientDelegate.getListFromAdminApi(
 				keyCache.getAdminBaseUrl() + url + keyCache.getKeyUrl(),
 				clazz,
 				keyCache.getLogger(), 
 				null);
+
 	}
 	
 }

@@ -3,12 +3,15 @@ package org.csi.yucca.adminapi.response;
 import org.csi.yucca.adminapi.model.ISoCategory;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class SoCategoryResponse extends Response{
 	
 	private Integer idSoCategory;
 	private String socategorycode;
 	private String description;
 	
+	@JsonIgnore
 	public boolean isEmpty(){
 		return this.idSoCategory == null && this.socategorycode == null && this.description == null;
 	}
