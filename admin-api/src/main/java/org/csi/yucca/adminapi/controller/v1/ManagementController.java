@@ -68,6 +68,22 @@ public class ManagementController extends YuccaController {
 
 	@Autowired
 	private DatasetService datasetService;
+
+	@ApiOperation(value = M_UNINSTALLING_DATASETS, notes = M_UNINSTALLING_DATASETS_NOTES, response = ServiceResponse.class)
+	@DeleteMapping("/organizations/{organizationCode}/datasets/{idDataset}")
+	public ResponseEntity<Object> uninstallingDatasets(
+			@PathVariable final String organizationCode, 
+			@PathVariable final Integer idDataset,
+			final HttpServletRequest request) {
+		
+		logger.info("uninstallingDatasets");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.uninstallingDatasets(organizationCode, idDataset, getAuthorizedUser(request));
+			}
+		}, logger);
+	}
 	
 	/**
 	 * 

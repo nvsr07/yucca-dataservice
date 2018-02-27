@@ -161,6 +161,25 @@ public class DatasetServiceImpl implements DatasetService {
 	private String datainsertBaseUrl;
 
 	@Override
+	public ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, Exception {
+
+		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
+
+		ServiceUtil.checkIfFoundRecord(dataset);
+		
+		// Aggiorna lo stato dell'ultima versione del datasource mettendolo a 'uninst':
+		Integer datasourceVersion = dataset.getDatasourceversion();
+		Integer idDataSource      = dataset.getIdDataSource();
+		dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), idDataSource, datasourceVersion);
+
+		// spubblicazione delle api odata e la cancellazione del documento Solr
+		removeOdataApiAndSolrDocument(dataset.getDatasetcode());
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+	
+	@Override
 	public ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception {
 		
 		List<BackofficeDettaglioStreamDatasetResponse> response = new ArrayList<>();
@@ -426,16 +445,7 @@ public class DatasetServiceImpl implements DatasetService {
 				SolrDelegate.build().addDocument(dettaglioDataset);
 
 			} else {
-				logger.info("[DatasetServiceImpl::updateDatasetTransaction] - unpublish datasetcode: " + datasetRequest.getDatasetcode());
-				try {
-					String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(datasetRequest.getDatasetcode()));
-					logger.info("[DatasetServiceImpl::updateDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
-
-				} catch (Exception ex) {
-					logger.error("[DatasetServiceImpl::updateDatasetTransaction] unpublish removeApi ERROR" + datasetRequest.getDatasetcode() + " - " + ex.getMessage());
-				}
-
-				SolrDelegate.build().removeDocument(datasetRequest.getDatasetcode());
+				removeOdataApiAndSolrDocument(httpclient, datasetRequest.getDatasetcode());
 			}
 		} catch (Exception e) {
 			logger.error("[DatasetServiceImpl::updateDatasetTransaction] Publish API - error " + e.getMessage());
@@ -445,7 +455,8 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 
 	}
-
+	
+	
 	/**
 	 * 
 	 */
@@ -975,5 +986,24 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return null;
 	}
+
+	private void removeOdataApiAndSolrDocument(String datasetCode) throws Exception{
+		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+		removeOdataApiAndSolrDocument(httpclient, datasetCode);
+	}
+	
+	private void removeOdataApiAndSolrDocument(CloseableHttpClient httpclient, String datasetCode) throws Exception{
+		logger.info("[DatasetServiceImpl::updateDatasetTransaction] - unpublish datasetcode: " + datasetCode);
+		try {
+			String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(datasetCode));
+			logger.info("[DatasetServiceImpl::updateDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+
+		} catch (Exception ex) {
+			logger.error("[DatasetServiceImpl::updateDatasetTransaction] unpublish removeApi ERROR" + datasetCode + " - " + ex.getMessage());
+		}
+
+		SolrDelegate.build().removeDocument(datasetCode);
+	}
+
 	
 }

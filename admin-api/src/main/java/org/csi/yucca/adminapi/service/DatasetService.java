@@ -10,6 +10,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface DatasetService {
 	
+	ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort,
