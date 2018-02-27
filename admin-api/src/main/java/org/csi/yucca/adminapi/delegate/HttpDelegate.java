@@ -21,14 +21,32 @@ import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 
 public class HttpDelegate {
+	
 	private static final Logger logger = Logger.getLogger(HttpDelegate.class);
 
 	public static String makeHttpPost(CloseableHttpClient httpclient, String url, List<NameValuePair> params) throws HttpException, IOException {
-		return makeHttpPost(httpclient, url, params, null, null, null);
+		return makeHttpPost(httpclient, url, params, null, null, null, null);
 	}
 
-	public static String makeHttpPost(CloseableHttpClient httpclient, String url, List<NameValuePair> params, String basicAuthUsername, String basicAuthPassword, String stringData)
-			throws HttpException, IOException {
+	public static String makeHttpPost(
+			CloseableHttpClient httpclient, 
+			String url, 
+			List<NameValuePair> params, 
+			String basicAuthUsername, 
+			String basicAuthPassword, 
+			String stringData) throws HttpException, IOException {
+		return makeHttpPost(httpclient, url, params, basicAuthUsername, basicAuthPassword, stringData, null);
+	}
+	
+	public static String makeHttpPost(
+			
+			CloseableHttpClient httpclient, 
+			String url, 
+			List<NameValuePair> params, 
+			String basicAuthUsername, 
+			String basicAuthPassword, 
+			String stringData, ContentType contentType) throws HttpException, IOException {
+		
 		logger.debug("[HttpDelegate::makeHttpPost] url " + url + " params " + explainParams(params));
 
 		HttpPost postMethod = new HttpPost(url);
@@ -40,7 +58,7 @@ public class HttpDelegate {
 			postMethod.addHeader(new BasicScheme().authenticate(creds, postMethod, null));
 		}
 		if(stringData!=null){
-			StringEntity  requestEntity = new StringEntity(stringData, ContentType.APPLICATION_JSON);
+			StringEntity  requestEntity = new StringEntity(stringData, contentType == null ? ContentType.APPLICATION_JSON : contentType);
 			postMethod.setEntity(requestEntity);
 		}
 		

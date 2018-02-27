@@ -12,6 +12,7 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
+import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.EcosystemMapper;
 import org.csi.yucca.adminapi.mapper.FunctionMapper;
@@ -47,6 +48,7 @@ import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.MailService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.service.TenantService;
+import org.csi.yucca.adminapi.service.TokenService;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.Ecosystem;
@@ -62,6 +64,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -69,7 +72,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-@PropertySource(value = { "classpath:ambiente_deployment.properties" })
+@PropertySources({ @PropertySource("classpath:ambiente_deployment.properties") })
 public class TenantServiceImpl implements TenantService {
 
 	@Value("${collprefix}")
@@ -113,6 +116,30 @@ public class TenantServiceImpl implements TenantService {
 
 	@Autowired
 	private MailService mailService;
+
+	@Autowired
+	private TokenService tokenService;
+	
+	@Override
+	public ServiceResponse selectTenantToken(String tenantCode, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, Exception {
+		
+		ServiceUtil.checkAuthTenant(authorizedUser, tenantCode);
+		
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
+		
+		ServiceUtil.checkIfFoundRecord(tenant);
+		
+		String clientKey = tenant.getClientkey();
+		
+		String clientSecret = tenant.getClientsecret();
+
+		// per testare scommentare qua sotto e commentare il checkAuthTenant: 
+		//		clientKey ="lj5De_Zev9snGEtZZBBFlZlgoO8a";
+		//		clientSecret = "jli9DGdEHqVpw6W7IEUXrjyTDeMa";
+		
+		return tokenService.get(clientKey, clientSecret);
+	}
 	
 	@Override
 	public ServiceResponse selectMail(String tenantcode) throws BadRequestException, NotFoundException, Exception {
@@ -617,6 +644,5 @@ public class TenantServiceImpl implements TenantService {
 			return ServiceResponse.build().object(new FabricResponse(0, "Error: " + e.getMessage()));
 		}
 	}
-
 
 }

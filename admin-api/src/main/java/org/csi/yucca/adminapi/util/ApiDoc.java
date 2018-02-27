@@ -51,6 +51,9 @@ public class ApiDoc {
 	public static final String M_LOAD_TENANT = "LOAD TENANT";
 	public static final String M_LOAD_TENANT_NOTES = "Load all Tenants in the System.";
 	
+	public static final String M_LOAD_TENANT_TOKEN = "LOAD TENANT TOKEN";
+	public static final String M_LOAD_TENANT_TOKEN_NOTES = "Load Tenant's token.";
+	
 	public static final String M_UPDATE_SMARTOBJECT = "UPDATE SMARTOBJECT";
 	public static final String M_UPDATE_SMARTOBJECT_NOTES = "Update Smartobject in the System.";
 	

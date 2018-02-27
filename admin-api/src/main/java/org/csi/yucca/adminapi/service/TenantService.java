@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.service;
 
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
+import org.csi.yucca.adminapi.jwt.JwtUser;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
 import org.csi.yucca.adminapi.request.PostTenantRequest;
@@ -34,5 +35,5 @@ public interface TenantService {
 
 	ServiceResponse selectMail(String tenantcode) throws BadRequestException, NotFoundException, Exception;
 
-	
+	ServiceResponse selectTenantToken(String tenantCode, JwtUser authorizedUser ) throws BadRequestException, NotFoundException, Exception;
 }
