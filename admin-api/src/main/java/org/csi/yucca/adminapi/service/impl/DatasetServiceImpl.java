@@ -160,8 +160,8 @@ public class DatasetServiceImpl implements DatasetService {
 	@Value("${datainsert.base.url}")
 	private String datainsertBaseUrl;
 
-	@Value("${publisher.deleteApiUrl}")
-	private String publisherDeleteApiUrl;
+	@Value("${datainsert.delete.url}")
+	private String datainsertDeleteUrl;
 	
 	@Override
 	public ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager,
@@ -176,7 +176,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
 		
-		String url = publisherDeleteApiUrl + tenantCodeManager + "/" + idDataset + version != null ? "/" + version : "";
+		String url = datainsertDeleteUrl + tenantCodeManager + "/" + idDataset + version != null ? "/" + version : "";
 
 		HttpDelegate.makeHttpDelete(url, user.getUsername(), user.getPassword());
 		
