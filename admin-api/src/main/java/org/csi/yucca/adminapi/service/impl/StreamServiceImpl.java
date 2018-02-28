@@ -349,9 +349,9 @@ public class StreamServiceImpl implements StreamService {
 				dettaglioStream.getIdDataSource());
 
 		// api: socket, mqtt
-		insertApi(dettaglioStream.getStreamname(), Util.intToBoolean(dettaglioStream.getSavedata()), 
-				dettaglioStream.getSmartObjectCode(), dettaglioStream.getIdDataSource(),
-				dettaglioStream.getStreamcode(), newVersion);
+		//insertApi(dettaglioStream.getStreamname(), Util.intToBoolean(dettaglioStream.getSavedata()), 
+		//		dettaglioStream.getSmartObjectCode(), dettaglioStream.getIdDataSource(),
+		//		dettaglioStream.getStreamcode(), newVersion);
 		
 		// clone api odata
 		Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioStream.getTenantCode());

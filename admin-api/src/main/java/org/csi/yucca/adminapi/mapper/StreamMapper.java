@@ -33,7 +33,7 @@ public interface StreamMapper {
 	" SELECT id_data_sourceinternal, #{newDataSourceVersion}, idstream, " + 
             " stream_alias " +
 	" FROM " +  STREAM_INTERNAL_TABLE +       
-	" WHERE idstream = #{idStream} and datasourceversion=#{currentDataSourceVersion}";
+	" WHERE idstream = #{idStream} and datasourceversioninternal=#{currentDataSourceVersion}";
 	@Insert(CLONE_STREAM_INTERNAL)
 	int cloneStreamInternal(@Param("newDataSourceVersion") Integer newDataSourceVersion,
 			@Param("currentDataSourceVersion") Integer currentDataSourceVersion, 
@@ -222,20 +222,37 @@ public interface StreamMapper {
 			" yucca_d_so_type.id_so_type, " +
 	  
 			" (select array_to_json(array_agg(row_to_json(comp))) from " + 
-			" ( select yucca_component.*, " +
-			" yucca_d_phenomenon.*, " +
-			" yucca_d_data_type.id_data_type dt_id_data_type, " +
-			" yucca_d_data_type.datatypecode dt_datatypecode, " +
-			" yucca_d_data_type.description dt_description, " +
-			" yucca_d_measure_unit.* " +
-			" from " + ComponentMapper.COMPONENT_TABLE  + " yucca_component " +
-			" LEFT JOIN " +  PhenomenonMapper.PHENOMENON_TABLE  + " yucca_d_phenomenon ON yucca_component.id_phenomenon = yucca_d_phenomenon.id_phenomenon " +
-			" LEFT JOIN " + DataTypeMapper.DATA_TYPE_TABLE + " yucca_d_data_type ON yucca_component.id_data_type = yucca_d_data_type.id_data_type " +
-			" LEFT JOIN " + MeasureUnitMapper.MEASURE_UNIT_TABLE + " yucca_d_measure_unit ON yucca_component.id_measure_unit = yucca_d_measure_unit.id_measure_unit " +
-			" where " +
-			" yucca_data_source.id_data_source = yucca_component.id_data_source AND " +
-			" yucca_data_source.datasourceversion = yucca_component.datasourceversion) comp " +
-			" ) componentsString " +  
+			" ( select yucca_component.id_component, " +
+			"        		yucca_component.name, " +
+			"        		yucca_component.alias, " +
+			"        		yucca_component.inorder, " +
+			"        		yucca_component.tolerance, " +
+			"        		yucca_component.since_version, " +
+			"        		yucca_component.id_measure_unit \"idMeasureUnit\", " +
+			"        		yucca_component.iskey, " +
+			"        		yucca_component.id_data_source, " +
+			"        		yucca_component.datasourceversion, " +
+			"        		yucca_component.sourcecolumn, " +
+			"        		yucca_component.sourcecolumnname, " +
+			"        		yucca_component.required, " +
+			"        		yucca_component.foreignkey," +
+			"         		yucca_d_phenomenon.id_phenomenon \"idPhenomenon\", " +
+			"         		yucca_d_phenomenon.phenomenonname phenomenonname, " +
+			"         		yucca_d_phenomenon.phenomenoncetegory phenomenoncetegory, " +
+			"         		yucca_d_data_type.id_data_type \"idDataType\", " +
+			"         		yucca_d_data_type.datatypecode datatypecode, " +
+			"         		yucca_d_data_type.description datatypedescription, " +
+			"         		yucca_d_measure_unit.id_measure_unit \"idMeasureUnit\", " +
+			"         		yucca_d_measure_unit.measureunit, " +
+			"         		yucca_d_measure_unit.measureunitcategory " +
+			"          from " + ComponentMapper.COMPONENT_TABLE  + " yucca_component " + 
+			"  	  LEFT JOIN " + PhenomenonMapper.PHENOMENON_TABLE  + " yucca_d_phenomenon ON yucca_component.id_phenomenon = yucca_d_phenomenon.id_phenomenon " + 
+			"     LEFT JOIN " +  DataTypeMapper.DATA_TYPE_TABLE  + " yucca_d_data_type ON yucca_component.id_data_type = yucca_d_data_type.id_data_type  " +
+			" 	  LEFT JOIN " + MeasureUnitMapper.MEASURE_UNIT_TABLE  + " yucca_d_measure_unit ON yucca_component.id_measure_unit = yucca_d_measure_unit.id_measure_unit " + 
+			"         where yucca_data_source.id_data_source = yucca_component.id_data_source AND  " +
+			"         yucca_data_source.datasourceversion = yucca_component.datasourceversion " +
+			" ) comp " +
+			" ) components " +  
 			" from " +  STREAM_INTERNAL_TABLE + " yucca_r_stream_internal " + 
 			" JOIN " + STREAM_TABLE + " yucca_stream ON yucca_r_stream_internal.idstream = yucca_stream.idstream " +
 			" JOIN " + DataSourceMapper.DATA_SOURCE_TABLE + " yucca_data_source ON yucca_data_source.id_data_source = yucca_stream.id_data_source " +
@@ -377,14 +394,36 @@ public interface StreamMapper {
 			" where yucca_d_license.id_license = yucca_data_source.id_license) license, " +
 					
 			" (select array_to_json(array_agg(row_to_json(comp))) from " + 
-			" ( select yucca_component.*, yucca_d_phenomenon.*, yucca_d_data_type.id_data_type dt_id_data_type, yucca_d_data_type.datatypecode dt_datatypecode, " + 
-			" yucca_d_data_type.description dt_description, yucca_d_measure_unit.* " +
-			" from " + ComponentMapper.COMPONENT_TABLE  + " yucca_component " + 
-			" LEFT JOIN " +  PhenomenonMapper.PHENOMENON_TABLE  + " yucca_d_phenomenon ON yucca_component.id_phenomenon = yucca_d_phenomenon.id_phenomenon " +
-			" LEFT JOIN " + DataTypeMapper.DATA_TYPE_TABLE + " yucca_d_data_type ON yucca_component.id_data_type = yucca_d_data_type.id_data_type " +
-			" LEFT JOIN " +  MeasureUnitMapper.MEASURE_UNIT_TABLE + " yucca_d_measure_unit ON yucca_component.id_measure_unit = yucca_d_measure_unit.id_measure_unit " +
-			" where yucca_data_source.id_data_source = yucca_component.id_data_source AND " +
-			" yucca_data_source.datasourceversion = yucca_component.datasourceversion) comp " +
+			" ( select yucca_component.id_component, " +
+			"        		yucca_component.name, " +
+			"        		yucca_component.alias, " +
+			"        		yucca_component.inorder, " +
+			"        		yucca_component.tolerance, " +
+			"        		yucca_component.since_version, " +
+			"        		yucca_component.id_measure_unit \"idMeasureUnit\", " +
+			"        		yucca_component.iskey, " +
+			"        		yucca_component.id_data_source, " +
+			"        		yucca_component.datasourceversion, " +
+			"        		yucca_component.sourcecolumn, " +
+			"        		yucca_component.sourcecolumnname, " +
+			"        		yucca_component.required, " +
+			"        		yucca_component.foreignkey," +
+			"         		yucca_d_phenomenon.id_phenomenon \"idPhenomenon\", " +
+			"         		yucca_d_phenomenon.phenomenonname phenomenonname, " +
+			"         		yucca_d_phenomenon.phenomenoncetegory phenomenoncetegory, " +
+			"         		yucca_d_data_type.id_data_type \"idDataType\", " +
+			"         		yucca_d_data_type.datatypecode datatypecode, " +
+			"         		yucca_d_data_type.description datatypedescription, " +
+			"         		yucca_d_measure_unit.id_measure_unit \"idMeasureUnit\", " +
+			"         		yucca_d_measure_unit.measureunit, " +
+			"         		yucca_d_measure_unit.measureunitcategory " +
+			"          from " + ComponentMapper.COMPONENT_TABLE  + " yucca_component " + 
+			"  	  LEFT JOIN " + PhenomenonMapper.PHENOMENON_TABLE  + " yucca_d_phenomenon ON yucca_component.id_phenomenon = yucca_d_phenomenon.id_phenomenon " + 
+			"     LEFT JOIN " +  DataTypeMapper.DATA_TYPE_TABLE  + " yucca_d_data_type ON yucca_component.id_data_type = yucca_d_data_type.id_data_type  " +
+			" 	  LEFT JOIN " + MeasureUnitMapper.MEASURE_UNIT_TABLE  + " yucca_d_measure_unit ON yucca_component.id_measure_unit = yucca_d_measure_unit.id_measure_unit " + 
+			"         where yucca_data_source.id_data_source = yucca_component.id_data_source AND  " +
+			"         yucca_data_source.datasourceversion = yucca_component.datasourceversion " +
+			" ) comp " +
 			" ) componentsString, " +
 				
 			" (select array_to_json(array_agg(row_to_json(tenantshr))) from " + 
@@ -533,7 +572,7 @@ public interface StreamMapper {
 		@Result(property = "soTypeCode", column = "sotypecode"),
 		@Result(property = "smartObjectTypeDescription", column = "smart_object_type_description"),
 		@Result(property = "idSoType", column = "id_so_type"),
-		@Result(property = "sharingTenant", column = "sharing_tenant") 
+		@Result(property = "sharingTenant", column = "sharing_tenant")
       })	
 	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION 
 						+ WHERE_STREAM_TENANT_MANAGER_CODE  
