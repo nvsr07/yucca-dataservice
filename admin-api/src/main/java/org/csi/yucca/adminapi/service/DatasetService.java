@@ -9,7 +9,9 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface DatasetService {
-	
+
+	ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager, Integer version, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+
 	ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception;

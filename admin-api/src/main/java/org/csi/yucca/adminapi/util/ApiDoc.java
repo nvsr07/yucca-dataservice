@@ -63,6 +63,9 @@ public class ApiDoc {
 	public static final String M_UNINSTALLING_DATASETS = "UNINSTALLING DATASETS";
 	public static final String M_UNINSTALLING_DATASETS_NOTES = "Api for datasets uninstallation.";
 	
+	public static final String M_DELETE_DATASET_DATA = "DELETE DATASET DATA";
+	public static final String M_DELETE_DATASET_DATA_NOTES = "Api for delete dataset data.";
+	
 	public static final String M_CREATE_SMARTOBJECT = "CREATE SMARTOBJECT";
 	public static final String M_CREATE_SMARTOBJECT_NOTES = "Create Smartobject in the System.";
 	

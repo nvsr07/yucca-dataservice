@@ -11,6 +11,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -24,6 +25,45 @@ public class HttpDelegate {
 	
 	private static final Logger logger = Logger.getLogger(HttpDelegate.class);
 
+	public static String makeHttpDelete(String url, String basicAuthUsername, String basicAuthPassword) throws HttpException, IOException {
+		return makeHttpDelete(null, url, basicAuthUsername, basicAuthPassword);
+	}
+	
+	public static String makeHttpDelete(
+			CloseableHttpClient httpclient, 
+			String url,  
+			String basicAuthUsername, 
+			String basicAuthPassword) throws HttpException, IOException {
+		
+		logger.debug("[HttpDelegate::makeHttpDelete] url " + url );
+
+		HttpDelete httpDelete =  new HttpDelete(url);
+		
+		if (basicAuthUsername != null && basicAuthPassword != null) {
+			UsernamePasswordCredentials creds = new UsernamePasswordCredentials(basicAuthUsername, basicAuthPassword);
+			httpDelete.addHeader(new BasicScheme().authenticate(creds, httpDelete, null));
+		}
+		
+		if(httpclient==null){
+			httpclient = HttpClients.createDefault();
+		}
+
+		CloseableHttpResponse response = httpclient.execute(httpDelete);
+		StatusLine statusLine = response.getStatusLine();
+		int statusCode = statusLine.getStatusCode();
+		if (statusCode == HttpStatus.SC_OK) {
+			try {
+				HttpEntity entity = response.getEntity();
+				return EntityUtils.toString(entity);
+			} finally {
+				response.close();
+			}
+		} else {
+			logger.error("[HttpDelegate::makeHttpDelete] ERROR Status code " + statusCode);
+			throw new HttpException("ERROR: Status code " + statusCode);
+		}
+	}
+	
 	public static String makeHttpPost(CloseableHttpClient httpclient, String url, List<NameValuePair> params) throws HttpException, IOException {
 		return makeHttpPost(httpclient, url, params, null, null, null, null);
 	}

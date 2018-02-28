@@ -160,6 +160,29 @@ public class DatasetServiceImpl implements DatasetService {
 	@Value("${datainsert.base.url}")
 	private String datainsertBaseUrl;
 
+	@Value("${publisher.deleteApiUrl}")
+	private String publisherDeleteApiUrl;
+	
+	@Override
+	public ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager,
+			Integer version, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+
+		// Verifica che l'utente loggato nel jwt possa utilizzare il tenant passato, se non puo' rilancia UNAUTHORIZED:
+		ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
+
+		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
+
+		checkIfFoundRecord(dataset);
+
+		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
+		
+		String url = publisherDeleteApiUrl + tenantCodeManager + "/" + idDataset + version != null ? "/" + version : "";
+
+		HttpDelegate.makeHttpDelete(url, user.getUsername(), user.getPassword());
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+	
 	@Override
 	public ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception {
@@ -1004,6 +1027,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 		SolrDelegate.build().removeDocument(datasetCode);
 	}
+
 
 	
 }
