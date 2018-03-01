@@ -176,7 +176,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
 		
-		String url = datainsertDeleteUrl + tenantCodeManager + "/" + idDataset + version != null ? "/" + version : "";
+		String url = datainsertDeleteUrl + tenantCodeManager + "/" + idDataset + (version != null ? "/" + version : "");
 
 		HttpDelegate.makeHttpDelete(url, user.getUsername(), user.getPassword());
 		
