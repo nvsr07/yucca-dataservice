@@ -193,12 +193,14 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 		this.icon = icon;
 	}
 
-	public OpenDataRequest getOpenData() {
+
+
+	public OpenDataRequest getOpendata() {
 		return opendata;
 	}
 
-	public void setOpenData(OpenDataRequest openData) {
-		this.opendata = openData;
+	public void setOpendata(OpenDataRequest opendata) {
+		this.opendata = opendata;
 	}
 
 	public DcatRequest getDcat() {

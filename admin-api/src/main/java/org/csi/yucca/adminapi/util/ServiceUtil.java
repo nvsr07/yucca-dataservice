@@ -243,13 +243,13 @@ public class ServiceUtil {
 		dataSource.setCopyright(streamRequest.getCopyright());
         dataSource.setDisclaimer(streamRequest.getDisclaimer());
         dataSource.setIcon(streamRequest.getIcon());
-        dataSource.setIsopendata(streamRequest.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
-        if(streamRequest.getOpenData() != null){
+        dataSource.setIsopendata(streamRequest.getOpendata() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
+        if(streamRequest.getOpendata() != null){
             dataSource.setExternalreference(streamRequest.getExternalreference());    
-            dataSource.setOpendataauthor(streamRequest.getOpenData().getOpendataauthor());
-            dataSource.setOpendataupdatedate(Util.dateStringToTimestamp(streamRequest.getOpenData().getOpendataupdatedate()));
-            dataSource.setOpendatalanguage(streamRequest.getOpenData().getOpendatalanguage());
-            dataSource.setLastupdate(streamRequest.getOpenData().getLastupdate());
+            dataSource.setOpendataauthor(streamRequest.getOpendata().getOpendataauthor());
+            dataSource.setOpendataupdatedate(Util.dateStringToTimestamp(streamRequest.getOpendata().getOpendataupdatedate()));
+            dataSource.setOpendatalanguage(streamRequest.getOpendata().getOpendatalanguage());
+            dataSource.setLastupdate(streamRequest.getOpendata().getLastupdate());
         }
         dataSource.setIdDcat(idDcat); 
         dataSource.setIdLicense(idLicense);
@@ -945,12 +945,12 @@ public class ServiceUtil {
 		dataSource.setRequestermail(request.getRequestermail());
 		dataSource.setPrivacyacceptance(Util.booleanToInt(request.getPrivacyacceptance()));
 		dataSource.setIcon(request.getIcon());		
-		dataSource.setIsopendata(request.getOpenData() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
+		dataSource.setIsopendata(request.getOpendata() != null ? Util.booleanToInt(true) : Util.booleanToInt(false));
 		dataSource.setExternalreference(request.getExternalreference());
-		dataSource.setOpendataauthor(request.getOpenData() != null ? request.getOpenData().getOpendataauthor() : null);
-		dataSource.setOpendataupdatedate(request.getOpenData() != null? Util.dateStringToTimestamp(request.getOpenData().getOpendataupdatedate()) : null);
-		dataSource.setOpendatalanguage(request.getOpenData() != null ? request.getOpenData().getOpendatalanguage() : null);
-		dataSource.setLastupdate(request.getOpenData() != null ? request.getOpenData().getLastupdate() : null);
+		dataSource.setOpendataauthor(request.getOpendata() != null ? request.getOpendata().getOpendataauthor() : null);
+		dataSource.setOpendataupdatedate(request.getOpendata() != null? Util.dateStringToTimestamp(request.getOpendata().getOpendataupdatedate()) : null);
+		dataSource.setOpendatalanguage(request.getOpendata() != null ? request.getOpendata().getOpendatalanguage() : null);
+		dataSource.setLastupdate(request.getOpendata() != null ? request.getOpendata().getLastupdate() : null);
 		dataSource.setIdOrganization(idOrganization);		
 		dataSource.setIdSubdomain(request.getIdSubdomain());
 		dataSource.setIdStatus(idStatus);		
@@ -991,7 +991,7 @@ public class ServiceUtil {
 	 * @throws NotFoundException
 	 */
 	public static void checkVisibility(IVisibility request, TenantMapper tenantMapper) throws BadRequestException, NotFoundException {
-		checkVisibility(request.getVisibility(), request.getLicense(), request.getOpenData(), 
+		checkVisibility(request.getVisibility(), request.getLicense(), request.getOpendata(), 
 				request.getSharingTenants(), request.getCopyright(), tenantMapper);
 	}
 	
