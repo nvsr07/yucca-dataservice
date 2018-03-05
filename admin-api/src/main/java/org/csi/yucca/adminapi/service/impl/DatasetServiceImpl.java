@@ -554,6 +554,9 @@ public class DatasetServiceImpl implements DatasetService {
 			Exception {
 
 		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
+		
+		if(postDatasetRequest.getMultiSubdomain()!=null )
+			postDatasetRequest.setMultiSubdomain(postDatasetRequest.getMultiSubdomain().toUpperCase());
 
 		insertDatasetValidation(postDatasetRequest, authorizedUser, organizationCode, organization);
 
