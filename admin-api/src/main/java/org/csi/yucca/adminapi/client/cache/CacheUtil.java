@@ -11,6 +11,7 @@ import org.csi.yucca.adminapi.client.cache.key.KeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByDatasetCodeDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByIdDatasetDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetBySoCodeStreamCodeKeyCache;
+import org.csi.yucca.adminapi.response.AllineamentoResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
@@ -34,7 +35,8 @@ public class CacheUtil {
 	private static final String BACK_OFFICE_API = "/1/backoffice/api/";
 	private static final String BACK_OFFICE_TENANTS = "/1/backoffice/tenants";
 	private static final String BACK_OFFICE_DATASETS_ORGANIZATION_CODE = "/1/backoffice/datasets/organizationCode=";
-
+	private static final String BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG = "/1/backoffice/allineamento/idOrganization=";
+	
 	private static LoadingCache<KeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeCache;
 	private static LoadingCache<StreamDatasetByDatasetCodeDatasetVersionKeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeDatasetVersionCache;	
 	private static LoadingCache<StreamDatasetByIdDatasetDatasetVersionKeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByIdDatasetDatasetVersionCache;
@@ -44,8 +46,40 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, BackofficeDettaglioApiResponse> dettaglioApiCache;
 	private static LoadingCache<KeyCache, MeasureUnitResponse> measureUnitCache;
 	private static LoadingCache<KeyCache, List<TenantManagementResponse>> tenantListCache;
-	
 	private static LoadingCache<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>> listaStreamDatasetByOrganizationCodeCache;
+	
+	private static LoadingCache<KeyCache, AllineamentoResponse> allineamentoResponseCache;
+	
+	static {
+		allineamentoResponseCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
+				.build(new CacheLoader<KeyCache, AllineamentoResponse>() {
+					@Override
+					public AllineamentoResponse load(KeyCache key) throws Exception {
+						return (AllineamentoResponse) get(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoResponse.class);
+					}
+					
+					@Override
+					public ListenableFuture<AllineamentoResponse> reload(final KeyCache key, AllineamentoResponse oldValue) throws Exception {
+						
+						ListenableFutureTask <AllineamentoResponse> task = ListenableFutureTask.create(new Callable<AllineamentoResponse>() {
+							public AllineamentoResponse call() throws Exception{
+								return (AllineamentoResponse) get(BACK_OFFICE_API, key, AllineamentoResponse.class);
+							}
+						});
+						Executors.newSingleThreadExecutor().execute(task);
+						return task;
+					}
+				});
+	}
+	
+	public static AllineamentoResponse getAllineamento(KeyCache keyCache) throws AdminApiClientException {
+		try {
+			return allineamentoResponseCache.get(keyCache);	
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
+	}
 	
 	static {
 		listaStreamDatasetByOrganizationCodeCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)

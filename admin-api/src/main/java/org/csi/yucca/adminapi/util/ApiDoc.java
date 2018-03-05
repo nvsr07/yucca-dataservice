@@ -191,6 +191,9 @@ public class ApiDoc {
 	
 	public static final String BO_CREATE_TENANT = "CRAETE TENANT";
 	public static final String BO_CREATE_TENANT_NOTES = "Insert a new Tenant in the System.";
+
+	public static final String BO_CREATE_ALLINEAMENTO = "CRAETE ALLINEAMENTO";
+	public static final String BO_CREATE_ALLINEAMENTO_NOTES = "Insert a new Allineamento in the System.";
 	
 	public static final String BO_UPDATE_TAG = "UPDATE TAG";
 	public static final String BO_UPDATE_TAG_NOTES = "Update a Tag in the System.";
@@ -245,6 +248,9 @@ public class ApiDoc {
 	
 	public static final String BO_UPDATE_DATA_TYPE = "UPDATE DATA TYPE";
 	public static final String BO_UPDATE_DATA_TYPE_NOTES = "Update a Data Type in the System.";
+
+	public static final String BO_UPDATE_ALLINEAMENTO = "UPDATE ALLINEAMENTO";
+	public static final String BO_UPDATE_ALLINEAMENTO_NOTES = "Update Allineamento in the System.";
 	
 	public static final String BO_DELETE_DATA_TYPE = "DELETE DATA TYPE";
 	public static final String BO_DELETE_DATA_TYPE_NOTES = "Delete Data Type in the System.";
@@ -287,5 +293,8 @@ public class ApiDoc {
 	
 	public static final String BO_LOAD_DATASETS_BY_ORGANIZATION_CODE = "LOAD DATASETS BY ORGANIZATION CODE";
 	public static final String BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES = "Load datasets by organization code with all details.";
+
+	public static final String BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION = "LOAD ALLINEAMENTO BY ID ORGANIZATION";
+	public static final String BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION_NOTES = "Load allineamento by id organization.";
 
 }

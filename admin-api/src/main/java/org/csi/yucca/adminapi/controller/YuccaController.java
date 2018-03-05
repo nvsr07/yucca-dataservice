@@ -32,6 +32,7 @@ public class YuccaController {
 				exception.getHttpStatus());
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public ResponseEntity<Object> buildResponse(ServiceResponse serviceResponse){
 		if (serviceResponse.isImage)
 		{
@@ -40,11 +41,11 @@ public class YuccaController {
 			return new ResponseEntity(serviceResponse.getObject(), headers, HttpStatus.CREATED); 
 		}
 		else {
-			return new ResponseEntity<Object>(serviceResponse.getObject(), 
-				serviceResponse.getHttpStatus());
+			return new ResponseEntity<Object>(serviceResponse.getObject(), serviceResponse.getHttpStatus());
 		}
 	}
 
+	@SuppressWarnings("rawtypes")
 	public ResponseEntity buildResponse(){
 		return new ResponseEntity(HttpStatus.OK);
 	}
@@ -96,11 +97,11 @@ public class YuccaController {
 			return internalServerError(e);
 		}
 		
-		
 		return buildResponse(serviceResponse);
 		
 	}	
 	
+	@SuppressWarnings("unchecked")
 	public ResponseEntity<Object> run(ApiExecutable apiExecutable, Logger logger){
 		
 		try {

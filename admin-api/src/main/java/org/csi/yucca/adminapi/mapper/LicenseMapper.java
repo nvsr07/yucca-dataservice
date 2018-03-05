@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.util.Constants;
 
@@ -81,7 +82,7 @@ public interface LicenseMapper {
 	public static final String UPDATE_LICENSE = 
 			"UPDATE " + LICENSE_TABLE + 
 			" SET licensecode=#{licensecode}, description=#{description} WHERE id_license=#{idLicense}";
-	@Delete(UPDATE_LICENSE)
+	@Update(UPDATE_LICENSE)
 	int updateLicense(License license);	
 	
 	

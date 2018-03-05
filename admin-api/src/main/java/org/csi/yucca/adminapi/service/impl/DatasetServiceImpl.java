@@ -42,6 +42,7 @@ import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
 import org.csi.yucca.adminapi.importmetadata.DatabaseReader;
 import org.csi.yucca.adminapi.jwt.JwtUser;
+import org.csi.yucca.adminapi.mapper.AllineamentoMapper;
 import org.csi.yucca.adminapi.mapper.ApiMapper;
 import org.csi.yucca.adminapi.mapper.BundlesMapper;
 import org.csi.yucca.adminapi.mapper.ComponentMapper;
@@ -56,6 +57,7 @@ import org.csi.yucca.adminapi.mapper.StreamMapper;
 import org.csi.yucca.adminapi.mapper.SubdomainMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.mapper.UserMapper;
+import org.csi.yucca.adminapi.model.Allineamento;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.Bundles;
 import org.csi.yucca.adminapi.model.ComponentJson;
@@ -66,7 +68,9 @@ import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.User;
+import org.csi.yucca.adminapi.model.builder.AllineamentoBuilder;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+import org.csi.yucca.adminapi.request.AllineamentoRequest;
 import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
@@ -76,6 +80,7 @@ import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
+import org.csi.yucca.adminapi.response.builder.AllineamentoResponseBuilder;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
 import org.csi.yucca.adminapi.util.DataType;
@@ -148,6 +153,9 @@ public class DatasetServiceImpl implements DatasetService {
 	@Autowired
 	private BundlesMapper bundlesMapper;
 
+	@Autowired
+	private AllineamentoMapper allineamentoMapper;
+	
 	@Value("${hive.jdbc.user}")
 	private String hiveUser;
 
@@ -162,6 +170,60 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Value("${datainsert.delete.url}")
 	private String datainsertDeleteUrl;
+	
+	@Override
+	public ServiceResponse updateAllineamento(AllineamentoRequest allineamentoRequest, Integer idOrganization)throws BadRequestException, NotFoundException, Exception {
+
+		Organization organization = organizationMapper.selectOrganizationById(idOrganization);
+		
+		checkIfFoundRecord(organization, "Not found organization: " + idOrganization);
+		
+		checkMandatoryParameter(allineamentoRequest.getLastobjectid(), "Lastobjectid");
+		
+		ServiceUtil.checkValue("locked", allineamentoRequest.getLocked(), 0, 1);
+
+		allineamentoMapper.updateAllineamento(new AllineamentoBuilder(allineamentoRequest, idOrganization).build());
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+
+	@Override
+	public ServiceResponse insertAllineamento(AllineamentoRequest allineamentoRequest)throws BadRequestException, NotFoundException, Exception {
+
+		ServiceUtil.checkMandatoryParameter(allineamentoRequest.getIdOrganization(), "id organization");
+		ServiceUtil.checkMandatoryParameter(allineamentoRequest.getLastobjectid(), "lastobjectid");
+		ServiceUtil.checkValue("locked", allineamentoRequest.getLocked(), 0, 1);
+		
+		Organization organization = organizationMapper.selectOrganizationById(allineamentoRequest.getIdOrganization());
+		checkIfFoundRecord(organization, "Not found organization: " + allineamentoRequest.getIdOrganization());
+		
+		Allineamento allineamento = allineamentoMapper.selectAllineamentoByIdOrganization(allineamentoRequest.getIdOrganization());
+		if (allineamento != null) {
+			allineamento.setLastobjectid(allineamentoRequest.getLastobjectid());
+			allineamento.setLocked(allineamentoRequest.getLocked());
+			allineamentoMapper.updateAllineamento(allineamento);
+		}
+		else{
+			allineamentoMapper.insertAllineamento(new AllineamentoBuilder(allineamentoRequest).build());			
+		}
+
+		allineamento = allineamentoMapper.selectAllineamentoByIdOrganization(allineamentoRequest.getIdOrganization());
+		
+		return buildResponse(new AllineamentoResponseBuilder(allineamento).build());
+		
+	}
+	
+	@Override
+	public ServiceResponse selectAllineamentoByIdOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception {
+
+		Organization organization = organizationMapper.selectOrganizationById(idOrganization);
+		
+		ServiceUtil.checkIfFoundRecord(organization);
+		
+		Allineamento allineamento = allineamentoMapper.selectAllineamentoByIdOrganization(idOrganization);
+		
+		return buildResponse(new AllineamentoResponseBuilder(allineamento).build());
+	}
 	
 	@Override
 	public ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager,
