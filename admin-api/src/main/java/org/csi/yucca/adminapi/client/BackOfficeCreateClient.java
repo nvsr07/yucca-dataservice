@@ -10,15 +10,15 @@ public class BackOfficeCreateClient {
 
 	
 //	TEST
-	public static void main(String [] args){
-		try {
-			String json = "{\"idOrganization\":17,\"locked\":0,\"lastobjectid\":\"rrrr\"}";
-			AllineamentoResponse allineamentoResponse = createOrUpdateAllineamento("http://localhost:8080/adminapi/1/backoffice", json, "");
-		} 
-		catch (Exception e) {
-			String stop = "";
-			stop = "";
-		}
-	}
+//	public static void main(String [] args){
+//		try {
+//			String json = "{\"idOrganization\":17,\"locked\":0,\"lastobjectid\":\"rrrr\"}";
+//			AllineamentoResponse allineamentoResponse = createOrUpdateAllineamento("http://localhost:8080/adminapi/1/backoffice", json, "");
+//		} 
+//		catch (Exception e) {
+//			String stop = "";
+//			stop = "";
+//		}
+//	}
 	
 }
