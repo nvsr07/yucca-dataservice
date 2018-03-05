@@ -285,11 +285,11 @@ public class DatasetRequest implements IVisibility, IDataSourceRequest {
 		this.jdbctablename = jdbctablename;
 	}
 
-	public OpenDataRequest getOpenData() {
+	public OpenDataRequest getOpendata() {
 		return opendata;
 	}
 
-	public void setOpenData(OpenDataRequest openData) {
-		this.opendata = openData;
+	public void setOpenData(OpenDataRequest opendata) {
+		this.opendata = opendata;
 	}
 }

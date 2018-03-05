@@ -388,7 +388,7 @@ public interface StreamMapper {
 			" and yucca_r_tag_data_source.id_tag = yucca_d_tag.id_tag) tags, " +
 					
 			" (select (row_to_json(yucca_dcat)) from " + DcatMapper.DCAT_TABLE  + " yucca_dcat " + 
-			" where yucca_dcat.id_dcat = yucca_data_source.id_dcat) dcat, " +
+			" where yucca_dcat.id_dcat = yucca_data_source.id_dcat) dcatString, " +
 					
 			" (select (row_to_json(yucca_d_license)) from " +  LicenseMapper.LICENSE_TABLE + " yucca_d_license " +
 			" where yucca_d_license.id_license = yucca_data_source.id_license) license, " +

@@ -1269,11 +1269,11 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	 * @throws BadRequestException
 	 */
 	private void checkOpendataupdatedate(PostStreamRequest request) throws BadRequestException {
-		if (request.getOpenData() != null && request.getOpenData().getOpendataupdatedate() != null
-				&& !Util.isValidDateFormat(request.getOpenData().getOpendataupdatedate())) {
+		if (request.getOpendata() != null && request.getOpendata().getOpendataupdatedate() != null
+				&& !Util.isValidDateFormat(request.getOpendata().getOpendataupdatedate())) {
 			throw new BadRequestException(Errors.INCORRECT_VALUE,
 					"Aspected format date [ " + Constants.CLIENT_FORMAT_DATE + " ]: opendataupdatedate is "
-							+ request.getOpenData().getOpendataupdatedate());
+							+ request.getOpendata().getOpendataupdatedate());
 		}
 	}
 
@@ -1561,7 +1561,6 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		Integer idDcat = insertDcat(streamRequest.getDcat(), dcatMapper);
 		Integer idLicense = insertLicense(streamRequest.getLicense(), licenseMapper);
-
 		updateDataSource(streamRequest, idDcat, idLicense, streamToUpdate.getIdDataSource(),
 				streamToUpdate.getDataSourceVersion(), dataSourceMapper);
 

@@ -15,7 +15,7 @@ public interface IDataSourceRequest {
 	String getRequestermail();
 	Boolean getPrivacyacceptance();
 	String getIcon();
-	OpenDataRequest getOpenData();
+	OpenDataRequest getOpendata();
 	String getCopyright();
 	String getExternalreference();
 	List<SharingTenantRequest> getSharingTenants();

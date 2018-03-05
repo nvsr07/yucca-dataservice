@@ -5,7 +5,7 @@ import java.util.List;
 public interface IVisibility {
 	String getVisibility();
 	LicenseRequest getLicense();
-	OpenDataRequest getOpenData(); 
+	OpenDataRequest getOpendata(); 
 	List<SharingTenantRequest> getSharingTenants(); 
 	String getCopyright();
 }
