@@ -79,9 +79,9 @@ public class SequenceHDFSReader extends Reader {
 	 * @see java.util.Enumeration
 	 */
 	public SequenceHDFSReader(
-			Enumeration<? extends HDFSFileProps> paths, int maxFields, String[] headerLine, String[] extractpostValuesMetadata) {
+			Enumeration<? extends HDFSFileProps> paths, String[] headerLine, String[] extractpostValuesMetadata) {
 		this.paths = paths;
-		this.maxFields = maxFields;
+//		this.maxFields = maxFields;
 		this.headerLine = headerLine;
 		this.extractpostValuesMetadata = extractpostValuesMetadata;
 		try {

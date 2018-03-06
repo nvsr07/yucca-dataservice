@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -48,12 +49,12 @@ public class HdfsFSUtils {
 		}
 		return input;
 	}
-	public static Reader readDir(String remotePath, Integer version, int maxFields, String[] headerLine, String[] extractpostValuesMetadata ) throws Exception {
-		return readDir( remotePath,  version,  maxFields,  headerLine,  extractpostValuesMetadata, null);
+	public static Reader readDir(String remotePath, Integer version, String[] headerLine, String[] extractpostValuesMetadata ) throws Exception {
+		return readDir( remotePath,  version,  headerLine,  extractpostValuesMetadata, null);
 	}
 	
 	
-	public static Reader readDir(String remotePath, Integer version, int maxFields, String headerLine[], String[] extractpostValuesMetadata,HashMap<Integer, Integer> mapVersionMaxFileds) throws Exception {
+	public static Reader readDir(String remotePath, Integer version, String headerLine[], String[] extractpostValuesMetadata,Map<Integer, Integer> mapVersionMaxFileds) throws Exception {
 		logger.info("[KnoxHdfsFSUtils::readDir] read directory:["+remotePath+"]");
 		Reader input = null;
 		try {
@@ -83,8 +84,16 @@ public class HdfsFSUtils {
 
 							
 							logger.info("[KnoxHdfsFSUtils::readDir] ))) add element:  versionStr="+versionStr +   "    maxfields="+mapVersionMaxFileds.get(new Integer(versionStr))    );
-							if (null!=mapVersionMaxFileds && null!=mapVersionMaxFileds.get(new Integer(versionStr))) {
-								prp.setMaxFileds(mapVersionMaxFileds.get(new Integer(versionStr)));
+							if (null!=mapVersionMaxFileds) {
+								
+								if (mapVersionMaxFileds.containsKey(new Integer(versionStr)))
+								{
+									prp.setMaxFileds(mapVersionMaxFileds.get(new Integer(versionStr)));
+								}
+								else {
+									prp.setMaxFileds(mapVersionMaxFileds.get(mapVersionMaxFileds.size()));
+								}
+								
 							}
 							
 							//list.addElement(remotePath+"/"+currentFile.getPathSuffix());
@@ -104,7 +113,7 @@ public class HdfsFSUtils {
 				logger.warn("[KnoxHdfsFSUtils::readDir] No elements found in :["+remotePath+"]");
 			}
 			
-			Reader sis = new SequenceHDFSReader(list,maxFields,headerLine,extractpostValuesMetadata);
+			Reader sis = new SequenceHDFSReader(list,headerLine,extractpostValuesMetadata);
 			
 			// try to fix max size (50 MB)
 //			HDFSFileProps curF=(HDFSFileProps) list.nextElement();

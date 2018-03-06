@@ -32,7 +32,7 @@ import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatus;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusContainer;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatuses;
 import org.csi.yucca.dataservice.binaryapi.knoxapi.json.FileStatusesContainer;
-import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
+import org.csi.yucca.dataservice.binaryapi.util.BinaryConfig;
 import org.csi.yucca.dataservice.binaryapi.util.json.JSonHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,9 +74,9 @@ public class KnoxWebHDFSConnection {
 
 	protected static final Logger logger = LoggerFactory.getLogger(KnoxWebHDFSConnection.class);
 
-	private String httpfsUrl = Config.getKnoxUrl();
-	private String principal = Config.getKnoxUser();
-	private String password = Config.getKnoxPwd();
+	private String httpfsUrl = BinaryConfig.getKnoxUrl();
+	private String principal = BinaryConfig.getKnoxUser();
+	private String password = BinaryConfig.getKnoxPwd();
 
 	static {
 		System.setProperty("jsse.enableSNIExtension", "false");
@@ -98,7 +98,7 @@ public class KnoxWebHDFSConnection {
 	
 	private static HttpClientContext getHttpContext(){
 		CredentialsProvider credsProvider = new BasicCredentialsProvider();
-		credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(Config.getKnoxUser(), Config.getKnoxPwd()));
+		credsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(BinaryConfig.getKnoxUser(), BinaryConfig.getKnoxPwd()));
 		// Add AuthCache to the execution context
 		final HttpClientContext context = HttpClientContext.create();
 		context.setCredentialsProvider(credsProvider);

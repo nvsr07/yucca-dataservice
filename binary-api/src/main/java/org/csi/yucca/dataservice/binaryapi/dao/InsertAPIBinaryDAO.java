@@ -13,7 +13,7 @@ import org.csi.yucca.dataservice.binaryapi.model.api.InsertObject;
 import org.csi.yucca.dataservice.binaryapi.model.api.MediaObject;
 import org.csi.yucca.dataservice.binaryapi.model.metadata.BinaryData;
 import org.csi.yucca.dataservice.binaryapi.model.tenantin.TenantIn;
-import org.csi.yucca.dataservice.binaryapi.mongo.singleton.Config;
+import org.csi.yucca.dataservice.binaryapi.util.BinaryConfig;
 import org.csi.yucca.dataservice.binaryapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
@@ -63,7 +63,7 @@ public class InsertAPIBinaryDAO {
 //			TenantIn tenantin = gson.fromJson(tenantDetailString, TenantIn.class);
 //			String tenantPassword = tenantin.getTenants().getTenant().getTenantPassword();
 
-			String insertApiUrl = Config.getInstance().getDataInsertBaseUrl() + binary.getTenantBinary();
+			String insertApiUrl = BinaryConfig.getInstance().getDataInsertBaseUrl() + binary.getTenantBinary();
 
 			log.info("[InsertAPIBinaryDAO:createBinary] - insertApiUrl = " + insertApiUrl);
 			log.info("[InsertAPIBinaryDAO:createBinary] - binary.getTenantBinary() = " + binary.getTenantBinary());
