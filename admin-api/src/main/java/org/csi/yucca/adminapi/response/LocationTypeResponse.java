@@ -2,12 +2,15 @@ package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class LocationTypeResponse extends Response{
 
 	private Integer idLocationType;
 	private String locationtype;
 	private String description;
 
+	@JsonIgnore
 	public boolean isEmpty(){
 		return 	this.idLocationType == null && this.locationtype == null && this.description == null;
 	}

@@ -2,12 +2,15 @@ package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ExposureTypeResponse extends Response {
 
 	private Integer idExposureType;
 	private String exposuretype;
 	private String description;
 	
+	@JsonIgnore
 	public boolean isEmpty(){
 		return this.idExposureType == null && this.exposuretype == null && this.description == null;
 	}

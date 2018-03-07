@@ -2,6 +2,8 @@ package org.csi.yucca.adminapi.response;
 
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class DettaglioSmartobjectPositionResponse extends Response {
 
 	private String address;
@@ -15,6 +17,7 @@ public class DettaglioSmartobjectPositionResponse extends Response {
 	private Float elevation;
 	private Float floor;
 	
+	@JsonIgnore
 	public boolean isEmpty(){
 		return this.address == null && this.building == null && this.city == null && this.country == null && this.placegeometry == null && this.room == null && this.lat == null && this.lon == null && this.elevation == null && this.floor == null;
 	}
