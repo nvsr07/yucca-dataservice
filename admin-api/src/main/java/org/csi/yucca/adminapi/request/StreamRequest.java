@@ -145,11 +145,11 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 		this.internalStreams = internalStreams;
 	}
 
-	public TwitterInfoRequest getTwitterInfoRequest() {
+	public TwitterInfoRequest getTwitterInfo() {
 		return twitterInfo;
 	}
 
-	public void setTwitterInfoRequest(TwitterInfoRequest twitterInfo) {
+	public void setTwitterInfo(TwitterInfoRequest twitterInfo) {
 		this.twitterInfo= twitterInfo;
 	}
 
