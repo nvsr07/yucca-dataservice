@@ -360,6 +360,9 @@ public class StreamServiceImpl implements StreamService {
 							dettaglioStream.getIdDataSource(), 
 							Api.API_TYPE, API_SUBTYPE_ODATA, 
 							bundles.getMaxOdataResultperpage() );
+		
+		tenantMapper.cloneTenantDataSourceNewVersion(newVersion, dettaglioStream.getDatasourceversion(),
+				dettaglioStream.getIdDataSource());
 
 	}
 

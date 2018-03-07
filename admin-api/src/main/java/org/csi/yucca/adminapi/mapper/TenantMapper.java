@@ -71,6 +71,25 @@ public interface TenantMapper {
             "</foreach>" +
             "</if>";	
 
+	/*************************************************************************
+	 * 
+	 * 					CLONE R_TENANT_DATA_SOURCE WITH NEW VERSION
+	 * 
+	 * ***********************************************************************/
+	public static final String CLONE_R_TENANT_DATA_SOURCE_NEW_VERSION = 
+	" INSERT INTO " + R_TENANT_DATA_SOURCE_TABLE  + ""
+			+ "( id_data_source, datasourceversion, id_tenant, isactive, ismanager, "
+			+ " dataoptions, manageoptions, activationdate, deactivationdate,  managerfrom, manageruntil) "
+      + " SELECT id_data_source, #{newDataSourceVersion}, id_tenant, isactive, ismanager,"
+            + " dataoptions, manageoptions, activationdate, deactivationdate,  managerfrom, manageruntil"
+      + " FROM " + R_TENANT_DATA_SOURCE_TABLE  
+      + " WHERE id_data_source = #{idDataSource} and datasourceversion=#{currentDataSourceVersion}";
+	@Insert(CLONE_R_TENANT_DATA_SOURCE_NEW_VERSION)
+	int cloneTenantDataSourceNewVersion(
+			@Param("newDataSourceVersion") Integer newDataSourceVersion,
+			@Param("currentDataSourceVersion") Integer currentDataSourceVersion, 
+			@Param("idDataSource") Integer idDataSource);
+	
 	
 	/*************************************************************************
 	 * 
