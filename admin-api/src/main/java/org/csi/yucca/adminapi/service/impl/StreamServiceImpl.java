@@ -747,7 +747,6 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		insertApi(request.getStreamname(), request.getSavedata(), smartobject.getSocode(), dataset, idDataSource, streamCode, dataSourceVersion);
 	}
 
-
 	/**
 	 * 
 	 * @param streamName

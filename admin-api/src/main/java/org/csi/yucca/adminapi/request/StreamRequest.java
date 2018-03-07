@@ -28,6 +28,7 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	private String requestername;
 	private String requestersurname;
 	private String externalreference;
+	
 	public String getExternalreference() {
 		return externalreference;
 	}
