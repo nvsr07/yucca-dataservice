@@ -223,14 +223,14 @@ public class AdminApiClientDelegate {
 
 		} 
 		catch (URISyntaxException e) {
-			logger.error("Error during calls", e);
+			logger.error("Error during call:" +url, e);
 			throw new AdminApiClientException(e);
 		}
 		catch (ClientProtocolException e) {
-			logger.error("Error during calls", e);
+			logger.error("Error during call:"+url, e);
 			throw new AdminApiClientException(e);
 		} catch (IOException e) {
-			logger.error("Error during calls", e);
+			logger.error("Error during call:"+url, e);
 			throw new AdminApiClientException(e);
 		}
 	}
@@ -261,14 +261,14 @@ public class AdminApiClientDelegate {
 
 		} 
 		catch (URISyntaxException e) {
-			logger.error("Error during calls", e);
+			logger.error("Error during call"+url, e);
 			throw new AdminApiClientException(e);
 		}
 		catch (ClientProtocolException e) {
-			logger.error("Error during calls", e);
+			logger.error("Error during call"+url, e);
 			throw new AdminApiClientException(e);
 		} catch (IOException e) {
-			logger.error("Error during calls", e);
+			logger.error("Error during call"+url, e);
 			throw new AdminApiClientException(e);
 		}
 	}
