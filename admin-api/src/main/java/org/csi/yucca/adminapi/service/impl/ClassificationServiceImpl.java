@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,9 +34,11 @@ import org.csi.yucca.adminapi.response.BackofficeLoadDomainResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
+import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.PublicOrganizationResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
+import org.csi.yucca.adminapi.response.builder.OrganizationResponseBuilder;
 import org.csi.yucca.adminapi.service.ClassificationService;
 import org.csi.yucca.adminapi.service.SmartObjectService;
 import org.csi.yucca.adminapi.util.Errors;
@@ -104,6 +107,7 @@ public class ClassificationServiceImpl implements ClassificationService{
 	 * 
 	 * chiamato da backoffice
 	 */
+	@Override
 	public ServiceResponse selectOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception{
 		
 		ServiceUtil.checkMandatoryParameter(idOrganization, "idOrganization");
@@ -113,6 +117,20 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkIfFoundRecord(organization);
 		
 		return ServiceResponse.build().object(new BackOfficeOrganizationResponse(organization));
+	}
+
+	@Override
+	public ServiceResponse selectOrganization() throws BadRequestException, NotFoundException, Exception{
+
+		List<Organization> listModel = organizationMapper.selectAllOrganization(null);
+
+		List<OrganizationResponse> listResponse = new ArrayList<>();
+		
+		for (Organization model : listModel) {
+			listResponse.add(new OrganizationResponseBuilder(model).build());
+		}
+		
+		return ServiceUtil.buildResponse(listResponse); 
 	}
 
 	

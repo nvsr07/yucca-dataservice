@@ -15,6 +15,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ClassificationService {
 	
+	ServiceResponse selectOrganization() throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse selectSubdomain(Integer idSubdomain) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
