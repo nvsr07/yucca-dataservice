@@ -684,9 +684,12 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	 * @param request
 	 * @param smartobject
 	 */
-	private void insertTweetComponents(PostStreamRequest request, Smartobject smartobject) {
+	private void insertTweetComponents(PostStreamRequest request, Smartobject smartobject,Integer idDataSource) {
 		if (Type.FEED_TWEET.id() == smartobject.getIdSoType()) {
 			for (Component tweetComponent : Constants.TWEET_COMPONENTS) {
+				tweetComponent.setIdDataSource(idDataSource);
+				tweetComponent.setDatasourceversion(DATASOURCE_VERSION);
+				tweetComponent.setSinceVersion(SINCE_VERSION);
 				componentMapper.insertComponent(tweetComponent);
 			}
 		}
@@ -719,7 +722,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		insertComponents(request, smartobject, idDataSource);
 
-		insertTweetComponents(request, smartobject);
+		insertTweetComponents(request, smartobject, idDataSource);
 
 		insertTenantDataSource(request.getIdTenant(), idDataSource, ServiceUtil.DATASOURCE_VERSION,  now, tenantMapper);
 
