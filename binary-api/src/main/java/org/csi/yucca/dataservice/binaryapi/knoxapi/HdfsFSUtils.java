@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,6 +63,7 @@ public class HdfsFSUtils {
 			FileStatusesContainer filesc  = new KnoxWebHDFSConnection().listStatus(remotePath);
 			ListOfFiles list = new ListOfFiles();
 			
+			logger.info("[KnoxHdfsFSUtils::readDir] "+ Arrays.toString(mapVersionMaxFileds.entrySet().toArray()) );
 			
 			Integer countFileIntoDir = 0;
 			
