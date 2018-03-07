@@ -813,8 +813,11 @@ public class InsertApiLogic {
 		}
 
 		HashMap<String, FieldsDto> campiMongoV1 = new HashMap<String, FieldsDto>();
-		for (int i = 0; i < elencoCampiV1.size(); i++) {
-			campiMongoV1.put(elencoCampiV1.get(i).getFieldName(), elencoCampiV1.get(i));
+		if (elencoCampiV1!=null)
+		{
+			for (int i = 0; i < elencoCampiV1.size(); i++) {
+				campiMongoV1.put(elencoCampiV1.get(i).getFieldName(), elencoCampiV1.get(i));
+			}
 		}
 
 		// JSONObject ooo=null;
