@@ -34,6 +34,7 @@ import org.csi.yucca.adminapi.response.EmailTenantResponse;
 import org.csi.yucca.adminapi.response.LicenseResponse;
 import org.csi.yucca.adminapi.response.ListStreamResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
+import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.PhenomenonResponse;
 import org.csi.yucca.adminapi.response.SubdomainResponse;
 import org.csi.yucca.adminapi.response.TagResponse;
@@ -86,7 +87,17 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private ApiService apiService;
-
+	
+	@ApiOperation(value = BO_LOAD_ALL_ORGANIZATION, notes = BO_LOAD_ALL_ORGANIZATION_NOTES, response = OrganizationResponse.class, responseContainer = "List")
+	@GetMapping("/organizations")
+	public ResponseEntity<Object> loadOrganization() {
+		logger.info("loadOrganization");
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return classificationService.selectOrganization();
+			}
+		}, logger);
+	}
 	
 	/****************************************************************************************************************
 				CREATE TABLE int_yucca.yucca_allineamento

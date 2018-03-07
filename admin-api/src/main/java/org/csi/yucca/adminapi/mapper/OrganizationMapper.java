@@ -31,39 +31,68 @@ public interface OrganizationMapper {
 					" ORG.socialphoenixtablename, ORG.socialphoenixschemaname FROM " + ORGANIZATION_TABLE + " ORG " ;
 	
 	public static final String SELECT = SELECT_STAR_FROM_ORG_TABLE + ", " + R_ECOSYSTEM_ORGANIZATION_TABLE + " R_ORG_ECO, "
-					+ EcosystemMapper.ECOSYSTEM_TABLE + " ECO " +
-			" WHERE ECO.ecosystemcode = #{ecosystemCode} AND  " +
-			" R_ORG_ECO.id_ecosystem = ECO.id_ecosystem AND " + 
-			" ORG.id_organization = R_ORG_ECO.id_organization  " +
+			+ EcosystemMapper.ECOSYSTEM_TABLE + " ECO " +
+	" WHERE ECO.ecosystemcode = #{ecosystemCode} AND  " +
+	" R_ORG_ECO.id_ecosystem = ECO.id_ecosystem AND " + 
+	" ORG.id_organization = R_ORG_ECO.id_organization  " +
 
-			"<if test=\"sortList != null\">" +
-				" ORDER BY " +
-			
-				" <foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"sortList\">" +
-				
-				"<if test=\"propName == 'idOrganization-'\">" +
-			        " id_organization desc" +
-		        "</if>" +
-		        "<if test=\"propName == 'idOrganization'\">" +
-		            " id_organization" +
-	            "</if>" +			
-				
-				"<if test=\"propName == 'organizationcode-'\">" +
-		           " organizationcode desc" +
-	            "</if>" +
-	            "<if test=\"propName == 'organizationcode'\">" +
-	               " organizationcode" +
-	            "</if>" +			
-				
-				"<if test=\"propName == 'description-'\">" +
-		           " description desc" +
-	            "</if>" +
-	            "<if test=\"propName == 'description'\">" +
-	               " description" +
-	            "</if>" +			
-	            "</foreach>" +
-            "</if>";
+	"<if test=\"sortList != null\">" +
+		" ORDER BY " +
 	
+		" <foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"sortList\">" +
+		
+		"<if test=\"propName == 'idOrganization-'\">" +
+	        " id_organization desc" +
+        "</if>" +
+        "<if test=\"propName == 'idOrganization'\">" +
+            " id_organization" +
+        "</if>" +			
+		
+		"<if test=\"propName == 'organizationcode-'\">" +
+           " organizationcode desc" +
+        "</if>" +
+        "<if test=\"propName == 'organizationcode'\">" +
+           " organizationcode" +
+        "</if>" +			
+		
+		"<if test=\"propName == 'description-'\">" +
+           " description desc" +
+        "</if>" +
+        "<if test=\"propName == 'description'\">" +
+           " description" +
+        "</if>" +			
+        "</foreach>" +
+    "</if>";
+
+	public static final String SELECT_ALL = SELECT_STAR_FROM_ORG_TABLE +
+	"<if test=\"sortList != null\">" +
+		" ORDER BY " +
+	
+		" <foreach item=\"propName\" separator=\",\" index=\"index\" collection=\"sortList\">" +
+		
+		"<if test=\"propName == 'idOrganization-'\">" +
+	        " id_organization desc" +
+        "</if>" +
+        "<if test=\"propName == 'idOrganization'\">" +
+            " id_organization" +
+        "</if>" +			
+		
+		"<if test=\"propName == 'organizationcode-'\">" +
+           " organizationcode desc" +
+        "</if>" +
+        "<if test=\"propName == 'organizationcode'\">" +
+           " organizationcode" +
+        "</if>" +			
+		
+		"<if test=\"propName == 'description-'\">" +
+           " description desc" +
+        "</if>" +
+        "<if test=\"propName == 'description'\">" +
+           " description" +
+        "</if>" +			
+        "</foreach>" +
+    "</if>";
+
 	/*************************************************************************
 	 * 
 	 * 					select ORGANIZATIONS by id
@@ -161,5 +190,18 @@ public interface OrganizationMapper {
 				SELECT,
              "</script>"}) 
 	List<Organization> selectOrganization(@Param("ecosystemCode") String ecosystemCode, @Param("sortList") List<String> sortList);
+	
+	/*************************************************************************
+	 * 
+	 * 					select ALL ORGANIZATIONS
+	 * 
+	 * ***********************************************************************/
+	@Results({
+        @Result(property = "idOrganization", column = "id_organization"),
+        @Result(property = "organizationcode", column = "organizationcode"),
+        @Result(property = "description", column = "description")
+      })
+	@Select({"<script>",SELECT_ALL,"</script>"}) 
+	List<Organization> selectAllOrganization(@Param("sortList") List<String> sortList);
 	
 }

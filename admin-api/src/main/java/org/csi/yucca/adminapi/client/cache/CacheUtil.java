@@ -15,6 +15,7 @@ import org.csi.yucca.adminapi.response.AllineamentoResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
+import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 
 import com.google.common.cache.CacheBuilder;
@@ -36,6 +37,7 @@ public class CacheUtil {
 	private static final String BACK_OFFICE_TENANTS = "/1/backoffice/tenants";
 	private static final String BACK_OFFICE_DATASETS_ORGANIZATION_CODE = "/1/backoffice/datasets/organizationCode=";
 	private static final String BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG = "/1/backoffice/allineamento/idOrganization=";
+	private static final String BACK_OFFICE_ORGANIZATIONS = "/1/backoffice/organizations";
 	
 	private static LoadingCache<KeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeCache;
 	private static LoadingCache<StreamDatasetByDatasetCodeDatasetVersionKeyCache, BackofficeDettaglioStreamDatasetResponse> dettaglioStreamDatasetByDatasetCodeDatasetVersionCache;	
@@ -47,8 +49,33 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, MeasureUnitResponse> measureUnitCache;
 	private static LoadingCache<KeyCache, List<TenantManagementResponse>> tenantListCache;
 	private static LoadingCache<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>> listaStreamDatasetByOrganizationCodeCache;
-	
 	private static LoadingCache<KeyCache, AllineamentoResponse> allineamentoResponseCache;
+
+	private static LoadingCache<KeyCache, List<OrganizationResponse>> organizationListCache;
+	
+	static {
+		organizationListCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
+				.build(new CacheLoader<KeyCache, List<OrganizationResponse>>() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public List<OrganizationResponse> load(KeyCache key) throws Exception {
+						return (List<OrganizationResponse>) getList(BACK_OFFICE_ORGANIZATIONS, key, OrganizationResponse.class);
+					}
+					
+					@Override
+					public ListenableFuture<List<OrganizationResponse>> reload(final KeyCache key, List<OrganizationResponse> oldValue) throws Exception {
+						
+						ListenableFutureTask <List<OrganizationResponse>> task = ListenableFutureTask.create(new Callable<List<OrganizationResponse>>() {
+							@SuppressWarnings("unchecked")
+							public List<OrganizationResponse> call() throws Exception{
+								return (List<OrganizationResponse>) getList(BACK_OFFICE_DATASETS_DATASETCODE, key, OrganizationResponse.class);
+							}
+						});
+						Executors.newSingleThreadExecutor().execute(task);
+						return task;
+					}
+				});
+	}
 	
 	static {
 		allineamentoResponseCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
@@ -321,6 +348,15 @@ public class CacheUtil {
 	public static List<TenantManagementResponse> getTenants(KeyCache keyCache) throws AdminApiClientException {
 		try {
 			return tenantListCache.get(keyCache);	
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
+	}
+	
+	public static List<OrganizationResponse> getOrganizations(KeyCache keyCache) throws AdminApiClientException {
+		try {
+			return organizationListCache.get(keyCache);	
 		} 
 		catch (Exception e) {
 			throw new AdminApiClientException(e);

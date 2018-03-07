@@ -224,6 +224,9 @@ public class ApiDoc {
 	
 	public static final String BO_LOAD_ORGANIZATION = "LOAD ORGANIZATION";
 	public static final String BO_LOAD_ORGANIZATION_NOTES = "Returns the Organization with the id in the request path.";
+
+	public static final String BO_LOAD_ALL_ORGANIZATION = "LOAD ALL ORGANIZATION";
+	public static final String BO_LOAD_ALL_ORGANIZATION_NOTES = "Returns all Organizations.";
 	
 	public static final String BO_LOAD_SUBDOMAIN = "LOAD SUBDOMAIN";
 	public static final String BO_LOAD_SUBDOMAIN_NOTES = "Returns the Subdomain with the id in the request path.";
