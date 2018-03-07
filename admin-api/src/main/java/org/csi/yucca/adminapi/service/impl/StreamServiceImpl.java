@@ -747,19 +747,6 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		insertApi(request.getStreamname(), request.getSavedata(), smartobject.getSocode(), dataset, idDataSource, streamCode, dataSourceVersion);
 	}
 
-	/**
-	 * 
-	 * @param streamName
-	 * @param saveData
-	 * @param soCode
-	 * @param idDataSource
-	 * @param streamCode
-	 * @param dataSourceVersion
-	 */
-//	private void insertApi(String streamName, Boolean saveData, String soCode, Integer idDataSource,
-//			String streamCode, Integer dataSourceVersion) {
-//		insertApi(streamName, saveData, soCode, null, idDataSource, streamCode, dataSourceVersion);
-//	}
 
 	/**
 	 * 
