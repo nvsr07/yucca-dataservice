@@ -648,15 +648,15 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static void insertBinaryComponents(Integer idBinaryDataSource, ComponentMapper componentMapper) throws Exception{
-		componentMapper.insertComponent(new Component().idDataType(DataType.LONG.id()).name("idBinary").alias("Id").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("filenameBinary").alias("File").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("aliasNameBinary").alias("File").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("sizeBinary").alias("File Size").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.DATE_TIME.id()).name("insertDateBinary").alias("Insert Date").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.DATE_TIME.id()).name("lastUpdateDateBinary").alias("Last Update").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("contentTypeBinary").alias("Content Type").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("urlDownloadBinary").alias("Download url").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
-		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("metadataBinary").alias("Metadata").idComponent(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.LONG.id()).name("idBinary").alias("Id").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("filenameBinary").alias("File").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("aliasNameBinary").alias("File").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("sizeBinary").alias("File Size").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.DATE_TIME.id()).name("insertDateBinary").alias("Insert Date").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.DATE_TIME.id()).name("lastUpdateDateBinary").alias("Last Update").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("contentTypeBinary").alias("Content Type").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("urlDownloadBinary").alias("Download url").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
+		componentMapper.insertComponent(new Component().idDataType(DataType.STRING.id()).name("metadataBinary").alias("Metadata").idDataSource(idBinaryDataSource).datasourceversion(ServiceUtil.DATASOURCE_VERSION));
 	}
 	
 	/**
