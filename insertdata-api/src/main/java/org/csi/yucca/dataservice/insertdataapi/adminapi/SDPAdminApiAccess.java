@@ -28,6 +28,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		BackofficeDettaglioStreamDatasetResponse dettaglio = getBackofficeDettaglioForDatasetCodeDatasetVersion(
 				datasetCode, datasetVersion);
 		dettaglio = checkTenantCanSendData(dettaglio, codiceTenant);
+		dettaglio = checkIsInstalled(dettaglio);
 		return SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToDatasetInfo(dettaglio);
 	}
 
@@ -38,7 +39,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 				idDataset, datasetVersion);
 		
 		dettaglio = checkTenantCanSendData(dettaglio, codiceTenant);
-		
+		dettaglio = checkIsInstalled(dettaglio);
 		return SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToDatasetInfo(dettaglio);
 	}
 
@@ -104,7 +105,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 							sensor, streamApplication, log.getName());
 			
 			dettaglio = checkTenantCanSendData(dettaglio, tenant);
-			
+			dettaglio = checkIsInstalled(dettaglio);
 			StreamInfo streamInfo = SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToStreamInfo(dettaglio);
 			if (streamInfo!=null)
 				infos.add(streamInfo);
@@ -175,11 +176,34 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 						}
 					}
 				}
-				if (!senderFound)
+				if (!senderFound) {
+					if (dettaglio.getDataset()!=null)
+						log.warn("[SDPAdminApiAccess::checkTenantCanSendData] tenant=["+tenantCode+"] cannot write on dataset=["+dettaglio.getDataset().getDatasetcode()+" ver "+dettaglio.getVersion()+"]");
+					else if (dettaglio.getStream()!=null)
+						log.warn("[SDPAdminApiAccess::checkTenantCanSendData] tenant=["+tenantCode+"] cannot write on stream=["+dettaglio.getStream().getStreamcode()+" <--> "+dettaglio.getStream().getSmartobject().getSocode()+"]");
+					else 
+						log.warn("[SDPAdminApiAccess::checkTenantCanSendData] tenant=["+tenantCode+"] cannot write on datasource without dataset or stream!!!!");
 					return null;
+				}
 			}
 		}
 		return dettaglio;
 	}
+	public static BackofficeDettaglioStreamDatasetResponse checkIsInstalled(
+			BackofficeDettaglioStreamDatasetResponse dettaglio) {
+		if (dettaglio!=null)
+		{
+			if (dettaglio.getStatus().getIdStatus() != 2) {
+				if (dettaglio.getDataset()!=null)
+					log.warn("[SDPAdminApiAccess::checkIsInstalled] not installed dataset=["+dettaglio.getDataset().getDatasetcode()+" ver "+dettaglio.getVersion()+"]");
+				else if (dettaglio.getStream()!=null)
+					log.warn("[SDPAdminApiAccess::checkIsInstalled] not installed stream=["+dettaglio.getStream().getStreamcode()+" <--> "+dettaglio.getStream().getSmartobject().getSocode()+"]");
+				else 
+					log.warn("[SDPAdminApiAccess::checkIsInstalled] not installed datasource without dataset or stream!!!!");
 
+				return null;
+			}
+		}
+		return dettaglio;
+	}
 }
