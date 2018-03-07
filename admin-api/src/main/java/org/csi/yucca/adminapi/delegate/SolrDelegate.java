@@ -267,7 +267,9 @@ public class SolrDelegate {
 			doc.addField("dcatReady", dataset.getDcat().getDcatready());
 		}
 
-		doc.addField("jsonFields", dataset.getComponents());
+		
+		//doc.addField("jsonFields", dataset.getComponents());
+		List<String> jsonFields = new LinkedList<String>();
 		if (dataset.getComponents() != null) {
 //			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
 //			});
@@ -276,9 +278,11 @@ public class SolrDelegate {
 			for (ComponentJson component : dataset.getComponents()) {
 				sdpComponentsName.add(component.getName());
 				phenomenonList.add(component.getPhenomenonname());
+				jsonFields.add(component.toJson());
 			}
 			doc.addField("sdpComponentsName", sdpComponentsName);
 			doc.addField("phenomenon", phenomenonList);
+			doc.addField("jsonFields", jsonFields);
 		}
 
 		if (dataset.getDataSourceIsopendata() == 1) {

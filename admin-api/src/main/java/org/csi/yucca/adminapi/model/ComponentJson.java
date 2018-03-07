@@ -1,5 +1,8 @@
 package org.csi.yucca.adminapi.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ComponentJson {
 
 	private Integer id_component;
@@ -28,6 +31,9 @@ public class ComponentJson {
 	private Integer idMeasureUnit;
 	private String measureunit;
 	private String measureunitcategory;
+	
+	private static ObjectMapper mapper = new ObjectMapper();
+
 	
 	public String getForeignkey() {
 		return foreignkey;
@@ -243,6 +249,10 @@ public class ComponentJson {
 			this.datatypecode = dataType.getDatatypecode();
 			this.datatypedescription = dataType.getDescription();
 		}
+	}
+
+	public String toJson() throws JsonProcessingException {
+		return mapper.writeValueAsString(this);
 	}
 
 }
