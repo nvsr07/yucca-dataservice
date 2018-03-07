@@ -519,6 +519,7 @@ public class BinaryService {
 			LOG.info("[BinaryService::uploadFile] - datasetVersion = " + datasetVersion);
 			LOG.info("[BinaryService::uploadFile] - tenantCode = " + tenantCode);
 			mdFromMongo = SDPAdminApiAccess.getInfoDatasetByDatasetCodeDatasetVersion(datasetCode, datasetVersion);
+			mdFromMongo = SDPAdminApiAccess.checkIsInstalled(mdFromMongo);
 			mdFromMongo = SDPAdminApiAccess.checkTenantCanSendData(mdFromMongo, tenantCode);
 		} catch (Exception ex1) {
 			ex1.printStackTrace();

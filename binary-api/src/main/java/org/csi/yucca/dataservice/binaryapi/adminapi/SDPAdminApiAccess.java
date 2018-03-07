@@ -64,4 +64,14 @@ public class SDPAdminApiAccess  {
 		return dettaglio;
 	}
 
+	public static BackofficeDettaglioStreamDatasetResponse checkIsInstalled(
+			BackofficeDettaglioStreamDatasetResponse dettaglio) {
+		if (dettaglio!=null)
+		{
+			if (dettaglio.getStatus().getIdStatus() != 2)
+				return null;
+		}
+		return dettaglio;
+	}
+
 }
