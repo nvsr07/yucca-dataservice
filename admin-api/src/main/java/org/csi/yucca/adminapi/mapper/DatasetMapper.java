@@ -448,10 +448,10 @@ public interface DatasetMapper {
 	public static final String WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED =
 			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
 			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
-			+ "  where id_data_source = yucca_dataset.id_data_source group by id_data_source) " 
+			+ "  where id_data_source = yucca_dataset.id_data_source  " 
 			+ " <if test=\"onlyInstalled == true\"> " +
 			" AND id_status = 2 " +
-			"  </if>";
+			"  </if>  group by id_data_source)";
 
 
 	
