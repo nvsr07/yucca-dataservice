@@ -22,7 +22,6 @@ public class BackofficeDettaglioClient {
 				new StreamDatasetBySoCodeStreamCodeKeyCache(adminApiBaseUrl, logger).soCode(soCode).streamCode(streamCode).addParams("onlyInstalled", onlyInstalled));
 	}
 
-
 	public static BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetByDatasetCode(
 			String adminApiBaseUrl, String datasetCode, Boolean onlyInstalled, String logger) throws AdminApiClientException {
 		return CacheUtil.getDettaglioStreamDatasetByDatasetCode(
@@ -33,44 +32,6 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, Integer IdDataset, Boolean onlyInstalled, String logger) throws AdminApiClientException {
 		return CacheUtil.getDettaglioStreamDatasetByIdDataset(new KeyCache(adminApiBaseUrl, logger).id(IdDataset).addParams("onlyInstalled", onlyInstalled));
 	}
-	
-	public static void main(String...args){
-		
-		
-		
-		try {
-			
-//			OK
-			// riferito a: BackOfficeController.loadStreamByIdStream
-//			getBackofficeDettaglioStreamDatasetByIdStream("http://localhost:8080/adminapi", 22, false, "ciccio");
-			
-//			OK
-			// riferito a: BackOfficeController.loadStreamBySoCodeStreamCode
-//			getBackofficeDettaglioStreamDatasetBySoCodeStreamCode("http://localhost:8080/adminapi", "nkgkgk", "nkjhkg", true, "nkjk");
-
-//			OK
-			// riferito a: BackOfficeController.loadDatasetByIdDataset
-//			getBackofficeDettaglioStreamDatasetByIdDataset("http://localhost:8080/adminapi", 22, false, "jgj");
-			
-			// 404!!!
-			// riferito a: BackOfficeController.loadDatasetByDatasetCode
-			getBackofficeDettaglioStreamDatasetByDatasetCode("http://localhost:8080/adminapi", "njh", false, "jk");
-			
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	public static BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
 			String adminApiBaseUrl, String datasetCode, Integer datasetVersion, String logger)throws AdminApiClientException {

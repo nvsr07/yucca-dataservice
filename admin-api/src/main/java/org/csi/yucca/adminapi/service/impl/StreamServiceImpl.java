@@ -36,7 +36,6 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.PublisherDelegate;
 import org.csi.yucca.adminapi.delegate.SolrDelegate;
@@ -217,8 +216,7 @@ public class StreamServiceImpl implements StreamService {
 				dettaglioStream.setIdStatus(Status.INSTALLED.id());
 			}
 			if (Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
-				dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(),
-						dettaglioStream.getDatasourceversion());	
+				ServiceUtil.updateDataSourceStatusAllVersion(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(), dataSourceMapper);
 			}
 			
 			publishStream(dettaglioStream);
@@ -418,15 +416,17 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
 		
-		
 		return ServiceResponse.build().OK();
 	}
 
 	// UNINSTALLATION (ONLY BACK OFFICE)
 	if (hasBeenValidated && StreamAction.DELETE.code().equals(actionRequest.getAction())) {
+		
 		dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(),
 				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		
 		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
+		
 		return ServiceResponse.build().OK();
 	}
 

@@ -253,10 +253,8 @@ public class DatasetServiceImpl implements DatasetService {
 
 		ServiceUtil.checkIfFoundRecord(dataset);
 		
-		// Aggiorna lo stato dell'ultima versione del datasource mettendolo a 'uninst':
-		Integer datasourceVersion = dataset.getDatasourceversion();
-		Integer idDataSource      = dataset.getIdDataSource();
-		dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), idDataSource, datasourceVersion);
+		// Aggiorna lo stato di tutte le versioni del datasource mettendolo a 'uninst':
+		ServiceUtil.updateDataSourceStatusAllVersion(Status.UNINSTALLATION.id(), dataset.getIdDataSource(), dataSourceMapper);
 
 		// spubblicazione delle api odata e la cancellazione del documento Solr
 		removeOdataApiAndSolrDocument(dataset.getDatasetcode());
