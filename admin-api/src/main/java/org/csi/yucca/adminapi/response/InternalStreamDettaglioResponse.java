@@ -13,6 +13,11 @@ public class InternalStreamDettaglioResponse extends StreamDettaglioResponse{
 	private String tenantCode;
 	private List<ComponentResponse> components = new ArrayList<ComponentResponse>();
 	
+	public InternalStreamDettaglioResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public InternalStreamDettaglioResponse(InternalDettaglioStream dettaglioStream)throws Exception{
 		this.setIdstream(dettaglioStream.getIdstream());
 		this.setStreamcode(dettaglioStream.getStreamcode());
