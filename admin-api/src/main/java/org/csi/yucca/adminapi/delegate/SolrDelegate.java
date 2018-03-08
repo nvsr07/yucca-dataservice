@@ -282,7 +282,11 @@ public class SolrDelegate {
 			}
 			doc.addField("sdpComponentsName", sdpComponentsName);
 			doc.addField("phenomenon", phenomenonList);
-			doc.addField("jsonFields", jsonFields);
+			
+			String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(jsonFields)+"}";
+			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
+
+			doc.addField("jsonFields", componentJsonElement);
 		}
 
 		if (dataset.getDataSourceIsopendata() == 1) {
