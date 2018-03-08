@@ -1,6 +1,8 @@
 package org.csi.yucca.adminapi.client.cache.key;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class KeyCache implements Serializable{
 
@@ -9,7 +11,19 @@ public class KeyCache implements Serializable{
 	private String adminBaseUrl;
 	private Integer id;
 	private String code;
-
+	private Map<String, String> params;
+	
+	public KeyCache addParams(String key, String value){
+		if(params == null) params = new HashMap<>();
+		params.put(key, value);
+		return this;
+	}
+	
+	public KeyCache addParams(String key, Boolean value){
+		addParams(key, value ? "true" : "false");
+		return this;
+	}
+	
 	public KeyCache id(Integer id){
 		this.id = id;
 		return this;
@@ -71,6 +85,14 @@ public class KeyCache implements Serializable{
 		return "";
 	}
 	
+	public Map<String, String> getParams() {
+		return params;
+	}
+
+	public void setParams(Map<String, String> params) {
+		this.params = params;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -81,6 +103,8 @@ public class KeyCache implements Serializable{
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
+	
+	
 	
 	@Override
 	public boolean equals(Object obj) {

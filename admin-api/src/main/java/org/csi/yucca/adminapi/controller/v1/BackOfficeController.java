@@ -1091,7 +1091,7 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * LOAD Stream by IdStream
-	 * 
+	 * OK
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_IDSTREAM, notes = BO_LOAD_STREAM_BY_IDSTREAM_NOTES, response = BackofficeDettaglioApiResponse.class)
@@ -1145,7 +1145,7 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * LOAD Dataset by IdDataset datasetVersion
-	 * 
+	 * OK
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION, notes = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
@@ -1161,6 +1161,13 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * OK
+	 * @param datasetCode
+	 * @param onlyInstalled
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}")
 	public ResponseEntity<Object> loadDatasetByDatasetCode(@PathVariable final String datasetCode,
@@ -1176,7 +1183,7 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * LOAD Stream by IdStream
-	 * 
+	 * OK
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE, notes = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
