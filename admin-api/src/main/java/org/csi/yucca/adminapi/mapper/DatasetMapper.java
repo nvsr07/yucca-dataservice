@@ -444,6 +444,16 @@ public interface DatasetMapper {
 			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
 			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
 			+ "  where id_data_source = yucca_dataset.id_data_source group by id_data_source) " ;
+
+	public static final String WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED =
+			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
+			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
+			+ "  where id_data_source = yucca_dataset.id_data_source  " 
+			+ " <if test=\"onlyInstalled == true\"> " +
+			" AND id_status = 2 " +
+			"  </if>  group by id_data_source)";
+
+
 	
 
 	public static final String WHERE_DETTAGLIO_DATASET_ORGANIZATION_CODE =
@@ -651,8 +661,9 @@ public interface DatasetMapper {
 		@Result(property = "sharingTenant", column = "sharing_tenant") 
       })
 	  @Select({"<script>", SELECT_DETTAGLIO_DATASET,WHERE_DETTAGLIO_DATASET_START + 
-		  			WHERE_DETTAGLIO_DATASET_IDDATASET+ WHERE_DETTAGLIO_DATASET_MAX_VERSION+"</script>"}) 
-	  DettaglioDataset selectDettaglioDatasetByIdDataset( @Param("idDataSet") Integer idDataset);
+		  			WHERE_DETTAGLIO_DATASET_IDDATASET+ WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED+"</script>"}) 
+	  DettaglioDataset selectDettaglioDatasetByIdDataset( @Param("idDataSet") Integer idDataset,
+			  @Param("onlyInstalled") boolean onlyInstalled );
 	
 	
 	@Results({
@@ -762,9 +773,9 @@ public interface DatasetMapper {
 		@Result(property = "sharingTenant", column = "sharing_tenant") 
       })
 	  @Select({"<script>", SELECT_DETTAGLIO_DATASET,WHERE_DETTAGLIO_DATASET_START + 
-		  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_MAX_VERSION+"</script>"}) 
+		  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED+"</script>"}) 
 	  DettaglioDataset selectDettaglioDatasetByDatasetCode(
-			  @Param("datasetCode")  String datasetCode);
+			  @Param("datasetCode")  String datasetCode, @Param("onlyInstalled") boolean onlyInstalled);
 
 	
 	@Results({

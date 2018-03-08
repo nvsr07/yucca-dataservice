@@ -132,10 +132,13 @@ public interface DataSourceMapper {
 	public static final String UPDATE_DATA_SOURCE_STATUS = 
 		" UPDATE " + DATA_SOURCE_TABLE  +
 			" SET id_status=#{idStatus}" +
-			" WHERE id_data_source = #{idDataSource} and datasourceversion=#{datasourceversion} ";
-	@Update(UPDATE_DATA_SOURCE_STATUS)
+			" WHERE id_data_source = #{idDataSource} "
+			+ "<if test=\"datasourceversion != null\">"
+			+ " AND datasourceversion=#{datasourceversion} "
+			+ "</if>";
+	@Update({"<script>", UPDATE_DATA_SOURCE_STATUS, "</script>"})
 	int updateDataSourceStatus(@Param("idStatus") Integer idStatus, 
 			@Param("idDataSource") Integer idDataSource, 
 			@Param("datasourceversion") Integer datasourceversion);
-	
+
 }

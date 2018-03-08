@@ -138,10 +138,10 @@ public class ApiServiceImpl implements ApiService {
 	 * select stream
 	 */
 	@Override
-	public ServiceResponse selectBackofficeDettaglioApi(String apiCode) 
+	public ServiceResponse selectBackofficeLastInstalledDettaglioApi(String apiCode) 
 			throws BadRequestException, NotFoundException, Exception {
 
-		Api api =  apiMapper.selectApi(apiCode);
+		Api api =  apiMapper.selectLastApiInstalled(apiCode);
 		
 		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
 		
@@ -153,6 +153,7 @@ public class ApiServiceImpl implements ApiService {
 
 			checkIfFoundRecord(dettaglioDataset);
 
+			
 			if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
 					DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
 

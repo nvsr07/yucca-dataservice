@@ -18,7 +18,7 @@ import org.csi.yucca.adminapi.util.Constants;
 public interface ApiMapper {
 	
 	public static final String API_TABLE = Constants.SCHEMA_DB + "yucca_api";
-
+	public static final String DATA_SOURCE_TABLE = Constants.SCHEMA_DB + "yucca_data_source";
 	
 	/*************************************************************************
 	 * 					CLONE API
@@ -59,11 +59,11 @@ public interface ApiMapper {
 	/*************************************************************************
 	 * 					SELECT API
 	 * ***********************************************************************/
-	public static final String SELECT_API_BY_CODE = 
+	public static final String SELECT_API_BY_CODE_LAST_INSTALLED = 
 	"SELECT idapi, apicode, apiname, apitype, apisubtype, id_data_source, datasourceversion, entitynamespace, max_odata_resultperpage "
 	+ " FROM " + API_TABLE + " WHERE apicode=#{apicode} AND (id_data_source, datasourceversion) IN " + 
-			" (select api2.id_data_source, max(api2.datasourceversion) from " +  API_TABLE + " api2 "
-			+ "  where api2.id_data_source = id_data_source group by id_data_source) ";
+			" (select data_source.id_data_source, max(data_source.datasourceversion) from " + DATA_SOURCE_TABLE + " data_source "
+			+ "  where data_source.id_data_source = id_data_source and data_source.id_status = 2  group by id_data_source) ";
 	@Results({
 	    @Result(property = "maxOdataResultperpage", column = "max_odata_resultperpage"),
 	    @Result(property = "idapi", column = "idapi"),
@@ -75,7 +75,7 @@ public interface ApiMapper {
 	    @Result(property = "datasourceversion", column = "datasourceversion"),
 	    @Result(property = "entitynamespace", column = "entitynamespace")
 	  })
-	@Select(SELECT_API_BY_CODE) 
-		Api selectApi(@Param("apicode") String apiCode);
+	@Select(SELECT_API_BY_CODE_LAST_INSTALLED) 
+		Api selectLastApiInstalled(@Param("apicode") String apiCode);
 		
 	}

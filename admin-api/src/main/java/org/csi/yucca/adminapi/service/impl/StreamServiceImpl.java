@@ -191,7 +191,7 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse actionFeedback(ActionRequest actionRequest, Integer idStream)
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, false);
 
 		checkIfFoundRecord(dettaglioStream);
 
@@ -216,8 +216,7 @@ public class StreamServiceImpl implements StreamService {
 				dettaglioStream.setIdStatus(Status.INSTALLED.id());
 			}
 			if (Status.UNINSTALLATION_IN_PROGRESS.code().equals(dettaglioStream.getStatusCode())) {
-				dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(),
-						dettaglioStream.getDatasourceversion());	
+				ServiceUtil.updateDataSourceStatusAllVersion(Status.UNINSTALLATION.id(), dettaglioStream.getIdDataSource(), dataSourceMapper);
 			}
 			
 			publishStream(dettaglioStream);
@@ -292,7 +291,7 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse actionOnStream(ActionRequest actionRequest, Integer idStream, ApiUserType apiUserType)
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, false);
 		
 		return actionOnStream(dettaglioStream, actionRequest, apiUserType);
 	}
@@ -360,6 +359,9 @@ public class StreamServiceImpl implements StreamService {
 							dettaglioStream.getIdDataSource(), 
 							Api.API_TYPE, API_SUBTYPE_ODATA, 
 							bundles.getMaxOdataResultperpage() );
+		
+		tenantMapper.cloneTenantDataSourceNewVersion(newVersion, dettaglioStream.getDatasourceversion(),
+				dettaglioStream.getIdDataSource());
 
 	}
 
@@ -414,15 +416,17 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
 		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
 		
-		
 		return ServiceResponse.build().OK();
 	}
 
 	// UNINSTALLATION (ONLY BACK OFFICE)
 	if (hasBeenValidated && StreamAction.DELETE.code().equals(actionRequest.getAction())) {
+		
 		dataSourceMapper.updateDataSourceStatus(Status.UNINSTALLATION_IN_PROGRESS.id(),
 				dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
+		
 		sendMessage(actionRequest, "stream", dettaglioStream.getIdstream(), messageSender);
+		
 		return ServiceResponse.build().OK();
 	}
 
@@ -1654,10 +1658,10 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	}
 
 	@Override
-	public ServiceResponse selectStreamByIdStream(Integer idStream)
+	public ServiceResponse selectStreamByIdStream(Integer idStream, boolean onlyInstalled)
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, onlyInstalled);
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());
@@ -1681,9 +1685,9 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	}
 
 	@Override
-	public ServiceResponse selectStreamBySoCodeStreamCode(String soCode, String streamCode)
+	public ServiceResponse selectStreamBySoCodeStreamCode(String soCode, String streamCode, boolean onlyInstalled)
 			throws BadRequestException, NotFoundException, Exception {
-		DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(soCode, streamCode);
+		DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(soCode, streamCode, onlyInstalled);
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());

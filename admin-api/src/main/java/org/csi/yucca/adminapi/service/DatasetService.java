@@ -27,13 +27,13 @@ public interface DatasetService {
 	ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
-	ServiceResponse selectDatasetByIdDataset(Integer idDataset) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectDatasetByIdDataset(Integer idDataset, boolean onlyInstalled) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse selectDatasetByIdDatasetDatasetVersion(Integer idDataset,Integer datasetVersion) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse selectDatasetByDatasetCodeDatasetVersion(String datasetCode, Integer datasetVersion)throws BadRequestException, NotFoundException, Exception;
 
-	ServiceResponse selectDatasetByDatasetCode(String datasetCode)throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectDatasetByDatasetCode(String datasetCode, boolean onlyInstalled)throws BadRequestException, NotFoundException, Exception;
 
 	
 	ServiceResponse insertDataset(String organizationCode, DatasetRequest postDatasetRequest, JwtUser authorizedUser)

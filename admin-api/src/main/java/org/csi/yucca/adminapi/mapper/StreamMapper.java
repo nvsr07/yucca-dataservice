@@ -456,8 +456,16 @@ public interface StreamMapper {
 	public static final String WHERE_STREAM_MAX_VERSION =
 			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
 			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
-			+ "  where id_data_source = yucca_stream.id_data_source group by id_data_source) " ;
-	
+			+ "  where id_data_source = yucca_stream.id_data_source group by id_data_source)  ";
+
+	public static final String WHERE_STREAM_MAX_VERSION_OPT_ONLY_INSTALLED =
+			" AND (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN " + 
+			" (select id_data_source, max(datasourceversion) from " +  DataSourceMapper.DATA_SOURCE_TABLE
+			+ "  where id_data_source = yucca_stream.id_data_source   "
+			+ " <if test=\"onlyInstalled == true\"> " +
+			" AND id_status = 2 " +
+			"  </if>  group by id_data_source)";
+
 	public static final String WHERE_STREAM_ORGANIZATION_CODE =
 			" AND yucca_organization.organizationcode = #{organizationCode} ";
 
@@ -912,6 +920,7 @@ public interface StreamMapper {
 	/*************************************************************************
 	 * 
 	 * 					SELECT STREAM BY ID_STREAM
+	 * @param onlyInstalled 
 	 * 
 	 * ***********************************************************************/
 	@Results({
@@ -984,9 +993,9 @@ public interface StreamMapper {
 		@Result(property = "idSoType", column = "id_so_type"),
 		@Result(property = "sharingTenant", column = "sharing_tenant")
       })	
-	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION
+	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION_OPT_ONLY_INSTALLED
 						+ WHERE_STREAM_IDSTREAM, "</script>"}) 
-	DettaglioStream selectStreamByIdStream( @Param("idStream") Integer idStream);
+	DettaglioStream selectStreamByIdStream( @Param("idStream") Integer idStream,@Param("onlyInstalled")  boolean onlyInstalled);
 	
 	
 	/*************************************************************************
@@ -1064,8 +1073,8 @@ public interface StreamMapper {
 		@Result(property = "idSoType", column = "id_so_type"),
 		@Result(property = "sharingTenant", column = "sharing_tenant")
       })	
-	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION
+	@Select({"<script>", SELECT_STREAM + WHERE_STREAM_START + WHERE_STREAM_MAX_VERSION_OPT_ONLY_INSTALLED
 						+ WHERE_STREAM_SOCODE + WHERE_STREAM_STREAMCODE, "</script>"}) 
-	DettaglioStream selectDettaglioStreamBySoCodeStreamCode( @Param("soCode") String soCode, @Param("streamCode") String streamCode);
+	DettaglioStream selectDettaglioStreamBySoCodeStreamCode( @Param("soCode") String soCode, @Param("streamCode") String streamCode, @Param("onlyInstalled")  boolean onlyInstalled);
 	
 }

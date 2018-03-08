@@ -1079,30 +1079,30 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_LOAD_API, notes = BO_LOAD_API_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/api/{apiCode}")
-	public ResponseEntity<Object> loadApi(@PathVariable final String apiCode, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadLastInstalledApi(@PathVariable final String apiCode, final HttpServletRequest request) {
 		logger.info("loadApi");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return apiService.selectBackofficeDettaglioApi(apiCode);
+				return apiService.selectBackofficeLastInstalledDettaglioApi(apiCode);
 			}
 		}, logger);
 	}
 
 	/**
 	 * LOAD Stream by IdStream
-	 * 
+	 * OK
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_IDSTREAM, notes = BO_LOAD_STREAM_BY_IDSTREAM_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/streams/{idStream}")
 	public ResponseEntity<Object> loadStreamByIdStream(@PathVariable final Integer idStream,
-			final HttpServletRequest request) {
+			@RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled,final HttpServletRequest request) {
 		logger.info("loadStreamByIdStream");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.selectStreamByIdStream(idStream);
+				return streamService.selectStreamByIdStream(idStream, onlyInstalled);
 			}
 		}, logger);
 	}
@@ -1115,15 +1115,15 @@ public class BackOfficeController extends YuccaController {
 	@ApiOperation(value = BO_LOAD_DATASET_BY_IDDATASET, notes = BO_LOAD_DATASET_BY_IDDATASET_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/{idDataset}")
 	public ResponseEntity<Object> loadDatasetByIdDataset(@PathVariable final Integer idDataset,
-			final HttpServletRequest request) {
+			final HttpServletRequest request, @RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled) {
 		logger.info("loadDatasetByIdDataset");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectDatasetByIdDataset(idDataset);
+				return datasetService.selectDatasetByIdDataset(idDataset, onlyInstalled);
 			}
 		}, logger);
-	}
+	} 
 
 	/**
 	 * LOAD Dataset by IdDataset datasetVersion
@@ -1145,7 +1145,7 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * LOAD Dataset by IdDataset datasetVersion
-	 * 
+	 * OK
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION, notes = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
@@ -1161,34 +1161,43 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 
+	/**
+	 * OK
+	 * @param datasetCode
+	 * @param onlyInstalled
+	 * @param request
+	 * @return
+	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}")
 	public ResponseEntity<Object> loadDatasetByDatasetCode(@PathVariable final String datasetCode,
-			final HttpServletRequest request) {
+			@RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled, final HttpServletRequest request) {
 		logger.info("loadDatasetByDatasetCode");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectDatasetByDatasetCode(datasetCode);
+				return datasetService.selectDatasetByDatasetCode(datasetCode, onlyInstalled);
 			}
 		}, logger);
-	}
+	} 
 
 	/**
 	 * LOAD Stream by IdStream
-	 * 
+	 * OK
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE, notes = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/streams/{soCode}/{streamCode}")
 	public ResponseEntity<Object> loadStreamBySoCodeStreamCode(@PathVariable final String soCode,
-			@PathVariable final String streamCode, final HttpServletRequest request) {
+			@PathVariable final String streamCode, 
+			@RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled,
+			final HttpServletRequest request) {
 		logger.info("loadStreamBySoCodeStreamCode");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return streamService.selectStreamBySoCodeStreamCode(soCode, streamCode);
+				return streamService.selectStreamBySoCodeStreamCode(soCode, streamCode, onlyInstalled);
 			}
 		}, logger);
-	}
+	} 
 }

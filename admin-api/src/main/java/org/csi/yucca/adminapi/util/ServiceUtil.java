@@ -81,6 +81,17 @@ public class ServiceUtil {
 	public static final String FAULT_STRING_CHILD_NODE_NAME = "faultstring";
 	public static final String FAULT_STRING_NODE_NAME = "soapenv:Fault";
 
+	/**
+	 * 
+	 * @param idStatus
+	 * @param idDataSource
+	 * @param dataSourceMapper
+	 * @throws Exception
+	 */
+	public static void updateDataSourceStatusAllVersion(Integer idStatus, Integer idDataSource, DataSourceMapper dataSourceMapper)throws Exception{
+		dataSourceMapper.updateDataSourceStatus(idStatus, idDataSource, null);	
+	}
+
 	
 	/**
 	 * 
@@ -1188,6 +1199,8 @@ public class ServiceUtil {
 		}
 	}
 
+
+	
 	/**
 	 * 
 	 * @param object
