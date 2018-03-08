@@ -138,7 +138,7 @@ public class ApiServiceImpl implements ApiService {
 	 * select stream
 	 */
 	@Override
-	public ServiceResponse selectBackofficeDettaglioApi(String apiCode) 
+	public ServiceResponse selectBackofficeLastInstalledDettaglioApi(String apiCode) 
 			throws BadRequestException, NotFoundException, Exception {
 
 		Api api =  apiMapper.selectLastApiInstalled(apiCode);

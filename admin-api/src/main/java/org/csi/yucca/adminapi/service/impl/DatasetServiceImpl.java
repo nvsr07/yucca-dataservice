@@ -513,7 +513,7 @@ public class DatasetServiceImpl implements DatasetService {
 			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			if (!datasetRequest.getUnpublished()) {
 
-				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode());
+				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode(), false);
 				String apiName = null;
 
 				Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
@@ -654,11 +654,11 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public ServiceResponse selectDatasetByIdDataset(Integer idDataset) throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse selectDatasetByIdDataset(Integer idDataset, boolean onlyInstalled) throws BadRequestException, NotFoundException, Exception {
 
 		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
 
-		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(idDataset);
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(idDataset, onlyInstalled);
 
 		checkIfFoundRecord(dettaglioDataset);
 
@@ -698,10 +698,10 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public ServiceResponse selectDatasetByDatasetCode(String datasetCode) throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse selectDatasetByDatasetCode(String datasetCode, boolean onlyInstalled) throws BadRequestException, NotFoundException, Exception {
 		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
 
-		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetCode);
+		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetCode, onlyInstalled);
 
 		checkIfFoundRecord(dettaglioDataset);
 
@@ -943,7 +943,7 @@ public class DatasetServiceImpl implements DatasetService {
 		try {
 			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			if (!postDatasetRequest.getUnpublished()) {
-				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(dataset.getDatasetcode());
+				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(dataset.getDatasetcode(), false);
 
 			String apiName = null;
 			

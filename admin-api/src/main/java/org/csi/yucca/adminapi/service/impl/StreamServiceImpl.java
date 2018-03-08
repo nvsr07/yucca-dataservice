@@ -36,6 +36,7 @@ import java.util.List;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.ibatis.annotations.Param;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.PublisherDelegate;
 import org.csi.yucca.adminapi.delegate.SolrDelegate;
@@ -191,7 +192,7 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse actionFeedback(ActionRequest actionRequest, Integer idStream)
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, false);
 
 		checkIfFoundRecord(dettaglioStream);
 
@@ -292,7 +293,7 @@ public class StreamServiceImpl implements StreamService {
 	public ServiceResponse actionOnStream(ActionRequest actionRequest, Integer idStream, ApiUserType apiUserType)
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, false);
 		
 		return actionOnStream(dettaglioStream, actionRequest, apiUserType);
 	}
@@ -1657,10 +1658,10 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	}
 
 	@Override
-	public ServiceResponse selectStreamByIdStream(Integer idStream)
+	public ServiceResponse selectStreamByIdStream(Integer idStream, boolean onlyInstalled)
 			throws BadRequestException, NotFoundException, Exception {
 
-		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream);
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, onlyInstalled);
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());
@@ -1684,9 +1685,9 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	}
 
 	@Override
-	public ServiceResponse selectStreamBySoCodeStreamCode(String soCode, String streamCode)
+	public ServiceResponse selectStreamBySoCodeStreamCode(String soCode, String streamCode, boolean onlyInstalled)
 			throws BadRequestException, NotFoundException, Exception {
-		DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(soCode, streamCode);
+		DettaglioStream dettaglioStream = streamMapper.selectDettaglioStreamBySoCodeStreamCode(soCode, streamCode, onlyInstalled);
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper
 				.selectSmartobjectById(dettaglioStream.getIdSmartObject());

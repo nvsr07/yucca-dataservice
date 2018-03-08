@@ -6,7 +6,7 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface ApiService {
 
-	ServiceResponse selectBackofficeDettaglioApi(String apiCode) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectBackofficeLastInstalledDettaglioApi(String apiCode) throws BadRequestException, NotFoundException, Exception;
 
 	
 	

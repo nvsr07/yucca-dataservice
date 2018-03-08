@@ -39,7 +39,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 				idDataset, datasetVersion);
 		
 		dettaglio = checkTenantCanSendData(dettaglio, codiceTenant);
-		dettaglio = checkIsInstalled(dettaglio);
+//		dettaglio = checkIsInstalled(dettaglio);
 		return SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToDatasetInfo(dettaglio);
 	}
 
