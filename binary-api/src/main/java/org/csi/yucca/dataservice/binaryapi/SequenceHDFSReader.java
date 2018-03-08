@@ -199,8 +199,8 @@ public class SequenceHDFSReader extends Reader {
 				if (writeHeader) 
 					csvw.writeNext(headerLine);
 				csvw.writeNext(fields);
-				
-				
+				csvw.flush();
+				csvw.close();
 				buf = new StringReader(sw.toString());
 				
 				
@@ -208,8 +208,8 @@ public class SequenceHDFSReader extends Reader {
 //					buf = new StringReader(Arrays.toString(headerLine)+"\n"+sw.toString());
 //				else
 //					buf = new StringReader(sw.toString());
-				csvw.flush();
-				csvw.close();
+				
+				
 			}
 		}
 		else
