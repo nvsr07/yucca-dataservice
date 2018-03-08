@@ -26,7 +26,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	public DatasetInfo getInfoDataset(String datasetCode, long datasetVersion,
 			String codiceTenant) throws Exception {
 		BackofficeDettaglioStreamDatasetResponse dettaglio = getBackofficeDettaglioForDatasetCodeDatasetVersion(
-				datasetCode, datasetVersion);
+				datasetCode, datasetVersion, true);
 		dettaglio = checkTenantCanSendData(dettaglio, codiceTenant);
 		dettaglio = checkIsInstalled(dettaglio);
 		return SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToDatasetInfo(dettaglio);
@@ -36,20 +36,20 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	public DatasetInfo getInfoDataset(Long idDataset, Long datasetVersion,
 			String codiceTenant) throws Exception {
 		BackofficeDettaglioStreamDatasetResponse dettaglio = getBackofficeDettaglioForIdDatasetDatasetVersion(
-				idDataset, datasetVersion);
+				idDataset, datasetVersion, true);
 		
 		dettaglio = checkTenantCanSendData(dettaglio, codiceTenant);
-//		dettaglio = checkIsInstalled(dettaglio);
+		dettaglio = checkIsInstalled(dettaglio);
 		return SDPAdminApiConverter.convertBackofficeDettaglioStreamDatasetResponseToDatasetInfo(dettaglio);
 	}
 
 	private BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioForIdDatasetDatasetVersion(
-			Long idDataset, Long datasetVersion) throws AdminApiClientException {
+			Long idDataset, Long datasetVersion, boolean onlyInstalled) throws AdminApiClientException {
 		BackofficeDettaglioStreamDatasetResponse dettaglio =  null;
 		if (datasetVersion == null || datasetVersion == -1) {
 			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDataset(
 					SDPInsertApiConfig.getInstance().getAdminApiUrl(),
-					idDataset.intValue(), log.getName());
+					idDataset.intValue(),onlyInstalled, log.getName());
 		}
 		else {
 			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
@@ -59,12 +59,12 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		return dettaglio;
 	}
 	private BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioForDatasetCodeDatasetVersion(
-			String datasetCode, Long datasetVersion) throws AdminApiClientException {
+			String datasetCode, Long datasetVersion, boolean onlyInstalled) throws AdminApiClientException {
 		BackofficeDettaglioStreamDatasetResponse dettaglio =  null;
 		if (datasetVersion == null || datasetVersion == -1) {
 			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCode(
 					SDPInsertApiConfig.getInstance().getAdminApiUrl(),
-					datasetCode, log.getName());
+					datasetCode, onlyInstalled, log.getName());
 		}
 		else {
 			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
@@ -78,7 +78,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	public ArrayList<FieldsDto> getCampiDataSet(Long idDataset,
 			long datasetVersion) throws Exception {
 		BackofficeDettaglioStreamDatasetResponse dettaglio = getBackofficeDettaglioForIdDatasetDatasetVersion(
-				idDataset, datasetVersion);
+				idDataset, datasetVersion, true);
 		return SDPAdminApiConverter.convertComponentToFields(dettaglio.getComponents(), 
 				dettaglio.getDataset().getIddataset(), dettaglio.getVersion());
 	}
@@ -102,7 +102,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		try {
 			BackofficeDettaglioStreamDatasetResponse dettaglio = BackofficeDettaglioClient
 					.getBackofficeDettaglioStreamDatasetBySoCodeStreamCode(SDPInsertApiConfig.getInstance().getAdminApiUrl(),
-							sensor, streamApplication, log.getName());
+							sensor, streamApplication,true,  log.getName());
 			
 			dettaglio = checkTenantCanSendData(dettaglio, tenant);
 			dettaglio = checkIsInstalled(dettaglio);
@@ -122,7 +122,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		StreamInfo streamInfo = null;
 		try {
 			BackofficeDettaglioStreamDatasetResponse dettaglio = getBackofficeDettaglioForIdDatasetDatasetVersion(
-					idDataset, datasetVersion);
+					idDataset, datasetVersion, true);
 			
 			dettaglio = checkTenantCanSendData(dettaglio, tenant);
 			
@@ -144,7 +144,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		BackofficeDettaglioStreamDatasetResponse dettaglio;
 		try {
 			dettaglio = getBackofficeDettaglioForIdDatasetDatasetVersion(
-					idDataset, datasetVersion);
+					idDataset, datasetVersion, true);
 		} catch (AdminApiClientException e) {
 			log.error("Error", e);
 			throw new InsertApiRuntimeException(e);
@@ -159,7 +159,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 			BackofficeDettaglioStreamDatasetResponse dettaglio, String tenantCode) {
 		if (dettaglio!=null)
 		{
-			if (!dettaglio.getTenantManager().getTenantcode().equals(tenantCode)) // TODO .. rimuovere controllo tenant manager... lo sharing dovrebbe essere sempre a posto
+			if (dettaglio.getTenantManager()==null || dettaglio.getTenantManager().getTenantcode() == null ||  !dettaglio.getTenantManager().getTenantcode().equals(tenantCode)) 
 			{
 				List<TenantResponse> tenants = dettaglio.getSharingTenanst();
 				boolean senderFound = false;
