@@ -109,7 +109,7 @@ public class HttpDelegate {
 		CloseableHttpResponse response = httpclient.execute(postMethod);
 		StatusLine statusLine = response.getStatusLine();
 		int statusCode = statusLine.getStatusCode();
-		if (statusCode == HttpStatus.SC_OK) {
+		if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_ACCEPTED) {
 			try {
 				HttpEntity entity = response.getEntity();
 				return EntityUtils.toString(entity);
