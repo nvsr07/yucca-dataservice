@@ -1069,8 +1069,8 @@ public class DatasetServiceImpl implements DatasetService {
 				return new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
 			}
 		}
-
-		return null;
+		
+		return new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, null);
 	}
 
 	private void removeOdataApiAndSolrDocument(String datasetCode) throws Exception{
