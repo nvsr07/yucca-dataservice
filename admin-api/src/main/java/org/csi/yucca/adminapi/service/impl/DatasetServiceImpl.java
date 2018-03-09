@@ -300,8 +300,6 @@ public class DatasetServiceImpl implements DatasetService {
 
 		InvioCsvRequest invioCsvRequest = new InvioCsvRequest().datasetCode(dataset.getDatasetcode()).datasetVersion(dataset.getDatasourceversion()).values(csvRows);
 
-		ObjectMapper mapper = new ObjectMapper();
-
 		logger.debug("tenantCodeManager: " + tenantCodeManager);
 
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
@@ -309,7 +307,7 @@ public class DatasetServiceImpl implements DatasetService {
 		logger.debug(user != null ? "user: " + user.getUsername() : "user è nullo!");
 
 		logger.debug("BEGIN: HttpDelegate.makeHttpPost");
-		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), mapper.writeValueAsString(invioCsvRequest));
+		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), invioCsvRequest.toString());
 
 		logger.info("END: >>> insertCSVData <<<");
 		return ServiceResponse.build().object(invioCsvRequest);

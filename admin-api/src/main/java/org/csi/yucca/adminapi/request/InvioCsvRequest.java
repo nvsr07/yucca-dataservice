@@ -2,6 +2,8 @@ package org.csi.yucca.adminapi.request;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class InvioCsvRequest {
 
 	private String datasetCode;
@@ -47,6 +49,14 @@ public class InvioCsvRequest {
 		this.values = values;
 	} 
 	
+	@Override
+	public String toString() {
 	
+		String valueString = "";
+		if (values!=null)
+			valueString = StringUtils.join(values, ",");
+		return "{\"datasetCode\":\""+datasetCode+"\",\"datasetVersion\":"+datasetVersion+",\"values\":["+
+				valueString	+"]}";
+	}
 	
 }
