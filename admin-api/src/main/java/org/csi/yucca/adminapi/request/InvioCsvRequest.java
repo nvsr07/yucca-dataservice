@@ -53,7 +53,7 @@ public class InvioCsvRequest {
 	public String toString() {
 	
 		String valueString = "";
-		if (values!=null)
+		if (values!=null) 
 			valueString = StringUtils.join(values, ",");
 		return "{\"datasetCode\":\""+datasetCode+"\",\"datasetVersion\":"+datasetVersion+",\"values\":["+
 				valueString	+"]}";

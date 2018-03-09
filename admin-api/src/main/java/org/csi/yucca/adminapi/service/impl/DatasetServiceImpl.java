@@ -281,7 +281,7 @@ public class DatasetServiceImpl implements DatasetService {
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding, String csvSeparator, String componentInfoRequestsJson, String organizationCode,
 			Integer idDataset, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		logger.info("BEGIN: >>> insertCSVData <<<");
+		logger.info("[DatasetServiceImpl::insertCSVData] Begin idDataset:["+idDataset+"], componentInfoRequestsJson:["+componentInfoRequestsJson +"]");
 
 		List<ComponentInfoRequest> componentInfoRequests = Util.getComponentInfoRequests(componentInfoRequestsJson);
 
@@ -306,10 +306,10 @@ public class DatasetServiceImpl implements DatasetService {
 
 		logger.debug(user != null ? "user: " + user.getUsername() : "user è nullo!");
 
-		logger.debug("BEGIN: HttpDelegate.makeHttpPost");
+		logger.debug("[DatasetServiceImpl::insertCSVData] makeHttpPost invioCsvRequest.summary(100 chars):["+invioCsvRequest.toString().substring(0, 100)+"...]");
 		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), invioCsvRequest.toString());
 
-		logger.info("END: >>> insertCSVData <<<");
+		logger.info("[DatasetServiceImpl::insertCSVData] END");
 		return ServiceResponse.build().object(invioCsvRequest);
 	}
 
@@ -1025,7 +1025,8 @@ public class DatasetServiceImpl implements DatasetService {
 			if (!info.isSkipColumn())
 				columnCount++;
 		}
-		if (columnCount != components.length) {
+		logger.debug("[DatasetServiceImpl::checkComponentsSize] components.size:["+components.length+"], componentInfoRequestsCount:["+columnCount +"]");
+		if (columnCount != components.length || columnCount==0) {
 			throw new BadRequestException(Errors.NOT_ACCEPTABLE);
 		}
 	}
