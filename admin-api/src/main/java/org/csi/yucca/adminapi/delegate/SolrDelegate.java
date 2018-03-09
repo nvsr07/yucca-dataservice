@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.delegate;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -43,6 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -269,7 +271,7 @@ public class SolrDelegate {
 
 		
 		//doc.addField("jsonFields", dataset.getComponents());
-		List<String> jsonFields = new LinkedList<String>();
+		//List<ComponentJson> jsonFields = new LinkedList<ComponentJson>();
 		if (dataset.getComponents() != null) {
 //			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
 //			});
@@ -278,12 +280,12 @@ public class SolrDelegate {
 			for (ComponentJson component : dataset.getComponents()) {
 				sdpComponentsName.add(component.getName());
 				phenomenonList.add(component.getPhenomenonname());
-				jsonFields.add(component.toJson());
+				//jsonFields.add(component);
 			}
 			doc.addField("sdpComponentsName", sdpComponentsName);
 			doc.addField("phenomenon", phenomenonList);
 			
-			String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(jsonFields)+"}";
+			String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(dataset.getComponents())+"}";
 			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
 
 			doc.addField("jsonFields", componentJsonElement);
@@ -304,6 +306,29 @@ public class SolrDelegate {
 
 		return doc;
 	}
+	
+	/*public static void main(String[] args) {
+		List<ComponentJson> jsonFields = new LinkedList<ComponentJson>();
+		
+		ComponentJson component1 = new  ComponentJson();
+		component1.setAlias("ciao");
+
+		try {
+			ComponentJson component2 = new  ComponentJson();
+			component1.setAlias("ciao2");
+			jsonFields.add(component1);
+			jsonFields.add(component2);
+			
+			StringWriter sw = new StringWriter();
+			mapper.writer().writeValue(sw, jsonFields);
+			String componentJsonElement = "{\"element\":"+sw.toString()+"}";
+			System.out.println("result " + componentJsonElement);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}*/
 
 	private static String formatDate(Date date) {
 		String formattedDate = null;
