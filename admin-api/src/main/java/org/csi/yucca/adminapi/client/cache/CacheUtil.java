@@ -50,7 +50,6 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, List<TenantManagementResponse>> tenantListCache;
 	private static LoadingCache<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>> listaStreamDatasetByOrganizationCodeCache;
 	private static LoadingCache<KeyCache, AllineamentoResponse> allineamentoResponseCache;
-
 	private static LoadingCache<KeyCache, List<OrganizationResponse>> organizationListCache;
 	
 	static {
@@ -127,7 +126,7 @@ public class CacheUtil {
 						ListenableFutureTask <List<OrganizationResponse>> task = ListenableFutureTask.create(new Callable<List<OrganizationResponse>>() {
 							@SuppressWarnings("unchecked")
 							public List<OrganizationResponse> call() throws Exception{
-								return (List<OrganizationResponse>) getList(BACK_OFFICE_DATASETS_DATASETCODE, key, OrganizationResponse.class);
+								return (List<OrganizationResponse>) getList(BACK_OFFICE_ORGANIZATIONS, key, OrganizationResponse.class);
 							}
 						});
 						Executors.newSingleThreadExecutor().execute(task);
@@ -149,7 +148,7 @@ public class CacheUtil {
 						
 						ListenableFutureTask <AllineamentoResponse> task = ListenableFutureTask.create(new Callable<AllineamentoResponse>() {
 							public AllineamentoResponse call() throws Exception{
-								return (AllineamentoResponse) get(BACK_OFFICE_API, key, AllineamentoResponse.class);
+								return (AllineamentoResponse) get(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoResponse.class);
 							}
 						});
 						Executors.newSingleThreadExecutor().execute(task);
@@ -206,7 +205,7 @@ public class CacheUtil {
 						ListenableFutureTask <List<TenantManagementResponse>> task = ListenableFutureTask.create(new Callable<List<TenantManagementResponse>>() {
 							@SuppressWarnings("unchecked")
 							public List<TenantManagementResponse> call() throws Exception{
-								return (List<TenantManagementResponse>) getList(BACK_OFFICE_DATASETS_DATASETCODE, key, TenantManagementResponse.class);
+								return (List<TenantManagementResponse>) getList(BACK_OFFICE_TENANTS, key, TenantManagementResponse.class);
 							}
 						});
 						Executors.newSingleThreadExecutor().execute(task);
