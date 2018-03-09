@@ -158,6 +158,7 @@ public class InsertApiLogic {
 	}
 
 	public HashMap<String, DatasetBulkInsert> parseJsonInputDataset(String tenant, String jsonInput) throws Exception {
+		log.log(Level.INFO, "[InsertApiLogic::parseJsonInputDataset] jsonInput:" + jsonInput);
 		int i = 0;
 		boolean endArray = false;
 		JSONObject ooo = null;

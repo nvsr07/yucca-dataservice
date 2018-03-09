@@ -103,7 +103,7 @@ public abstract class AbstractService {
 			accLog.setErrore(insEx.getErrorCode() + " - " + insEx.getErrorName());
 			throw insEx;
 		} catch (Exception e) {
-			log.fatal("[InsertApi::insertApiDataset] GenericException " + e);
+			log.fatal("[InsertApi::insertApiDataset] GenericException WITH TENANTCODE["+codTenant+"] WITH DATA ["+jsonData+"]" + e);
 			throw new InsertApiRuntimeException(e);
 		} finally {
 			try {
