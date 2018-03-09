@@ -99,21 +99,6 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 	
-	/****************************************************************************************************************
-				CREATE TABLE int_yucca.yucca_allineamento
-				(
-				   id_organization bigint NOT NULL, 
-				   locked smallint NOT NULL, 
-				   lastobjectid character varying(40), 
-				   CONSTRAINT pk_yucca_allineamento PRIMARY KEY (id_organization), 
-				   CONSTRAINT yucca_organization_yucca_allineamento FOREIGN KEY (id_organization) REFERENCES int_yucca.yucca_organization (id_organization) ON UPDATE NO ACTION ON DELETE NO ACTION
-				) 
-				WITH (
-				  OIDS = FALSE
-				);
-	 ****************************************************************************************************************/
-	
-	
 	@ApiOperation(value = BO_CREATE_ALLINEAMENTO, notes = BO_CREATE_ALLINEAMENTO_NOTES, response = ServiceResponse.class)
 	@PostMapping("/allineamento")
 	public ResponseEntity<Object> createOrUpdateAllineamento(@RequestBody final AllineamentoRequest allineamentoRequest) {

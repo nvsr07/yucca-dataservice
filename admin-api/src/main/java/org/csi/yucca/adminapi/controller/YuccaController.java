@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 public class YuccaController {
 	
+	private static final Logger logger = Logger.getLogger(YuccaController.class);
+	
 	protected JwtUser getAuthorizedUser(HttpServletRequest request){
 		return (JwtUser)request.getAttribute(JwtFilter.JWT_USER_REQUEST_ATTRIBUTE_KEY);
 	}
@@ -57,6 +59,7 @@ public class YuccaController {
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<Object> handleBindException(Exception be) {
+		logger.error("Exception before Controller: " + be, be);
 		return new ResponseEntity<Object>(new Response(Errors.PARAMETER_TYPE_ERROR, be.getMessage()), 
 				HttpStatus.BAD_REQUEST);
 	}

@@ -20,7 +20,7 @@ public class BackofficeListaClient {
 		return CacheUtil.getListStreamDataset(new KeyCache(adminApiBaseUrl, logger).code(organizationCode));
 	}
 
-	public static List<OrganizationResponse> getOrganozations(
+	public static List<OrganizationResponse> getOrganizations(
 			String adminApiBaseUrl, String logger) throws AdminApiClientException {
 		return CacheUtil.getOrganizations(new KeyCache(adminApiBaseUrl, logger));
 	}

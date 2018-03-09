@@ -16,7 +16,7 @@ import org.csi.yucca.adminapi.util.Constants;
  */
 public interface AllineamentoMapper {
 
-	public static final String ALLINEAMENTO_TABLE = Constants.SCHEMA_DB + "yucca_allineamento";
+	public static final String ALLINEAMENTO_TABLE = Constants.SCHEMA_DB + "yucca_allineamento2";
 	
 	/*************************************************************************
 	 * 
