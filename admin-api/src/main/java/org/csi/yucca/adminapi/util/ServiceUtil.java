@@ -628,7 +628,7 @@ public class ServiceUtil {
 				component.sourcecolumnname(componentRequest.getSourcecolumnname());
 				component.required(componentRequest.getRequired());
 				component.setIskey(componentRequest.getIskey());
-				component.setSinceVersion(ServiceUtil.SINCE_VERSION);			
+				component.setSinceVersion(sinceVersion);			
 				component.setIdDataSource(idDataSource);
 				component.setDatasourceversion(datasourceVersion);
 				componentMapper.insertComponent(component);
