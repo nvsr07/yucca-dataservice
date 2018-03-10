@@ -439,9 +439,9 @@ public class ServiceUtil {
 					throw new BadRequestException(Errors.NOT_ACCEPTABLE, "Some idComponent is incorrect: " + component.getIdComponent());
 				}
 
-				// sono stati inseriti campi non modificabili
+				// sono stati inseriti campi non modificabili nei vcampi delle precedenti versione
 				if(component.getIdComponent() != null){
-					for (Component cmp : alreadyPresentComponents) {
+					for (Component cmp : alreadyPresentComponentsPreviousVersion) {
 						
 						if(component.getIdComponent().equals(cmp.getIdComponent())  &&
 								
