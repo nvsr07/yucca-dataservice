@@ -101,8 +101,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @Configuration
@@ -291,10 +289,8 @@ public class DatasetServiceImpl implements DatasetService {
 
 		checkComponentsSize(dataset.getComponents(), componentInfoRequests);
 
-		List<String> errors = checkCsvFile(file, skipFirstRow, csvSeparator, dataset.getComponents(), componentInfoRequests);
-		if (!errors.isEmpty()) {
-			return ServiceResponse.build().object(errors);
-		}
+		// could throw bad request
+		checkCsvFile(file, skipFirstRow, csvSeparator, dataset.getComponents(), componentInfoRequests);
 
 		List<String> csvRows = getCsvRows(file, skipFirstRow, dataset.getComponents(), componentInfoRequests, csvSeparator);
 
@@ -310,7 +306,7 @@ public class DatasetServiceImpl implements DatasetService {
 		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), invioCsvRequest.toString());
 
 		logger.info("[DatasetServiceImpl::insertCSVData] END");
-		return ServiceResponse.build().object(invioCsvRequest);
+		return ServiceResponse.build().object("Row's number: " + csvRows == null ? 0 : csvRows.size());
 	}
 
 	private String getCsvRow(String row, String csvSeparator, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests) {
@@ -370,7 +366,7 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private List<String> checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, ComponentJson[] components,
+	private void checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, ComponentJson[] components,
 			List<ComponentInfoRequest> componentInfoRequests) throws Exception {
 
 		checkComponentsSize(components, componentInfoRequests);
@@ -424,7 +420,14 @@ public class DatasetServiceImpl implements DatasetService {
 				}
 			}
 		}
-		return errors;
+		
+		if (!errors.isEmpty()) {
+			StringBuilder errorsString = new StringBuilder();
+			for (String error : errors) {
+				errorsString.append(error).append("\n");
+			}
+			throw new BadRequestException(Errors.INCORRECT_VALUE, errorsString.toString());
+		}
 	}
 
 	/**
