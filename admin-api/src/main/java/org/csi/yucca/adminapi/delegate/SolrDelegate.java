@@ -141,6 +141,41 @@ public class SolrDelegate {
 		doc.addField("datasetType", dataset.getDatasetType());
 		doc.addField("datasetSubtype", dataset.getDatasetSubtype());
 		doc.addField("importFileType", dataset.getImportfiletype());
+		
+		//Componenti
+		if (dataset.getComponents() != null) {
+			List<String> sdpComponentsName = new LinkedList<String>();
+			List<String> phenomenonList = new LinkedList<String>();
+			List<SolrDatasetComponent> solrDatasetComponents = new LinkedList<SolrDatasetComponent>();
+			for (ComponentJson component : dataset.getComponents()) {
+				sdpComponentsName.add(component.getName());
+				phenomenonList.add(component.getPhenomenonname());
+				
+				SolrDatasetComponent datasetComponent= new SolrDatasetComponent();
+				datasetComponent.setFieldName(component.getName());
+				datasetComponent.setFieldAlias(component.getAlias());
+				datasetComponent.setDataType(component.getDatatypedescription());
+				datasetComponent.setSourceColumn(component.getSourcecolumn());
+				datasetComponent.setIsKey(component.getIskey());
+				datasetComponent.setMeasureUnit(component.getMeasureunit());
+				datasetComponent.setMeasureUnitCategory(component.getMeasureunitcategory());
+				datasetComponent.setOrder(component.getInorder());
+				solrDatasetComponents.add(datasetComponent);				
+			}
+			doc.addField("sdpComponentsName", sdpComponentsName);
+			doc.addField("phenomenon", phenomenonList);			
+		
+			//String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(dataset.getComponents())+"}";
+			
+			String componentJsonElement = "[{";
+			for (SolrDatasetComponent component : solrDatasetComponents) {
+				componentJsonElement+=mapper.writeValueAsString(component);			
+			}
+			componentJsonElement+="]}";
+			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
+
+			doc.addField("jsonFields", componentJsonElement);
+		}
 
 		return doc;
 	}
@@ -202,6 +237,36 @@ public class SolrDelegate {
 
 			jsonSo += "}]}";
 			doc.addField("jsonSo", jsonSo);
+			
+			//Componenti
+			if (stream.getComponents() != null) {
+				List<SolrStreamComponent> solrStreamComponents = new LinkedList<SolrStreamComponent>();
+				for (ComponentJson component : stream.getComponents()) {					
+					SolrStreamComponent streamComponent= new SolrStreamComponent();
+					streamComponent.setIdComponent(component.getId_component().toString());
+					streamComponent.setComponentName(component.getName());
+					streamComponent.setComponentAlias(component.getAlias());
+					streamComponent.setDataType(component.getDatatypedescription());
+					streamComponent.setTolerance(component.getTolerance());
+					streamComponent.setMeasureUnit(component.getMeasureunit());
+					streamComponent.setMeasureUnitCategory(component.getMeasureunitcategory());
+					streamComponent.setPhenomenon(component.getPhenomenonname());
+					streamComponent.setPhenomenonCategory(component.getPhenomenoncetegory());
+					streamComponent.setSinceVersion(component.getSince_version().toString());
+					solrStreamComponents.add(streamComponent);				
+				}	
+			
+				//String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(dataset.getComponents())+"}";
+				
+				String componentJsonElement = "{\"element\":[";
+				for (SolrStreamComponent component : solrStreamComponents) {
+					componentJsonElement+=mapper.writeValueAsString(component);			
+				}
+				componentJsonElement+="]}";
+				logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
+
+				doc.addField("jsonFields", componentJsonElement);
+			}
 
 		}
 
@@ -272,24 +337,7 @@ public class SolrDelegate {
 		
 		//doc.addField("jsonFields", dataset.getComponents());
 		//List<ComponentJson> jsonFields = new LinkedList<ComponentJson>();
-		if (dataset.getComponents() != null) {
-//			List<ComponentJson> components = mapper.readValue(dataset.getComponents(), new TypeReference<List<ComponentJson>>() {
-//			});
-			List<String> sdpComponentsName = new LinkedList<String>();
-			List<String> phenomenonList = new LinkedList<String>();
-			for (ComponentJson component : dataset.getComponents()) {
-				sdpComponentsName.add(component.getName());
-				phenomenonList.add(component.getPhenomenonname());
-				//jsonFields.add(component);
-			}
-			doc.addField("sdpComponentsName", sdpComponentsName);
-			doc.addField("phenomenon", phenomenonList);
-			
-			String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(dataset.getComponents())+"}";
-			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
-
-			doc.addField("jsonFields", componentJsonElement);
-		}
+		
 
 		if (dataset.getDataSourceIsopendata() == 1) {
 			doc.addField("opendataAuthor", dataset.getDataSourceOpenDataAuthor());
@@ -425,5 +473,7 @@ public class SolrDelegate {
 
 		}
 	}
+	
+	
 
 }
