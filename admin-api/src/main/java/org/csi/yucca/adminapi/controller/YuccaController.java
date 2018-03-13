@@ -30,7 +30,7 @@ public class YuccaController {
 	}
 	
 	public ResponseEntity<Object> buildErrorResponse(YuccaException exception){
-		return new ResponseEntity<Object>(new Response(exception.errors(), exception.getArg()), 
+		return new ResponseEntity<Object>(new Response(exception.errors(), exception.getArg()).args(exception.getArgs()), 
 				exception.getHttpStatus());
 	}
 	

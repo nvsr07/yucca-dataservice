@@ -1,21 +1,27 @@
 package org.csi.yucca.adminapi.exception;
 
+import java.util.List;
+
 import org.csi.yucca.adminapi.util.Errors;
 import org.springframework.http.HttpStatus;
 
 public class YuccaException extends Exception {
 
+	private static final long serialVersionUID = 7650157029898117208L;
+	
 	private Errors errors;
 	
 	private HttpStatus httpStatus;
 	
 	private String arg;
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7650157029898117208L;
-
+	private List<String> args;
+	
+	public YuccaException args(List<String> args){
+		setArgs(args);
+		return this;
+	}
+	
 	public YuccaException(String message) {
 		super(message);
 	}
@@ -52,6 +58,14 @@ public class YuccaException extends Exception {
 
 	public void setArg(String arg) {
 		this.arg = arg;
+	}
+	
+	public List<String> getArgs() {
+		return args;
+	}
+
+	public void setArgs(List<String> args) {
+		this.args = args;
 	}
 	
 }

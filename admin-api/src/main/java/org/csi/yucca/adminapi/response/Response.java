@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.response;
 
+import java.util.List;
+
 import org.csi.yucca.adminapi.util.Errors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,6 +14,14 @@ public class Response {
 	
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private String errorName;
+	
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<String> args;
+	
+	public Response args(List<String> args){
+		setArgs(args);
+		return this;
+	}
 	
 	public Response(Errors errors, String arg){
 		this.errorCode = errors.errorCode();
@@ -43,6 +53,14 @@ public class Response {
 
 	public void setErrorName(String errorName) {
 		this.errorName = errorName;
+	}
+
+	public List<String> getArgs() {
+		return args;
+	}
+
+	public void setArgs(List<String> args) {
+		this.args = args;
 	}
 
 	

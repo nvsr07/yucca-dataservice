@@ -306,7 +306,12 @@ public class DatasetServiceImpl implements DatasetService {
 		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), invioCsvRequest.toString());
 
 		logger.info("[DatasetServiceImpl::insertCSVData] END");
-		return ServiceResponse.build().object("Row's number: " + csvRows == null ? 0 : csvRows.size());
+		
+		int number = csvRows == null ? 0 : csvRows.size();
+		
+		String message = "Row's number: " + number;
+		
+		return ServiceResponse.build().object(message);
 	}
 
 	private String getCsvRow(String row, String csvSeparator, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests) {
@@ -387,6 +392,11 @@ public class DatasetServiceImpl implements DatasetService {
 
 			String[] columns = rows[r].split(csvSeparator);
 
+			if (columns.length != components.length) {
+				errors.add("Errore alla riga " + r + ", il numero di colonne deve essere: " + components.length);
+				continue;
+			}
+			
 			for (int c = 0; c < columns.length; c++) {
 
 				if (maximumLimitErrorsReached(errors))
@@ -422,11 +432,11 @@ public class DatasetServiceImpl implements DatasetService {
 		}
 		
 		if (!errors.isEmpty()) {
-			StringBuilder errorsString = new StringBuilder();
-			for (String error : errors) {
-				errorsString.append(error).append("\n");
-			}
-			throw new BadRequestException(Errors.INCORRECT_VALUE, errorsString.toString());
+//			StringBuilder errorsString = new StringBuilder();
+//			for (String error : errors) {
+//				errorsString.append(error).append("\n");
+//			}
+			throw new BadRequestException(Errors.INCORRECT_VALUE).args(errors);
 		}
 	}
 
