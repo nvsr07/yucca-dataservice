@@ -418,7 +418,10 @@ public class ServiceUtil {
 			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper, boolean isStream) throws NotFoundException, BadRequestException {
 			
 		
-		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersion, componentMapper);
+		Integer dataSourceVersionPrevVersion = dataSourceVersion;
+		if(!isStream) // nel caso  di dataset la versione che arriva dalla request coicide con la versione installata, allora alreadyPresentComponentsPreviousVersion diventa uguale a alreadyPresentComponents
+			dataSourceVersionPrevVersion++;
+		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersionPrevVersion, componentMapper);
 		
 		if (idSoType == null || Type.FEED_TWEET.id() != idSoType) {
 			
