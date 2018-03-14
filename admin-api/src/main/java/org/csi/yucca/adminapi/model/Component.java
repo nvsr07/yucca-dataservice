@@ -6,7 +6,7 @@ public class Component {
 	private String name;
 	private String alias;
 	private Integer inorder;
-	private Integer tolerance;
+	private Double tolerance;
 	private Integer sinceVersion;
 	private Integer idPhenomenon;
 	private Integer idDataType;
@@ -59,11 +59,11 @@ public class Component {
 		this.inorder = inorder;
 	}
 
-	public Integer getTolerance() {
+	public Double getTolerance() {
 		return tolerance;
 	}
 
-	public void setTolerance(Integer tolerance) {
+	public void setTolerance(Double tolerance) {
 		this.tolerance = tolerance;
 	}
 
@@ -169,7 +169,7 @@ public class Component {
 		return this;
 	}
 
-	public Component tolerance(Integer tolerance) {
+	public Component tolerance(Double tolerance) {
 		this.tolerance = tolerance;
 		return this;
 	}
