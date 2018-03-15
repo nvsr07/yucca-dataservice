@@ -414,7 +414,7 @@ public class ServiceUtil {
 	 * @throws NotFoundException
 	 * @throws BadRequestException
 	 */
-	private static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
+	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
 			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper, boolean isStream) throws NotFoundException, BadRequestException {
 			
 		

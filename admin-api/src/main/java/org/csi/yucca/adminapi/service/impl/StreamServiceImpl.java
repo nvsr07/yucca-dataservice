@@ -970,7 +970,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		checkFeedTweetSmartobject(request, smartobject.getIdSoType());
 
-		checkComponents(request.getComponents(), smartobject.getIdSoType(), componentMapper);
+		checkComponents(request.getComponents(), smartobject.getIdSoType(),null, null, componentMapper, true);
 
 		checkVisibility(request, tenantMapper);
 	}
