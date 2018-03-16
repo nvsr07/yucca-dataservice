@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.csi.yucca.adminapi.client.cache.CacheUtil;
 import org.csi.yucca.adminapi.client.cache.key.KeyCache;
+import org.csi.yucca.adminapi.response.AllineamentoScaricoDatasetResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
@@ -25,4 +26,9 @@ public class BackofficeListaClient {
 		return CacheUtil.getOrganizations(new KeyCache(adminApiBaseUrl, logger));
 	}
 	
+	public static List<AllineamentoScaricoDatasetResponse> getAllineamentoByIdOrganization(
+			String adminApiBaseUrl, Integer idOrganization, String logger) throws AdminApiClientException {
+		return CacheUtil.getAllineamento(new KeyCache(adminApiBaseUrl, logger).id(idOrganization));
+	}
+
 }

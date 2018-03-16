@@ -12,7 +12,7 @@ import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ActionfeedbackOnTenantRequest;
-import org.csi.yucca.adminapi.request.AllineamentoRequest;
+import org.csi.yucca.adminapi.request.AllineamentoScaricoDatasetRequest;
 import org.csi.yucca.adminapi.request.DataTypeRequest;
 import org.csi.yucca.adminapi.request.DomainRequest;
 import org.csi.yucca.adminapi.request.EcosystemRequest;
@@ -23,7 +23,7 @@ import org.csi.yucca.adminapi.request.PhenomenonRequest;
 import org.csi.yucca.adminapi.request.PostTenantRequest;
 import org.csi.yucca.adminapi.request.SubdomainRequest;
 import org.csi.yucca.adminapi.request.TagRequest;
-import org.csi.yucca.adminapi.response.AllineamentoResponse;
+import org.csi.yucca.adminapi.response.AllineamentoScaricoDatasetResponse;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
@@ -88,6 +88,20 @@ public class BackOfficeController extends YuccaController {
 	@Autowired
 	private ApiService apiService;
 	
+	@ApiOperation(value = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE, notes = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
+	@GetMapping("/datasets/organizationCode={organizationCode}")
+	public ResponseEntity<Object> loadDatasetsByOrganizationCode(@PathVariable final String organizationCode) {
+
+		logger.info("loadDatasetsByOrganizationCode");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return datasetService.selectDatasetByOrganizationCode(organizationCode);
+			}
+		}, logger);
+	}
+	
+	
 	@ApiOperation(value = BO_LOAD_ALL_ORGANIZATION, notes = BO_LOAD_ALL_ORGANIZATION_NOTES, response = OrganizationResponse.class, responseContainer = "List")
 	@GetMapping("/organizations")
 	public ResponseEntity<Object> loadOrganization() {
@@ -99,32 +113,20 @@ public class BackOfficeController extends YuccaController {
 		}, logger);
 	}
 	
-	@ApiOperation(value = BO_CREATE_ALLINEAMENTO, notes = BO_CREATE_ALLINEAMENTO_NOTES, response = ServiceResponse.class)
-	@PostMapping("/allineamento")
-	public ResponseEntity<Object> createOrUpdateAllineamento(@RequestBody final AllineamentoRequest allineamentoRequest) {
-		logger.info("createAllineamento");
-
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.insertAllineamento(allineamentoRequest);
-			}
-		}, logger);
-	}
-	
 	@ApiOperation(value = BO_UPDATE_ALLINEAMENTO, notes = BO_UPDATE_ALLINEAMENTO_NOTES, response = ServiceResponse.class)
-	@PutMapping("/allineamento/idOrganization={idOrganization}")
-	public ResponseEntity<Object> updateAllineamento(@RequestBody final AllineamentoRequest allineamentoRequest,
+	@PostMapping("/allineamento/idOrganization={idOrganization}")
+	public ResponseEntity<Object> insertLastMongoObjectId(@RequestBody final AllineamentoScaricoDatasetRequest request,
 			@PathVariable final Integer idOrganization) {
-		logger.info("updateAllineamento");
+		logger.info("updateLastMongoObjectId");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.updateAllineamento(allineamentoRequest, idOrganization);
+				return datasetService.insertLastMongoObjectId(request, idOrganization);
 			}
 		}, logger);
 	}
 	
-	@ApiOperation(value = BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION, notes = BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION_NOTES, response = AllineamentoResponse.class)
+	@ApiOperation(value = BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION, notes = BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION_NOTES, response = AllineamentoScaricoDatasetResponse.class)
 	@GetMapping("/allineamento/idOrganization={idOrganization}")
 	public ResponseEntity<Object> loadAllineamentoByIdOrganization(@PathVariable final Integer idOrganization) {
 
@@ -132,20 +134,7 @@ public class BackOfficeController extends YuccaController {
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectAllineamentoByIdOrganization(idOrganization);
-			}
-		}, logger);
-	}
-	
-	@ApiOperation(value = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE, notes = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
-	@GetMapping("/datasets/organizationCode={organizationCode}")
-	public ResponseEntity<Object> loadDatasetsByOrganizationCode(@PathVariable final String organizationCode) {
-
-		logger.info("loadDatasetsByOrganizationCode");
-
-		return run(new ApiCallable() {
-			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectDatasetByOrganizationCode(organizationCode);
+				return datasetService.selectAllineamentoScaricoDataset(idOrganization);
 			}
 		}, logger);
 	}
