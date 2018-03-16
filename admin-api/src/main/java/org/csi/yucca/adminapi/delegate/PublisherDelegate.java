@@ -134,7 +134,7 @@ public class PublisherDelegate {
 				API_FIELD_MAX_LENGTH) : ""));
 
 		String apiName = createApiNameOData(datasetcode);
-		String endpoint = baseApiUrl + apiName;
+		String endpoint = baseApiUrl + datasetcode;
 		String apiContext = "/api/" + datasetcode;
 		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, stream.getDataSourceVisibility(), stream.getSharingTenant(), stream.getDomDomainCode(),
 				stream.getTags(), stream.getDataSourceIcon(), stream.getLicense(), stream.getDataSourceDisclaimer(), stream.getTenantCode(), stream.getTenantName());
@@ -153,8 +153,8 @@ public class PublisherDelegate {
 		addApiParams.add(new BasicNameValuePair("virtualEntityDescription", ""));
 
 		String apiName = createApiNameOData(dataset.getDatasetcode());
-		String endpoint = baseApiUrl + apiName;
-		String apiContext = "/api/" + apiName;
+		String endpoint = baseApiUrl + dataset.getDatasetcode();
+		String apiContext = "/api/" + dataset.getDatasetcode();
 		return addApi(httpclient, addApiParams, apiName, endpoint, apiContext, dataset.getDataSourceVisibility(), dataset.getSharingTenant(), dataset.getDomDomainCode(),
 				dataset.getTags(), dataset.getDataSourceIcon(), dataset.getLicense(), dataset.getDataSourceDisclaimer(), dataset.getTenantCode(), dataset.getTenantName());
 

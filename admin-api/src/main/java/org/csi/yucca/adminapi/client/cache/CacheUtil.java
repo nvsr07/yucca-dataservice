@@ -11,7 +11,7 @@ import org.csi.yucca.adminapi.client.cache.key.KeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByDatasetCodeDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByIdDatasetDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetBySoCodeStreamCodeKeyCache;
-import org.csi.yucca.adminapi.response.AllineamentoResponse;
+import org.csi.yucca.adminapi.response.AllineamentoScaricoDatasetResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
@@ -49,7 +49,7 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, MeasureUnitResponse> measureUnitCache;
 	private static LoadingCache<KeyCache, List<TenantManagementResponse>> tenantListCache;
 	private static LoadingCache<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>> listaStreamDatasetByOrganizationCodeCache;
-	private static LoadingCache<KeyCache, AllineamentoResponse> allineamentoResponseCache;
+	private static LoadingCache<KeyCache, List<AllineamentoScaricoDatasetResponse>> allineamentoResponseCache;
 	private static LoadingCache<KeyCache, List<OrganizationResponse>> organizationListCache;
 	
 	static {
@@ -110,6 +110,31 @@ public class CacheUtil {
 					}
 				});
 	}
+
+	static {
+		allineamentoResponseCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
+				.build(new CacheLoader<KeyCache, List<AllineamentoScaricoDatasetResponse>>() {
+					@SuppressWarnings("unchecked")
+					@Override
+					public List<AllineamentoScaricoDatasetResponse> load(KeyCache key) throws Exception {
+						return (List<AllineamentoScaricoDatasetResponse>) getList(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoScaricoDatasetResponse.class);
+					}
+					
+					@Override
+					public ListenableFuture<List<AllineamentoScaricoDatasetResponse>> reload(final KeyCache key, List<AllineamentoScaricoDatasetResponse> oldValue) throws Exception {
+						
+						ListenableFutureTask <List<AllineamentoScaricoDatasetResponse>> task = ListenableFutureTask.create(new Callable<List<AllineamentoScaricoDatasetResponse>>() {
+							@SuppressWarnings("unchecked")
+							public List<AllineamentoScaricoDatasetResponse> call() throws Exception{
+								return (List<AllineamentoScaricoDatasetResponse>) getList(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoScaricoDatasetResponse.class);
+							}
+						});
+						Executors.newSingleThreadExecutor().execute(task);
+						return task;
+					}
+				});
+	}
+	
 	
 	static {
 		organizationListCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
@@ -135,29 +160,7 @@ public class CacheUtil {
 				});
 	}
 	
-	static {
-		allineamentoResponseCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
-				.build(new CacheLoader<KeyCache, AllineamentoResponse>() {
-					@Override
-					public AllineamentoResponse load(KeyCache key) throws Exception {
-						return (AllineamentoResponse) get(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoResponse.class);
-					}
-					
-					@Override
-					public ListenableFuture<AllineamentoResponse> reload(final KeyCache key, AllineamentoResponse oldValue) throws Exception {
-						
-						ListenableFutureTask <AllineamentoResponse> task = ListenableFutureTask.create(new Callable<AllineamentoResponse>() {
-							public AllineamentoResponse call() throws Exception{
-								return (AllineamentoResponse) get(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoResponse.class);
-							}
-						});
-						Executors.newSingleThreadExecutor().execute(task);
-						return task;
-					}
-				});
-	}
-	
-	public static AllineamentoResponse getAllineamento(KeyCache keyCache) throws AdminApiClientException {
+	public static List<AllineamentoScaricoDatasetResponse> getAllineamento(KeyCache keyCache) throws AdminApiClientException {
 		try {
 			return allineamentoResponseCache.get(keyCache);	
 		} 

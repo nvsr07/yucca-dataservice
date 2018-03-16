@@ -1,7 +1,6 @@
 package org.csi.yucca.adminapi.delegate;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -44,7 +43,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -165,16 +163,20 @@ public class SolrDelegate {
 			doc.addField("sdpComponentsName", sdpComponentsName);
 			doc.addField("phenomenon", phenomenonList);			
 		
+			String componentJsonElement = mapper.writeValueAsString(solrDatasetComponents);
+			doc.addField("jsonFields", componentJsonElement);
+			
 			//String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(dataset.getComponents())+"}";
 			
-			String componentJsonElement = "[{";
-			for (SolrDatasetComponent component : solrDatasetComponents) {
-				componentJsonElement+=mapper.writeValueAsString(component);			
-			}
-			componentJsonElement+="]}";
+			//String componentJsonElement = "[{";
+			//for (SolrDatasetComponent component : solrDatasetComponents) {
+			//	componentJsonElement+=mapper.writeValueAsString(component);			
+			//}
+			//componentJsonElement+="]}";
+			
 			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
 
-			doc.addField("jsonFields", componentJsonElement);
+			//doc.addField("jsonFields", componentJsonElement);
 		}
 
 		return doc;
@@ -258,11 +260,11 @@ public class SolrDelegate {
 			
 				//String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(dataset.getComponents())+"}";
 				
-				String componentJsonElement = "{\"element\":[";
-				for (SolrStreamComponent component : solrStreamComponents) {
-					componentJsonElement+=mapper.writeValueAsString(component);			
-				}
-				componentJsonElement+="]}";
+				String componentJsonElement = "{\"element\":"+mapper.writeValueAsString(solrStreamComponents)+"}";
+//				for (SolrStreamComponent component : solrStreamComponents) {
+//					componentJsonElement+=mapper.writeValueAsString(component);			
+//				}
+//				componentJsonElement+="}";
 				logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] componentJsonElement: " + componentJsonElement);
 
 				doc.addField("jsonFields", componentJsonElement);

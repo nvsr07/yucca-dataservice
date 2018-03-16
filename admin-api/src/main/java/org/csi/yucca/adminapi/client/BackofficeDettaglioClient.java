@@ -5,17 +5,11 @@ import org.csi.yucca.adminapi.client.cache.key.KeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByDatasetCodeDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByIdDatasetDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetBySoCodeStreamCodeKeyCache;
-import org.csi.yucca.adminapi.response.AllineamentoResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.MeasureUnitResponse;
 
 public class BackofficeDettaglioClient {
-	
-	public static AllineamentoResponse getAllineamentoByIdOrganization(
-			String adminApiBaseUrl, Integer idOrganization, String logger) throws AdminApiClientException {
-		return CacheUtil.getAllineamento(new KeyCache(adminApiBaseUrl, logger).id(idOrganization));
-	}
 	
 	public static BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetByIdStream(
 			String adminApiBaseUrl, Integer idStream, Boolean onlyInstalled, String logger) throws AdminApiClientException {
