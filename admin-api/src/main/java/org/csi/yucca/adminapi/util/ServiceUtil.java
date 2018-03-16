@@ -417,12 +417,13 @@ public class ServiceUtil {
 	public static void checkComponents(List<ComponentRequest> listComponentRequest, Integer idSoType, 
 			Integer idDataSource, Integer dataSourceVersion, ComponentMapper componentMapper, boolean isStream) throws NotFoundException, BadRequestException {
 			
-		
-		Integer dataSourceVersionPrevVersion = dataSourceVersion;
-		if(!isStream) // nel caso  di dataset la versione che arriva dalla request coicide con la versione installata, allora alreadyPresentComponentsPreviousVersion diventa uguale a alreadyPresentComponents
-			dataSourceVersionPrevVersion++;
-		List<Component> alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersionPrevVersion, componentMapper);
-		
+		List<Component> alreadyPresentComponentsPreviousVersion = null;
+		if (dataSourceVersion != null) {
+			Integer dataSourceVersionPrevVersion = dataSourceVersion;
+			if(!isStream) // nel caso  di dataset la versione che arriva dalla request coicide con la versione installata, allora alreadyPresentComponentsPreviousVersion diventa uguale a alreadyPresentComponents
+				dataSourceVersionPrevVersion++;
+			alreadyPresentComponentsPreviousVersion = getAlreadyPresentComponentsPreviousVersion(idDataSource, dataSourceVersionPrevVersion, componentMapper);
+		}
 		if (idSoType == null || Type.FEED_TWEET.id() != idSoType) {
 			
 			ServiceUtil.checkList(listComponentRequest);
