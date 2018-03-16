@@ -206,9 +206,9 @@ public class SolrDelegate {
 		doc.addField("twtUntil", stream.getTwtuntil());
 		doc.addField("twtRatePercentage", stream.getTwtratepercentage());
 		doc.addField("twtLastSearchId", stream.getTwtlastsearchid());
-		doc.addField("soCode", stream.getSmartObjectCode());
-		doc.addField("soName", stream.getSmartObjectName());
-		doc.addField("soType", stream.getSoTypeCode());
+		doc.addField("soCode", smartobject.getSocode());
+		doc.addField("soName", smartobject.getName());
+		doc.addField("soType", smartobject.getSotypecode());
 		doc.addField("soCategory", stream.getSmartObjectCategoryDescription());
 		doc.addField("soDescription", stream.getSmartObjectDescription());
 
