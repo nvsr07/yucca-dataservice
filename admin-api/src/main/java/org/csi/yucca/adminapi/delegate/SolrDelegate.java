@@ -305,11 +305,11 @@ public class SolrDelegate {
 		doc.addField("tenantName", dataset.getTenantName());
 		doc.addField("tenantDescription", dataset.getTenantDescription());
 
+		List<String> tenantsCode = new LinkedList<String>();
+		tenantsCode.add(dataset.getTenantCode());
 		if (dataset.getSharingTenant() != null) {
 			List<SharingTenantsJson> tenants = mapper.readValue(dataset.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {
 			});
-			List<String> tenantsCode = new LinkedList<String>();
-			tenantsCode.add(dataset.getTenantCode());
 			for (SharingTenantsJson tenant : tenants) {
 				tenantsCode.add(tenant.getTenantcode());
 			}
