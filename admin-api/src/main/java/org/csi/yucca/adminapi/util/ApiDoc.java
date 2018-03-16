@@ -191,9 +191,6 @@ public class ApiDoc {
 	
 	public static final String BO_CREATE_TENANT = "CRAETE TENANT";
 	public static final String BO_CREATE_TENANT_NOTES = "Insert a new Tenant in the System.";
-
-	public static final String BO_CREATE_ALLINEAMENTO = "CRAETE ALLINEAMENTO";
-	public static final String BO_CREATE_ALLINEAMENTO_NOTES = "Insert a new Allineamento in the System.";
 	
 	public static final String BO_UPDATE_TAG = "UPDATE TAG";
 	public static final String BO_UPDATE_TAG_NOTES = "Update a Tag in the System.";

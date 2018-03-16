@@ -3,7 +3,7 @@ package org.csi.yucca.adminapi.service;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
-import org.csi.yucca.adminapi.request.AllineamentoRequest;
+import org.csi.yucca.adminapi.request.AllineamentoScaricoDatasetRequest;
 import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.ImportMetadataDatasetRequest;
 import org.csi.yucca.adminapi.util.ServiceResponse;
@@ -11,9 +11,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface DatasetService {
 
-	ServiceResponse updateAllineamento( AllineamentoRequest allineamentoRequest, Integer idOrganization )throws BadRequestException, NotFoundException, Exception;
-	ServiceResponse insertAllineamento( AllineamentoRequest allineamentoRequest ) throws BadRequestException, NotFoundException, Exception;
-	ServiceResponse selectAllineamentoByIdOrganization(Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse selectAllineamentoScaricoDataset(Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse insertLastMongoObjectId(AllineamentoScaricoDatasetRequest request, Integer idOrganization)throws BadRequestException, NotFoundException, Exception;
+	
+	ServiceResponse selectAllineamentoScaricoDataset(Integer idOrganization, Integer idDataset, Integer datasetVersion) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager, Integer version, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
