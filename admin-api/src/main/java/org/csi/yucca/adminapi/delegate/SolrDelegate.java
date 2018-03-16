@@ -35,6 +35,7 @@ import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.Dettaglio;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.LicenseJson;
 import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.TagJson;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
@@ -194,6 +195,7 @@ public class SolrDelegate {
 		}
 		
 		doc.addField("id", createIdForStream(stream));
+		doc.addField("name", stream.getStreamname());
 		doc.addField("entityType", entityTypes);
 		doc.addField("streamCode", stream.getStreamcode());
 		doc.addField("twtQuery", stream.getTwtquery());
@@ -289,8 +291,16 @@ public class SolrDelegate {
 		doc.addField("subdomainCode", dataset.getSubSubDomainCode());
 		doc.addField("subdomainLangIT", dataset.getSubLangIt());
 		doc.addField("subdomainLangEN", dataset.getSubLangEn());
-		doc.addField("licenseCode", dataset.getLicense()); // FIXME description
-		doc.addField("licenceDescription", dataset.getLicense());
+		if(dataset.getLicense()!=null) {
+			try {
+				LicenseJson license = mapper.readValue(dataset.getLicense(), LicenseJson.class);
+				doc.addField("licenseCode", license.getLicensecode());
+				doc.addField("licenceDescription", license.getDescription());
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("[SolrDelegate::createSolrDocumentFromDettaglio] ERROR on lincese: " + e.getMessage());
+			}
+		}
 		doc.addField("tenantCode", dataset.getTenantCode());
 		doc.addField("tenantName", dataset.getTenantName());
 		doc.addField("tenantDescription", dataset.getTenantDescription());
