@@ -530,6 +530,7 @@ public class DatasetServiceImpl implements DatasetService {
 				apiMapper.insertApi(
 
 				Api.buildOutput(datasetRequest.getNewDataSourceVersion()).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
+					.entitynamespace( Api.ENTITY_NAMESPACE + datasetRequest.getDatasetcode())
 						.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource())
 						.maxOdataResultperpage(bundles != null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE));
 
@@ -965,6 +966,7 @@ public class DatasetServiceImpl implements DatasetService {
 					.apiname(dettaglioDataset.getDatasetname())
 					.apisubtype(API_SUBTYPE_ODATA)
 					.idDataSource(dettaglioDataset.getIdDataSource())
+					.entitynamespace( Api.ENTITY_NAMESPACE + dataset.getDatasetcode())
 					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE ));
 				// publisher
 				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
