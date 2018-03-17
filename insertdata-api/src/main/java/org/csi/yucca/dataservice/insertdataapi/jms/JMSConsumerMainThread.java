@@ -17,7 +17,7 @@ import org.apache.activemq.RedeliveryPolicy;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
+import org.csi.yucca.dataservice.insertdataapi.exception.TenantListAccessException;
 import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMedataFactory;
 import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMetadataApiAccess;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
@@ -61,7 +61,7 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 			while (true) {
 				log.info("[JMSConsumerMainThread::run] Get tenant list and update sessions...");
 				SDPInsertMetadataApiAccess metadataAccess = SDPInsertMedataFactory.getSDPInsertMetadataApiAccess();
-				Set<String> tenants;
+				Set<String> tenants=null;
 				try {
 					tenants = metadataAccess.getTenantList();
 					Iterator<String> iter = jmsTenants.keySet().iterator();
@@ -92,10 +92,15 @@ public class JMSConsumerMainThread implements Runnable, ExceptionListener {
 							jmsTenants.put(newTenant, jmsTenant);
 						}
 					}
-				} catch (MongoAccessException e) {
+				} catch (Exception e) {
 					log.error("[JMSConsumerMainThread::run] Error reading tenant list... continue with old list", e);
 				}
-				Thread.sleep(5 * 60 * 1000);
+				if (tenants== null || tenants.isEmpty()) {
+					log.info("[JMSConsumerMainThread::run] Tenants list is empty!! retry after 10 sec");
+					Thread.sleep(10 * 1000);
+					}
+				else
+					Thread.sleep(5 * 60 * 1000);
 			}
 
 		} catch (InterruptedException ie) {

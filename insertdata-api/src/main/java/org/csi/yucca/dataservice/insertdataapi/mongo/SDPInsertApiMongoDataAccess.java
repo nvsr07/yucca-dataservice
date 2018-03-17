@@ -14,7 +14,7 @@ import org.csi.yucca.dataservice.insertdataapi.dto.DatasetInfoKey;
 import org.csi.yucca.dataservice.insertdataapi.dto.StreamInfoKey;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
-import org.csi.yucca.dataservice.insertdataapi.exception.MongoAccessException;
+import org.csi.yucca.dataservice.insertdataapi.exception.TenantListAccessException;
 import org.csi.yucca.dataservice.insertdataapi.metadata.SDPInsertMetadataApiAccess;
 import org.csi.yucca.dataservice.insertdataapi.model.output.CollectionConfDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
@@ -469,7 +469,7 @@ public class SDPInsertApiMongoDataAccess implements SDPInsertMetadataApiAccess {
 	 * @see org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertMetadataApiAccess#getTenantList()
 	 */
 	@Override
-	public Set<String> getTenantList() throws MongoAccessException {
+	public Set<String> getTenantList() throws TenantListAccessException {
 		Set<String> tenants = new HashSet<String>();
 
 		log.info("getTenantList....");
@@ -494,7 +494,7 @@ public class SDPInsertApiMongoDataAccess implements SDPInsertMetadataApiAccess {
 			}
 		} catch (Exception e) {
 			log.error("Error during tenant List", e);
-			throw new MongoAccessException(e);
+			throw new TenantListAccessException(e);
 		} finally {
 			try {
 				cursor.close();
