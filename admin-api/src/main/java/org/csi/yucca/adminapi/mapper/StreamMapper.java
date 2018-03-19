@@ -252,7 +252,7 @@ public interface StreamMapper {
 			"         where yucca_data_source.id_data_source = yucca_component.id_data_source AND  " +
 			"         yucca_data_source.datasourceversion = yucca_component.datasourceversion " +
 			" ) comp " +
-			" ) components " +  
+			" ) componentsString " +  
 			" from " +  STREAM_INTERNAL_TABLE + " yucca_r_stream_internal " + 
 			" JOIN " + STREAM_TABLE + " yucca_stream ON yucca_r_stream_internal.idstream = yucca_stream.idstream " +
 			" JOIN " + DataSourceMapper.DATA_SOURCE_TABLE + " yucca_data_source ON yucca_data_source.id_data_source = yucca_stream.id_data_source " +
