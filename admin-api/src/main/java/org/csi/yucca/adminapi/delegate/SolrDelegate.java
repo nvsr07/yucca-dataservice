@@ -313,8 +313,8 @@ public class SolrDelegate {
 			for (SharingTenantsJson tenant : tenants) {
 				tenantsCode.add(tenant.getTenantcode());
 			}
-			doc.addField("tenantsCode", tenantsCode);
 		}
+		doc.addField("tenantsCode", tenantsCode);
 
 		if (dataset.getTags() != null) {
 			List<TagJson> tags = mapper.readValue(dataset.getTags(), new TypeReference<List<TagJson>>() {
