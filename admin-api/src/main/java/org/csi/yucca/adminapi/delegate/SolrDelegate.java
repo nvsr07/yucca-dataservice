@@ -242,6 +242,12 @@ public class SolrDelegate {
 			jsonSo += "}]}";
 			doc.addField("jsonSo", jsonSo);
 			
+			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] stream - components: " + stream.getComponents());
+			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] stream - componentsString: " + stream.getComponentsString());
+			
+			if(stream.getComponentsString()!=null)
+				stream.setComponents(mapper.readValue(stream.getComponentsString(), ComponentJson[].class));
+			
 			//Componenti
 			if (stream.getComponents() != null) {
 				List<SolrStreamComponent> solrStreamComponents = new LinkedList<SolrStreamComponent>();
@@ -367,6 +373,7 @@ public class SolrDelegate {
 
 		return doc;
 	}
+	
 	
 	/*public static void main(String[] args) {
 		List<ComponentJson> jsonFields = new LinkedList<ComponentJson>();
