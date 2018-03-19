@@ -1,10 +1,10 @@
 package org.csi.yucca.dataservice.insertdataapi.exception;
 
-public class MongoAccessException extends Exception {
+public class TenantListAccessException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public MongoAccessException(Throwable e) {
+	public TenantListAccessException(Throwable e) {
 		initCause(e);
 	}
 }
