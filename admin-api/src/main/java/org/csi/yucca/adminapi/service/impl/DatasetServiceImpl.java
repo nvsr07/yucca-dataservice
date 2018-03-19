@@ -980,9 +980,13 @@ public class DatasetServiceImpl implements DatasetService {
 
 				} catch (Exception ex) {
 					logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
-				}
-
-				SolrDelegate.build().removeDocument(postDatasetRequest.getDatasetcode());
+				}				
+				try {
+					SolrDelegate.build().removeDocument(postDatasetRequest.getDatasetcode());
+					logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeDocument: " + postDatasetRequest.getDatasetcode());
+				} catch (Exception ex) {
+					logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeDocument ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
+				}	
 			}
 		} catch (Exception e) {
 			logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - error " + e.getMessage());

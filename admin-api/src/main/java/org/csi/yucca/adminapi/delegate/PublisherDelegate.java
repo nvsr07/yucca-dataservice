@@ -312,7 +312,7 @@ public class PublisherDelegate {
 		publishApi.add(new BasicNameValuePair("httpok", httpOk));
 		publishApi.add(new BasicNameValuePair("ok", responseOk));
 
-		publishApi.add(new BasicNameValuePair("status", "PUBLISHED"));
+		publishApi.add(new BasicNameValuePair("status", status));
 		publishApi.add(new BasicNameValuePair("version", "1.0"));
 		publishApi.add(new BasicNameValuePair("name", apiName));
 		publishApi.add(new BasicNameValuePair("provider", "admin"));
