@@ -310,6 +310,14 @@ public class DatasetServiceImpl implements DatasetService {
 		
 		String message = "Row's number: " + number;
 		
+		String importedfiles = dataset.getImportedfiles();
+		if(importedfiles == null || importedfiles.equals(""))
+			importedfiles = file.getOriginalFilename();
+		else
+			importedfiles += "," + file.getOriginalFilename();
+		
+		datasetMapper.updateImportedFiles(dataset.getIdDataSource(), dataset.getDatasourceversion(), importedfiles);
+		
 		return ServiceResponse.build().object(message);
 	}
 

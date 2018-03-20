@@ -217,6 +217,17 @@ public interface DatasetMapper {
 			@Param("idDataSource") Integer idDataSource,
 			@Param("dataSourceVersion") Integer dataSourceVersion );
 	
+	
+	
+	
+	public static final String UPDATE_DATASET_IMPORTEDFILES = 
+			"UPDATE " + DATASET_TABLE + 
+			" SET importedfiles=#{importedfiles}  " + 
+			" WHERE id_data_source=#{idDataSource} and datasourceversion=#{dataSourceVersion}";
+		@Update(UPDATE_DATASET_IMPORTEDFILES)
+	void updateImportedFiles(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion, @Param("importedfiles") String importedfiles);
+
+	
 	/**
 	 * SELECT DATASET FOR UPDATE
 	 */
@@ -1208,6 +1219,9 @@ public interface DatasetMapper {
 	@Select({"<script>", SELECT_DATASET_FROM_JDBC, "</script>"}) 
 	List<DettaglioDataset> selectDatasetFromJdbc_old(@Param("jdbcdburl") String jdbcdburl, @Param("jdbcdbname") String jdbcdbname, @Param("jdbcdbtype") String jdbcdbtype, 
 			@Param("tenantCode") String tenantCode, @Param("organizationcode") String organizationcode, @Param("tenantCodeManager") String  tenantCodeManager, @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);
+
+
+
 
 
 
