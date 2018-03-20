@@ -71,6 +71,16 @@ public class WebServiceDelegate {
 	 */
 	public WebServiceResponse validateSiddhiQueriesWebService(String queryExpressions, List<String> inputStreamDefiniitons)throws NoSuchAlgorithmException, KeyManagementException, IOException {
 		
+		String inputStreamDefiniitonsString;
+		StringBuilder sb = new StringBuilder ();
+
+		for (String element:inputStreamDefiniitons)
+		{
+			sb.append (element);
+		}
+
+		inputStreamDefiniitonsString= sb.toString ();
+		
 		String xmlInput =
 			    "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://admin.processor.event.carbon.wso2.org\">";
 		xmlInput += "   <soapenv:Header/>";
@@ -78,8 +88,8 @@ public class WebServiceDelegate {
 		xmlInput += "   <soapenv:Body>";
 		
 		xmlInput += "      <ser:validateSiddhiQueries>";
-	    xmlInput += "         <ser:queryExpressions>" + queryExpressions + "</ser:queryExpressions>";
-	    xmlInput += "         <ser:inputStreamDefiniitons>" + inputStreamDefiniitons + "</ser:inputStreamDefiniitons>";
+		xmlInput += "         <ser:inputStreamDefiniitons>" + inputStreamDefiniitonsString + "</ser:inputStreamDefiniitons>";
+	    xmlInput += "         <ser:queryExpressions>" + queryExpressions + "</ser:queryExpressions>";	    
 		xmlInput += "      </ser:validateSiddhiQueries>";
 		
 		xmlInput += "   </soapenv:Body>";
