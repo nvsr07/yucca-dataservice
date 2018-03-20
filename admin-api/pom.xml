@@ -386,7 +386,47 @@
 				</plugins>
 			</build>
 		</profile>
-		
+		<profile>
+			<id>pochdp</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/pochdp</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/pochdp</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/pochdp/</webXmlPath>
+			</properties>
+		</profile>
 		<profile>
 			<id>int</id>
 			<build>
