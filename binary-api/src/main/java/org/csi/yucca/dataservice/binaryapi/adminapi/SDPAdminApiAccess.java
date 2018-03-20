@@ -9,30 +9,38 @@ import org.csi.yucca.adminapi.response.TenantResponse;
 import org.csi.yucca.dataservice.binaryapi.util.BinaryConfig;
 
 public class SDPAdminApiAccess  {
-	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("org.csi.yucca.datainsert");
+	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("org.csi.yucca.binaryapi");
 
 	
 	
 	
 	
 	public static BackofficeDettaglioApiResponse getInfoDatasetByApi(String apiCode) throws Exception {
+		log.info("[SDPAdminApiAccess::getInfoDatasetByApi] BEGIN apiCode: " + apiCode );
 		BackofficeDettaglioApiResponse dettaglio = 
 				BackofficeDettaglioClient.getBackofficeDettaglioApi(
 						BinaryConfig.getInstance().getApiAdminServicesUrl(), apiCode, log.getName());
+		log.info("[SDPAdminApiAccess::getInfoDatasetByApi] END");
 		return dettaglio;
 	}
 
 	public static BackofficeDettaglioStreamDatasetResponse getInfoDatasetByIdDatasetDatasetVersion(Integer idDataset, Integer datasetVersion) throws Exception {
+		log.info("[SDPAdminApiAccess::getInfoDatasetByIdDatasetDatasetVersion] BEGIN idDataset, datasetVersion: " + idDataset +","+datasetVersion);
 		BackofficeDettaglioStreamDatasetResponse dettaglio = 
 				BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
 						BinaryConfig.getInstance().getApiAdminServicesUrl(), idDataset, datasetVersion, log.getName());
+		log.info("[SDPAdminApiAccess::getInfoDatasetByIdDatasetDatasetVersion] END");
 		return dettaglio;
 	}
 	
 	public static BackofficeDettaglioStreamDatasetResponse getInfoDatasetByDatasetCodeDatasetVersion(String datasetCode, Integer datasetVersion) throws Exception {
+		log.info("[SDPAdminApiAccess::getInfoDatasetByDatasetCodeDatasetVersion] BEGIN datasetCode, datasetVersion: " + datasetCode +","+datasetVersion);
+		
 		BackofficeDettaglioStreamDatasetResponse dettaglio = 
 				BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
 						BinaryConfig.getInstance().getApiAdminServicesUrl(), datasetCode, datasetVersion, log.getName());
+		log.info("[SDPAdminApiAccess::getInfoDatasetByIdDatasetDatasetVersion] END");
+		
 		return dettaglio;
 	}
 	
