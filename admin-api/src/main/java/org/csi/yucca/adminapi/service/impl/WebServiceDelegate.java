@@ -73,14 +73,6 @@ public class WebServiceDelegate {
 		
 		String inputStreamDefiniitonsString;
 		StringBuilder sb = new StringBuilder ();
-
-		for (String element:inputStreamDefiniitons)
-		{
-			sb.append (element);
-		}
-
-		inputStreamDefiniitonsString= sb.toString ();
-		
 		String xmlInput =
 			    "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:ser=\"http://admin.processor.event.carbon.wso2.org\">";
 		xmlInput += "   <soapenv:Header/>";
@@ -88,7 +80,14 @@ public class WebServiceDelegate {
 		xmlInput += "   <soapenv:Body>";
 		
 		xmlInput += "      <ser:validateSiddhiQueries>";
-		xmlInput += "         <ser:inputStreamDefiniitons>" + inputStreamDefiniitonsString + "</ser:inputStreamDefiniitons>";
+		for (String element:inputStreamDefiniitons)
+		{
+			sb.append (element);
+			inputStreamDefiniitonsString= sb.toString ();
+			xmlInput += "		<ser:inputStreamDefiniitons>" + inputStreamDefiniitonsString + "</ser:inputStreamDefiniitons>";
+			inputStreamDefiniitonsString="";
+			sb.setLength(0);
+		}
 	    xmlInput += "         <ser:queryExpressions>" + queryExpressions + "</ser:queryExpressions>";	    
 		xmlInput += "      </ser:validateSiddhiQueries>";
 		
