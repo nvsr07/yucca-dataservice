@@ -24,16 +24,22 @@ import org.csi.yucca.adminapi.mapper.DatasetMapper;
 import org.csi.yucca.adminapi.mapper.DcatMapper;
 import org.csi.yucca.adminapi.mapper.LicenseMapper;
 import org.csi.yucca.adminapi.mapper.SequenceMapper;
+import org.csi.yucca.adminapi.mapper.SmartobjectMapper;
+import org.csi.yucca.adminapi.mapper.StreamMapper;
 import org.csi.yucca.adminapi.mapper.TenantMapper;
 import org.csi.yucca.adminapi.messaging.MessageSender;
 import org.csi.yucca.adminapi.model.Component;
 import org.csi.yucca.adminapi.model.DataSource;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.Dcat;
+import org.csi.yucca.adminapi.model.DettaglioDataset;
+import org.csi.yucca.adminapi.model.DettaglioStream;
+import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.License;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.TenantDataSource;
+import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
 import org.csi.yucca.adminapi.request.DcatRequest;
@@ -43,6 +49,7 @@ import org.csi.yucca.adminapi.request.LicenseRequest;
 import org.csi.yucca.adminapi.request.OpenDataRequest;
 import org.csi.yucca.adminapi.request.SharingTenantRequest;
 import org.csi.yucca.adminapi.request.SmartobjectRequest;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
@@ -81,6 +88,58 @@ public class ServiceUtil {
 	public static final String FAULT_STRING_CHILD_NODE_NAME = "faultstring";
 	public static final String FAULT_STRING_NODE_NAME = "soapenv:Fault";
 
+	
+	/**
+	 * 
+	 * @param dettaglioDataset
+	 * @param streamMapper
+	 * @param smartobjectMapper
+	 * @param datasetMapper
+	 * @return
+	 * @throws Exception
+	 */
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDataset(DettaglioDataset dettaglioDataset, 
+			StreamMapper streamMapper, SmartobjectMapper smartobjectMapper, DatasetMapper datasetMapper)throws Exception{
+		
+		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
+		
+		checkIfFoundRecord(dettaglioDataset);
+		
+		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
+				DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
+
+			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
+			if (dettaglioStream != null) {
+
+				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
+				
+				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
+				
+				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+			}				
+		}
+		
+		DettaglioDataset dettaglioBinary = null;
+		
+		if (dettaglioDataset.getIdDataSourceBinary()!=null)
+		{
+			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
+					dettaglioDataset.getIdDataSourceBinary(), 	
+					dettaglioDataset.getDatasourceversionBinary());
+		}
+		
+		if (dettaglio == null) {
+			dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+		}
+		else{
+			dettaglio.setBinarydataset(dettaglioBinary);
+		}
+		
+		return dettaglio;
+		
+	}
+
+	
 	/**
 	 * 
 	 * @param idStatus

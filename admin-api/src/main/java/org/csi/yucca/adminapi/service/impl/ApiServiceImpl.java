@@ -3,8 +3,6 @@ package org.csi.yucca.adminapi.service.impl;
 import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkIfFoundRecord;
 
-import java.util.List;
-
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.mapper.ApiMapper;
@@ -13,14 +11,11 @@ import org.csi.yucca.adminapi.mapper.SmartobjectMapper;
 import org.csi.yucca.adminapi.mapper.StreamMapper;
 import org.csi.yucca.adminapi.model.Api;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
-import org.csi.yucca.adminapi.model.DettaglioStream;
-import org.csi.yucca.adminapi.model.InternalDettaglioStream;
-import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.service.ApiService;
-import org.csi.yucca.adminapi.util.DatasetSubtype;
 import org.csi.yucca.adminapi.util.ServiceResponse;
+import org.csi.yucca.adminapi.util.ServiceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -41,7 +36,7 @@ public class ApiServiceImpl implements ApiService {
 
 	@Autowired
 	private StreamMapper streamMapper;
- 
+
 	
 	/**
 	 * select stream
@@ -56,42 +51,11 @@ public class ApiServiceImpl implements ApiService {
 		
 		checkIfFoundRecord(api);
 		
-		if (api.getApisubtype().equals(org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA))
-		{
+		if (api.getApisubtype().equals(org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA)){
+			
 			DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasource(api.getIdDataSource(),api.getDatasourceversion());
 
-			checkIfFoundRecord(dettaglioDataset);
-
-			
-			if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
-					DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype()) ) {
-
-				DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-				if (dettaglioStream != null) {
-
-					DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-					
-					List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
-					
-					dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-				}				
-			}
-			
-			DettaglioDataset dettaglioBinary = null;
-			
-			if (dettaglioDataset.getIdDataSourceBinary()!=null)
-			{
-				dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
-						dettaglioDataset.getIdDataSourceBinary(), 	
-						dettaglioDataset.getDatasourceversionBinary());
-			}
-			
-			if (dettaglio == null) {
-				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
-			}
-			else{
-				dettaglio.setBinarydataset(dettaglioBinary);
-			}
+			dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);
 		}
 
 		return buildResponse(new BackofficeDettaglioApiResponse(api, dettaglio));
