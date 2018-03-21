@@ -82,6 +82,11 @@ public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse
 			this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
 	}
 
+	public void setBinarydataset(DettaglioDataset binaryDataset){
+		if (binaryDataset!=null)
+			this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
+	}
+	
 	public List<ComponentResponse> getComponents() {
 		return components;
 	}
