@@ -1,10 +1,12 @@
 package org.csi.yucca.adminapi.model;
 
+import org.apache.ibatis.annotations.Result;
+
 public class Api {
 
 	public static final String API_TYPE = "output"; 
 	public static final String ENTITY_NAMESPACE = "it.csi.smartdata.odata.";
-	
+
 	private Integer maxOdataResultperpage;
 	private Integer idapi;
 	private String apicode;

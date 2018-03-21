@@ -294,6 +294,9 @@ public class ApiDoc {
 	public static final String BO_LOAD_DATASETS_BY_ORGANIZATION_CODE = "LOAD DATASETS BY ORGANIZATION CODE";
 	public static final String BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES = "Load datasets by organization code with all details.";
 
+	public static final String BO_LOAD_INGESTION_CONFIGURATION = "DOWNLOAD INGESTION CONFIGURATION";
+	public static final String BO_LOAD_INGESTION_CONFIGURATION_NOTES = "Api that returns csv with information related to the datasets.";
+	
 	public static final String BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION = "LOAD ALLINEAMENTO BY ID ORGANIZATION";
 	public static final String BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION_NOTES = "Load allineamento by id organization.";
 

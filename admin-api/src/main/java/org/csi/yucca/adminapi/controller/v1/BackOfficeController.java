@@ -88,6 +88,28 @@ public class BackOfficeController extends YuccaController {
 	@Autowired
 	private ApiService apiService;
 	
+	@ApiOperation(value = BO_LOAD_INGESTION_CONFIGURATION, notes = BO_LOAD_INGESTION_CONFIGURATION_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
+	@GetMapping("/ingestion/config/datasets/{tenantCode}")
+	public ResponseEntity<Object> downloadIngestionConfigurationCSV(
+			@PathVariable final String tenantCode,
+			@RequestParam(required = false) final String dbname,
+			@RequestParam(required = false, defaultValue="dd/MM/yyyy") final String dateformat,
+			@RequestParam(required = false, defaultValue="\t") final String separator,
+			@RequestParam(required = false, defaultValue="true") final Boolean onlyImported,
+			@RequestParam(required = false) final Boolean help,
+			final HttpServletResponse httpServletResponse) {
+
+		logger.info("loadIngestionConfiguration");
+		
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+//				return datasetService.selectIngestionConfiguration(tenantCode, dbname, dateformat, separator, onlyImported, help, 
+//						httpServletResponse);
+				return null;
+			}
+		}, logger);
+	}
+	
 	@ApiOperation(value = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE, notes = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
 	@GetMapping("/datasets/organizationCode={organizationCode}")
 	public ResponseEntity<Object> loadDatasetsByOrganizationCode(@PathVariable final String organizationCode) {

@@ -9,26 +9,64 @@ import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 
+import com.google.common.cache.CacheLoader.InvalidCacheLoadException;
+
 public class BackofficeListaClient {
-	
-	public static List<TenantManagementResponse> getTenants(
-			String adminApiBaseUrl, String logger) throws AdminApiClientException {
-		return CacheUtil.getTenants(new KeyCache(adminApiBaseUrl, logger));
-	}
-	
-	public static List<BackofficeDettaglioStreamDatasetResponse> getListStreamDataset(
-			String adminApiBaseUrl, String organizationCode, String logger) throws AdminApiClientException {
-		return CacheUtil.getListStreamDataset(new KeyCache(adminApiBaseUrl, logger).code(organizationCode));
+
+	public static List<TenantManagementResponse> getTenants(String adminApiBaseUrl, String logger)
+			throws AdminApiClientException {
+		try {
+			return CacheUtil.getTenants(new KeyCache(adminApiBaseUrl, logger));	
+		} 
+		catch (InvalidCacheLoadException exception) {
+			return null;
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
+		
 	}
 
-	public static List<OrganizationResponse> getOrganizations(
-			String adminApiBaseUrl, String logger) throws AdminApiClientException {
-		return CacheUtil.getOrganizations(new KeyCache(adminApiBaseUrl, logger));
+	public static List<BackofficeDettaglioStreamDatasetResponse> getListStreamDataset(String adminApiBaseUrl,
+			String organizationCode, String logger) throws AdminApiClientException {
+		try {
+			return CacheUtil.getListStreamDataset(new KeyCache(adminApiBaseUrl, logger).code(organizationCode));	
+		} 
+		catch (InvalidCacheLoadException exception) {
+			return null;
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
+		
 	}
-	
-	public static List<AllineamentoScaricoDatasetResponse> getAllineamentoByIdOrganization(
-			String adminApiBaseUrl, Integer idOrganization, String logger) throws AdminApiClientException {
-		return CacheUtil.getAllineamento(new KeyCache(adminApiBaseUrl, logger).id(idOrganization));
+
+	public static List<OrganizationResponse> getOrganizations(String adminApiBaseUrl, String logger)
+			throws AdminApiClientException {
+		
+		try {
+			return CacheUtil.getOrganizations(new KeyCache(adminApiBaseUrl, logger));	
+		} 
+		catch (InvalidCacheLoadException exception) {
+			return null;
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}		
+		
+	}
+
+	public static List<AllineamentoScaricoDatasetResponse> getAllineamentoByIdOrganization(String adminApiBaseUrl,
+			Integer idOrganization, String logger) throws AdminApiClientException {
+		try {
+			return CacheUtil.getAllineamento(new KeyCache(adminApiBaseUrl, logger).id(idOrganization));
+		} 
+		catch (InvalidCacheLoadException exception) {
+			return null;
+		} 
+		catch (Exception e) {
+			throw new AdminApiClientException(e);
+		}
 	}
 
 }

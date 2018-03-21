@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
@@ -212,27 +213,30 @@ public class AdminApiClientDelegate {
 		CloseableHttpClient httpClient = Singleton.Client.get();
 		
 		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
+
+		int statusCode = 0;
 		
 		try {
-
+			
 			HttpGet httpGet = getHttpGet(url, params);
+			HttpResponse httpResponse = httpClient.execute(httpGet);
+			statusCode = httpResponse.getStatusLine().getStatusCode();
 			
 			ResponseHandler<List<T>> responseHandler = getListResponseHandler(cl);
-			
-			return httpClient.execute(httpGet, responseHandler);
+			List<T> responseBody = responseHandler.handleResponse(httpResponse);
 
+			return responseBody;
+			
 		} 
-		catch (URISyntaxException e) {
-			logger.error("Error during call:" +url, e);
-			throw new AdminApiClientException(e);
+		catch (Exception e) {
+			if (HttpStatus.SC_NOT_FOUND == statusCode) {
+				logger.error("NOT FOUND: " + url + " - Http Status Code: " + statusCode, e);
+				return null;
+			}
+			logger.error("Error during call: " + url + " - Http Status Code: " + statusCode, e);
+			throw new AdminApiClientException(e, statusCode);
 		}
-		catch (ClientProtocolException e) {
-			logger.error("Error during call:"+url, e);
-			throw new AdminApiClientException(e);
-		} catch (IOException e) {
-			logger.error("Error during call:"+url, e);
-			throw new AdminApiClientException(e);
-		}
+
 	}
 	
 	/**
@@ -251,26 +255,28 @@ public class AdminApiClientDelegate {
 		
 		Logger logger = Logger.getLogger(loggerName+".AdminApiClientDelegate");
 		
+		int statusCode = 0;
+		
 		try {
 
 			HttpGet httpGet = getHttpGet(url, params);
+			HttpResponse httpResponse = httpClient.execute(httpGet);
+			statusCode = httpResponse.getStatusLine().getStatusCode();
 			
 			ResponseHandler<T> responseHandler = getResponseHandler(cl);
-			
-			return httpClient.execute(httpGet, responseHandler);
+			T responseBody = responseHandler.handleResponse(httpResponse);
 
-		} 
-		catch (URISyntaxException e) {
-			logger.error("Error during call"+url, e);
-			throw new AdminApiClientException(e);
+			return responseBody;
 		}
-		catch (ClientProtocolException e) {
-			logger.error("Error during call"+url, e);
-			throw new AdminApiClientException(e);
-		} catch (IOException e) {
-			logger.error("Error during call"+url, e);
-			throw new AdminApiClientException(e);
+		catch (Exception e) {
+			if (HttpStatus.SC_NOT_FOUND == statusCode) {
+				logger.error("NOT FOUND: " + url + " - Http Status Code: " + statusCode, e);
+				return null;
+			}
+			logger.error("Error during call: " + url + " - Http Status Code: " + statusCode, e);
+			throw new AdminApiClientException(e, statusCode);
 		}
+		
 	}
 
 	/**

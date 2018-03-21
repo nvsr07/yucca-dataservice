@@ -1,5 +1,7 @@
 package org.csi.yucca.adminapi.service;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.jwt.JwtUser;
@@ -10,6 +12,9 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface DatasetService {
+	
+	ServiceResponse selectIngestionConfiguration(String tenantCode, String dbname, String dateformat, 
+			String separator, Boolean onlyImported, Boolean help, HttpServletResponse httpServletResponse) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse selectAllineamentoScaricoDataset(Integer idOrganization) throws BadRequestException, NotFoundException, Exception;
 	

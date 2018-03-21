@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.csi.yucca.adminapi.model.Dataset;
 import org.csi.yucca.adminapi.model.DettaglioDataset;
+import org.csi.yucca.adminapi.model.join.IngestionConfiguration;
 import org.csi.yucca.adminapi.util.Constants;
 
 /**
@@ -21,6 +22,76 @@ import org.csi.yucca.adminapi.util.Constants;
 public interface DatasetMapper {
 	
 	public static final String DATASET_TABLE = Constants.SCHEMA_DB + "yucca_dataset";
+	
+	// aggiunta la "distinct" per evitare duplicati sui componenti senza sourcecolumnname:
+	public static final String SELECT_INGESTION_CONFIGURATION = 
+			" SELECT distinct " +
+				" YUCCA_DOMAIN.domaincode, " +
+				" SUBDOMAIN.subdomaincode, " +
+
+				" COMPONENT.sourcecolumn, " +   
+				" COMPONENT.sourcecolumnname, " +   
+				" COMPONENT.alias, " +   
+
+				" DATASET.jdbcdbschema, " +   
+				" DATASET.jdbcdburl, " +   
+				" DATASET.jdbcdbname, " +   
+				" DATASET.jdbctablename, " +   
+				" DATASET.datasetcode, " +   
+
+				" DATA_SOURCE.visibility, " +   
+				" DATA_SOURCE.isopendata, " +   
+				" DATA_SOURCE.registrationdate " + 
+
+			" FROM " + TenantMapper.TENANT_TABLE                + " TENANT, " +  
+			           TenantMapper.R_TENANT_DATA_SOURCE_TABLE  + " TENANT_DATASOURCE, " +   
+			           DataSourceMapper.DATA_SOURCE_TABLE       + " DATA_SOURCE, " +   
+			           DatasetMapper.DATASET_TABLE              + " DATASET, " +   
+			           ComponentMapper.COMPONENT_TABLE          + " COMPONENT, " +
+			           DomainMapper.DOMAIN_TABLE                + " YUCCA_DOMAIN, " +
+			           SubdomainMapper.SUBDOMAIN_TABLE          + " SUBDOMAIN " +
+			         
+			" WHERE TENANT.tenantcode       = #{tenantCode} AND  " +
+				" TENANT.id_tenant              = TENANT_DATASOURCE.id_tenant AND  " +
+				" DATA_SOURCE.id_data_source    = TENANT_DATASOURCE.id_data_source AND  " +
+				" DATA_SOURCE.datasourceversion = TENANT_DATASOURCE.datasourceversion AND  " +
+				" DATASET.id_data_source        = DATA_SOURCE.id_data_source AND  " +
+				" DATASET.datasourceversion     = DATA_SOURCE.datasourceversion AND  " +
+				" COMPONENT.id_data_source      = TENANT_DATASOURCE.id_data_source AND  " +
+				" COMPONENT.datasourceversion   = TENANT_DATASOURCE.datasourceversion AND " +
+				         
+				" DATA_SOURCE.id_subdomain      = SUBDOMAIN.id_subdomain AND " +
+				" YUCCA_DOMAIN.id_domain        = SUBDOMAIN.id_domain  " +
+	
+				// se onlyImported è true -> jdbcdbtype non nullo
+				"<if test=\"onlyImported\">" +
+				" AND DATASET.jdbcdbtype IS NOT NULL " +
+				"</if>" +
+	
+				// se il parametro dbName è valorizzato filtrare anche sulla colonna jdbcdbname
+				"<if test=\"dbName != null\">" +
+				" AND DATASET.jdbcdbname = #{dbName} " +
+				"</if>"; 
+	  @Results({
+		@Result(property = "table", column = "jdbctablename"),
+		@Result(property = "column", column = "sourcecolumnname"),
+		@Result(property = "comments", column = "alias"),
+		@Result(property = "datasetCode", column = "datasetcode"),
+		@Result(property = "domain", column = "domaincode"),
+		@Result(property = "subdomain", column = "subdomaincode"),
+		@Result(property = "visibility", column = "visibility"),
+		@Result(property = "opendata", column = "isopendata"),
+		@Result(property = "registrationDate", column = "registrationdate"),
+		@Result(property = "dbName", column = "jdbcdbname"),
+		@Result(property = "dbSchema", column = "jdbcdbschema"),
+		@Result(property = "dbUrl", column = "jdbcdburl"),
+		@Result(property = "columnIndex", column = "sourcecolumn")
+	  })
+	  @Select({"<script>", SELECT_INGESTION_CONFIGURATION , "</script>"}) 
+	  List<IngestionConfiguration> selectIngestionConfiguration(
+			  @Param("dbName")  String dbName,
+			  @Param("tenantCode")  String tenantCode,
+			  @Param("onlyImported")  Boolean onlyImported );	
 	
 	public static final String SELECT_LISTA_DATASET_BY_ORGANIZATION = 
 		    " SELECT " + 

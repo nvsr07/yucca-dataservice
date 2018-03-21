@@ -32,6 +32,8 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
@@ -70,6 +72,7 @@ import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.builder.AllineamentoScaricoDatasetBuilder;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
+import org.csi.yucca.adminapi.model.join.IngestionConfiguration;
 import org.csi.yucca.adminapi.request.AllineamentoScaricoDatasetRequest;
 import org.csi.yucca.adminapi.request.ComponentInfoRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
@@ -101,6 +104,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -169,6 +174,49 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Value("${datainsert.delete.url}")
 	private String datainsertDeleteUrl;
+	
+	@Override
+	public ServiceResponse selectIngestionConfiguration(String tenantCode, String dbname, String dateformat,
+			String separator, Boolean onlyImported, Boolean help, HttpServletResponse httpServletResponse)
+			throws BadRequestException, NotFoundException, Exception {
+		
+		List<IngestionConfiguration> list =  datasetMapper.selectIngestionConfiguration(dbname, tenantCode, onlyImported);
+
+		downloadCsv(list, "ingestionConf.csv", separator.charAt(0), httpServletResponse, 
+				"table", "column", "comments", "datasetCode", "domain", "subdomain", "visibility",
+				"opendata", "registrationDate", "dbName", "dbSchema", "dbUrl", "columnIndex");
+		
+		return buildResponse("Downloaded CSV file with " + list.size() + "records.");
+	}
+	
+	/**
+	 * 
+	 * @param list
+	 * @param fileName
+	 * @param delimiterChar
+	 * @param httpServletResponse
+	 * @param header
+	 * @throws Exception
+	 */
+	private <T> void  downloadCsv(List<T> list, String fileName, int delimiterChar, HttpServletResponse httpServletResponse, String...header) throws Exception{
+		
+		httpServletResponse.setContentType("text/csv");
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        httpServletResponse.setHeader(headerKey, headerValue);
+        
+        CsvPreference csvPreference = new CsvPreference.Builder('"', delimiterChar, "\r\n").build();
+        
+        CsvBeanWriter csvWriter = new CsvBeanWriter(httpServletResponse.getWriter(), csvPreference);
+  
+        csvWriter.writeHeader(header);
+ 
+        for (T ingestionConfiguration : list) {
+        	csvWriter.write(ingestionConfiguration, header);
+		}
+ 
+        csvWriter.close();
+	}
 	
 	@Override
 	public ServiceResponse insertLastMongoObjectId(AllineamentoScaricoDatasetRequest request, Integer idOrganization)throws BadRequestException, NotFoundException, Exception {

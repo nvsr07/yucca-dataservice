@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.client.cache;
 
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -160,13 +161,8 @@ public class CacheUtil {
 				});
 	}
 	
-	public static List<AllineamentoScaricoDatasetResponse> getAllineamento(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return allineamentoResponseCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static List<AllineamentoScaricoDatasetResponse> getAllineamento(KeyCache keyCache) throws Exception {
+		return allineamentoResponseCache.get(keyCache);	
 	}
 	
 	static {
@@ -353,31 +349,16 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static MeasureUnitResponse getMeasureUnit(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return measureUnitCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static MeasureUnitResponse getMeasureUnit(KeyCache keyCache) throws Exception {
+		return measureUnitCache.get(keyCache);	
 	}
 	
-	public static List<TenantManagementResponse> getTenants(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return tenantListCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static List<TenantManagementResponse> getTenants(KeyCache keyCache) throws Exception {
+		return tenantListCache.get(keyCache);	
 	}
 	
-	public static List<OrganizationResponse> getOrganizations(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return organizationListCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static List<OrganizationResponse> getOrganizations(KeyCache keyCache) throws Exception {
+		return organizationListCache.get(keyCache);	
 	}
 
 	/**
@@ -385,14 +366,10 @@ public class CacheUtil {
 	 * @param key
 	 * @return
 	 * @throws AdminApiClientException
+	 * @throws ExecutionException 
 	 */
-	public static BackofficeDettaglioApiResponse getDettaglioApi(KeyCache key) throws AdminApiClientException {
-		try {
-			return dettaglioApiCache.get(key);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static BackofficeDettaglioApiResponse getDettaglioApi(KeyCache key) throws AdminApiClientException, ExecutionException {
+		return dettaglioApiCache.get(key);	
 	}
 	
 	/**
@@ -401,13 +378,8 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByDatasetCode(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return dettaglioStreamDatasetByDatasetCodeCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByDatasetCode(KeyCache keyCache) throws Exception {
+		return dettaglioStreamDatasetByDatasetCodeCache.get(keyCache);	
 	}
 
 	/**
@@ -416,13 +388,8 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByDatasetCodeDatasetVersion(StreamDatasetByDatasetCodeDatasetVersionKeyCache keyCache) throws AdminApiClientException {
-		try {
-			return dettaglioStreamDatasetByDatasetCodeDatasetVersionCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByDatasetCodeDatasetVersion(StreamDatasetByDatasetCodeDatasetVersionKeyCache keyCache) throws Exception {
+		return dettaglioStreamDatasetByDatasetCodeDatasetVersionCache.get(keyCache);	
 	}
 	
 	/**
@@ -431,13 +398,8 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByIdDatasetDatasetVersion(StreamDatasetByIdDatasetDatasetVersionKeyCache keyCache) throws AdminApiClientException {
-		try {
-			return dettaglioStreamDatasetByIdDatasetDatasetVersionCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByIdDatasetDatasetVersion(StreamDatasetByIdDatasetDatasetVersionKeyCache keyCache) throws Exception {
+		return dettaglioStreamDatasetByIdDatasetDatasetVersionCache.get(keyCache);	
 	}
 	
 	/**
@@ -446,13 +408,8 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByIdDataset(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return dettaglioStreamDatasetByIdDatasetCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetByIdDataset(KeyCache keyCache) throws Exception {
+		return dettaglioStreamDatasetByIdDatasetCache.get(keyCache);	
 	}
 	
 	/**
@@ -461,13 +418,8 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDataset(StreamDatasetBySoCodeStreamCodeKeyCache keyCache) throws AdminApiClientException {
-		try {
-			return dettaglioStreamDatasetBySoCodeStreamCodeCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDataset(StreamDatasetBySoCodeStreamCodeKeyCache keyCache) throws Exception {
+		return dettaglioStreamDatasetBySoCodeStreamCodeCache.get(keyCache);	
 	}
 
 	/**
@@ -476,13 +428,8 @@ public class CacheUtil {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static List<BackofficeDettaglioStreamDatasetResponse> getListStreamDataset(KeyCache keyCache) throws AdminApiClientException {
-		try {
-			return listaStreamDatasetByOrganizationCodeCache.get(keyCache);	
-		} 
-		catch (Exception e) {
-			throw new AdminApiClientException(e);
-		}
+	public static List<BackofficeDettaglioStreamDatasetResponse> getListStreamDataset(KeyCache keyCache) throws Exception {
+		return listaStreamDatasetByOrganizationCodeCache.get(keyCache);	
 	}
 	
 	/**
@@ -496,10 +443,10 @@ public class CacheUtil {
 	@SuppressWarnings("unchecked")
 	private static Object get(String url, KeyCache keyCache, @SuppressWarnings("rawtypes") Class clazz )throws Exception{
 		return AdminApiClientDelegate.getFromAdminApi(
-				keyCache.getAdminBaseUrl() + url + keyCache.getKeyUrl(),
-				clazz,
-				keyCache.getLogger(), 
-				keyCache.getParams());
+				   keyCache.getAdminBaseUrl() + url + keyCache.getKeyUrl(),
+				   clazz,
+				   keyCache.getLogger(), 
+				   keyCache.getParams());			
 	}
 	
 	@SuppressWarnings("unchecked")
