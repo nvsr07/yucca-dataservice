@@ -317,7 +317,8 @@ public class DatasetServiceImpl implements DatasetService {
 		checkList(listDettaglioDataset);
 		
 		for (DettaglioDataset dettaglioDataset : listDettaglioDataset) {
-			response.add(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));
+//			response.add(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));
+			response.add(ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper));
 		}
 		return buildResponse(response);
 	}
@@ -721,32 +722,9 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public ServiceResponse selectDatasetByIdDataset(Integer idDataset, boolean onlyInstalled) throws BadRequestException, NotFoundException, Exception {
 
-		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
-
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(idDataset, onlyInstalled);
-
-		checkIfFoundRecord(dettaglioDataset);
-
-		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype())) {
-
-			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-			if (dettaglioStream != null) {
-
-				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-
-				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-			}
-		}
-
-		DettaglioDataset dettaglioBinary = null;
-
-		if (dettaglioDataset.getIdDataSourceBinary() != null) {
-			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioDataset.getIdDataSourceBinary(), dettaglioDataset.getDatasourceversionBinary());
-		}
-
-		dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+		
+		BackofficeDettaglioStreamDatasetResponse dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);		
 
 		return buildResponse(dettaglio);
 	}
@@ -758,38 +736,17 @@ public class DatasetServiceImpl implements DatasetService {
 
 		checkIfFoundRecord(dettaglioDataset);
 		
-		return buildResponse(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));	
+//		return buildResponse(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));	
+		return buildResponse(ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper));	
 	
 	}
 
 	@Override
 	public ServiceResponse selectDatasetByDatasetCode(String datasetCode, boolean onlyInstalled) throws BadRequestException, NotFoundException, Exception {
-		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
 
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetCode, onlyInstalled);
 
-		checkIfFoundRecord(dettaglioDataset);
-
-		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype())) {
-
-			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-			if (dettaglioStream != null) {
-
-				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-
-				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-			}
-		}
-
-		DettaglioDataset dettaglioBinary = null;
-
-		if (dettaglioDataset.getIdDataSourceBinary() != null) {
-			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioDataset.getIdDataSourceBinary(), dettaglioDataset.getDatasourceversionBinary());
-		}
-
-		dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
+		BackofficeDettaglioStreamDatasetResponse dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);
 
 		return buildResponse(dettaglio);
 	}
@@ -797,33 +754,14 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public ServiceResponse selectDatasetByIdDatasetDatasetVersion(Integer idDataset, Integer datasetVersion) throws BadRequestException, NotFoundException, Exception {
 
-		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
+
 
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDatasetDatasourceVersion(idDataset, datasetVersion);
 
-		checkIfFoundRecord(dettaglioDataset);
-
-		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype())) {
-
-			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-			if (dettaglioStream != null) {
-
-				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-
-				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-			}
-		}
-
-		DettaglioDataset dettaglioBinary = null;
-
-		if (dettaglioDataset.getIdDataSourceBinary() != null) {
-			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioDataset.getIdDataSourceBinary(), dettaglioDataset.getDatasourceversionBinary());
-		}
-
-		dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
-
+		
+		BackofficeDettaglioStreamDatasetResponse dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);
+		
+		
 		return buildResponse(dettaglio);
 	}
 

@@ -101,8 +101,6 @@ public class ServiceUtil {
 	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDataset(DettaglioDataset dettaglioDataset, 
 			StreamMapper streamMapper, SmartobjectMapper smartobjectMapper, DatasetMapper datasetMapper)throws Exception{
 		
-		BackofficeDettaglioStreamDatasetResponse dettaglio = null;
-		
 		checkIfFoundRecord(dettaglioDataset);
 		
 		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || 
@@ -115,28 +113,20 @@ public class ServiceUtil {
 				
 				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream( dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion() );
 				
-				dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-			}				
+				return new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
+			}
+			
 		}
 		
 		DettaglioDataset dettaglioBinary = null;
 		
-		if (dettaglioDataset.getIdDataSourceBinary()!=null)
-		{
+		if (dettaglioDataset.getIdDataSourceBinary()!=null){
 			dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(
 					dettaglioDataset.getIdDataSourceBinary(), 	
 					dettaglioDataset.getDatasourceversionBinary());
 		}
-		
-		if (dettaglio == null) {
-			dettaglio = new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
-		}
-		else{
-			dettaglio.setBinarydataset(dettaglioBinary);
-		}
-		
-		return dettaglio;
-		
+
+		return new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
 	}
 
 	
