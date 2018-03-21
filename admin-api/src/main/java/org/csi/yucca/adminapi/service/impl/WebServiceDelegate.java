@@ -82,11 +82,7 @@ public class WebServiceDelegate {
 		xmlInput += "      <ser:validateSiddhiQueries>";
 		for (String element:inputStreamDefiniitons)
 		{
-			sb.append (element);
-			inputStreamDefiniitonsString= sb.toString ();
-			xmlInput += "		<ser:inputStreamDefiniitons>" + inputStreamDefiniitonsString + "</ser:inputStreamDefiniitons>";
-			inputStreamDefiniitonsString="";
-			sb.setLength(0);
+			xmlInput += "		<ser:inputStreamDefiniitons>" + element + "</ser:inputStreamDefiniitons>";
 		}
 	    xmlInput += "         <ser:queryExpressions>" + queryExpressions + "</ser:queryExpressions>";	    
 		xmlInput += "      </ser:validateSiddhiQueries>";
