@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -53,6 +54,8 @@ import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.StringUtils;
+import org.supercsv.io.CsvBeanWriter;
+import org.supercsv.prefs.CsvPreference;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -88,6 +91,34 @@ public class ServiceUtil {
 	public static final String FAULT_STRING_CHILD_NODE_NAME = "faultstring";
 	public static final String FAULT_STRING_NODE_NAME = "soapenv:Fault";
 
+	/**
+	 * 
+	 * @param list
+	 * @param fileName
+	 * @param delimiterChar
+	 * @param httpServletResponse
+	 * @param header
+	 * @throws Exception
+	 */
+	public static <T> void  downloadCsv(List<T> list, String fileName, int delimiterChar, HttpServletResponse httpServletResponse, String...header) throws Exception{
+		
+		httpServletResponse.setContentType("text/csv");
+        String headerKey = "Content-Disposition";
+        String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+        httpServletResponse.setHeader(headerKey, headerValue);
+        
+        CsvPreference csvPreference = new CsvPreference.Builder('"', delimiterChar, "\r\n").build();
+        
+        CsvBeanWriter csvWriter = new CsvBeanWriter(httpServletResponse.getWriter(), csvPreference);
+  
+        csvWriter.writeHeader(header);
+ 
+        for (T ingestionConfiguration : list) {
+        	csvWriter.write(ingestionConfiguration, header);
+		}
+ 
+        csvWriter.close();
+	}
 	
 	/**
 	 * 
