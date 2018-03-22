@@ -82,10 +82,10 @@ public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse
 			this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
 	}
 
-	public void setBinarydataset(DettaglioDataset binaryDataset){
-		if (binaryDataset!=null)
-			this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
-	}
+//	public void setBinarydataset(DettaglioDataset binaryDataset){
+//		if (binaryDataset!=null)
+//			this.binarydataset = new BackofficeDatasetDettaglioResponse(binaryDataset);
+//	}
 	
 	public List<ComponentResponse> getComponents() {
 		return components;
@@ -144,13 +144,13 @@ public class BackofficeDettaglioStreamDatasetResponse extends DataSourceResponse
 	}
 
 
-	public BackofficeDatasetDettaglioResponse getBinarydataset() {
-		return binarydataset;
+	public void setBinarydataset(BackofficeDatasetDettaglioResponse binarydataset) {
+		this.binarydataset = binarydataset;
 	}
 
 
-	public void setBinarydataset(BackofficeDatasetDettaglioResponse binarydataset) {
-		this.binarydataset = binarydataset;
+	public BackofficeDatasetDettaglioResponse getBinarydataset() {
+		return binarydataset;
 	}
 
 }

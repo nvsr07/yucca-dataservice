@@ -96,16 +96,15 @@ public class BackOfficeController extends YuccaController {
 			@RequestParam(required = false, defaultValue="dd/MM/yyyy") final String dateformat,
 			@RequestParam(required = false, defaultValue="\t") final String separator,
 			@RequestParam(required = false, defaultValue="true") final Boolean onlyImported,
-			@RequestParam(required = false) final Boolean help,
+			@RequestParam(required = false, defaultValue="false") final Boolean help,
 			final HttpServletResponse httpServletResponse) {
 
 		logger.info("loadIngestionConfiguration");
 		
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-//				return datasetService.selectIngestionConfiguration(tenantCode, dbname, dateformat, separator, onlyImported, help, 
-//						httpServletResponse);
-				return null;
+				return datasetService.selectIngestionConfiguration(tenantCode, dbname, dateformat, separator, onlyImported, help, 
+						httpServletResponse);
 			}
 		}, logger);
 	}

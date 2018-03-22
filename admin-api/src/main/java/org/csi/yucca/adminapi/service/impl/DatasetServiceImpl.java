@@ -4,8 +4,6 @@ import static org.csi.yucca.adminapi.util.Constants.MAX_ODATA_RESULT_PER_PAGE;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
 import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
 import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
-import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_LANG_EN;
-import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_LANG_IT;
 import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_PATTERN;
 import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkAuthTenant;
@@ -83,8 +81,10 @@ import org.csi.yucca.adminapi.response.AllineamentoScaricoDatasetResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.DatasetResponse;
 import org.csi.yucca.adminapi.response.DettaglioStreamDatasetResponse;
+import org.csi.yucca.adminapi.response.IngestionConfigurationResponse;
 import org.csi.yucca.adminapi.response.PostDatasetResponse;
 import org.csi.yucca.adminapi.response.builder.AllineamentoScaricoDatasetResponseBuilder;
+import org.csi.yucca.adminapi.response.builder.IngestionConfigurationResponseBuilder;
 import org.csi.yucca.adminapi.service.DatasetService;
 import org.csi.yucca.adminapi.util.DataOption;
 import org.csi.yucca.adminapi.util.DataType;
@@ -179,15 +179,29 @@ public class DatasetServiceImpl implements DatasetService {
 	public ServiceResponse selectIngestionConfiguration(String tenantCode, String dbname, String dateformat,
 			String separator, Boolean onlyImported, Boolean help, HttpServletResponse httpServletResponse)
 			throws BadRequestException, NotFoundException, Exception {
+
+		if (help) {
+			return buildResponse("CSV da usare per caricare un csv contentente la configuarazione da usare per l'ingestion\n\n" + "PARAMETRI\n"
+					+ " - dbName: nome database da includere, se omesso vengono presi tutti\n" 
+					+ " - sep: separatore di colonna, se omesso viene usata la tabulazione\n"
+					+ " - onlyImported: flag indicante se includere solo i dataset importati da db: default true\n"
+					+ " - dateformat: formato data, se omesso viene usato dd/MM/yyyy\n");
+		}
 		
 		List<IngestionConfiguration> list =  datasetMapper.selectIngestionConfiguration(dbname, tenantCode, onlyImported);
-
-		downloadCsv(list, "ingestionConf.csv", separator.charAt(0), httpServletResponse, 
+		checkList(list);
+		
+		List<IngestionConfigurationResponse> listCsvRow = new ArrayList<>();
+		for (IngestionConfiguration model : list) {
+			listCsvRow.add(new IngestionConfigurationResponseBuilder(model).build(dateformat));
+		}
+		
+		downloadCsv(listCsvRow, "ingestionConf.csv", separator.charAt(0), httpServletResponse, 
 				"table", "column", "comments", "datasetCode", "domain", "subdomain", "visibility",
 				"opendata", "registrationDate", "dbName", "dbSchema", "dbUrl", "columnIndex");
 		
 		return buildResponse("Downloaded CSV file with " + list.size() + "records.");
-	}
+	}	
 	
 	/**
 	 * 
@@ -1061,29 +1075,6 @@ public class DatasetServiceImpl implements DatasetService {
 		return buildResponse(schema);
 	}
 
-	private BackofficeDettaglioStreamDatasetResponse getBackofficeDettaglioStreamDatasetResponse(DettaglioDataset dettaglioDataset) throws Exception{
-
-		if (dettaglioDataset.getIdDataSourceBinary() != null) {
-			DettaglioDataset dettaglioBinary = datasetMapper.selectDettaglioDatasetByDatasource(dettaglioDataset.getIdDataSourceBinary(), dettaglioDataset.getDatasourceversionBinary());
-			return new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, dettaglioBinary);
-		}
-		
-		if (DatasetSubtype.STREAM.id().equals(dettaglioDataset.getIdDatasetSubtype()) || DatasetSubtype.SOCIAL.id().equals(dettaglioDataset.getIdDatasetSubtype())) {
-
-			DettaglioStream dettaglioStream = streamMapper.selectStreamByDatasource(dettaglioDataset.getIdDataSource(), dettaglioDataset.getDatasourceversion());
-			if (dettaglioStream != null) {
-
-				DettaglioSmartobject dettaglioSmartobject = smartobjectMapper.selectSmartobjectById(dettaglioStream.getIdSmartObject());
-
-				List<InternalDettaglioStream> listInternalStream = streamMapper.selectInternalStream(dettaglioStream.getIdDataSource(), dettaglioStream.getDatasourceversion());
-
-				return new BackofficeDettaglioStreamDatasetResponse(dettaglioStream, dettaglioDataset, dettaglioSmartobject, listInternalStream);
-			}
-		}
-		
-		return new BackofficeDettaglioStreamDatasetResponse(dettaglioDataset, null);
-	}
-
 	private void removeOdataApiAndSolrDocument(String datasetCode) throws Exception{
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		removeOdataApiAndSolrDocument(httpclient, datasetCode);
@@ -1101,7 +1092,5 @@ public class DatasetServiceImpl implements DatasetService {
 
 		SolrDelegate.build().removeDocument(datasetCode);
 	}
-
-
 	
 }
