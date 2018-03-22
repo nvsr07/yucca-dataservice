@@ -888,7 +888,7 @@ public class DatasetServiceImpl implements DatasetService {
 			return postDatasetRequest.getIdSubdomain();
 		}
 
-		Subdomain subdomain = new Subdomain().idDomain(MULTI_SUBDOMAIN_ID_DOMAIN).langEn(MULTI_SUBDOMAIN_LANG_EN).langIt(MULTI_SUBDOMAIN_LANG_IT)
+		Subdomain subdomain = new Subdomain().idDomain(MULTI_SUBDOMAIN_ID_DOMAIN).langEn(postDatasetRequest.getMultiSubdomain()).langIt(postDatasetRequest.getMultiSubdomain())
 				.subdomaincode(postDatasetRequest.getMultiSubdomain());
 
 		subdomainMapper.insertSubdomain(subdomain);
