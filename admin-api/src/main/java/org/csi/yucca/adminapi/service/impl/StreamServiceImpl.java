@@ -619,43 +619,23 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	public ServiceResponse createStreamDataset(PostStreamRequest request, String organizationCode, String soCode,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 
+		logger.info("BEGIN [StreamServiceImpl::createStreamDataset]");
+		
 		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
 		checkIfFoundRecord(organization);
 
 		Smartobject smartobject = smartobjectMapper.selectSmartobjectBySocodeAndOrgcode(soCode, organizationCode);
-		checkIfFoundRecord(smartobject,
-				"smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
+		checkIfFoundRecord(smartobject, "smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
 
 		validation(request, organizationCode, smartobject, authorizedUser);
-
+		logger.debug("VALIDATION OK...");
+		
 		Stream stream = insertStreamTransaction(request, organization, smartobject);
-
+		
+		logger.info("END [StreamServiceImpl::createStreamDataset]: created stream [ " + stream.getIdstream() + " ]");
 		return ServiceResponse.build().object(PostStreamResponse.build(stream.getIdstream())
 				.streamcode(stream.getStreamcode()).streamname(stream.getStreamname()));
 	}
-
-	/**
-	 * 
-	 * @param idDataSource
-	 * @param version
-	 * @return
-	 */
-	// private List<Component>
-	// getAlreadyPresentComponentsPreviousVersion(Integer idDataSource, Integer
-	// version){
-	//
-	// if(idDataSource == null || version == null){
-	// return null;
-	// }
-	//
-	// if(version > 1){
-	// return
-	// componentMapper.selectComponentByDataSourceAndVersion(idDataSource,
-	// (version-1) );
-	// }
-	//
-	// return null;
-	// }
 
 	/**
 	 * 

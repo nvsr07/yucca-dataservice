@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -67,6 +68,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class SmartObjectServiceImpl implements SmartObjectService {
 
+	private static final Logger logger = Logger.getLogger(SmartObjectServiceImpl.class);
+	
 	@Autowired
 	private ExposureTypeMapper exposureTypeMapper;
 
@@ -168,8 +171,11 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	/**
 	 * 
 	 */
+	@Override
 	public ServiceResponse updateSmartobject(SmartobjectRequest smartobjectRequest, String organizationCode, String soCode) throws BadRequestException, NotFoundException, Exception {
 
+		logger.info("BEGIN [SmartObjectServiceImpl::updateSmartobject]");
+		
 		ServiceUtil.checkMandatoryParameter(smartobjectRequest, "smartobjectRequest");
 		ServiceUtil.checkMandatoryParameter(smartobjectRequest.getName(), "name");
 		ServiceUtil.checkMandatoryParameter(organizationCode, "organizationCode");
@@ -199,6 +205,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		
 		Smartobject smartobjectResponse = smartobjectMapper.selectSmartobject(soCode);
 		
+		logger.info("END [SmartObjectServiceImpl::updateSmartobject]");
 		return ServiceResponse.build().object(new SmartobjectResponse(smartobjectResponse, smartobjectRequest.getPosition()));
 	}
 
@@ -270,6 +277,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		
 	}
 	
+	@Override
 	public Smartobject insertSmartObject(SmartobjectRequest smartobjectRequest, Organization organization)throws BadRequestException{
 
 		Timestamp now = Util.getNow();
@@ -294,10 +302,14 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 	public ServiceResponse insertSmartobject(SmartobjectRequest smartobjectRequest, String organizationCode)
 			throws BadRequestException, NotFoundException, Exception {
 		
+		logger.info("BEGIN >>> insertSmartobject");
+		
 		// recupera l'organizatione con il code passato:
 		Organization organization = getOrganization(organizationCode);
 
 		validation(smartobjectRequest, organization.getIdOrganization());
+		
+		logger.info("VALIDATION OK ...");
 		
 		//		inserimento so		
 		Smartobject smartobject = insertSmartObject(smartobjectRequest, organization);		
@@ -308,6 +320,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 			insertSoPosition(soPositionRequest, smartobject.getIdSmartObject());
 		}
 		
+		logger.info("END >>> insertSmartobject");
 		return ServiceResponse.build().object(new SmartobjectResponse(smartobject, smartobjectRequest.getPosition()));
 	}
 	

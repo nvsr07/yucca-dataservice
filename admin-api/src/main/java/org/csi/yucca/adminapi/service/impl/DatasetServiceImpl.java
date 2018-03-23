@@ -538,6 +538,8 @@ public class DatasetServiceImpl implements DatasetService {
 	 */
 	private void updateDatasetTransaction(DatasetRequest datasetRequest, String tenantCodeManager) throws Exception {
 
+		logger.info("BEGIN [DatasetServiceImpl::updateDatasetTransaction]");
+		
 		// dcat
 		Integer idDcat = insertDcat(datasetRequest.getDcat(), dcatMapper);
 
@@ -568,6 +570,8 @@ public class DatasetServiceImpl implements DatasetService {
 		// TODO vanno clonate le api?
 		try {
 			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+			logger.debug("Build publisher delegate...");
+			
 			if (!datasetRequest.getUnpublished()) {
 
 				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode(), false);
@@ -583,8 +587,13 @@ public class DatasetServiceImpl implements DatasetService {
 						.maxOdataResultperpage(bundles != null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE));
 
 				// publisher
+				logger.debug("publisher delegate add api...");
 				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
+
+				logger.debug("publisher delegate publish api...");
 				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+				
+				logger.debug("solr delegate add document...");
 				SolrDelegate.build().addDocument(dettaglioDataset);
 
 			} else {
@@ -597,6 +606,8 @@ public class DatasetServiceImpl implements DatasetService {
 
 		}
 
+		logger.info("END [DatasetServiceImpl::updateDatasetTransaction]");
+		
 	}
 	
 	
