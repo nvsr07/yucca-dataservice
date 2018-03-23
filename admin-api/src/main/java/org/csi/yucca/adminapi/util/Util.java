@@ -46,10 +46,14 @@ public class Util {
 		return rows;
 	}
 
-	public static boolean isThisDateValid(String dateToValidate, String dateFromat) {
+	
+	public static SimpleDateFormat insertDataDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"); //2014-05-13T17:08:58+0200
 
+	public static String isThisDateValid(String dateToValidate, String dateFromat) {
+
+		String formattedDate = null;
 		if (dateToValidate == null) {
-			return false;
+			return formattedDate;
 		}
 
 		SimpleDateFormat sdf = new SimpleDateFormat(dateFromat);
@@ -60,14 +64,15 @@ public class Util {
 			// if not valid, it will throw ParseException
 			Date date = sdf.parse(dateToValidate);
 			System.out.println(date);
+			formattedDate = insertDataDateFormat.format(date);
 
 		} catch (ParseException e) {
 
 			e.printStackTrace();
-			return false;
+			return formattedDate;
 		}
 
-		return true;
+		return formattedDate;
 	}
 
 	public static <E> boolean notEqual(E value1, E value2) {

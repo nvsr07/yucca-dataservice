@@ -372,6 +372,8 @@ public class DatasetServiceImpl implements DatasetService {
 			if (DataType.STRING.id().equals(component.getIdDataType()) || DataType.DATE_TIME.id().equals(component.getIdDataType())) {
 				doubleQuote = "\"";
 			}
+			if(DataType.DATE_TIME.id().equals(component.getIdDataType()))
+				columns[c]  = Util.isThisDateValid(columns[c], info.getDateFormat());
 
 			resultRow.append("\"").append(component.getName()).append("\"").append(":").append(doubleQuote).append(columns[c]).append(doubleQuote).append(",");
 		}
@@ -423,15 +425,21 @@ public class DatasetServiceImpl implements DatasetService {
 		// byte[] bytes = file.getBytes();
 		// String completeData = new String(bytes);
 
+		
 		String[] rows = Util.getCsvRows(file, skipFirstRow);
-
 		List<String> errors = new ArrayList<String>();
 
 		for (int r = 0; r < rows.length; r++) {
 
 			String[] columns = rows[r].split(csvSeparator);
+			
+			int totalColumnSkipped = 0;
+			for (ComponentInfoRequest cir : componentInfoRequests) {
+				if(cir.isSkipColumn())
+					totalColumnSkipped++;
+			}
 
-			if (columns.length != components.length) {
+			if (columns.length - totalColumnSkipped  != components.length) {
 				errors.add("Errore alla riga " + r + ", il numero di colonne deve essere: " + components.length);
 				continue;
 			}
@@ -455,14 +463,15 @@ public class DatasetServiceImpl implements DatasetService {
 						try {
 
 							if (DataType.DATE_TIME == dateType) {
-								if (!Util.isThisDateValid(column, info.getDateFormat())) {
+								String formattedDate = Util.isThisDateValid(column, info.getDateFormat());
+								if (formattedDate==null) {
 									throw new Exception();
 								}
 								continue;
 							}
 							dateType.checkValue(column);
 						} catch (Exception e) {
-							errors.add("Errore alla riga " + r + ", il dato della colonna " + component.getName() + " non è di tipo " + dateType.description());
+							errors.add("Errore alla riga " + r + ", il dato della colonna " + component.getName() + " non e' di tipo " + dateType.description());
 						}
 						break;
 					}
