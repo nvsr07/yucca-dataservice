@@ -242,6 +242,8 @@ public class SolrDelegate {
 			jsonSo += "}]}";
 			doc.addField("jsonSo", jsonSo);
 			
+		}
+			
 			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] stream - components: " + stream.getComponents());
 			logger.info("[SolrDelegate::createSolrDocumentFromDettaglio] stream - componentsString: " + stream.getComponentsString());
 			
@@ -278,7 +280,7 @@ public class SolrDelegate {
 				doc.addField("jsonFields", componentJsonElement);
 			}
 
-		}
+		
 
 		return doc;
 	}
