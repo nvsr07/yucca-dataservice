@@ -598,12 +598,12 @@ public interface StreamMapper {
 	// stream icon for metadataapi
 	public static final String SELECT_STREAM_ICON_BY_STREAMCODE_AND_CODE_SO = 
 			"SELECT icon " + 
-			" FROM " + DataSourceMapper.DATA_SOURCE_TABLE + " ds, " + STREAM_TABLE + " st, " +  SmartobjectMapper.SMARTOBJECT_TABLE  + " so" + 
-			"  where st.streamcode = #{streamcode} and so.socode = #{soCode} and " + 
-			"  ds.id_data_source = st.id_data_source" + 
-			"  and st.id_smart_object = so.id_smart_object";
+			" FROM " + DataSourceMapper.DATA_SOURCE_TABLE + ", " + STREAM_TABLE + " , " +  SmartobjectMapper.SMARTOBJECT_TABLE  + 
+			"  where " + STREAM_TABLE + ".streamcode = #{streamcode} and " +  SmartobjectMapper.SMARTOBJECT_TABLE  +".socode = #{soCode} and " + 
+			"  "+DataSourceMapper.DATA_SOURCE_TABLE+".id_data_source = " + STREAM_TABLE + ".id_data_source" + 
+			"  and " + STREAM_TABLE + ".id_smart_object = "+SmartobjectMapper.SMARTOBJECT_TABLE+".id_smart_object " + WHERE_STREAM_MAX_VERSION_OPT_ONLY_INSTALLED ;
 		
-	@Select(SELECT_STREAM_ICON_BY_STREAMCODE_AND_CODE_SO)
+	@Select({"<script>",SELECT_STREAM_ICON_BY_STREAMCODE_AND_CODE_SO, "</script>"})
 	String  selectStreamIconByStreamcodeAndSoCode( @Param("streamcode") String streamcode, @Param("soCode") String soCode);	
 
 	

@@ -784,7 +784,7 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public byte[] selectDatasetIcon(String datasetCode) throws BadRequestException, NotFoundException, Exception {
 
-		String  icon = datasetMapper.selectStreamIconByStreamcodeAndSoCode(datasetCode, true);
+		String  icon = datasetMapper.selectDatasetIconByStreamcodeAndSoCode(datasetCode, true);
 
 		//checkIfFoundRecord(icon);
 

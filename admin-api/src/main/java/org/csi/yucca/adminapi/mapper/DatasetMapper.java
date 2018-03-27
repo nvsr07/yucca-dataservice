@@ -865,7 +865,7 @@ public interface DatasetMapper {
 	  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED+
 	  			" AND yucca_data_source.id_data_source = yucca_dataset.id_data_source AND  yucca_data_source.datasourceversion = yucca_dataset.datasourceversion" +
 				"</script>"}) 
-		String  selectStreamIconByStreamcodeAndSoCode( @Param("datasetCode") String datasetCode, @Param("onlyInstalled") boolean onlyInstalled);	
+		String  selectDatasetIconByStreamcodeAndSoCode( @Param("datasetCode") String datasetCode, @Param("onlyInstalled") boolean onlyInstalled);	
 
 	
 	
