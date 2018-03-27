@@ -553,7 +553,9 @@ public class ServiceUtil {
 					if (isStream) {
 						ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
 						ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
-						ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
+						//Se il dataType è lat, lon o dateTime idMeasureUnit non è valorizzato
+						if(component.getIdDataType()!= 7 && component.getIdDataType()!= 8 && component.getIdDataType()!= 9  )
+							ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
 						ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
 					}
 
