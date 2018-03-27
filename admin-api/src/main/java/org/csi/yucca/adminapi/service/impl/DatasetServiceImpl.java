@@ -786,7 +786,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 		String  icon = datasetMapper.selectStreamIconByStreamcodeAndSoCode(datasetCode, true);
 
-		checkIfFoundRecord(icon);
+		//checkIfFoundRecord(icon);
 
 		return Util.convertIconFromDBToByte(icon);
 	}

@@ -462,6 +462,10 @@
 						<directory>conf</directory>
 						<targetPath>.</targetPath>
 					</resource>
+					<resource>
+						<directory>src/main/webapp/img</directory>
+						<targetPath>.</targetPath>
+					</resource>
 				</resources>
 				<testResources>
 					<testResource>
@@ -503,6 +507,10 @@
 						<directory>conf</directory>
 						<targetPath>.</targetPath>
 					</resource>
+					<resource>
+						<directory>src/main/webapp/img</directory>
+						<targetPath>.</targetPath>
+					</resource>
 				</resources>
 				<testResources>
 					<testResource>
@@ -523,6 +531,10 @@
 					</resource>
 					<resource>
 						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+					<resource>
+						<directory>src/main/webapp/img</directory>
 						<targetPath>.</targetPath>
 					</resource>
 				</resources>

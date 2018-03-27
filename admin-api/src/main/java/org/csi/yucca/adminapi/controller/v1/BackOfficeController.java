@@ -2,6 +2,10 @@ package org.csi.yucca.adminapi.controller.v1;
 
 import static org.csi.yucca.adminapi.util.ApiDoc.*;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,28 +91,23 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private ApiService apiService;
-	
+
 	@ApiOperation(value = BO_LOAD_INGESTION_CONFIGURATION, notes = BO_LOAD_INGESTION_CONFIGURATION_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
 	@GetMapping("/ingestion/config/datasets/{tenantCode}")
-	public ResponseEntity<Object> downloadIngestionConfigurationCSV(
-			@PathVariable final String tenantCode,
-			@RequestParam(required = false) final String dbname,
-			@RequestParam(required = false, defaultValue="dd/MM/yyyy") final String dateformat,
-			@RequestParam(required = false, defaultValue="\t") final String separator,
-			@RequestParam(required = false, defaultValue="true") final Boolean onlyImported,
-			@RequestParam(required = false, defaultValue="false") final Boolean help,
+	public ResponseEntity<Object> downloadIngestionConfigurationCSV(@PathVariable final String tenantCode, @RequestParam(required = false) final String dbname,
+			@RequestParam(required = false, defaultValue = "dd/MM/yyyy") final String dateformat, @RequestParam(required = false, defaultValue = "\t") final String separator,
+			@RequestParam(required = false, defaultValue = "true") final Boolean onlyImported, @RequestParam(required = false, defaultValue = "false") final Boolean help,
 			final HttpServletResponse httpServletResponse) {
 
 		logger.info("loadIngestionConfiguration");
-		
+
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.selectIngestionConfiguration(tenantCode, dbname, dateformat, separator, onlyImported, help, 
-						httpServletResponse);
+				return datasetService.selectIngestionConfiguration(tenantCode, dbname, dateformat, separator, onlyImported, help, httpServletResponse);
 			}
 		}, logger);
 	}
-	
+
 	@ApiOperation(value = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE, notes = BO_LOAD_DATASETS_BY_ORGANIZATION_CODE_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
 	@GetMapping("/datasets/organizationCode={organizationCode}")
 	public ResponseEntity<Object> loadDatasetsByOrganizationCode(@PathVariable final String organizationCode) {
@@ -121,8 +120,7 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
-	
+
 	@ApiOperation(value = BO_LOAD_ALL_ORGANIZATION, notes = BO_LOAD_ALL_ORGANIZATION_NOTES, response = OrganizationResponse.class, responseContainer = "List")
 	@GetMapping("/organizations")
 	public ResponseEntity<Object> loadOrganization() {
@@ -133,11 +131,10 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	@ApiOperation(value = BO_UPDATE_ALLINEAMENTO, notes = BO_UPDATE_ALLINEAMENTO_NOTES, response = ServiceResponse.class)
 	@PostMapping("/allineamento/idOrganization={idOrganization}")
-	public ResponseEntity<Object> insertLastMongoObjectId(@RequestBody final AllineamentoScaricoDatasetRequest request,
-			@PathVariable final Integer idOrganization) {
+	public ResponseEntity<Object> insertLastMongoObjectId(@RequestBody final AllineamentoScaricoDatasetRequest request, @PathVariable final Integer idOrganization) {
 		logger.info("updateLastMongoObjectId");
 
 		return run(new ApiCallable() {
@@ -146,7 +143,7 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	}
-	
+
 	@ApiOperation(value = BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION, notes = BO_LOAD_ALLINEAMENTO_BY_ID_ORGANIZATION_NOTES, response = AllineamentoScaricoDatasetResponse.class)
 	@GetMapping("/allineamento/idOrganization={idOrganization}")
 	public ResponseEntity<Object> loadAllineamentoByIdOrganization(@PathVariable final Integer idOrganization) {
@@ -185,8 +182,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_STREAM, notes = BO_ACTION_ON_STREAM_NOTES, response = ServiceResponse.class)
 	@PutMapping("/streams/{idStream}/actionfeedback")
-	public ResponseEntity<Object> actionFeedback(@RequestBody final ActionRequest actionRequest,
-			@PathVariable final Integer idStream) {
+	public ResponseEntity<Object> actionFeedback(@RequestBody final ActionRequest actionRequest, @PathVariable final Integer idStream) {
 		logger.info("actionFeedback");
 
 		return run(new ApiCallable() {
@@ -204,8 +200,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_STREAM, notes = BO_ACTION_ON_STREAM_NOTES, response = ServiceResponse.class)
 	@PutMapping("/streams/{idStream}/action")
-	public ResponseEntity<Object> actionOnStream(@RequestBody final ActionRequest actionRequest,
-			@PathVariable final Integer idStream) {
+	public ResponseEntity<Object> actionOnStream(@RequestBody final ActionRequest actionRequest, @PathVariable final Integer idStream) {
 		logger.info("actionOnStream");
 
 		return run(new ApiCallable() {
@@ -222,8 +217,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
 	@PutMapping("/tenants/{tenantcode}/action")
-	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionRequest actionOnTenantRequest,
-			@PathVariable final String tenantcode) {
+	public ResponseEntity<Object> actionOnTenant(@RequestBody final ActionRequest actionOnTenantRequest, @PathVariable final String tenantcode) {
 		logger.info("actionOnTenant");
 
 		return run(new ApiCallable() {
@@ -242,8 +236,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ADD_ADMIN_APPLICATION_TENANT, notes = BO_ADD_ADMIN_APPLICATION_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/addAdminApplication")
-	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantCode,
-			@RequestParam(required = true) final String username,
+	public ResponseEntity<Object> addAdminApplication(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
 
@@ -263,8 +256,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT, notes = BO_SUBSCRIBE_ADMIN_API_IN_STORE_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/subscribeAdminApi")
-	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantCode,
-			@RequestParam(required = true) final String username,
+	public ResponseEntity<Object> subscribeAdminApiInStore(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("subscribeAdminApiInStore");
 
@@ -284,8 +276,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_GENERETATE_ADMIN_KEY_TENANT, notes = BO_GENERETATE_ADMIN_KEY_TENANT_NOTES, response = ServiceResponse.class)
 	@PostMapping("/tenant/generetateAdminKey")
-	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantCode,
-			@RequestParam(required = true) final String username,
+	public ResponseEntity<Object> generetateAdminKey(@RequestParam(required = true) final String tenantCode, @RequestParam(required = true) final String username,
 			@RequestParam(required = true) final String password) {
 		logger.info("addAdminApplication");
 
@@ -303,9 +294,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_ACTION_ON_TENANT, notes = BO_ACTION_ON_TENANT_NOTES, response = ServiceResponse.class)
 	@PutMapping("/tenants/{tenantcode}/actionfeedback")
-	public ResponseEntity<Object> actionfeedbackOnTenant(
-			@RequestBody final ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest,
-			@PathVariable final String tenantcode) {
+	public ResponseEntity<Object> actionfeedbackOnTenant(@RequestBody final ActionfeedbackOnTenantRequest actionfeedbackOnTenantRequest, @PathVariable final String tenantcode) {
 		logger.info("actionfeedbackOnTenant");
 
 		return run(new ApiCallable() {
@@ -362,9 +351,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_LOAD_TENANTS, notes = BO_LOAD_TENANTS_NOTES, response = DomainResponse.class, responseContainer = "List")
 	@GetMapping("/tenants")
-	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip,
-			@RequestParam(required = false) final Integer limit, @RequestParam(required = false) final String fields,
-			@RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
+	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip, @RequestParam(required = false) final Integer limit,
+			@RequestParam(required = false) final String fields, @RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
 		logger.info("loadTenants");
 
 		return run(new ApiCallable() {
@@ -411,8 +399,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_DATA_TYPE, notes = BO_UPDATE_DATA_TYPE_NOTES, response = DataTypeResponse.class)
 	@PutMapping("/data_types/{idDataType}")
-	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest,
-			@PathVariable final Integer idDataType) {
+	public ResponseEntity<Object> updateDataType(@RequestBody final DataTypeRequest dataTypeRequest, @PathVariable final Integer idDataType) {
 		logger.info("updateDataType");
 
 		return run(new ApiCallable() {
@@ -526,8 +513,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_PHENOMENON, notes = BO_UPDATE_PHENOMENON_NOTES, response = PhenomenonResponse.class)
 	@PutMapping("/phenomenons/{idPhenomenon}")
-	public ResponseEntity<Object> updatePhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest,
-			@PathVariable final Integer idPhenomenon) {
+	public ResponseEntity<Object> updatePhenomenon(@RequestBody final PhenomenonRequest phenomenonRequest, @PathVariable final Integer idPhenomenon) {
 		logger.info("updatePhenomenon");
 
 		return run(new ApiCallable() {
@@ -595,8 +581,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_MEASURE_UNIT, notes = BO_UPDATE_MEASURE_UNIT_NOTES, response = MeasureUnitResponse.class)
 	@PutMapping("/measure_units/{idMeasureUnit}")
-	public ResponseEntity<Object> updateMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest,
-			@PathVariable final Integer idMeasureUnit) {
+	public ResponseEntity<Object> updateMeasureUnit(@RequestBody final MeasureUnitRequest measureUnitRequest, @PathVariable final Integer idMeasureUnit) {
 		logger.info("updateMeasureUnit");
 
 		return run(new ApiCallable() {
@@ -760,8 +745,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_SUBDOMAIN, notes = BO_UPDATE_SUBDOMAIN_NOTES, response = SubdomainResponse.class)
 	@PutMapping("/subdomains/{idSubdomain}")
-	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest,
-			@PathVariable final Integer idSubdomain) {
+	public ResponseEntity<Object> updateSubdomain(@RequestBody final SubdomainRequest subdomainRequest, @PathVariable final Integer idSubdomain) {
 		logger.info("updateSubdomain");
 
 		return run(new ApiCallable() {
@@ -801,8 +785,7 @@ public class BackOfficeController extends YuccaController {
 
 	@ApiOperation(value = BO_UPDATE_TAG, notes = BO_UPDATE_TAG_NOTES, response = TagResponse.class)
 	@PutMapping("/tags/{idTag}")
-	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest,
-			@PathVariable final Integer idTag) {
+	public ResponseEntity<Object> updateTag(@RequestBody final TagRequest tagRequest, @PathVariable final Integer idTag) {
 		logger.info("updateTag");
 
 		return run(new ApiCallable() {
@@ -838,8 +821,7 @@ public class BackOfficeController extends YuccaController {
 
 	@ApiOperation(value = BO_UPDATE_LICENSE, notes = BO_UPDATE_LICENSE_NOTES, response = LicenseResponse.class)
 	@PutMapping("/licenses/{idLicense}")
-	public ResponseEntity<Object> updateLicense(@RequestBody final LicenseRequest licenseRequest,
-			@PathVariable final Integer idLicense) {
+	public ResponseEntity<Object> updateLicense(@RequestBody final LicenseRequest licenseRequest, @PathVariable final Integer idLicense) {
 		logger.info("updateLicense");
 
 		return run(new ApiCallable() {
@@ -867,8 +849,7 @@ public class BackOfficeController extends YuccaController {
 
 	@ApiOperation(value = BO_UPDATE_ORGANIZATION, notes = BO_UPDATE_ORGANIZATION_NOTES, response = BackOfficeOrganizationResponse.class)
 	@PutMapping("/organizations/{idOrganization}")
-	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest,
-			@PathVariable final Integer idOrganization) {
+	public ResponseEntity<Object> updateOrganization(@RequestBody final OrganizationRequest organizationRequest, @PathVariable final Integer idOrganization) {
 		logger.info("updateOrganization");
 
 		return run(new ApiCallable() {
@@ -950,8 +931,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_ECOSYSTEM, notes = BO_UPDATE_ECOSYSTEM_NOTES, response = EcosystemResponse.class)
 	@PutMapping("/ecosystems/{idEcosystem}")
-	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest,
-			@PathVariable final Integer idEcosystem) {
+	public ResponseEntity<Object> updateEcosystem(@RequestBody final EcosystemRequest ecosystemRequest, @PathVariable final Integer idEcosystem) {
 		logger.info("updateEcosystem");
 
 		return run(new ApiCallable() {
@@ -1002,8 +982,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_UPDATE_DOMAIN, notes = BO_UPDATE_DOMAIN_NOTES, response = DomainResponse.class)
 	@PutMapping("/domains/{idDomain}")
-	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest,
-			@PathVariable final Integer idDomain) {
+	public ResponseEntity<Object> updateDomain(@RequestBody final DomainRequest domainRequest, @PathVariable final Integer idDomain) {
 		logger.info("updateDomain");
 
 		return run(new ApiCallable() {
@@ -1021,8 +1000,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_LOAD_STREAMS, notes = BO_LOAD_STREAMS_NOTES, response = ListStreamResponse.class, responseContainer = "List")
 	@GetMapping("/streams")
-	public ResponseEntity<Object> loadStreams(@RequestParam(required = false) final String sort,
-			final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStreams(@RequestParam(required = false) final String sort, final HttpServletRequest request) {
 		logger.info("loadStreams");
 
 		return run(new ApiCallable() {
@@ -1041,8 +1019,7 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/streams/{idstream}/icon")
-	public void loadStreamIcon(@RequestParam(required = true) final String organizationCode,
-			@PathVariable final Integer idstream, final HttpServletRequest request,
+	public void loadStreamIcon(@RequestParam(required = true) final String organizationCode, @PathVariable final Integer idstream, final HttpServletRequest request,
 			final HttpServletResponse response) {
 
 		logger.info("loadStreamIcon");
@@ -1085,14 +1062,14 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * LOAD Stream by IdStream
-	 * OK
+	 * LOAD Stream by IdStream OK
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_IDSTREAM, notes = BO_LOAD_STREAM_BY_IDSTREAM_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/streams/{idStream}")
-	public ResponseEntity<Object> loadStreamByIdStream(@PathVariable final Integer idStream,
-			@RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled,final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStreamByIdStream(@PathVariable final Integer idStream, @RequestParam(name = "onlyInstalled", required = true) final Boolean onlyInstalled,
+			final HttpServletRequest request) {
 		logger.info("loadStreamByIdStream");
 
 		return run(new ApiCallable() {
@@ -1109,8 +1086,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_IDDATASET, notes = BO_LOAD_DATASET_BY_IDDATASET_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/{idDataset}")
-	public ResponseEntity<Object> loadDatasetByIdDataset(@PathVariable final Integer idDataset,
-			final HttpServletRequest request, @RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled) {
+	public ResponseEntity<Object> loadDatasetByIdDataset(@PathVariable final Integer idDataset, final HttpServletRequest request,
+			@RequestParam(name = "onlyInstalled", required = true) final Boolean onlyInstalled) {
 		logger.info("loadDatasetByIdDataset");
 
 		return run(new ApiCallable() {
@@ -1118,7 +1095,7 @@ public class BackOfficeController extends YuccaController {
 				return datasetService.selectDatasetByIdDataset(idDataset, onlyInstalled);
 			}
 		}, logger);
-	} 
+	}
 
 	/**
 	 * LOAD Dataset by IdDataset datasetVersion
@@ -1127,8 +1104,8 @@ public class BackOfficeController extends YuccaController {
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_IDDATASET_DATASETVERSION, notes = BO_LOAD_DATASET_BY_IDDATASET_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/{idDataset}/{datasetVersion}")
-	public ResponseEntity<Object> loadDatasetByIdDatasetDatasetVersion(@PathVariable final Integer idDataset,
-			@PathVariable final Integer datasetVersion, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadDatasetByIdDatasetDatasetVersion(@PathVariable final Integer idDataset, @PathVariable final Integer datasetVersion,
+			final HttpServletRequest request) {
 		logger.info("loadDatasetByIdDataset");
 
 		return run(new ApiCallable() {
@@ -1139,14 +1116,14 @@ public class BackOfficeController extends YuccaController {
 	}
 
 	/**
-	 * LOAD Dataset by IdDataset datasetVersion
-	 * OK
+	 * LOAD Dataset by IdDataset datasetVersion OK
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION, notes = BO_LOAD_DATASET_BY_DATASETCODE_DATASETVERSION_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}/{datasetVersion}")
-	public ResponseEntity<Object> loadDatasetByDatasetCodeDatasetVersion(@PathVariable final String datasetCode,
-			@PathVariable final Integer datasetVersion, final HttpServletRequest request) {
+	public ResponseEntity<Object> loadDatasetByDatasetCodeDatasetVersion(@PathVariable final String datasetCode, @PathVariable final Integer datasetVersion,
+			final HttpServletRequest request) {
 		logger.info("loadDatasetByDatasetCodeDatasetVersion");
 
 		return run(new ApiCallable() {
@@ -1158,6 +1135,7 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * OK
+	 * 
 	 * @param datasetCode
 	 * @param onlyInstalled
 	 * @param request
@@ -1166,7 +1144,7 @@ public class BackOfficeController extends YuccaController {
 	@ApiOperation(value = BO_LOAD_DATASET_BY_DATASETCODE, notes = BO_LOAD_DATASET_BY_DATASETCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/datasets/datasetCode={datasetCode}")
 	public ResponseEntity<Object> loadDatasetByDatasetCode(@PathVariable final String datasetCode,
-			@RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled, final HttpServletRequest request) {
+			@RequestParam(name = "onlyInstalled", required = true) final Boolean onlyInstalled, final HttpServletRequest request) {
 		logger.info("loadDatasetByDatasetCode");
 
 		return run(new ApiCallable() {
@@ -1174,19 +1152,17 @@ public class BackOfficeController extends YuccaController {
 				return datasetService.selectDatasetByDatasetCode(datasetCode, onlyInstalled);
 			}
 		}, logger);
-	} 
+	}
 
 	/**
-	 * LOAD Stream by IdStream
-	 * OK
+	 * LOAD Stream by IdStream OK
+	 * 
 	 * @return
 	 */
 	@ApiOperation(value = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE, notes = BO_LOAD_STREAM_BY_SOCODE_STREAMCODE_NOTES, response = BackofficeDettaglioApiResponse.class)
 	@GetMapping("/streams/{soCode}/{streamCode}")
-	public ResponseEntity<Object> loadStreamBySoCodeStreamCode(@PathVariable final String soCode,
-			@PathVariable final String streamCode, 
-			@RequestParam(name="onlyInstalled", required=true) final Boolean onlyInstalled,
-			final HttpServletRequest request) {
+	public ResponseEntity<Object> loadStreamBySoCodeStreamCode(@PathVariable final String soCode, @PathVariable final String streamCode,
+			@RequestParam(name = "onlyInstalled", required = true) final Boolean onlyInstalled, final HttpServletRequest request) {
 		logger.info("loadStreamBySoCodeStreamCode");
 
 		return run(new ApiCallable() {
@@ -1194,69 +1170,64 @@ public class BackOfficeController extends YuccaController {
 				return streamService.selectStreamBySoCodeStreamCode(soCode, streamCode, onlyInstalled);
 			}
 		}, logger);
-	} 
-	
+	}
+
 	/**
 	 * 
 	 * @param organizationCode
 	 * @param idstream
 	 * @param request
 	 * @param response
+	 * @throws Exception 
+	 * @throws NotFoundException 
+	 * @throws BadRequestException 
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/smartobjects/{smartobjectCode}/streams/{streamCode}/icon")
-	public void loadStreamIcon( @PathVariable final String smartobjectCode, @PathVariable final String streamCode, final HttpServletRequest request,
-			final HttpServletResponse response) {
-
+	public void loadStreamIcon(@PathVariable final String smartobjectCode, @PathVariable final String streamCode, final HttpServletRequest request,
+			final HttpServletResponse response) throws BadRequestException, NotFoundException, Exception {
 		logger.info("loadStreamIcon");
-
-		byte[] imgByte = null;
-		try {
-			imgByte = streamService.selectStreamIcon(smartobjectCode, streamCode);
-			if (imgByte != null) {
-				response.setHeader("Pragma", "no-cache");
-				response.setDateHeader("Expires", 0);
-				response.setContentType("image/png");
-				ServletOutputStream responseOutputStream = response.getOutputStream();
-				responseOutputStream.write(imgByte);
-				responseOutputStream.flush();
-				responseOutputStream.close();
-			} else 
-				response.sendRedirect(Util.defaultIconPath(request, "stream"));
-		} catch (Exception e) {
-			logger.info("loadStreamIcon ERROR: " + e.getMessage());
-			e.printStackTrace();
-			imgByte = null;
-		}
+		byte[] imgByte = streamService.selectStreamIcon(smartobjectCode, streamCode);
+		streamOutIcon("stream", imgByte, response);
 	}
-	
+
 	/**
 	 * 
 	 * @param organizationCode
 	 * @param idstream
 	 * @param request
 	 * @param response
+	 * @throws Exception 
+	 * @throws NotFoundException 
+	 * @throws BadRequestException 
 	 */
 	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
 	@GetMapping("/datasets/{datasetCode}/icon")
-	public void loadDatasetIcon( @PathVariable final String datasetCode, final HttpServletRequest request,
-			final HttpServletResponse response) {
+	public void loadDatasetIcon(@PathVariable final String datasetCode, final HttpServletRequest request, final HttpServletResponse response) throws BadRequestException, NotFoundException, Exception {
 
 		logger.info("loadDatasetIcon");
 
-		byte[] imgByte = null;
+		byte[] imgByte = datasetService.selectDatasetIcon(datasetCode);
+		streamOutIcon("dataset", imgByte, response);
+	}
+
+	private void streamOutIcon(String entityType, byte[] imgByte, final HttpServletResponse response) {
 		try {
-			imgByte = datasetService.selectDatasetIcon(datasetCode);
-			if (imgByte != null) {
-				response.setHeader("Pragma", "no-cache");
-				response.setDateHeader("Expires", 0);
-				response.setContentType("image/png");
-				ServletOutputStream responseOutputStream = response.getOutputStream();
-				responseOutputStream.write(imgByte);
-				responseOutputStream.flush();
-				responseOutputStream.close();
-			} else 
-				response.sendRedirect(Util.defaultIconPath(request, "stream"));
+			if (imgByte == null) {
+				BufferedImage defaultIcon = ImageIO.read(BackOfficeController.class.getClassLoader().getResourceAsStream(entityType + "-icon-default.png"));
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+				ImageIO.write(defaultIcon, "png", baos);
+				baos.flush();
+				imgByte = baos.toByteArray();
+				baos.close();
+			}
+			response.setHeader("Pragma", "no-cache");
+			response.setDateHeader("Expires", 0);
+			response.setContentType("image/png");
+			ServletOutputStream responseOutputStream = response.getOutputStream();
+			responseOutputStream.write(imgByte);
+			responseOutputStream.flush();
+			responseOutputStream.close();
 		} catch (Exception e) {
 			logger.info("loadStreamIcon ERROR: " + e.getMessage());
 			e.printStackTrace();

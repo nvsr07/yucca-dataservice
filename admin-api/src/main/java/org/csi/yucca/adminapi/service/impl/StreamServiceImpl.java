@@ -581,7 +581,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	@Override
 	public byte[] selectStreamIcon(String smartobjectCode, String streamCode) throws BadRequestException, NotFoundException, Exception{
 		String icon = streamMapper.selectStreamIconByStreamcodeAndSoCode(streamCode, smartobjectCode);
-		checkIfFoundRecord(icon);
+		//checkIfFoundRecord(icon);
 		return Util.convertIconFromDBToByte(icon);
 	}
 
