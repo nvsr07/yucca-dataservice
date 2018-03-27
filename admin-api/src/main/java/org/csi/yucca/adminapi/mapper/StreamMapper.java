@@ -600,7 +600,7 @@ public interface StreamMapper {
 			"SELECT icon " + 
 			" FROM " + DataSourceMapper.DATA_SOURCE_TABLE + ", " + STREAM_TABLE + " , " +  SmartobjectMapper.SMARTOBJECT_TABLE  + 
 			"  where " + STREAM_TABLE + ".streamcode = #{streamcode} and " +  SmartobjectMapper.SMARTOBJECT_TABLE  +".socode = #{soCode} and " + 
-			"  "+DataSourceMapper.DATA_SOURCE_TABLE+".id_data_source = " + STREAM_TABLE + ".id_data_source" + 
+			"  "+DataSourceMapper.DATA_SOURCE_TABLE+".id_data_source = " + STREAM_TABLE + ".id_data_source and" + 
 			"  "+DataSourceMapper.DATA_SOURCE_TABLE+".datasourceversion = " + STREAM_TABLE + ".datasourceversion" + 
 			"  and " + STREAM_TABLE + ".id_smart_object = "+SmartobjectMapper.SMARTOBJECT_TABLE+".id_smart_object " + WHERE_STREAM_MAX_VERSION_OPT_ONLY_INSTALLED ;
 		
