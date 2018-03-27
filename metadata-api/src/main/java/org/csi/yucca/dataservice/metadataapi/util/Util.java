@@ -152,6 +152,7 @@ public class Util {
 		return out;
 	}
 	
+	@Deprecated
 	public static byte[] extractImageFromStream(String streamJson) throws IOException {
 		Gson gson = JSonHelper.getInstance();
 		StreamsForIcon streamsForIcon = gson.fromJson(streamJson, StreamsForIcon.class);
