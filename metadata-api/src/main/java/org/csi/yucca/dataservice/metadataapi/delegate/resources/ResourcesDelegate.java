@@ -1,8 +1,11 @@
 package org.csi.yucca.dataservice.metadataapi.delegate.resources;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import javax.imageio.ImageIO;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -46,26 +49,39 @@ public class ResourcesDelegate {
 
 		return loadDatasourceIcon(completeUrl);
 	}
-	
+
 	private byte[] loadDatasourceIcon(String completeUrl) throws IOException {
 		log.debug("[ResourcesDelegate::loadDatasourceIcon] START - completeUrl: " + completeUrl);
 
-		HttpGet getMethod = new HttpGet(completeUrl);
-		HttpClient httpClient = HttpClientBuilder.create().build();
-		HttpResponse response = httpClient.execute(getMethod);
-		HttpEntity entity = response.getEntity();
+		try {
+			HttpGet getMethod = new HttpGet(completeUrl);
+			HttpClient httpClient = HttpClientBuilder.create().build();
+			HttpResponse response = httpClient.execute(getMethod);
+			HttpEntity entity = response.getEntity();
 
-		// log.debug("[ResourcesDelegate::loadDatasetIcon] result: " + result);
+			// log.debug("[ResourcesDelegate::loadDatasetIcon] result: " +
+			// result);
 
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-		InputStream inputStream = entity.getContent();
-		byte[] tmp = new byte[1024];
-		int chunk;
-		while ((chunk = inputStream.read(tmp)) != -1) {
-			buffer.write(tmp, 0, chunk);
+			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+			InputStream inputStream = entity.getContent();
+			byte[] tmp = new byte[1024];
+			int chunk;
+			while ((chunk = inputStream.read(tmp)) != -1) {
+				buffer.write(tmp, 0, chunk);
+			}
+			// return getMethod.getResponseBody();
+			return buffer.toByteArray();
+		} catch (Exception e) {
+			BufferedImage defaultIcon = ImageIO.read(ResourcesDelegate.class.getClassLoader().getResourceAsStream("stream-icon-default.png"));
+			byte[] iconBytes = null;
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ImageIO.write(defaultIcon, "png", baos);
+			baos.flush();
+			iconBytes = baos.toByteArray();
+			baos.close();
+
+			return iconBytes;
 		}
-		// return getMethod.getResponseBody();
-		return buffer.toByteArray();
 	}
 
 }
