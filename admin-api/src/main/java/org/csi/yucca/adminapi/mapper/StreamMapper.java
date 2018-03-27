@@ -604,7 +604,7 @@ public interface StreamMapper {
 			"  and " + STREAM_TABLE + ".id_smart_object = "+SmartobjectMapper.SMARTOBJECT_TABLE+".id_smart_object " + WHERE_STREAM_MAX_VERSION_OPT_ONLY_INSTALLED ;
 		
 	@Select({"<script>",SELECT_STREAM_ICON_BY_STREAMCODE_AND_CODE_SO, "</script>"})
-	String  selectStreamIconByStreamcodeAndSoCode( @Param("streamcode") String streamcode, @Param("soCode") String soCode);	
+	String  selectStreamIconByStreamcodeAndSoCode( @Param("streamcode") String streamcode, @Param("soCode") String soCode, @Param("onlyInstalled") boolean onlyInstalled);	
 
 	
 	@Results({
