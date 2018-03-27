@@ -554,7 +554,7 @@ public class ServiceUtil {
 						ServiceUtil.checkMandatoryParameter(component.getTolerance(), "tolerance");
 						ServiceUtil.checkMandatoryParameter(component.getIdPhenomenon(), "idPhenomenon");
 						//Se il dataType è lat, lon o dateTime idMeasureUnit non è valorizzato
-						if(component.getIdDataType()!= 7 && component.getIdDataType()!= 8 && component.getIdDataType()!= 9  )
+						if(component.getIdDataType()!= Constants.ADMINAPI_DATA_TYPE_DATETIME && component.getIdDataType()!= Constants.ADMINAPI_DATA_TYPE_LONGITUDE  && component.getIdDataType()!= Constants.ADMINAPI_DATA_TYPE_LATITUDE   )
 							ServiceUtil.checkMandatoryParameter(component.getIdMeasureUnit(), "idMeasureUnit");
 						ServiceUtil.checkMandatoryParameter(component.getRequired(), "required");
 					}
