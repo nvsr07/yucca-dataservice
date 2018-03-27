@@ -858,6 +858,15 @@ public interface DatasetMapper {
 		  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED+"</script>"}) 
 	  DettaglioDataset selectDettaglioDatasetByDatasetCode(
 			  @Param("datasetCode")  String datasetCode, @Param("onlyInstalled") boolean onlyInstalled);
+	
+	
+		// dataset icon for metadataapi
+		@Select({"<script>", "SELECT icon FROM " + DataSourceMapper.DATA_SOURCE_TABLE + ", " + DATASET_TABLE ,WHERE_DETTAGLIO_DATASET_START + 
+	  			WHERE_DETTAGLIO_DATASET_DATASETCODE+ WHERE_DETTAGLIO_DATASET_MAX_VERSION_OPT_ONLY_INSTALLED+"</script>"}) 
+		String  selectStreamIconByStreamcodeAndSoCode( @Param("datasetCode") String datasetCode, @Param("onlyInstalled") boolean onlyInstalled);	
+
+	
+	
 
 	
 	@Results({

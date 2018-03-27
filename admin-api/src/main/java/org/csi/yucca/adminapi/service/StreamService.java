@@ -22,6 +22,8 @@ public interface StreamService {
 	ServiceResponse updateStream(String organizationCode, String soCode, Integer idStream, StreamRequest streamRequest, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
 	byte[] selectStreamIcon(String organizationCode, Integer idStream, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+	
+	byte[] selectStreamIcon(String smartobjectCode, String streamCode) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse actionOnStream( ActionRequest actionRequest, String organizationCode, String soCode, Integer idStream, ApiUserType apiUserType, JwtUser authorizedUser ) throws BadRequestException, NotFoundException, Exception;
 

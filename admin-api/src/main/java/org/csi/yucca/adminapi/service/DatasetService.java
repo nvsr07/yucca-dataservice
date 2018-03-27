@@ -55,6 +55,8 @@ public interface DatasetService {
 	ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 	
 	byte[] selectDatasetIcon(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+	
+	byte[] selectDatasetIcon(String datasetCode) throws BadRequestException, NotFoundException, Exception;
 
 
 

@@ -592,6 +592,19 @@ public interface StreamMapper {
 							      @Param("organizationCode") String organizationcode,
 							      @Param("userAuthorizedTenantCodeList") List<String> userAuthorizedTenantCodeList);	
 	
+	
+
+
+	// stream icon for metadataapi
+	public static final String SELECT_STREAM_ICON_BY_STREAMCODE_AND_CODE_SO = 
+			"SELECT icon " + 
+			" FROM " + DataSourceMapper.DATA_SOURCE_TABLE + " ds, " + STREAM_TABLE + " st, " +  SmartobjectMapper.SMARTOBJECT_TABLE  + " so" + 
+			"  where st.streamcode = #{streamcode} and so.socode = #{soCode} and " + 
+			"  ds.id_data_source = st.id_data_source" + 
+			"  and st.id_smart_object = so.id_smart_object";
+		
+	@Select(SELECT_STREAM_ICON_BY_STREAMCODE_AND_CODE_SO)
+	String  selectStreamIconByStreamcodeAndSoCode( @Param("streamcode") String streamcode, @Param("soCode") String soCode);	
 
 	
 	@Results({

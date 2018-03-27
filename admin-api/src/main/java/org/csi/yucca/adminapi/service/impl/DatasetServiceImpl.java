@@ -780,6 +780,18 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return Util.convertIconFromDBToByte(dettaglioDataset.getDataSourceIcon());
 	}
+	
+	@Override
+	public byte[] selectDatasetIcon(String datasetCode) throws BadRequestException, NotFoundException, Exception {
+
+		String  icon = datasetMapper.selectStreamIconByStreamcodeAndSoCode(datasetCode, true);
+
+		checkIfFoundRecord(icon);
+
+		return Util.convertIconFromDBToByte(icon);
+	}
+
+
 
 	/**
 	 * 
@@ -1069,7 +1081,7 @@ public class DatasetServiceImpl implements DatasetService {
 		removeOdataApiAndSolrDocument(httpclient, datasetCode);
 	}
 	
-	private void removeOdataApiAndSolrDocument(CloseableHttpClient httpclient, String datasetCode) throws Exception{
+	private void removeOdataApiAndSolrDocument(CloseableHttpClient httpclient, String datasetCode) {
 		logger.info("[DatasetServiceImpl::updateDatasetTransaction] - unpublish datasetcode: " + datasetCode);
 		try {
 			String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(datasetCode));
@@ -1079,7 +1091,11 @@ public class DatasetServiceImpl implements DatasetService {
 			logger.error("[DatasetServiceImpl::updateDatasetTransaction] unpublish removeApi ERROR" + datasetCode + " - " + ex.getMessage());
 		}
 
-		SolrDelegate.build().removeDocument(datasetCode);
+		try {
+			SolrDelegate.build().removeDocument(datasetCode);
+		} catch (Exception ex) {
+			logger.error("[DatasetServiceImpl::updateDatasetTransaction] unpublish removeDocument ERROR" + datasetCode + " - " + ex.getMessage());
+		}
 	}
 	
 }

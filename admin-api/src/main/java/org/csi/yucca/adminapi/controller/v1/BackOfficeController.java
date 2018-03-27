@@ -1195,4 +1195,73 @@ public class BackOfficeController extends YuccaController {
 			}
 		}, logger);
 	} 
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param request
+	 * @param response
+	 */
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/smartobjects/{smartobjectCode}/streams/{streamCode}/icon")
+	public void loadStreamIcon( @PathVariable final String smartobjectCode, @PathVariable final String streamCode, final HttpServletRequest request,
+			final HttpServletResponse response) {
+
+		logger.info("loadStreamIcon");
+
+		byte[] imgByte = null;
+		try {
+			imgByte = streamService.selectStreamIcon(smartobjectCode, streamCode);
+			if (imgByte != null) {
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", 0);
+				response.setContentType("image/png");
+				ServletOutputStream responseOutputStream = response.getOutputStream();
+				responseOutputStream.write(imgByte);
+				responseOutputStream.flush();
+				responseOutputStream.close();
+			} else 
+				response.sendRedirect(Util.defaultIconPath(request, "stream"));
+		} catch (Exception e) {
+			logger.info("loadStreamIcon ERROR: " + e.getMessage());
+			e.printStackTrace();
+			imgByte = null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param idstream
+	 * @param request
+	 * @param response
+	 */
+	@ApiOperation(value = M_LOAD_STREAM_ICON, notes = M_LOAD_STREAM_ICON_NOTES, response = Byte[].class)
+	@GetMapping("/datasets/{datasetCode}/icon")
+	public void loadDatasetIcon( @PathVariable final String datasetCode, final HttpServletRequest request,
+			final HttpServletResponse response) {
+
+		logger.info("loadDatasetIcon");
+
+		byte[] imgByte = null;
+		try {
+			imgByte = datasetService.selectDatasetIcon(datasetCode);
+			if (imgByte != null) {
+				response.setHeader("Pragma", "no-cache");
+				response.setDateHeader("Expires", 0);
+				response.setContentType("image/png");
+				ServletOutputStream responseOutputStream = response.getOutputStream();
+				responseOutputStream.write(imgByte);
+				responseOutputStream.flush();
+				responseOutputStream.close();
+			} else 
+				response.sendRedirect(Util.defaultIconPath(request, "stream"));
+		} catch (Exception e) {
+			logger.info("loadStreamIcon ERROR: " + e.getMessage());
+			e.printStackTrace();
+			imgByte = null;
+		}
+	}
+
 }
