@@ -51,7 +51,7 @@ public class ResourcesDelegate {
 	}
 
 	private byte[] loadDatasourceIcon(String completeUrl) throws IOException {
-		log.debug("[ResourcesDelegate::loadDatasourceIcon] START - completeUrl: " + completeUrl);
+		log.info("[ResourcesDelegate::loadDatasourceIcon] START - completeUrl: " + completeUrl);
 
 		try {
 			HttpGet getMethod = new HttpGet(completeUrl);
@@ -61,6 +61,7 @@ public class ResourcesDelegate {
 
 			// log.debug("[ResourcesDelegate::loadDatasetIcon] result: " +
 			// result);
+			log.info("[ResourcesDelegate::loadDatasourceIcon] load icon ok");
 
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			InputStream inputStream = entity.getContent();
@@ -72,6 +73,8 @@ public class ResourcesDelegate {
 			// return getMethod.getResponseBody();
 			return buffer.toByteArray();
 		} catch (Exception e) {
+			log.info("[ResourcesDelegate::loadDatasourceIcon] load error load default ok");
+
 			BufferedImage defaultIcon = ImageIO.read(ResourcesDelegate.class.getClassLoader().getResourceAsStream("stream-icon-default.png"));
 			byte[] iconBytes = null;
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
