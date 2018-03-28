@@ -501,7 +501,9 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		updateValidation(smartObject, streamToUpdate, streamRequest);
 
 		// update
-		updateStreamTransaction(streamRequest, streamToUpdate, smartObject);
+		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCodeManager);
+		updateStreamTransaction(streamRequest, streamToUpdate, smartObject, tenant, organization);
 
 		return ServiceResponse.build().NO_CONTENT();
 	}
@@ -623,9 +625,6 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		return buildResponse(buildSelectStreamsResponse(list));
 	}
 
-	/**
-	 * 
-	 */
 	@Override
 	public ServiceResponse createStreamDataset(PostStreamRequest request, String organizationCode, String soCode,
 			JwtUser authorizedUser) throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
@@ -638,10 +637,14 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		Smartobject smartobject = smartobjectMapper.selectSmartobjectBySocodeAndOrgcode(soCode, organizationCode);
 		checkIfFoundRecord(smartobject, "smartobject not found socode [" + soCode + "], organizationcode [" + organizationCode + "] ");
 
+		Tenant tenant = checkTenant(request.getIdTenant(), organizationCode, tenantMapper);
+		
+		checkAuthTenant(authorizedUser, tenant.getTenantcode());
+		
 		validation(request, organizationCode, smartobject, authorizedUser);
 		logger.debug("VALIDATION OK...");
 		
-		Stream stream = insertStreamTransaction(request, organization, smartobject);
+		Stream stream = insertStreamTransaction(request, organization, smartobject, tenant);
 		
 		logger.info("END [StreamServiceImpl::createStreamDataset]: created stream [ " + stream.getIdstream() + " ]");
 		return ServiceResponse.build().object(PostStreamResponse.build(stream.getIdstream())
@@ -695,9 +698,12 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	 * @param request
 	 * @param organization
 	 * @param smartobject
+	 * @param tenant
+	 * @return
+	 * @throws Exception
 	 */
 	private Stream insertStreamTransaction(PostStreamRequest request, Organization organization,
-			Smartobject smartobject) throws Exception {
+			Smartobject smartobject, Tenant tenant) throws Exception {
 
 		Timestamp now = Util.getNow();
 		Integer idLicense = null;
@@ -725,7 +731,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		insertStreamInternal(request, idDataSource);
 		Dataset dataset = insertDataset(request.getSavedata(), idDataSource, smartobject.getIdSoType(),
-				DATASOURCE_VERSION, request.getStreamcode(), datasetMapper, sequenceMapper);
+				DATASOURCE_VERSION, request.getStreamcode(), tenant, organization, datasetMapper, sequenceMapper);
 
 		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), DATASOURCE_VERSION);
 
@@ -1518,17 +1524,22 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	 * @param streamRequest
 	 * @param streamToUpdate
 	 * @param smartObject
+	 * @param tenant
+	 * @param organization
+	 * @return
 	 * @throws Exception
 	 */
-	private Dataset updateDataSet(StreamRequest streamRequest, StreamToUpdate streamToUpdate, Smartobject smartObject)
+	private Dataset updateDataSet(StreamRequest streamRequest, StreamToUpdate streamToUpdate, 
+			Smartobject smartObject, Tenant tenant, Organization organization)
 			throws Exception {
-
+		
 		if (!streamRequest.getSavedata()) {
 			datasetMapper.deleteDataSet(streamToUpdate.getIdDataSource(), streamToUpdate.getDataSourceVersion());
 		}
 
 		return insertDataset(streamRequest.getSavedata(), streamToUpdate.getIdDataSource(), smartObject.getIdSoType(),
-				streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode(), datasetMapper, sequenceMapper);
+				streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode(), 
+				tenant, organization, datasetMapper, sequenceMapper);
 	}
 
 	/**
@@ -1536,10 +1547,12 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	 * @param streamRequest
 	 * @param streamToUpdate
 	 * @param smartObject
+	 * @param tenant
+	 * @param organization
 	 * @throws Exception
 	 */
 	private void updateStreamTransaction(StreamRequest streamRequest, StreamToUpdate streamToUpdate,
-			Smartobject smartObject) throws Exception {
+			Smartobject smartObject, Tenant tenant, Organization organization) throws Exception {
 
 		Timestamp now = Util.getNow();
 
@@ -1559,11 +1572,9 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		updateInternalStreamsTransaction(streamRequest, streamToUpdate);
 
-		Dataset dataset = updateDataSet(streamRequest, streamToUpdate, smartObject);
+		Dataset dataset = updateDataSet(streamRequest, streamToUpdate, smartObject, tenant, organization);
 
 		updateApi(streamRequest, streamToUpdate, smartObject, dataset);
-		
-		
 
 	}
 

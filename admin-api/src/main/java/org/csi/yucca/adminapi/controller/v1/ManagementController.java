@@ -491,6 +491,8 @@ public class ManagementController extends YuccaController {
 	 * @param httpRequest
 	 * @return
 	 */
+
+	
 	@ApiOperation(value = M_CREATE_STREAM_DATASET, notes = M_CREATE_STREAM_DATASET_NOTES, response = PostStreamResponse.class)
 	@PostMapping("/organizations/{organizationCode}/smartobjects/{soCode}/streams")
 	public ResponseEntity<Object> createStreamDataset(@RequestBody final PostStreamRequest request, @PathVariable final String organizationCode, @PathVariable final String soCode,
