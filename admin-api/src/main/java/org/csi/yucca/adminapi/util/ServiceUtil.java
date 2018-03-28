@@ -879,6 +879,15 @@ public class ServiceUtil {
 
 	/**
 	 * 
+	 * @param datasetName
+	 * @return
+	 */
+	private static String getDatasetDescription(String datasetName){
+		return "Dataset " + datasetName;
+	}
+	
+	/**
+	 * 
 	 * @param saveData
 	 * @param idDataSource
 	 * @param idSoType
@@ -916,18 +925,19 @@ public class ServiceUtil {
 			Integer currentIdDatasetSubtype = getIdDatasetSubtype(idSoType, idDatasetSubtype);
 			Dataset slrCollectionAndPhoenix = getSlrCollectionAndPhoenix(currentIdDatasetSubtype, organization, tenant);
 			String datasetCode              = getDatasetcode(currentIdDatasetSubtype, datasetName, iddataset);
+			String datasetDescription       = getDatasetDescription(datasetName);
 			
 			Dataset dataset = new Dataset();
+			dataset.setIdDatasetType(DatasetType.DATASET.id());
+			dataset.setAvailablespeed(Util.booleanToInt(true));
+			dataset.setIstransformed(Util.booleanToInt(false));
 			dataset.setIddataset(iddataset);
 			dataset.setIdDataSource(idDataSource);
 			dataset.setDatasourceversion(dataSourceVersion);
 			dataset.setDatasetname(datasetName);
 			dataset.setDatasetcode(datasetCode);
-			dataset.setDescription("Dataset " + datasetName);
-			dataset.setIdDatasetType(DatasetType.DATASET.id());
+			dataset.setDescription(datasetDescription);
 			dataset.setIdDatasetSubtype(currentIdDatasetSubtype);
-			dataset.setAvailablespeed(Util.booleanToInt(true));
-			dataset.setIstransformed(Util.booleanToInt(false));
 			dataset.setImportfiletype(importFileType);
 			dataset.setIdDataSourceBinary(idDataSourceBinary);
 			dataset.setDatasourceversionBinary(dataSourceVersionBinary);
