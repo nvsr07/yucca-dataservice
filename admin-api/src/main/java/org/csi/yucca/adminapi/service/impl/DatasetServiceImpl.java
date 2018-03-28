@@ -67,6 +67,7 @@ import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
 import org.csi.yucca.adminapi.model.Subdomain;
+import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.User;
 import org.csi.yucca.adminapi.model.builder.AllineamentoScaricoDatasetBuilder;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
@@ -689,9 +690,11 @@ public class DatasetServiceImpl implements DatasetService {
 		if(postDatasetRequest.getMultiSubdomain()!=null )
 			postDatasetRequest.setMultiSubdomain(postDatasetRequest.getMultiSubdomain().toUpperCase());
 
+		Tenant tenant = checkTenant(postDatasetRequest.getIdTenant(), organizationCode, tenantMapper);
+		
 		insertDatasetValidation(postDatasetRequest, authorizedUser, organizationCode, organization);
 
-		PostDatasetResponse response = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization);
+		PostDatasetResponse response = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization, tenant);
 		return ServiceResponse.build().object(response);
 	}
 
@@ -872,10 +875,12 @@ public class DatasetServiceImpl implements DatasetService {
 	 * 
 	 * @param postDatasetRequest
 	 * @param organization
+	 * @param idSubdomain
+	 * @param tenant
 	 * @return
 	 * @throws Exception
 	 */
-	private Integer insertBinary(DatasetRequest postDatasetRequest, Organization organization, Integer idSubdomain) throws Exception {
+	private Integer insertBinary(DatasetRequest postDatasetRequest, Organization organization, Integer idSubdomain, Tenant tenant) throws Exception {
 		Integer idBinaryDataSource = null;
 		if (isBinaryDataset(postDatasetRequest.getComponents())) {
 
@@ -884,7 +889,7 @@ public class DatasetServiceImpl implements DatasetService {
 					Status.INSTALLED.id(), dataSourceMapper);
 
 			// INSERT DATASET
-			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), datasetMapper, sequenceMapper);
+			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper, sequenceMapper);
 
 			// BINARY COMPONENT
 			insertBinaryComponents(idBinaryDataSource, componentMapper);
@@ -919,13 +924,14 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private PostDatasetResponse insertDatasetTransaction(DatasetRequest postDatasetRequest, JwtUser authorizedUser, Organization organization) throws Exception {
+	private PostDatasetResponse insertDatasetTransaction(DatasetRequest postDatasetRequest, 
+			JwtUser authorizedUser, Organization organization, Tenant tenant) throws Exception {
 
 		// insert subdomain
 		Integer idSubdomain = insertSubdomain(postDatasetRequest);
 
 		// BINARY
-		Integer idBinaryDataSource = insertBinary(postDatasetRequest, organization, idSubdomain);
+		Integer idBinaryDataSource = insertBinary(postDatasetRequest, organization, idSubdomain, tenant);
 
 		// INSERT LICENSE:
 		Integer idLicense = insertLicense(postDatasetRequest.getLicense(), licenseMapper);
@@ -940,7 +946,7 @@ public class DatasetServiceImpl implements DatasetService {
 		// INSERT DATASET
 		Dataset dataset = ServiceUtil.insertDataset(idDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BULK.id(),
 				postDatasetRequest.getImportfiletype(), DATASOURCE_VERSION, idBinaryDataSource, postDatasetRequest.getJdbcdburl(), postDatasetRequest.getJdbcdbname(),
-				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), datasetMapper, sequenceMapper);
+				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), tenant, organization, datasetMapper, sequenceMapper);
 
 		// TAGS
 		for (Integer idTag : postDatasetRequest.getTags()) {
