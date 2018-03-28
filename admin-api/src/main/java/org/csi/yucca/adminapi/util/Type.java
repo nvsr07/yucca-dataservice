@@ -11,13 +11,13 @@ public enum Type {
 	private String code;
 	private String description;
 	
-	Type(int id, String code, String description){
+	Type(Integer id, String code, String description){
 		this.id = id;
 		this.code = code;
 		this.description = description;
 	}
 
-	public int id() {
+	public Integer id() {
 		return id;
 	}
 

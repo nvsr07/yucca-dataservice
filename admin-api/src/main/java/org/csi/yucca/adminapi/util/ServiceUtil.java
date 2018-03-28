@@ -1031,7 +1031,7 @@ public class ServiceUtil {
 	 */
 	private static Integer getIdDatasetSubtype(Integer idSoType, Integer idDatasetSubtype) {
 		
-		if (Type.FEED_TWEET.id() == idSoType) {
+		if (Type.FEED_TWEET.id().equals(idSoType)) {
 			return DatasetSubtype.SOCIAL.id();
 		}		
 
