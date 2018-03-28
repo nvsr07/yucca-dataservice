@@ -3,6 +3,7 @@ package org.csi.yucca.adminapi.client.cache;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -53,7 +54,10 @@ public class CacheUtil {
 	private static LoadingCache<KeyCache, List<AllineamentoScaricoDatasetResponse>> allineamentoResponseCache;
 	private static LoadingCache<KeyCache, List<OrganizationResponse>> organizationListCache;
 	
+	private static  ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
+	
 	static {
+		
 		dettaglioStreamDatasetCache = CacheBuilder.newBuilder().maximumSize(MAXIMUM_SIZE).refreshAfterWrite(DURATION, TimeUnit.MINUTES)
 				.build(new CacheLoader<KeyCache, BackofficeDettaglioStreamDatasetResponse>() {
 					@Override
@@ -69,7 +73,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioStreamDatasetResponse) get(BACK_OFFICE_STREAMS, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -106,7 +111,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioStreamDatasetResponse) get(BACK_OFFICE_STREAMS, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -130,7 +136,8 @@ public class CacheUtil {
 								return (List<AllineamentoScaricoDatasetResponse>) getList(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoScaricoDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -155,7 +162,8 @@ public class CacheUtil {
 								return (List<OrganizationResponse>) getList(BACK_OFFICE_ORGANIZATIONS, key, OrganizationResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -183,7 +191,8 @@ public class CacheUtil {
 								return (List<BackofficeDettaglioStreamDatasetResponse>) getList(BACK_OFFICE_DATASETS_ORGANIZATION_CODE, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -207,7 +216,8 @@ public class CacheUtil {
 								return (List<TenantManagementResponse>) getList(BACK_OFFICE_TENANTS, key, TenantManagementResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -229,7 +239,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioStreamDatasetResponse) get(BACK_OFFICE_DATASETS_DATASETCODE, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -251,7 +262,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioStreamDatasetResponse) get(BACK_OFFICE_DATASETS_DATASETCODE, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -273,7 +285,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioStreamDatasetResponse) get(BACK_OFFICE_DATASETS, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -295,7 +308,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioStreamDatasetResponse) get(BACK_OFFICE_DATASETS, key, BackofficeDettaglioStreamDatasetResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -315,7 +329,8 @@ public class CacheUtil {
 								return (MeasureUnitResponse)get(BACK_OFFICE_MEASURE_UNITS, keyCache, MeasureUnitResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
@@ -337,7 +352,8 @@ public class CacheUtil {
 								return (BackofficeDettaglioApiResponse) get(BACK_OFFICE_API, key, BackofficeDettaglioApiResponse.class);
 							}
 						});
-						Executors.newSingleThreadExecutor().execute(task);
+						fixedThreadPool.execute(task);
+						//Executors.newSingleThreadExecutor().execute(task);
 						return task;
 					}
 				});
