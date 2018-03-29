@@ -139,12 +139,29 @@ public interface DatasetMapper {
 			" where yucca_d_license.id_license = yucca_data_source.id_license " +
 			" ) license, " +
 			" ( select array_to_json(array_agg(row_to_json(comp))) " + 
-			" from ( select yucca_component.*, " +
-			"        		yucca_d_phenomenon.*, " +
-			"         		yucca_d_data_type.id_data_type dt_id_data_type, " +
-			"         		yucca_d_data_type.datatypecode dt_datatypecode, " +
-			"         		yucca_d_data_type.description dt_description, " +
-			"         		yucca_d_measure_unit.*  " +
+			" from ( select yucca_component.id_component, " +
+			"        		yucca_component.name, " +
+			"        		yucca_component.alias, " +
+			"        		yucca_component.inorder, " +
+			"        		yucca_component.tolerance, " +
+			"        		yucca_component.since_version, " +
+			"        		yucca_component.id_measure_unit \"idMeasureUnit\", " +
+			"        		yucca_component.iskey, " +
+			"        		yucca_component.id_data_source, " +
+			"        		yucca_component.datasourceversion, " +
+			"        		yucca_component.sourcecolumn, " +
+			"        		yucca_component.sourcecolumnname, " +
+			"        		yucca_component.required, " +
+			"        		yucca_component.foreignkey, " +
+			"         		yucca_d_phenomenon.id_phenomenon \"idPhenomenon\", " +
+			"         		yucca_d_phenomenon.phenomenonname phenomenonname, " +
+			"         		yucca_d_phenomenon.phenomenoncetegory phenomenoncetegory, " +
+			"         		yucca_d_data_type.id_data_type \"idDataType\", " +
+			"         		yucca_d_data_type.datatypecode datatypecode, " +
+			"         		yucca_d_data_type.description datatypedescription, " +
+			"         		yucca_d_measure_unit.id_measure_unit \"idMeasureUnit\", " +
+			"         		yucca_d_measure_unit.measureunit, " +
+			"         		yucca_d_measure_unit.measureunitcategory " +
 			"          from " + ComponentMapper.COMPONENT_TABLE  + " yucca_component " + 
 			"  	  LEFT JOIN " + PhenomenonMapper.PHENOMENON_TABLE  + " yucca_d_phenomenon ON yucca_component.id_phenomenon = yucca_d_phenomenon.id_phenomenon " + 
 			"     LEFT JOIN " +  DataTypeMapper.DATA_TYPE_TABLE  + " yucca_d_data_type ON yucca_component.id_data_type = yucca_d_data_type.id_data_type  " +

@@ -426,6 +426,7 @@ public class Dettaglio {
 	public void setComponentsString(String componentsString) {
 		this.componentsString = componentsString;
 		if (componentsString != null) {
+			//componentsString = componentsString.replaceAll("id_phenomenon", "idPhenomenon").replaceAll("id_measure_unit", "idMeasureUnit").replaceAll("id_data_type", "idDataType");
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				setComponents(mapper.readValue(componentsString, ComponentJson[].class));
