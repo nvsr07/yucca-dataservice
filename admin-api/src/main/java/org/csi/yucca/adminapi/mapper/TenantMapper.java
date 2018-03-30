@@ -340,7 +340,7 @@ public interface TenantMapper {
 	 * ***********************************************************************/
 	public static final String INSERT_TENANT = 
 		"INSERT INTO " + TENANT_TABLE +
-			" ( creationdate, expirationdate, activationdate, deactivationdate, id_share_type, " +
+			" ( <if test=\"idTenant != null\">id_tenant,</if> creationdate, expirationdate, activationdate, deactivationdate, id_share_type, " +
 			" tenantcode, name, description, clientkey, clientsecret, username, " +
 			" userfirstname, userlastname, useremail, usertypeauth, id_ecosystem, " +
 			" id_organization, id_tenant_type, id_tenant_status, datasolrcollectionname, " +
@@ -348,7 +348,7 @@ public interface TenantMapper {
 			" dataphoenixtablename, dataphoenixschemaname, measuresphoenixtablename, " +
 			" measuresphoenixschemaname, mediaphoenixtablename, mediaphoenixschemaname, " +
 			" socialphoenixtablename, socialphoenixschemaname ) " +
-			" VALUES (	#{creationdate}, #{expirationdate}, #{activationdate}, #{deactivationdate}, #{idShareType}, " +
+			" VALUES (<if test=\"idTenant != null\">#{idTenant},</if>#{creationdate}, #{expirationdate}, #{activationdate}, #{deactivationdate}, #{idShareType}, " +
 			" #{tenantcode}, #{name}, #{description}, #{clientkey}, #{clientsecret}, " +
 			" #{username}, #{userfirstname}, #{userlastname}, #{useremail}, #{usertypeauth}, #{idEcosystem}, " +
 			" #{idOrganization}, #{idTenantType}, #{idTenantStatus}, #{datasolrcollectionname}, " +
@@ -356,7 +356,7 @@ public interface TenantMapper {
 			" #{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, " +
 			" #{measuresphoenixschemaname}, #{mediaphoenixtablename}, #{mediaphoenixschemaname}, " +
 			" #{socialphoenixtablename}, #{socialphoenixschemaname})";
-	@Insert(INSERT_TENANT)
+	@Insert({"<script>",INSERT_TENANT,"</script>"})
 	@Options(useGeneratedKeys=true, keyProperty="idTenant")
 	int insertTenant(Tenant tenant);
 	

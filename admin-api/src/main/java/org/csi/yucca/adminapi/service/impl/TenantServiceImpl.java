@@ -531,7 +531,7 @@ public class TenantServiceImpl implements TenantService {
 	private User insertUser(String username, int idOrganization) {
 
 		User user = userMapper.selectUserByUserName(username);
-
+		
 		if (user == null) {
 			user = new User();
 			user.setIdOrganization(idOrganization);

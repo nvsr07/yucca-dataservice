@@ -1604,7 +1604,8 @@ public class ServiceUtil {
 	 */
 	public static void checkTenantTypeAndUserTypeAuth(String userTypeAuth, Integer idTenantType)
 			throws BadRequestException {
-
+		
+		// se  ( tenantType == DEFAULT or PLUS or ZERO or DEVELOP ) and userTypeAuth != ADMIN ==> BAD REQUEST! 
 		if ((TenantType.DEFAULT.id() == idTenantType || TenantType.PLUS.id() == idTenantType
 				|| TenantType.ZERO.id() == idTenantType || TenantType.DEVELOP.id() == idTenantType)
 				&& !UserTypeAuth.ADMIN.description().equals(userTypeAuth)) {
