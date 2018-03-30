@@ -151,18 +151,24 @@ public interface OrganizationMapper {
 	@Insert(INSERT_ECOSYSTEM_ORGANIZATION)
 	int insertEcosystemOrganization(@Param("idEcosystem") int idEcosystem, @Param("idOrganization") int idOrganization);
 	
-	
 	/*************************************************************************
 	 * 
 	 * 					INSERT ORGANIZATION
 	 * 
 	 * ***********************************************************************/
 	public static final String INSERT_ORGANIZATION 
-	= "INSERT INTO " + ORGANIZATION_TABLE + "( organizationcode, description, datasolrcollectionname, measuresolrcollectionname, mediasolrcollectionname, socialsolrcollectionname, dataphoenixtablename, dataphoenixschemaname, measuresphoenixtablename, measuresphoenixschemaname, mediaphoenixtablename, mediaphoenixschemaname, socialphoenixtablename, socialphoenixschemaname) VALUES (#{organizationcode}, #{description}, #{datasolrcollectionname}, #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, #{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, #{measuresphoenixschemaname}, #{mediaphoenixtablename}, #{mediaphoenixschemaname}, #{socialphoenixtablename}, #{socialphoenixschemaname})";
-	@Insert(INSERT_ORGANIZATION)
+	= "INSERT INTO " + ORGANIZATION_TABLE + 
+	"( <if test=\"idOrganization != null\">id_organization,</if>"
+	+ "organizationcode, description, datasolrcollectionname, measuresolrcollectionname, mediasolrcollectionname, socialsolrcollectionname, "
+	+ "dataphoenixtablename, dataphoenixschemaname, measuresphoenixtablename, measuresphoenixschemaname, mediaphoenixtablename, "
+	+ "mediaphoenixschemaname, socialphoenixtablename, socialphoenixschemaname) "
+	+ "VALUES (<if test=\"idOrganization != null\">#{idOrganization},</if>"
+	+ "#{organizationcode}, #{description}, #{datasolrcollectionname}, #{measuresolrcollectionname}, #{mediasolrcollectionname}, #{socialsolrcollectionname}, "
+	+ "#{dataphoenixtablename}, #{dataphoenixschemaname}, #{measuresphoenixtablename}, #{measuresphoenixschemaname}, #{mediaphoenixtablename}, "
+	+ "#{mediaphoenixschemaname}, #{socialphoenixtablename}, #{socialphoenixschemaname})";
+	@Insert({"<script>",INSERT_ORGANIZATION,"</script>"}) 
 	@Options(useGeneratedKeys=true, keyProperty="idOrganization")
 	int insertOrganization(Organization organization);
-	
 	
 	/*************************************************************************
 	 * 

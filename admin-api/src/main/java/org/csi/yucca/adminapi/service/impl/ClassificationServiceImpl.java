@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -57,6 +58,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 public class ClassificationServiceImpl implements ClassificationService{
+	
+	private static final Logger LOG = Logger.getLogger(ClassificationServiceImpl.class);
 	
 	@Autowired
 	private DomainMapper domainMapper;
@@ -712,7 +715,12 @@ public class ClassificationServiceImpl implements ClassificationService{
 	/**
 	 *	INSERT ORGANIZATION 
 	 */
+	@Override
 	public ServiceResponse insertOrganization(OrganizationRequest organizationRequest) throws BadRequestException, NotFoundException, Exception{
+		
+		LOG.info("insertOrganization ==> BEGIN");
+		
+		LOG.debug("organizationRequest.getIdOrganization(): " + organizationRequest.getIdOrganization());
 		
 		ServiceUtil.checkMandatoryParameter(organizationRequest, "organizationRequest");
 
@@ -734,10 +742,16 @@ public class ClassificationServiceImpl implements ClassificationService{
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList(), "ecosystemCodeList"); 
 		ServiceUtil.checkMandatoryParameter(organizationRequest.getEcosystemCodeList().isEmpty(), "ecosystemCodeList"); 
 		
+		LOG.debug("VALIDATION OK!");
+		
 		Organization organization = new Organization();
 		BeanUtils.copyProperties(organizationRequest, organization);
 
 		insertOrganization(organization, organizationRequest.getEcosystemCodeList());
+		
+		LOG.debug("INSERT OK!");
+		
+		LOG.info("insertOrganization ==> END");
 		
 		return ServiceResponse.build().object(new BackOfficeOrganizationResponse(organization));
 	}
