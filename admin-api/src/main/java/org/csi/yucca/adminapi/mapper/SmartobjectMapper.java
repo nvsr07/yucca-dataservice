@@ -352,20 +352,21 @@ public interface SmartobjectMapper{
 	 * 
 	 * ***********************************************************************/
 	public static final String INSERT_SMARTOBJECT = 
-	" INSERT INTO " + SMARTOBJECT_TABLE + " ( " +
+	" INSERT INTO " + SMARTOBJECT_TABLE + " ( " + 
+	        " <if test=\"idSmartObject != null\">id_smart_object,</if>" +
 			" socode, name, description, urladmin, fbcoperationfeedback, " + 
 			" swclientversion, version, model, deploymentversion, " +
 			" creationdate, twtusername, " + 
 			" twtusertoken, twttokensecret, twtname, twtuserid, twtmaxstreams, " +
 			" slug, id_location_type, id_exposure_type, id_supply_type, id_so_category, " + 
 			" id_so_type, id_status, id_organization) " +
-			" VALUES (#{socode}, #{name}, #{description}, #{urladmin}, #{fbcoperationfeedback}, " + 
+			" VALUES (<if test=\"idSmartObject != null\">#{idSmartObject},</if> #{socode}, #{name}, #{description}, #{urladmin}, #{fbcoperationfeedback}, " + 
 			"  #{swclientversion}, #{version}, #{model}, #{deploymentversion},  " +
 			" #{creationdate}, #{twtusername}, " +
 			" #{twtusertoken}, #{twttokensecret}, #{twtname}, #{twtuserid}, #{twtmaxstreams}, " +
 			" #{slug}, #{idLocationType}, #{idExposureType}, #{idSupplyType}, #{idSoCategory}, " +
 			" #{idSoType}, #{idStatus}, #{idOrganization}) ";
-	@Insert(INSERT_SMARTOBJECT)
+	@Insert({"<script>",INSERT_SMARTOBJECT,"</script>"})
 	@Options(useGeneratedKeys=true, keyProperty="idSmartObject")
 	int insertSmartObject(Smartobject smartobject);
 	
