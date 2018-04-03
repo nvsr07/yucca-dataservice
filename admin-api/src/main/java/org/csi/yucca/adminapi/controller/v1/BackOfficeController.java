@@ -31,6 +31,7 @@ import org.csi.yucca.adminapi.response.AllineamentoScaricoDatasetResponse;
 import org.csi.yucca.adminapi.response.BackOfficeOrganizationResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
+import org.csi.yucca.adminapi.response.BackofficeDettaglioTenantResponse;
 import org.csi.yucca.adminapi.response.DataTypeResponse;
 import org.csi.yucca.adminapi.response.DomainResponse;
 import org.csi.yucca.adminapi.response.EcosystemResponse;
@@ -327,7 +328,7 @@ public class BackOfficeController extends YuccaController {
 	 * @param tenantcode
 	 * @return
 	 */
-	@ApiOperation(value = BO_LOAD_TENANT, notes = BO_LOAD_TENANT_NOTES, response = DomainResponse.class, responseContainer = "List")
+	@ApiOperation(value = BO_LOAD_TENANT, notes = BO_LOAD_TENANT_NOTES, response = BackofficeDettaglioTenantResponse.class)
 	@GetMapping("/tenants/{tenantcode}")
 	public ResponseEntity<Object> loadTenant(@PathVariable final String tenantcode) {
 		logger.info("loadTenant");
@@ -349,10 +350,9 @@ public class BackOfficeController extends YuccaController {
 	 * @param embed
 	 * @return
 	 */
-	@ApiOperation(value = BO_LOAD_TENANTS, notes = BO_LOAD_TENANTS_NOTES, response = DomainResponse.class, responseContainer = "List")
+	@ApiOperation(value = BO_LOAD_TENANTS, notes = BO_LOAD_TENANTS_NOTES, response = BackofficeDettaglioTenantResponse.class, responseContainer = "List")
 	@GetMapping("/tenants")
-	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final Integer skip, @RequestParam(required = false) final Integer limit,
-			@RequestParam(required = false) final String fields, @RequestParam(required = false) final String sort, @RequestParam(required = false) final String embed) {
+	public ResponseEntity<Object> loadTenants(@RequestParam(required = false) final String sort) {
 		logger.info("loadTenants");
 
 		return run(new ApiCallable() {
