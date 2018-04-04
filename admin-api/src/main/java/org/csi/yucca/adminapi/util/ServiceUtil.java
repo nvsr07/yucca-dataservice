@@ -812,13 +812,13 @@ public class ServiceUtil {
 	public static Dataset insertDataset(Integer idDataSource, Integer dataSourceVersion, String datasetName,
 			Integer idDatasetSubtype, String importFileData, Integer dataSourceVersionBinary,
 			Integer idDataSourceBinary, String jdbcdburl, String jdbcdbname, String jdbcdbtype, String jdbctablename,
-			Tenant tenant, Organization organization, DatasetMapper datasetMapper, SequenceMapper sequenceMapper) throws Exception {
+			Tenant tenant, Organization organization, DatasetMapper datasetMapper, SequenceMapper sequenceMapper, Integer iddataset) throws Exception {
 		return insertDataset(
 				true, // saveData
 				idDataSource, 
 				null, // idSoType
 				dataSourceVersion, datasetName, idDatasetSubtype, importFileData, dataSourceVersionBinary,
-				idDataSourceBinary, jdbcdburl, jdbcdbname, jdbcdbtype, jdbctablename, tenant, organization, datasetMapper, sequenceMapper);
+				idDataSourceBinary, jdbcdburl, jdbcdbname, jdbcdbtype, jdbctablename, tenant, organization, datasetMapper, sequenceMapper, iddataset);
 	}
 
 	/**
@@ -835,7 +835,7 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static Dataset insertDataset(Integer idDataSource, Integer dataSourceVersion, String datasetName,
-			Integer idDatasetSubtype, Tenant tenant, Organization organization, DatasetMapper datasetMapper, SequenceMapper sequenceMapper) throws Exception {
+			Integer idDatasetSubtype, Tenant tenant, Organization organization, DatasetMapper datasetMapper, SequenceMapper sequenceMapper, Integer iddataset) throws Exception {
 		return insertDataset(true, // saveData
 				idDataSource, null, // idSoType
 				dataSourceVersion, datasetName, idDatasetSubtype, null, // importFiledata
@@ -846,7 +846,7 @@ public class ServiceUtil {
 				null, // jdbcdbtype,
 				null, // jdbctablename,
 				tenant, organization,
-				datasetMapper, sequenceMapper);
+				datasetMapper, sequenceMapper, iddataset);
 	}
 
 	/**
@@ -863,7 +863,7 @@ public class ServiceUtil {
 	 * @throws Exception
 	 */
 	public static Dataset insertDataset(boolean saveData, Integer idDataSource, Integer idSoType,
-			Integer dataSourceVersion, String datasetName, Tenant tenant, Organization organization, DatasetMapper datasetMapper, SequenceMapper sequenceMapper)
+			Integer dataSourceVersion, String datasetName, Tenant tenant, Organization organization, DatasetMapper datasetMapper, SequenceMapper sequenceMapper, Integer iddataset)
 			throws Exception {
 		return insertDataset(saveData, idDataSource, idSoType, dataSourceVersion, datasetName, null, // idDatasetSubtype
 				null, // importFiledata
@@ -874,7 +874,7 @@ public class ServiceUtil {
 				null, // jdbcdbtype,
 				null, // jdbctablename,
 				tenant, organization,
-				datasetMapper, sequenceMapper);
+				datasetMapper, sequenceMapper, iddataset);
 	}
 
 	/**
@@ -912,7 +912,7 @@ public class ServiceUtil {
 			Integer dataSourceVersion, String datasetName, Integer idDatasetSubtype, String importFileType,
 			Integer dataSourceVersionBinary, Integer idDataSourceBinary, String jdbcdburl, String jdbcdbname,
 			String jdbcdbtype, String jdbctablename, Tenant tenant, Organization organization,
-			DatasetMapper datasetMapper, SequenceMapper sequenceMapper) throws Exception {
+			DatasetMapper datasetMapper, SequenceMapper sequenceMapper, Integer iddataset) throws Exception {
 
 		Dataset checkDataSet = datasetMapper.selectDataSet(idDataSource, dataSourceVersion);
 
@@ -921,7 +921,11 @@ public class ServiceUtil {
 		}
 
 		if (saveData) {
-			Integer iddataset               = sequenceMapper.selectDatasetSequence();
+			
+			if (iddataset == null) {
+				iddataset = sequenceMapper.selectDatasetSequence();	
+			}
+			
 			Integer currentIdDatasetSubtype = getIdDatasetSubtype(idSoType, idDatasetSubtype);
 			Dataset slrCollectionAndPhoenix = getSlrCollectionAndPhoenix(currentIdDatasetSubtype, organization, tenant);
 			String datasetCode              = getDatasetcode(currentIdDatasetSubtype, datasetName, iddataset);

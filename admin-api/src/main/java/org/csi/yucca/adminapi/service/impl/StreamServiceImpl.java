@@ -731,7 +731,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		insertStreamInternal(request, idDataSource);
 		Dataset dataset = insertDataset(request.getSavedata(), idDataSource, smartobject.getIdSoType(),
-				DATASOURCE_VERSION, request.getStreamcode(), tenant, organization, datasetMapper, sequenceMapper);
+				DATASOURCE_VERSION, request.getStreamcode(), tenant, organization, datasetMapper, sequenceMapper, request.getIdDataset());
 
 		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), DATASOURCE_VERSION);
 
@@ -897,6 +897,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	 */
 	private Stream insertStream(PostStreamRequest request, Integer idDataSource, Integer idSmartobject) {
 		Stream stream = new Stream();
+		stream.setIdstream(request.getIdStream());
 		stream.setIdDataSource(idDataSource);
 		stream.setDatasourceversion(1);
 		stream.setStreamcode(request.getStreamcode());
@@ -905,32 +906,19 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		stream.setSavedata(Util.booleanToInt(request.getSavedata()));
 		stream.setFps(request.getFps());
 		stream.setInternalquery(request.getInternalquery());
-		stream.setTwtquery(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtquery() : null);
-		stream.setTwtgeoloclat(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeoloclat() : null);
-		stream.setTwtgeoloclon(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeoloclon() : null);
-		stream.setTwtgeolocradius(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeolocradius() : null);
-		stream.setTwtgeolocunit(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeolocunit() : null);
-		stream.setTwtlang(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtlang() : null);
-		stream.setTwtlocale(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtlocale() : null);
-		stream.setTwtcount(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtcount() : null);
-		stream.setTwtresulttype(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtresulttype() : null);
-		stream.setTwtuntil(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtuntil() : null);
-		stream.setTwtratepercentage(request.getTwitterInfo() != null
-				? request.getTwitterInfo().getTwtratepercentage() : null);
-		stream.setTwtlastsearchid(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtlastsearchid() : null);
-		stream.setTwtquery(
-				request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtquery() : null);
+		stream.setTwtquery(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtquery() : null);
+		stream.setTwtgeoloclat(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeoloclat() : null);
+		stream.setTwtgeoloclon(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeoloclon() : null);
+		stream.setTwtgeolocradius(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeolocradius() : null);
+		stream.setTwtgeolocunit(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtgeolocunit() : null);
+		stream.setTwtlang(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtlang() : null);
+		stream.setTwtlocale(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtlocale() : null);
+		stream.setTwtcount(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtcount() : null);
+		stream.setTwtresulttype(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtresulttype() : null);
+		stream.setTwtuntil(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtuntil() : null);
+		stream.setTwtratepercentage(request.getTwitterInfo() != null? request.getTwitterInfo().getTwtratepercentage() : null);
+		stream.setTwtlastsearchid(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtlastsearchid() : null);
+		stream.setTwtquery(request.getTwitterInfo() != null ? request.getTwitterInfo().getTwtquery() : null);
 		stream.setIdSmartObject(idSmartobject);
 
 		streamMapper.insertStream(stream);
@@ -1539,7 +1527,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		return insertDataset(streamRequest.getSavedata(), streamToUpdate.getIdDataSource(), smartObject.getIdSoType(),
 				streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode(), 
-				tenant, organization, datasetMapper, sequenceMapper);
+				tenant, organization, datasetMapper, sequenceMapper, streamRequest.getIdDataset());
 	}
 
 	/**

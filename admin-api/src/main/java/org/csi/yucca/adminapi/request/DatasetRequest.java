@@ -4,6 +4,7 @@ import java.util.List;
 
 public class DatasetRequest implements IVisibility, IDataSourceRequest {
 
+	private Integer iddataset;
 	private Integer idTenant;
 	private String datasetname;
 	private boolean unpublished;
@@ -34,6 +35,14 @@ public class DatasetRequest implements IVisibility, IDataSourceRequest {
 	private Integer idDataSource;
 	private String datasetcode;
 	private String externalreference;
+	
+	public Integer getIddataset() {
+		return iddataset;
+	}
+
+	public void setIddataset(Integer iddataset) {
+		this.iddataset = iddataset;
+	}
 
 	public String getExternalreference() {
 		return externalreference;

@@ -567,8 +567,6 @@ public class DatasetServiceImpl implements DatasetService {
 		// TENANT-DATASOURCE
 		insertTenantDataSource(datasetRequest.getIdTenant(), datasetRequest.getIdDataSource(),datasetRequest.getNewDataSourceVersion(), Util.getNow(), tenantMapper);
 
-
-		// TODO vanno clonate le api?
 		try {
 			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 			logger.debug("Build publisher delegate...");
@@ -889,7 +887,9 @@ public class DatasetServiceImpl implements DatasetService {
 					Status.INSTALLED.id(), dataSourceMapper);
 
 			// INSERT DATASET
-			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper, sequenceMapper);
+			ServiceUtil.insertDataset(
+					idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), 
+					DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper, sequenceMapper, postDatasetRequest.getIddataset());
 
 			// BINARY COMPONENT
 			insertBinaryComponents(idBinaryDataSource, componentMapper);
@@ -946,7 +946,7 @@ public class DatasetServiceImpl implements DatasetService {
 		// INSERT DATASET
 		Dataset dataset = ServiceUtil.insertDataset(idDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BULK.id(),
 				postDatasetRequest.getImportfiletype(), DATASOURCE_VERSION, idBinaryDataSource, postDatasetRequest.getJdbcdburl(), postDatasetRequest.getJdbcdbname(),
-				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), tenant, organization, datasetMapper, sequenceMapper);
+				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), tenant, organization, datasetMapper, sequenceMapper, postDatasetRequest.getIddataset());
 
 		// TAGS
 		for (Integer idTag : postDatasetRequest.getTags()) {

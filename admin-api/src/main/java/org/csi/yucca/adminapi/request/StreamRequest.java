@@ -4,6 +4,8 @@ import java.util.List;
 
 public class StreamRequest implements IVisibility, IDataSourceRequest {
 
+	private Integer idStream;
+	private Integer idDataset;
 	private String streamname;
 	private String name;
 	private boolean unpublished;
@@ -29,6 +31,22 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	private String requestersurname;
 	private String externalreference;
 	
+	public Integer getIdStream() {
+		return idStream;
+	}
+
+	public void setIdStream(Integer idStream) {
+		this.idStream = idStream;
+	}
+
+	public Integer getIdDataset() {
+		return idDataset;
+	}
+
+	public void setIdDataset(Integer idDataset) {
+		this.idDataset = idDataset;
+	}
+
 	public String getExternalreference() {
 		return externalreference;
 	}

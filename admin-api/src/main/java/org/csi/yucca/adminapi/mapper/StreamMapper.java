@@ -880,17 +880,18 @@ public interface StreamMapper {
 	 * 
 	 * ***********************************************************************/
 	public static final String INSERT_STREAM = 
-	" INSERT INTO " + STREAM_TABLE + "( id_data_source, datasourceversion, streamcode, streamname, "
+	" INSERT INTO " + STREAM_TABLE + "( "
+	+ "<if test=\"idstream != null\">idstream,</if> id_data_source, datasourceversion, streamcode, streamname, "
 	+ "publishstream, savedata, fps, internalquery, twtquery, twtgeoloclat, twtgeoloclon, twtgeolocradius, "
 	+ "twtgeolocunit, twtlang, twtlocale, twtcount, twtresulttype, twtuntil, twtratepercentage, twtlastsearchid,  id_smart_object) "
-	+ "VALUES (#{idDataSource},#{datasourceversion},#{streamcode},#{streamname},#{publishstream},#{savedata},#{fps},"
+	+ "VALUES ("
+	+ "<if test=\"idstream != null\">#{idstream},</if> #{idDataSource},#{datasourceversion},#{streamcode},#{streamname},#{publishstream},#{savedata},#{fps},"
 	+ "#{internalquery},#{twtquery},#{twtgeoloclat},#{twtgeoloclon},#{twtgeolocradius},#{twtgeolocunit},#{twtlang},"
 	+ "#{twtlocale},#{twtcount},#{twtresulttype},#{twtuntil},#{twtratepercentage},#{twtlastsearchid},#{idSmartObject})";	
-	@Insert(INSERT_STREAM)
+	@Insert({"<script>", INSERT_STREAM, "</script>"})
 	@Options(useGeneratedKeys=true, keyProperty="idstream", keyColumn="idstream")
 	int insertStream(Stream stream);
-	
-	
+	 
 	
 	/*************************************************************************
 	 * 
