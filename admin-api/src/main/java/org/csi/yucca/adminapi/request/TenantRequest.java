@@ -1,7 +1,8 @@
 package org.csi.yucca.adminapi.request;
 
 public class TenantRequest {
-	
+
+	private String userPassword;
 	private String creationDate;
 	private Integer idTenantType;
 	private Integer idEcosystem;	
@@ -15,7 +16,13 @@ public class TenantRequest {
 	private String name;
 	private String description;
 	private Integer IdOrganization;
-	
+
+	public String getUserPassword() {
+		return userPassword;
+	}
+	public void setUserPassword(String userPassword) {
+		this.userPassword = userPassword;
+	}
 	public String getCreationDate() {
 		return creationDate;
 	}

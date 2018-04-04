@@ -186,18 +186,29 @@ public class TenantServiceImpl implements TenantService {
 		bundlesRequest.setMaxdatasetnum(Constants.INSTALLATION_TENANT_MAX_DATASET_NUM);
 		bundlesRequest.setMaxstreamsnum(Constants.INSTALLATION_TENANT_MAX_STREAMS_NUM);
 		
-		ServiceResponse serviceResponse = insertTenant(request, bundlesRequest);
+		ServiceResponse serviceResponse = insertTenantFromManagement(request, bundlesRequest);
 		
 		mailService.sendTenantRequestInstallationEmail(request);
 		
 		return serviceResponse;
 	}
 
+
+	private ServiceResponse insertTenantFromManagement(TenantRequest request, BundlesRequest bundlesRequest) throws BadRequestException, NotFoundException, Exception {
+		return insertTenant(request, bundlesRequest, true);
+	}
+	
 	private ServiceResponse insertTenant(TenantRequest request, BundlesRequest bundlesRequest) throws BadRequestException, NotFoundException, Exception {
+		return insertTenant(request, bundlesRequest, false);
+	}
+	
+	private ServiceResponse insertTenant(TenantRequest request, BundlesRequest bundlesRequest, boolean fromManagement) throws BadRequestException, NotFoundException, Exception {
 
 		validation(request);
 
-		if (TenantType.PERSONAL.id() == request.getIdTenantType() || TenantType.TRIAL.id() == request.getIdTenantType()) {
+		if (fromManagement && 
+				(TenantType.PERSONAL.id() == request.getIdTenantType() || 
+				 TenantType.TRIAL.id()    == request.getIdTenantType()  ) ) {
 			managePersonalOrTrial(request);
 		}
 
@@ -207,7 +218,7 @@ public class TenantServiceImpl implements TenantService {
 		Bundles bundles = insertBundles(bundlesRequest, request.getIdTenantType());
 
 		// insert user
-		User user = insertUser(tenant.getTenantcode(), request.getIdOrganization());
+		User user = insertUser(tenant.getTenantcode(), request.getIdOrganization(), request.getUserPassword());
 
 		// insert tenant
 		tenantMapper.insertTenant(tenant);
@@ -477,10 +488,13 @@ public class TenantServiceImpl implements TenantService {
 
 		checkActiveTrialOrPersonalTenant(tenantRequest, tenantTypeDescription);
 
+		// solo se arrivo da management
 		String code = tenantTypeDescription + getProgressivo(tenantRequest.getIdTenantType());
 		String tenantName = tenantTypeDescription + " tenant " + code;
 		String description = tenantName + " created for user " + tenantRequest.getUsername();
-
+		// solo se arrivo da management
+		
+		
 		// inserire un organizzazione con codice e descrizione uguali a quelle
 		// del tenant
 		Organization organization = new Organization();
@@ -520,26 +534,18 @@ public class TenantServiceImpl implements TenantService {
 	 */
 	private Tenant createTenant(TenantRequest tenantRequest) {
 		Tenant tenant = new Tenant();
+
 		BeanUtils.copyProperties(tenantRequest, tenant);
 
 		// set creationdate
-		if (tenantRequest.getCreationDate() != null) {
-			tenant.setCreationdate(Util.dateStringToTimestamp(tenantRequest.getCreationDate()));
-		}
-		else{
-			tenant.setCreationdate(new Timestamp(System.currentTimeMillis()));	
-		}
-
+		tenant.setCreationdate(tenantRequest.getCreationDate() != null ? Util.dateStringToTimestamp(tenantRequest.getCreationDate()) : new Timestamp(System.currentTimeMillis()));
+		
 		// set tenant status
 		tenant.setIdTenantStatus(Status.REQUEST_INSTALLATION.id());
 
 		// set id share type
-		if (TenantType.DEVELOP.id() == tenantRequest.getIdTenantType()) {
-			tenant.setIdShareType(ShareType.NONE.id());
-		} else {
-			tenant.setIdShareType(ShareType.PUBLIC.id());
-		}
-
+		tenant.setIdShareType(TenantType.DEVELOP.id() == tenantRequest.getIdTenantType() ? ShareType.NONE.id() : ShareType.PUBLIC.id());
+		
 		return tenant;
 	}
 
@@ -549,14 +555,14 @@ public class TenantServiceImpl implements TenantService {
 	 * @param idOrganization
 	 * @return
 	 */
-	private User insertUser(String username, int idOrganization) {
+	private User insertUser(String username, int idOrganization, String userPassword) {
 
 		User user = userMapper.selectUserByUserName(username);
 		
 		if (user == null) {
 			user = new User();
 			user.setIdOrganization(idOrganization);
-			user.setPassword(functionMapper.selectRandomPassword());
+			user.setPassword(userPassword != null ? userPassword : functionMapper.selectRandomPassword());
 			user.setUsername(username);
 			userMapper.insertUser(user);
 		}
