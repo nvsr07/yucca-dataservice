@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
+import static org.csi.yucca.adminapi.util.ServiceUtil.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -119,6 +119,20 @@ public class TenantServiceImpl implements TenantService {
 
 	@Autowired
 	private TokenService tokenService;
+	
+	
+	@Override
+	public ServiceResponse updateTenantStatus(Integer idStatus, String tenantcode)
+			throws BadRequestException, NotFoundException, Exception {
+		
+	    checkTenant(tenantcode, tenantMapper);
+		
+		checkIdStatus(idStatus);
+
+		tenantMapper.updateTenantStatus(idStatus, tenantcode);
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
 	
 	@Override
 	public ServiceResponse selectTenantToken(String tenantCode, JwtUser authorizedUser)

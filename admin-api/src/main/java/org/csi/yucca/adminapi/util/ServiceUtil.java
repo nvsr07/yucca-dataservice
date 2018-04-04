@@ -1238,6 +1238,26 @@ public class ServiceUtil {
 
 	/**
 	 * 
+	 * @param tenantCode
+	 * @param tenantMapper
+	 * @return
+	 * @throws NotFoundException
+	 * @throws BadRequestException
+	 */
+	public static Tenant checkTenant(String tenantCode, TenantMapper tenantMapper)
+			throws NotFoundException, BadRequestException {
+
+		Tenant tenant = tenantMapper.selectTenantByTenantCode(tenantCode);
+
+		ServiceUtil.checkIfFoundRecord(tenant,
+				"tenant not found tenantCode [" + tenantCode + "]");
+
+		return tenant;
+	}
+
+	
+	/**
+	 * 
 	 * @param visibility
 	 * @param license
 	 * @param openData
@@ -1596,6 +1616,29 @@ public class ServiceUtil {
 
 		String message = "received " + "idTenantType" + " [ " + idTenantType + " ]. Possible values are: "
 				+ StringUtils.collectionToCommaDelimitedString(listIdTenantType);
+
+		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
+	}
+	
+	/**
+	 * 
+	 * @param idStatus
+	 * @throws BadRequestException
+	 */
+	public static void checkIdStatus(Integer idStatus) throws BadRequestException {
+
+		for (Status status : Status.values()) {
+			if (status.id() == idStatus)
+				return;
+		}
+
+		List<Integer> listIdStatus = new ArrayList<>();
+		for (Status status : Status.values()) {
+			listIdStatus.add(status.id());
+		}
+
+		String message = "received " + "idStatus" + " [ " + idStatus + " ]. Possible values are: "
+				+ StringUtils.collectionToCommaDelimitedString(listIdStatus);
 
 		throw new BadRequestException(Errors.INCORRECT_VALUE, message);
 	}

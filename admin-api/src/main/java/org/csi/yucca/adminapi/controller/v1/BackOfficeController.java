@@ -92,7 +92,22 @@ public class BackOfficeController extends YuccaController {
 
 	@Autowired
 	private ApiService apiService;
+	
+	@ApiOperation(value = BO_UPDATE_TENANT_STATUS, notes = BO_UPDATE_TENANT_STATUS_NOTES, response = ServiceResponse.class)
+	@PutMapping("/tenants/{tenantcode}/status/{idStatus}")
+	public ResponseEntity<Object> updateTenantStatus(
+			@PathVariable final Integer idStatus, @PathVariable final String tenantcode) {
+		
+		logger.info("updateTenantStatus");
 
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return tenantService.updateTenantStatus(idStatus, tenantcode);
+			}
+		}, logger);
+		
+	}
+	
 	@ApiOperation(value = BO_LOAD_INGESTION_CONFIGURATION, notes = BO_LOAD_INGESTION_CONFIGURATION_NOTES, response = BackofficeDettaglioStreamDatasetResponse.class, responseContainer = "List")
 	@GetMapping("/ingestion/config/datasets/{tenantCode}")
 	public ResponseEntity<Object> downloadIngestionConfigurationCSV(@PathVariable final String tenantCode, @RequestParam(required = false) final String dbname,

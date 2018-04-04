@@ -11,6 +11,8 @@ import org.csi.yucca.adminapi.util.ServiceResponse;
 
 public interface TenantService {
 
+	ServiceResponse updateTenantStatus(Integer idStatus, String tenantcode) throws BadRequestException, NotFoundException, Exception;
+	
 	ServiceResponse insertTenantSocial(PostTenantSocialRequest request) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse insertTenant(PostTenantRequest tenantRequest) throws BadRequestException, NotFoundException, Exception;
