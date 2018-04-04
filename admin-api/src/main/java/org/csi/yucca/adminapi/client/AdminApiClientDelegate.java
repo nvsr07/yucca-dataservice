@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
@@ -298,11 +299,13 @@ public class AdminApiClientDelegate {
 			// Increase default max connection per route to 20
 			cm.setDefaultMaxPerRoute(20);
 
+			
 		}
 
 		public CloseableHttpClient get() {
+			RequestConfig config = RequestConfig.custom().setConnectTimeout(5 * 1000).build();
 			CloseableHttpClient threadSafeClient = HttpClients.custom()
-					.setConnectionManager(cm).build();
+					.setConnectionManager(cm).setDefaultRequestConfig(config).build();
 			return threadSafeClient;
 		}
 
