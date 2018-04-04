@@ -60,6 +60,7 @@ import org.csi.yucca.adminapi.util.Status;
 import org.csi.yucca.adminapi.util.StreamAction;
 import org.csi.yucca.adminapi.util.TenantType;
 import org.csi.yucca.adminapi.util.Type;
+import org.csi.yucca.adminapi.util.Util;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -401,7 +402,8 @@ public class TenantServiceImpl implements TenantService {
 		ServiceUtil.checkMandatoryParameter(tenantRequest.getUseremail(), "useremail");
 		ServiceUtil.checkUserTypeAuth(tenantRequest.getUsertypeauth());
 		ServiceUtil.checkTenantTypeAndUserTypeAuth(tenantRequest.getUsertypeauth(), tenantRequest.getIdTenantType());
-
+        ServiceUtil.checkValidDate(tenantRequest.getCreationDate());
+		
 		if (tenantRequest instanceof PostTenantRequest && TenantType.PERSONAL.id() != tenantRequest.getIdTenantType() && TenantType.TRIAL.id() != tenantRequest.getIdTenantType()) {
 
 			ServiceUtil.checkMandatoryParameter(((PostTenantRequest) tenantRequest).getName(), "name");
@@ -521,7 +523,12 @@ public class TenantServiceImpl implements TenantService {
 		BeanUtils.copyProperties(tenantRequest, tenant);
 
 		// set creationdate
-		tenant.setCreationdate(new Timestamp(System.currentTimeMillis()));
+		if (tenantRequest.getCreationDate() != null) {
+			tenant.setCreationdate(Util.dateStringToTimestamp(tenantRequest.getCreationDate()));
+		}
+		else{
+			tenant.setCreationdate(new Timestamp(System.currentTimeMillis()));	
+		}
 
 		// set tenant status
 		tenant.setIdTenantStatus(Status.REQUEST_INSTALLATION.id());

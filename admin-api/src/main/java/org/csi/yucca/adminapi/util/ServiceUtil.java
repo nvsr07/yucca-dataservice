@@ -1765,6 +1765,19 @@ public class ServiceUtil {
 		}
 	}
 
+
+	/**
+	 * 
+	 * @param date
+	 * @throws BadRequestException
+	 */
+	public static void checkValidDate(String date) throws BadRequestException {
+		if(date != null && !Util.isValidDateFormat(date)){
+			throw new BadRequestException(
+					Errors.INCORRECT_VALUE, "correct format date is [ " + Constants.CLIENT_FORMAT_DATE + " ] founded: [ " + date + " ]");
+		}
+	}
+
 	/**
 	 * 
 	 * @param parameterObj

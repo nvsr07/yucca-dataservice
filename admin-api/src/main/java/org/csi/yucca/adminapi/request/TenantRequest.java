@@ -1,9 +1,8 @@
 package org.csi.yucca.adminapi.request;
 
-import com.fasterxml.jackson.annotation.JsonView;
-
 public class TenantRequest {
 	
+	private String creationDate;
 	private Integer idTenantType;
 	private Integer idEcosystem;	
 	private String useremail;
@@ -17,6 +16,12 @@ public class TenantRequest {
 	private String description;
 	private Integer IdOrganization;
 	
+	public String getCreationDate() {
+		return creationDate;
+	}
+	public void setCreationDate(String creationDate) {
+		this.creationDate = creationDate;
+	}
 	public Integer getIdTenantType() {
 		return idTenantType;
 	}
