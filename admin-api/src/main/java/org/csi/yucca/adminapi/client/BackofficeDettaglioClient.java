@@ -1,6 +1,6 @@
 package org.csi.yucca.adminapi.client;
 
-import org.csi.yucca.adminapi.client.cache.CacheUtil;
+import org.csi.yucca.adminapi.client.cache.CacheUtil2k;
 import org.csi.yucca.adminapi.client.cache.key.KeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByDatasetCodeDatasetVersionKeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByIdDatasetDatasetVersionKeyCache;
@@ -17,7 +17,7 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, Integer idStream, Boolean onlyInstalled, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioStreamDataset(
+			return CacheUtil2k.getDettaglioStreamDataset(
 					new KeyCache(adminApiBaseUrl, logger).id(idStream).addParams("onlyInstalled", onlyInstalled));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
@@ -30,7 +30,7 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, String soCode, String streamCode, Boolean onlyInstalled, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioStreamDataset(new StreamDatasetBySoCodeStreamCodeKeyCache(adminApiBaseUrl, logger)
+			return CacheUtil2k.getDettaglioStreamDataset(new StreamDatasetBySoCodeStreamCodeKeyCache(adminApiBaseUrl, logger)
 					.soCode(soCode).streamCode(streamCode).addParams("onlyInstalled", onlyInstalled));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
@@ -43,7 +43,7 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, String datasetCode, Boolean onlyInstalled, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioStreamDatasetByDatasetCode(
+			return CacheUtil2k.getDettaglioStreamDatasetByDatasetCode(
 					new KeyCache(adminApiBaseUrl, logger).code(datasetCode).addParams("onlyInstalled", onlyInstalled));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
@@ -56,7 +56,7 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, Integer IdDataset, Boolean onlyInstalled, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioStreamDatasetByIdDataset(
+			return CacheUtil2k.getDettaglioStreamDatasetByIdDataset(
 					new KeyCache(adminApiBaseUrl, logger).id(IdDataset).addParams("onlyInstalled", onlyInstalled));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
@@ -69,7 +69,7 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, String datasetCode, Integer datasetVersion, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioStreamDatasetByDatasetCodeDatasetVersion(
+			return CacheUtil2k.getDettaglioStreamDatasetByDatasetCodeDatasetVersion(
 					new StreamDatasetByDatasetCodeDatasetVersionKeyCache(adminApiBaseUrl, logger).datasetCode(datasetCode)
 							.datasetVersion(datasetVersion));
 		} catch (InvalidCacheLoadException exception) {
@@ -83,7 +83,7 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, Integer idDataset, Integer datasetVersion, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioStreamDatasetByIdDatasetDatasetVersion(
+			return CacheUtil2k.getDettaglioStreamDatasetByIdDatasetDatasetVersion(
 					new StreamDatasetByIdDatasetDatasetVersionKeyCache(adminApiBaseUrl, logger).idDataset(idDataset)
 							.datasetVersion(datasetVersion));
 		} catch (InvalidCacheLoadException exception) {
@@ -96,7 +96,7 @@ public class BackofficeDettaglioClient {
 	public static MeasureUnitResponse getMeasureUnit(String adminApiBaseUrl, Integer idMeasureUnit, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil.getMeasureUnit(new KeyCache(adminApiBaseUrl, logger).id(idMeasureUnit));
+			return CacheUtil2k.getMeasureUnit(new KeyCache(adminApiBaseUrl, logger).id(idMeasureUnit));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
@@ -107,7 +107,7 @@ public class BackofficeDettaglioClient {
 	public static BackofficeDettaglioApiResponse getBackofficeDettaglioApi(String adminApiBaseUrl, String codApi,
 			String logger) throws AdminApiClientException {
 		try {
-			return CacheUtil.getDettaglioApi(new KeyCache(adminApiBaseUrl, logger).code(codApi));
+			return CacheUtil2k.getDettaglioApi(new KeyCache(adminApiBaseUrl, logger).code(codApi));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {

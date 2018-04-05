@@ -119,12 +119,25 @@
             <version>1.4.7</version>
         </dependency>		
         <!-- DIPENDENZE PER EMAIL SENDER END -->
-
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>19.0-rc2</version>
 		</dependency>
+
+<!--  cache2k --> 
+		<dependency>
+		    <groupId>org.cache2k</groupId>
+		    <artifactId>cache2k-api</artifactId>
+		    <version>1.0.2.Final</version>
+		    <scope>provided</scope>
+		  </dependency>
+		  <dependency>
+		    <groupId>org.cache2k</groupId>
+		    <artifactId>cache2k-all</artifactId>
+		    <version>1.0.2.Final</version>
+		    <scope>runtime</scope>
+		  </dependency>
 
 		<dependency>
 			<groupId>com.opencsv</groupId>
