@@ -269,7 +269,7 @@ public interface StreamMapper {
 			" yucca_r_stream_internal.id_data_sourceinternal = #{idDataSource} AND " + //-- <--Esempio: id_data_source " + 
 			" yucca_r_stream_internal.datasourceversioninternal = #{dataSourceVersion} AND " + // -- <--Esempio: datasourceversion " +
 			" (yucca_data_source.id_data_source, yucca_data_source.datasourceversion) IN  " +
-			" (select id_data_source, max(datasourceversion) from int_yucca.yucca_data_source  where id_data_source = yucca_stream.id_data_source group by id_data_source) ";	
+			" (select id_data_source, max(datasourceversion) from yucca_data_source  where id_data_source = yucca_stream.id_data_source group by id_data_source) ";	
 	@Results({
 		@Result(property = "idTenant", column = "id_tenant"),
 		@Result(property = "tenantDescription", column = "tenant_description"),

@@ -96,7 +96,7 @@ public interface DataTypeMapper {
 	DataType selectDataTypeById(int idDataType);
 
 	
-	// String DATA_TYPE_TABLE_NAME = "int_yucca.yucca_d_data_type";
+	// String DATA_TYPE_TABLE_NAME = "yucca_d_data_type";
 	//
 	// /*******************************************************************************/
 	//

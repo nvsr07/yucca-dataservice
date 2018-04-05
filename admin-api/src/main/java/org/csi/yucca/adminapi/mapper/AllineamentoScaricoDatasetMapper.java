@@ -38,7 +38,7 @@ public interface AllineamentoScaricoDatasetMapper {
 	 ********************************************************************************************/
 	public static final String SELECT_LAST_MONGO_OBJECT_ID = 
 			" SELECT last_mongo_object_id " +
-			" FROM int_yucca.yucca_allineamento_scarico_dataset " +
+			" FROM yucca_allineamento_scarico_dataset " +
 			" where id_organization = #{idOrganization} and " +
 			" id_dataset            = #{idDataset} and " +
 			" dataset_version       = #{datasetVersion} ";
@@ -72,7 +72,7 @@ public interface AllineamentoScaricoDatasetMapper {
 	 * 
 	 * ***********************************************************************/
 	public static final String UPDATE_LAST_MONGO_OBJECT_ID =
-	" UPDATE int_yucca.yucca_allineamento_scarico_dataset " +
+	" UPDATE yucca_allineamento_scarico_dataset " +
 	" SET last_mongo_object_id = #{lastMongoObjectId} " +
 	" WHERE id_organization    = #{idOrganization} and  " +
 	" id_dataset               = #{idDataset} and  " +

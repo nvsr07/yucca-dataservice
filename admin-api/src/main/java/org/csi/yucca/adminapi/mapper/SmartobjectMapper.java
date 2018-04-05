@@ -327,7 +327,7 @@ public interface SmartobjectMapper{
 	 * 
 	 * ***********************************************************************/
 	public static final String SELECT_ALL_ID_SMARTOBJECT = 
-			"SELECT id_smart_object FROM int_yucca.yucca_smart_object";
+			"SELECT id_smart_object FROM yucca_smart_object";
 	@Select(SELECT_ALL_ID_SMARTOBJECT) 
 	List<Integer> selectAllSmartobject();	
 
@@ -337,7 +337,7 @@ public interface SmartobjectMapper{
 	 * 
 	 * ***********************************************************************/
 	public static final String INSERT_TENANT_SMARTOBJECT = 
-		" INSERT INTO int_yucca.yucca_r_tenant_smart_object( " +
+		" INSERT INTO yucca_r_tenant_smart_object( " +
 		" id_tenant, id_smart_object, isactive, ismanager, activationdate, managerfrom) " +
 		" VALUES (#{idTenant}, #{idSmartObject}, 1, #{isManager}, #{now}, #{now}) ";
 	@Insert(INSERT_TENANT_SMARTOBJECT)

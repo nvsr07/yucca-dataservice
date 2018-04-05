@@ -540,14 +540,14 @@ public class BackOfficeController extends YuccaController {
 
 	/**
 	 * 
-	 * CREATE SEQUENCE int_yucca.phenomenon_id_phenomenon_seq; ALTER TABLE
-	 * int_yucca.yucca_d_phenomenon ALTER COLUMN id_phenomenon SET DEFAULT
-	 * nextval('int_yucca.phenomenon_id_phenomenon_seq'); ALTER TABLE
-	 * int_yucca.yucca_d_phenomenon ALTER COLUMN id_phenomenon SET NOT NULL;
-	 * ALTER SEQUENCE int_yucca.phenomenon_id_phenomenon_seq OWNED BY
-	 * int_yucca.yucca_d_phenomenon.id_phenomenon; -- 8.2 or later
+	 * CREATE SEQUENCE phenomenon_id_phenomenon_seq; ALTER TABLE
+	 * yucca_d_phenomenon ALTER COLUMN id_phenomenon SET DEFAULT
+	 * nextval('phenomenon_id_phenomenon_seq'); ALTER TABLE
+	 * yucca_d_phenomenon ALTER COLUMN id_phenomenon SET NOT NULL;
+	 * ALTER SEQUENCE phenomenon_id_phenomenon_seq OWNED BY
+	 * yucca_d_phenomenon.id_phenomenon; -- 8.2 or later
 	 * 
-	 * ALTER SEQUENCE int_yucca.phenomenon_id_phenomenon_seq RESTART WITH 49;
+	 * ALTER SEQUENCE phenomenon_id_phenomenon_seq RESTART WITH 49;
 	 * 
 	 * 
 	 * INSERT PHENOMENON

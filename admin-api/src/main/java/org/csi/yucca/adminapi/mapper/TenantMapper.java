@@ -128,7 +128,7 @@ public interface TenantMapper {
 			" coalesce(TENANT.socialsolrcollectionname, ORGANIZATION.socialsolrcollectionname) AS socialsolrcollectionname, "+	
 			" coalesce(TENANT.dataphoenixtablename, ORGANIZATION.dataphoenixtablename) AS dataphoenixtablename, "+	
 			" coalesce(TENANT.dataphoenixschemaname, ORGANIZATION.dataphoenixschemaname) AS dataphoenixschemaname "+	
-			" FROM int_yucca.yucca_tenant TENANT  "+
+			" FROM yucca_tenant TENANT  "+
 			" LEFT JOIN " + R_TENANT_BUNDLES_TABLE + " TENANT_BUNDLES ON TENANT.id_tenant = TENANT_BUNDLES.id_tenant "+
 			" LEFT JOIN " + BundlesMapper.BUNDLES_TABLE + " BUNDLES ON BUNDLES.id_bundles = TENANT_BUNDLES.id_bundles "+
 			" LEFT JOIN " + OrganizationMapper.ORGANIZATION_TABLE + " ORGANIZATION ON TENANT.id_organization = ORGANIZATION.id_organization "+
@@ -324,7 +324,7 @@ public interface TenantMapper {
 		 * 
 		 * ***********************************************************************/
 		public static final String INSERT_TENANT_DATA_SOURCE = 
-				" INSERT INTO int_yucca.yucca_r_tenant_data_source( id_data_source, datasourceversion, id_tenant, "
+				" INSERT INTO yucca_r_tenant_data_source( id_data_source, datasourceversion, id_tenant, "
 				+ "isactive, ismanager, dataoptions, manageoptions, activationdate, deactivationdate, managerfrom, manageruntil) "
 				+ "VALUES (#{idDataSource}, #{datasourceversion}, #{idTenant},#{isactive}, "
 				+ "#{ismanager}, #{dataoptions}, #{manageoptions}, #{activationdate}, #{deactivationdate}, "

@@ -22,7 +22,7 @@ public interface MailTemplatesMapper {
 	 * ***********************************************************************/
 	public static final String SELECT_MAILTEMPLATES_BY_ID_TENANT_TYPE =
 			" SELECT id_tenant_type, mailbody, mailobject " + 
-			" FROM int_yucca.yucca_d_mailtemplates " +
+			" FROM yucca_d_mailtemplates " +
 			" WHERE id_tenant_type = #{idTenantType}";
 	@Results({
         @Result(property = "idTenantType", column = "id_tenant_type")
