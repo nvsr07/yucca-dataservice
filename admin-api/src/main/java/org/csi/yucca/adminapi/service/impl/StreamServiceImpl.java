@@ -8,6 +8,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
 import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_WEBSOCKET;
 import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
+import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
 import static org.csi.yucca.adminapi.util.ServiceUtil.SINCE_VERSION;
 import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkAuthTenant;
@@ -77,6 +78,7 @@ import org.csi.yucca.adminapi.model.TenantDataSource;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
+import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostValidateSiddhiQueriesRequest;
@@ -692,6 +694,25 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 			}
 		}
 	}
+	
+	/**
+	 * 
+	 * @param postDatasetRequest
+	 * @return
+	 */
+	private Integer insertSubdomain(PostStreamRequest postStreamRequest) {
+
+		if (postStreamRequest.getIdSubdomain() != null) {
+			return postStreamRequest.getIdSubdomain();
+		}
+
+		Subdomain subdomain = new Subdomain().idDomain(MULTI_SUBDOMAIN_ID_DOMAIN).langEn(postStreamRequest.getMultiSubdomain()).langIt(postStreamRequest.getMultiSubdomain())
+				.subdomaincode(postStreamRequest.getMultiSubdomain());
+
+		subdomainMapper.insertSubdomain(subdomain);
+
+		return subdomain.getIdSubdomain();
+	}
 
 	/**
 	 * 
@@ -714,7 +735,10 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 			idLicense = insertLicense(request.getLicense(), licenseMapper);
 		}
 
-		Integer idDataSource = ServiceUtil.insertDataSource(request, organization.getIdOrganization(), idDcat,
+		// insert subdomain
+		Integer idSubdomain = insertSubdomain(request);
+				
+		Integer idDataSource = ServiceUtil.insertDataSource(request.idSubdomain(idSubdomain), organization.getIdOrganization(), idDcat,
 				idLicense, Status.DRAFT.id(), dataSourceMapper);
 
 		Stream stream = insertStream(request, idDataSource, smartobject.getIdSmartObject());
@@ -943,7 +967,7 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 
 		checkMandatories(request);
 
-		checkSubdomain(request.getIdSubdomain());
+		checkSubdomain(request);
 
 		checkOpendataupdatedate(request);
 
@@ -1266,6 +1290,20 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 		checkMandatoryParameter(idSubdomain, "idSubdomain");
 		Subdomain subdomain = subdomainMapper.selectSubdomainByIdSubdomain(idSubdomain);
 		checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + idSubdomain + "] ");
+		return subdomain;
+	}
+	
+	private Subdomain checkSubdomain(PostStreamRequest request) throws NotFoundException, BadRequestException {
+		Subdomain subdomain = null;
+		if (request.getIdSubdomain() == null && request.getMultiSubdomain()== null) {
+			throw new BadRequestException(Errors.MANDATORY_PARAMETER, "Mandatory idSubdomanin or multiSubdomain");
+		}
+		
+		/*checkMandatoryParameter(idSubdomain, "idSubdomain");*/
+		else if (request.getIdSubdomain() != null) {
+		 subdomain = subdomainMapper.selectSubdomainByIdSubdomain(request.getIdSubdomain());
+		checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + request.getIdSubdomain() + "] ");
+		}
 		return subdomain;
 	}
 
