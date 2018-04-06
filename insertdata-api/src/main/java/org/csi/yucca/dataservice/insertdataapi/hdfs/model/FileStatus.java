@@ -1,5 +1,7 @@
 package org.csi.yucca.dataservice.insertdataapi.hdfs.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class FileStatus {
 
 	private String fileId;
