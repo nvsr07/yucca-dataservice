@@ -264,7 +264,7 @@ public class CacheUtil2k {
 	 * @return
 	 * @throws AdminApiClientException
 	 */
-	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDataset(StreamDatasetBySoCodeStreamCodeKeyCache keyCache) throws Exception {
+	public static BackofficeDettaglioStreamDatasetResponse getDettaglioStreamDatasetBySO(StreamDatasetBySoCodeStreamCodeKeyCache keyCache) throws Exception {
 		return dettaglioStreamDatasetBySoCodeStreamCodeCache.get(keyCache);	
 	}
 

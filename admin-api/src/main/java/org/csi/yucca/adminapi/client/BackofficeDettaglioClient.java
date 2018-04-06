@@ -1,5 +1,6 @@
 package org.csi.yucca.adminapi.client;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.client.cache.CacheUtil2k;
 import org.csi.yucca.adminapi.client.cache.key.KeyCache;
 import org.csi.yucca.adminapi.client.cache.key.StreamDatasetByDatasetCodeDatasetVersionKeyCache;
@@ -22,7 +23,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -30,12 +31,13 @@ public class BackofficeDettaglioClient {
 			String adminApiBaseUrl, String soCode, String streamCode, Boolean onlyInstalled, String logger)
 			throws AdminApiClientException {
 		try {
-			return CacheUtil2k.getDettaglioStreamDataset(new StreamDatasetBySoCodeStreamCodeKeyCache(adminApiBaseUrl, logger)
+			return CacheUtil2k.getDettaglioStreamDatasetBySO(new StreamDatasetBySoCodeStreamCodeKeyCache(adminApiBaseUrl, logger)
 					.soCode(soCode).streamCode(streamCode).addParams("onlyInstalled", onlyInstalled));
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -48,7 +50,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -61,7 +63,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -75,7 +77,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -89,7 +91,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -100,7 +102,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
@@ -111,7 +113,7 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
 		}
 	}
 
