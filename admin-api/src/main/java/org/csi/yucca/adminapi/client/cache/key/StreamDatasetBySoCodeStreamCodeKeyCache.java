@@ -22,6 +22,16 @@ public class StreamDatasetBySoCodeStreamCodeKeyCache extends KeyCache{
 	}
 
 	@Override
+	public StreamDatasetBySoCodeStreamCodeKeyCache addParams(String key, String value) {
+		return (StreamDatasetBySoCodeStreamCodeKeyCache)super.addParams(key, value);
+	}
+	
+	@Override
+	public StreamDatasetBySoCodeStreamCodeKeyCache addParams(String key, Boolean value) {
+		return (StreamDatasetBySoCodeStreamCodeKeyCache)super.addParams(key, value);
+	}
+	
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
