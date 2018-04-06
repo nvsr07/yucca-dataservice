@@ -93,7 +93,7 @@ public class CacheUtil2k {
 		allineamentoResponseCache = new Cache2kBuilder<KeyCache, List<AllineamentoScaricoDatasetResponse>>(){}.resilienceDuration(24, TimeUnit.HOURS).expireAfterWrite(DURATION, TimeUnit.MINUTES).refreshAhead(true)
 				.loader(new CacheLoader<KeyCache, List<AllineamentoScaricoDatasetResponse>>() {
 					public List<AllineamentoScaricoDatasetResponse> load(KeyCache key) throws Exception {
-						return (List<AllineamentoScaricoDatasetResponse>) get(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoScaricoDatasetResponse.class);	
+						return (List<AllineamentoScaricoDatasetResponse>) getList(BACK_OFFICE_ALLINEAMENTO_BY_ID_ORG, key, AllineamentoScaricoDatasetResponse.class);	
 					};
 				}).build();
 				
@@ -104,7 +104,7 @@ public class CacheUtil2k {
 		organizationListCache = new Cache2kBuilder<KeyCache, List<OrganizationResponse>>(){}.resilienceDuration(24, TimeUnit.HOURS).expireAfterWrite(DURATION, TimeUnit.MINUTES).refreshAhead(true)
 				.loader(new CacheLoader<KeyCache, List<OrganizationResponse>>() {
 					public List<OrganizationResponse> load(KeyCache key) throws Exception {
-						return (List<OrganizationResponse>) get(BACK_OFFICE_ORGANIZATIONS, key, OrganizationResponse.class);	
+						return (List<OrganizationResponse>) getList(BACK_OFFICE_ORGANIZATIONS, key, OrganizationResponse.class);	
 					};
 				}).build();
 	}
@@ -117,7 +117,7 @@ public class CacheUtil2k {
 		listaStreamDatasetByOrganizationCodeCache = new Cache2kBuilder<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>>(){}.resilienceDuration(24, TimeUnit.HOURS).expireAfterWrite(DURATION, TimeUnit.MINUTES).refreshAhead(true)
 				.loader(new CacheLoader<KeyCache, List<BackofficeDettaglioStreamDatasetResponse>>() {
 					public List<BackofficeDettaglioStreamDatasetResponse> load(KeyCache key) throws Exception {
-						return (List<BackofficeDettaglioStreamDatasetResponse>) get(BACK_OFFICE_DATASETS_ORGANIZATION_CODE, key, BackofficeDettaglioStreamDatasetResponse.class);	
+						return (List<BackofficeDettaglioStreamDatasetResponse>) getList(BACK_OFFICE_DATASETS_ORGANIZATION_CODE, key, BackofficeDettaglioStreamDatasetResponse.class);	
 					};
 				}).build();
 	}
@@ -126,7 +126,7 @@ public class CacheUtil2k {
 		tenantListCache = new Cache2kBuilder<KeyCache, List<TenantManagementResponse>>(){}.resilienceDuration(24, TimeUnit.HOURS).expireAfterWrite(DURATION, TimeUnit.MINUTES).refreshAhead(true)
 				.loader(new CacheLoader<KeyCache, List<TenantManagementResponse>>() {
 					public List<TenantManagementResponse> load(KeyCache key) throws Exception {
-						return (List<TenantManagementResponse>) get(BACK_OFFICE_TENANTS, key, TenantManagementResponse.class);	
+						return (List<TenantManagementResponse>) getList(BACK_OFFICE_TENANTS, key, TenantManagementResponse.class);	
 					};
 				}).build();
 	}
