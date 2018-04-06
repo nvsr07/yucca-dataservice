@@ -30,6 +30,7 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	private String requestername;
 	private String requestersurname;
 	private String externalreference;
+	private String multiSubdomain;
 	
 	public Integer getIdStream() {
 		return idStream;
@@ -244,5 +245,20 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	public void setTags(List<Integer> tags) {
 		this.tags = tags;
 	}
+
+	public String getMultiSubdomain() {
+		return multiSubdomain;
+	}
+
+	public void setMultiSubdomain(String multiSubdomain) {
+		this.multiSubdomain = multiSubdomain;
+	}
+
+	public StreamRequest idSubdomain(Integer idSubdomain) {
+		setIdSubdomain(idSubdomain);
+		return this;
+	}
+	
+	
 
 }
