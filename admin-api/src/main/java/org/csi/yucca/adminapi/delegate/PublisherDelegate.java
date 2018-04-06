@@ -170,7 +170,7 @@ public class PublisherDelegate {
 		} else {
 			addApiParams.add(new BasicNameValuePair("visibility", "restricted"));
 			String roles = "";
-
+			roles += tenantcode+ "_subscriber";
 			if (sharingTenant != null) {
 				List<SharingTenantsJson> tenants = mapper.readValue(sharingTenant, new TypeReference<List<SharingTenantsJson>>() {
 				});
