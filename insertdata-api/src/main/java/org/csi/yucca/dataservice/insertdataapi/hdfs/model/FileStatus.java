@@ -1,5 +1,6 @@
 package org.csi.yucca.dataservice.insertdataapi.hdfs.model;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class FileStatus {
