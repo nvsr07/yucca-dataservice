@@ -566,7 +566,7 @@ public class ServiceUtil {
 				 */
 				if (component.getIdComponent() == null) {
 					checkUnicComponentName(listComponentRequest, component.getName());
-					ServiceUtil.checkAphanumeric(component.getName(), "component name");
+					ServiceUtil.checkAphanumericAndUnderscore(component.getName(), "component name");
 					ServiceUtil.checkMandatoryParameter(component.getAlias(), "alias");
 					ServiceUtil.checkMandatoryParameter(component.getInorder(), "inorder");
 					if (isStream) {
