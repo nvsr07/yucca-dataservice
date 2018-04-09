@@ -1115,7 +1115,7 @@ public class ServiceUtil {
 			License license = new License();
 			BeanUtils.copyProperties(licenseRequest, license);
 			if(license.getDescription() == null)
-				license.setDescription(licenseRequest.getDescription());
+				license.setDescription(licenseRequest.getLicensecode());
 			licenseMapper.insertLicense(license);
 			return license.getIdLicense();
 		}
