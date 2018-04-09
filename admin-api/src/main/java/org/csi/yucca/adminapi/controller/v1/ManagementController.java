@@ -240,14 +240,14 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_UPDATE_DATASET, notes = M_UPDATE_DATASET_NOTES, response = SmartobjectResponse.class)
 	@PutMapping("/organizations/{organizationCode}/datasets/{idDataset}")
-	public ResponseEntity<Object> updateDataset(@PathVariable final String organizationCode, @PathVariable final Integer idDataset,
+	public ResponseEntity<Object> updateDataset(@PathVariable final String organizationCode, @PathVariable final Integer idDataset, @RequestParam(required = false) final Boolean publish, 
 			@RequestBody final DatasetRequest datasetRequest, @RequestParam(required = false) final String tenantCodeManager, final HttpServletRequest request) {
 
 		logger.info("updateDataset");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.updateDataset(organizationCode, idDataset, datasetRequest, tenantCodeManager, getAuthorizedUser(request));
+				return datasetService.updateDataset(organizationCode, idDataset, datasetRequest, tenantCodeManager, getAuthorizedUser(request), publish);
 			}
 		}, logger);
 	}
@@ -264,16 +264,18 @@ public class ManagementController extends YuccaController {
 	 */
 	@ApiOperation(value = M_INSERT_DATASET, notes = M_INSERT_DATASET_NOTES, response = Response.class)
 	@PostMapping("/organizations/{organizationCode}/datasets")
-	public ResponseEntity<Object> addDataSet(@PathVariable final String organizationCode, @RequestBody final DatasetRequest postDatasetRequest, final HttpServletRequest request) {
+	public ResponseEntity<Object> addDataSet(@PathVariable final String organizationCode, @RequestParam(required = false) final Boolean publish, @RequestBody final DatasetRequest postDatasetRequest, final HttpServletRequest request) {
 		logger.info("addDataSet");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.insertDataset(organizationCode, postDatasetRequest, getAuthorizedUser(request));
+				return datasetService.insertDataset(organizationCode, publish, postDatasetRequest, getAuthorizedUser(request));
 			}
 		}, logger);
 	}
 
+
+	
 	/**
 	 * 
 	 * http://redmine.sdp.csi.it/projects/yucca-smart-data-platform/wiki/

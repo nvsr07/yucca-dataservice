@@ -43,11 +43,11 @@ public interface DatasetService {
 	ServiceResponse selectDatasetByDatasetCode(String datasetCode, boolean onlyInstalled)throws BadRequestException, NotFoundException, Exception;
 
 	
-	ServiceResponse insertDataset(String organizationCode, DatasetRequest postDatasetRequest, JwtUser authorizedUser)
+	ServiceResponse insertDataset(String organizationCode, Boolean publish, DatasetRequest postDatasetRequest, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse updateDataset(String organizationCode, Integer idDataset, DatasetRequest datasetRequest,
-			String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+			String tenantCodeManager, JwtUser authorizedUser, Boolean publish) throws BadRequestException, NotFoundException, Exception;
 
 	ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding,
 			String csvSeparator, String componentInfoRequests, String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser)

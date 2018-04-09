@@ -158,7 +158,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Autowired
 	private AllineamentoScaricoDatasetMapper allineamentoScaricoDatasetMapper;
-	
+
 	@Value("${hive.jdbc.user}")
 	private String hiveUser;
 
@@ -173,92 +173,90 @@ public class DatasetServiceImpl implements DatasetService {
 
 	@Value("${datainsert.delete.url}")
 	private String datainsertDeleteUrl;
-	
+
 	@Override
-	public ServiceResponse selectIngestionConfiguration(String tenantCode, String dbname, String dateformat,
-			String separator, Boolean onlyImported, Boolean help, HttpServletResponse httpServletResponse)
-			throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse selectIngestionConfiguration(String tenantCode, String dbname, String dateformat, String separator, Boolean onlyImported, Boolean help,
+			HttpServletResponse httpServletResponse) throws BadRequestException, NotFoundException, Exception {
 
 		if (help) {
 			return buildResponse("CSV da usare per caricare un csv contentente la configuarazione da usare per l'ingestion\n\n" + "PARAMETRI\n"
-					+ " - dbName: nome database da includere, se omesso vengono presi tutti\n" 
-					+ " - sep: separatore di colonna, se omesso viene usata la tabulazione\n"
+					+ " - dbName: nome database da includere, se omesso vengono presi tutti\n" + " - sep: separatore di colonna, se omesso viene usata la tabulazione\n"
 					+ " - onlyImported: flag indicante se includere solo i dataset importati da db: default true\n"
 					+ " - dateformat: formato data, se omesso viene usato dd/MM/yyyy\n");
 		}
-		
-		List<IngestionConfiguration> list =  datasetMapper.selectIngestionConfiguration(dbname, tenantCode, onlyImported);
+
+		List<IngestionConfiguration> list = datasetMapper.selectIngestionConfiguration(dbname, tenantCode, onlyImported);
 		checkList(list);
-		
+
 		List<IngestionConfigurationResponse> listCsvRow = new ArrayList<>();
 		for (IngestionConfiguration model : list) {
 			listCsvRow.add(new IngestionConfigurationResponseBuilder(model).build(dateformat));
 		}
-		
-		ServiceUtil.downloadCsv(listCsvRow, "ingestionConf.csv", separator.charAt(0), httpServletResponse, 
-				"table", "column", "comments", "datasetCode", "domain", "subdomain", "visibility",
-				"opendata", "registrationDate", "dbName", "dbSchema", "dbUrl", "columnIndex");
-		
+
+		ServiceUtil.downloadCsv(listCsvRow, "ingestionConf.csv", separator.charAt(0), httpServletResponse, "table", "column", "comments", "datasetCode", "domain", "subdomain",
+				"visibility", "opendata", "registrationDate", "dbName", "dbSchema", "dbUrl", "columnIndex");
+
 		return buildResponse("Downloaded CSV file with " + list.size() + "records.");
-	}	
-	
+	}
+
 	@Override
-	public ServiceResponse insertLastMongoObjectId(AllineamentoScaricoDatasetRequest request, Integer idOrganization)throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse insertLastMongoObjectId(AllineamentoScaricoDatasetRequest request, Integer idOrganization) throws BadRequestException, NotFoundException, Exception {
 
 		Organization organization = organizationMapper.selectOrganizationById(idOrganization);
-		
+
 		checkIfFoundRecord(organization, "Not found organization: " + idOrganization);
-		
+
 		checkMandatoryParameter(request.getLastMongoObjectId(), "LastMongoObjectId");
 		checkMandatoryParameter(request.getDatasetVersion(), "DatasetVersion");
 		checkMandatoryParameter(request.getIdDataset(), "IdDataset");
-		
+
 		String lastMongoObjectId = allineamentoScaricoDatasetMapper.selectLastMongoObjectId(idOrganization, request.getIdDataset(), request.getDatasetVersion());
-		
+
 		if (lastMongoObjectId != null) {
 			allineamentoScaricoDatasetMapper.updateLastMongoObjectId(new AllineamentoScaricoDatasetBuilder(request, idOrganization).build());
-		}
-		else{
+		} else {
 			allineamentoScaricoDatasetMapper.insertAllineamentoScaricoDataset(new AllineamentoScaricoDatasetBuilder(request, idOrganization).build());
 		}
-		
-		return buildResponse(new AllineamentoScaricoDatasetResponseBuilder()
-				.idOrganization(idOrganization).idDataset(request.getIdDataset()).datasetVersion(request.getDatasetVersion()).lastMongoObjectId(request.getLastMongoObjectId()).build());
+
+		return buildResponse(new AllineamentoScaricoDatasetResponseBuilder().idOrganization(idOrganization).idDataset(request.getIdDataset())
+				.datasetVersion(request.getDatasetVersion()).lastMongoObjectId(request.getLastMongoObjectId()).build());
 
 	}
 
 	@Override
-	public ServiceResponse selectAllineamentoScaricoDataset(Integer idOrganization, Integer idDataset, Integer datasetVersion) throws BadRequestException, NotFoundException, Exception {
-		
+	public ServiceResponse selectAllineamentoScaricoDataset(Integer idOrganization, Integer idDataset, Integer datasetVersion)
+			throws BadRequestException, NotFoundException, Exception {
+
 		String lastMongoObjectId = allineamentoScaricoDatasetMapper.selectLastMongoObjectId(idOrganization, idDataset, datasetVersion);
 
 		checkIfFoundRecord(lastMongoObjectId, "lastMongoObjectId");
-		
-		return buildResponse(new AllineamentoScaricoDatasetResponseBuilder()
-				.idOrganization(idOrganization).idDataset(idDataset).datasetVersion(datasetVersion).lastMongoObjectId(lastMongoObjectId).build());
+
+		return buildResponse(new AllineamentoScaricoDatasetResponseBuilder().idOrganization(idOrganization).idDataset(idDataset).datasetVersion(datasetVersion)
+				.lastMongoObjectId(lastMongoObjectId).build());
 	}
 
 	@Override
 	public ServiceResponse selectAllineamentoScaricoDataset(Integer idOrganization) throws BadRequestException, NotFoundException, Exception {
 
 		List<AllineamentoScaricoDataset> listModel = allineamentoScaricoDatasetMapper.selectAllineamentoScaricoDatasetByOrganization(idOrganization);
-		
+
 		checkList(listModel);
 
 		List<AllineamentoScaricoDatasetResponse> listResponse = new ArrayList<>();
-		
+
 		for (AllineamentoScaricoDataset model : listModel) {
 			listResponse.add(new AllineamentoScaricoDatasetResponseBuilder(model).build());
 		}
-		
+
 		return buildResponse(listResponse);
 	}
-	
-	@Override
-	public ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager,
-			Integer version, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		// Verifica che l'utente loggato nel jwt possa utilizzare il tenant passato, se non puo' rilancia UNAUTHORIZED:
+	@Override
+	public ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager, Integer version, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, Exception {
+
+		// Verifica che l'utente loggato nel jwt possa utilizzare il tenant
+		// passato, se non puo' rilancia UNAUTHORIZED:
 		ServiceUtil.checkAuthTenant(authorizedUser, tenantCodeManager);
 
 		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
@@ -266,58 +264,59 @@ public class DatasetServiceImpl implements DatasetService {
 		checkIfFoundRecord(dataset);
 
 		User user = userMapper.selectUserByIdDataSourceAndVersion(dataset.getIdDataSource(), dataset.getDatasourceversion(), tenantCodeManager, DataOption.WRITE.id());
-		
+
 		String url = datainsertDeleteUrl + tenantCodeManager + "/" + idDataset + (version != null ? "/" + version : "");
 
 		HttpDelegate.makeHttpDelete(url, user.getUsername(), user.getPassword());
-		
+
 		return ServiceResponse.build().NO_CONTENT();
 	}
-	
+
 	@Override
-	public ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser)
-			throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
 
 		ServiceUtil.checkIfFoundRecord(dataset);
-		
-		// Aggiorna lo stato di tutte le versioni del datasource mettendolo a 'uninst':
+
+		// Aggiorna lo stato di tutte le versioni del datasource mettendolo a
+		// 'uninst':
 		ServiceUtil.updateDataSourceStatusAllVersion(Status.UNINSTALLATION.id(), dataset.getIdDataSource(), dataSourceMapper);
 
 		// spubblicazione delle api odata e la cancellazione del documento Solr
 		removeOdataApiAndSolrDocument(dataset.getDatasetcode());
-		
+
 		return ServiceResponse.build().NO_CONTENT();
 	}
-	
+
 	@Override
 	public ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception {
-		
+
 		List<BackofficeDettaglioStreamDatasetResponse> response = new ArrayList<>();
 
 		List<DettaglioDataset> listDettaglioDataset = datasetMapper.selectListaDettaglioDatasetByOrganizationCode(organizationCode);
 
 		checkList(listDettaglioDataset);
-		
+
 		for (DettaglioDataset dettaglioDataset : listDettaglioDataset) {
-//			response.add(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));
+			// response.add(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));
 			response.add(ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper));
 		}
 		return buildResponse(response);
 	}
-	
+
 	@Override
 	public ServiceResponse insertCSVData(MultipartFile file, Boolean skipFirstRow, String encoding, String csvSeparator, String componentInfoRequestsJson, String organizationCode,
 			Integer idDataset, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
-		logger.info("[DatasetServiceImpl::insertCSVData] Begin idDataset:["+idDataset+"], componentInfoRequestsJson:["+componentInfoRequestsJson +"]");
+		logger.info("[DatasetServiceImpl::insertCSVData] Begin idDataset:[" + idDataset + "], componentInfoRequestsJson:[" + componentInfoRequestsJson + "]");
 
 		List<ComponentInfoRequest> componentInfoRequests = Util.getComponentInfoRequests(componentInfoRequestsJson);
 
 		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
 		checkIfFoundRecord(dataset);
-		//List<ComponentResponse> components = Util.getComponents(dataset.getComponents());
+		// List<ComponentResponse> components =
+		// Util.getComponents(dataset.getComponents());
 
 		checkComponentsSize(dataset.getComponents(), componentInfoRequests);
 
@@ -334,23 +333,23 @@ public class DatasetServiceImpl implements DatasetService {
 
 		logger.debug(user != null ? "user: " + user.getUsername() : "user è nullo!");
 
-		logger.debug("[DatasetServiceImpl::insertCSVData] makeHttpPost invioCsvRequest.summary(100 chars):["+invioCsvRequest.toString().substring(0, 100)+"...]");
+		logger.debug("[DatasetServiceImpl::insertCSVData] makeHttpPost invioCsvRequest.summary(100 chars):[" + invioCsvRequest.toString().substring(0, 100) + "...]");
 		HttpDelegate.makeHttpPost(null, datainsertBaseUrl + user.getUsername(), null, user.getUsername(), user.getPassword(), invioCsvRequest.toString());
 
 		logger.info("[DatasetServiceImpl::insertCSVData] END");
-		
+
 		int number = csvRows == null ? 0 : csvRows.size();
-		
+
 		String message = "Row's number: " + number;
-		
+
 		String importedfiles = dataset.getImportedfiles();
-		if(importedfiles == null || importedfiles.equals(""))
+		if (importedfiles == null || importedfiles.equals(""))
 			importedfiles = file.getOriginalFilename();
 		else
 			importedfiles += "," + file.getOriginalFilename();
-		
+
 		datasetMapper.updateImportedFiles(dataset.getIdDataSource(), dataset.getDatasourceversion(), importedfiles);
-		
+
 		return ServiceResponse.build().object(message);
 	}
 
@@ -373,8 +372,8 @@ public class DatasetServiceImpl implements DatasetService {
 			if (DataType.STRING.id().equals(component.getIdDataType()) || DataType.DATE_TIME.id().equals(component.getIdDataType())) {
 				doubleQuote = "\"";
 			}
-			if(DataType.DATE_TIME.id().equals(component.getIdDataType()))
-				columns[c]  = Util.isThisDateValid(columns[c], info.getDateFormat());
+			if (DataType.DATE_TIME.id().equals(component.getIdDataType()))
+				columns[c] = Util.isThisDateValid(columns[c], info.getDateFormat());
 
 			resultRow.append("\"").append(component.getName()).append("\"").append(":").append(doubleQuote).append(columns[c]).append(doubleQuote).append(",");
 		}
@@ -385,8 +384,8 @@ public class DatasetServiceImpl implements DatasetService {
 
 	}
 
-	private List<String> getCsvRows(MultipartFile file, boolean skipFirstRow, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests,
-			String csvSeparator) throws Exception {
+	private List<String> getCsvRows(MultipartFile file, boolean skipFirstRow, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests, String csvSeparator)
+			throws Exception {
 
 		String[] rows = Util.getCsvRows(file, skipFirstRow);
 
@@ -413,8 +412,8 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private void checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, ComponentJson[] components,
-			List<ComponentInfoRequest> componentInfoRequests) throws Exception {
+	private void checkCsvFile(MultipartFile file, boolean skipFirstRow, String csvSeparator, ComponentJson[] components, List<ComponentInfoRequest> componentInfoRequests)
+			throws Exception {
 
 		checkComponentsSize(components, componentInfoRequests);
 
@@ -426,25 +425,24 @@ public class DatasetServiceImpl implements DatasetService {
 		// byte[] bytes = file.getBytes();
 		// String completeData = new String(bytes);
 
-		
 		String[] rows = Util.getCsvRows(file, skipFirstRow);
 		List<String> errors = new ArrayList<String>();
 
 		for (int r = 0; r < rows.length; r++) {
 
 			String[] columns = rows[r].split(csvSeparator);
-			
+
 			int totalColumnSkipped = 0;
 			for (ComponentInfoRequest cir : componentInfoRequests) {
-				if(cir.isSkipColumn())
+				if (cir.isSkipColumn())
 					totalColumnSkipped++;
 			}
 
-			if (columns.length - totalColumnSkipped  != components.length) {
+			if (columns.length - totalColumnSkipped != components.length) {
 				errors.add("Errore alla riga " + r + ", il numero di colonne deve essere: " + components.length);
 				continue;
 			}
-			
+
 			for (int c = 0; c < columns.length; c++) {
 
 				if (maximumLimitErrorsReached(errors))
@@ -458,14 +456,14 @@ public class DatasetServiceImpl implements DatasetService {
 				}
 
 				String column = columns[c];
-				//DataTypeResponse typeResponse = component.getDataType();
+				// DataTypeResponse typeResponse = component.getDataType();
 				for (DataType dateType : DataType.values()) {
 					if (dateType.id().equals(component.getIdDataType())) {
 						try {
 
 							if (DataType.DATE_TIME == dateType) {
 								String formattedDate = Util.isThisDateValid(column, info.getDateFormat());
-								if (formattedDate==null) {
+								if (formattedDate == null) {
 									throw new Exception();
 								}
 								continue;
@@ -479,12 +477,12 @@ public class DatasetServiceImpl implements DatasetService {
 				}
 			}
 		}
-		
+
 		if (!errors.isEmpty()) {
-//			StringBuilder errorsString = new StringBuilder();
-//			for (String error : errors) {
-//				errorsString.append(error).append("\n");
-//			}
+			// StringBuilder errorsString = new StringBuilder();
+			// for (String error : errors) {
+			// errorsString.append(error).append("\n");
+			// }
 			throw new BadRequestException(Errors.INCORRECT_VALUE).args(errors);
 		}
 	}
@@ -537,10 +535,10 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @param datasetRequest
 	 * @throws Exception
 	 */
-	private void updateDatasetTransaction(DatasetRequest datasetRequest, String tenantCodeManager) throws Exception {
+	private void updateDatasetTransaction(DatasetRequest datasetRequest, String tenantCodeManager, Boolean publish) throws Exception {
 
 		logger.info("BEGIN [DatasetServiceImpl::updateDatasetTransaction]");
-		
+
 		// dcat
 		Integer idDcat = insertDcat(datasetRequest.getDcat(), dcatMapper);
 
@@ -563,63 +561,64 @@ public class DatasetServiceImpl implements DatasetService {
 
 		// sharing tenants
 		updateSharingTenants(datasetRequest);
-		
+
 		// TENANT-DATASOURCE
-		insertTenantDataSource(datasetRequest.getIdTenant(), datasetRequest.getIdDataSource(),datasetRequest.getNewDataSourceVersion(), Util.getNow(), tenantMapper);
+		insertTenantDataSource(datasetRequest.getIdTenant(), datasetRequest.getIdDataSource(), datasetRequest.getNewDataSourceVersion(), Util.getNow(), tenantMapper);
 
-		try {
-			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
-			logger.debug("Build publisher delegate...");
-			
-			if (!datasetRequest.getUnpublished()) {
+		if (publish == null || publish) {
+			try {
+				CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+				logger.debug("Build publisher delegate...");
 
-				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode(), false);
-				String apiName = null;
+				if (!datasetRequest.getUnpublished()) {
 
-				Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
+					DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(datasetRequest.getDatasetcode(), false);
+					String apiName = null;
 
-				apiMapper.insertApi(
+					Bundles bundles = bundlesMapper.selectBundlesByTenantCode(tenantCodeManager);
 
-				Api.buildOutput(datasetRequest.getNewDataSourceVersion()).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
-					.entitynamespace( Api.ENTITY_NAMESPACE + datasetRequest.getDatasetcode())
-						.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource())
-						.maxOdataResultperpage(bundles != null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE));
+					apiMapper.insertApi(
 
-				// publisher
-				logger.debug("publisher delegate add api...");
-				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
+							Api.buildOutput(datasetRequest.getNewDataSourceVersion()).apicode(datasetRequest.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
+									.entitynamespace(Api.ENTITY_NAMESPACE + datasetRequest.getDatasetcode()).apisubtype(API_SUBTYPE_ODATA)
+									.idDataSource(dettaglioDataset.getIdDataSource())
+									.maxOdataResultperpage(bundles != null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE));
 
-				logger.debug("publisher delegate publish api...");
-				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
-				
-				logger.debug("solr delegate add document...");
-				SolrDelegate.build().addDocument(dettaglioDataset);
+					// publisher
+					logger.debug("publisher delegate add api...");
+					apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
 
-			} else {
-				removeOdataApiAndSolrDocument(httpclient, datasetRequest.getDatasetcode());
+					logger.debug("publisher delegate publish api...");
+					PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+
+					logger.debug("solr delegate add document...");
+					SolrDelegate.build().addDocument(dettaglioDataset);
+
+				} else {
+					removeOdataApiAndSolrDocument(httpclient, datasetRequest.getDatasetcode());
+				}
+			} catch (Exception e) {
+				logger.error("[DatasetServiceImpl::updateDatasetTransaction] Publish API - error " + e.getMessage());
+				e.printStackTrace();
+				throw new BadRequestException(Errors.INTERNAL_SERVER_ERROR, " An error occurred during the publication of the API, please try to save again");
+
 			}
-		} catch (Exception e) {
-			logger.error("[DatasetServiceImpl::updateDatasetTransaction] Publish API - error " + e.getMessage());
-			e.printStackTrace();
-			throw new BadRequestException(Errors.INTERNAL_SERVER_ERROR, " An error occurred during the publication of the API, please try to save again");
-
 		}
 
 		logger.info("END [DatasetServiceImpl::updateDatasetTransaction]");
-		
+
 	}
-	
-	
+
 	/**
 	 * 
 	 */
 	@Override
-	public ServiceResponse updateDataset(String organizationCode, Integer idDataset, DatasetRequest datasetRequest, String tenantCodeManager, JwtUser authorizedUser)
-			throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse updateDataset(String organizationCode, Integer idDataset, DatasetRequest datasetRequest, String tenantCodeManager, JwtUser authorizedUser,
+			Boolean publish) throws BadRequestException, NotFoundException, Exception {
 
 		updateDatasetValidation(datasetRequest, authorizedUser, organizationCode, idDataset, tenantCodeManager);
 
-		updateDatasetTransaction(datasetRequest, tenantCodeManager);
+		updateDatasetTransaction(datasetRequest, tenantCodeManager, publish);
 
 		return ServiceResponse.build().object(PostDatasetResponse.build(idDataset).datasetcode(datasetRequest.getDatasetcode()).datasetname(datasetRequest.getDatasetname()));
 
@@ -680,19 +679,19 @@ public class DatasetServiceImpl implements DatasetService {
 	 * 
 	 */
 	@Override
-	public ServiceResponse insertDataset(String organizationCode, DatasetRequest postDatasetRequest, JwtUser authorizedUser) throws BadRequestException, NotFoundException,
-			Exception {
+	public ServiceResponse insertDataset(String organizationCode, Boolean publish, DatasetRequest postDatasetRequest, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, Exception {
 
 		Organization organization = organizationMapper.selectOrganizationByCode(organizationCode);
-		
-		if(postDatasetRequest.getMultiSubdomain()!=null )
+
+		if (postDatasetRequest.getMultiSubdomain() != null)
 			postDatasetRequest.setMultiSubdomain(postDatasetRequest.getMultiSubdomain().toUpperCase());
 
 		Tenant tenant = checkTenant(postDatasetRequest.getIdTenant(), organizationCode, tenantMapper);
-		
+
 		insertDatasetValidation(postDatasetRequest, authorizedUser, organizationCode, organization);
 
-		PostDatasetResponse response = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization, tenant);
+		PostDatasetResponse response = insertDatasetTransaction(postDatasetRequest, authorizedUser, organization, tenant, publish);
 		return ServiceResponse.build().object(response);
 	}
 
@@ -700,8 +699,8 @@ public class DatasetServiceImpl implements DatasetService {
 	 * 
 	 */
 	@Override
-	public ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser) throws BadRequestException,
-			NotFoundException, Exception {
+	public ServiceResponse selectDataset(String organizationCode, Integer idDataset, String tenantCodeManager, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
 
@@ -727,22 +726,23 @@ public class DatasetServiceImpl implements DatasetService {
 	public ServiceResponse selectDatasetByIdDataset(Integer idDataset, boolean onlyInstalled) throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDataset(idDataset, onlyInstalled);
-		
-		BackofficeDettaglioStreamDatasetResponse dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);		
+
+		BackofficeDettaglioStreamDatasetResponse dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);
 
 		return buildResponse(dettaglio);
 	}
 
 	@Override
 	public ServiceResponse selectDatasetByDatasetCodeDatasetVersion(String datasetCode, Integer datasetVersion) throws BadRequestException, NotFoundException, Exception {
-	
+
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCodeDatasourceVersion(datasetCode, datasetVersion);
 
 		checkIfFoundRecord(dettaglioDataset);
-		
-//		return buildResponse(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));	
-		return buildResponse(ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper));	
-	
+
+		// return
+		// buildResponse(getBackofficeDettaglioStreamDatasetResponse(dettaglioDataset));
+		return buildResponse(ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper));
+
 	}
 
 	@Override
@@ -758,14 +758,10 @@ public class DatasetServiceImpl implements DatasetService {
 	@Override
 	public ServiceResponse selectDatasetByIdDatasetDatasetVersion(Integer idDataset, Integer datasetVersion) throws BadRequestException, NotFoundException, Exception {
 
-
-
 		DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByIdDatasetDatasourceVersion(idDataset, datasetVersion);
 
-		
 		BackofficeDettaglioStreamDatasetResponse dettaglio = ServiceUtil.getDettaglioStreamDataset(dettaglioDataset, streamMapper, smartobjectMapper, datasetMapper);
-		
-		
+
 		return buildResponse(dettaglio);
 	}
 
@@ -781,25 +777,23 @@ public class DatasetServiceImpl implements DatasetService {
 
 		return Util.convertIconFromDBToByte(dettaglioDataset.getDataSourceIcon());
 	}
-	
+
 	@Override
 	public byte[] selectDatasetIcon(String datasetCode) throws BadRequestException, NotFoundException, Exception {
 
-		String  icon = datasetMapper.selectDatasetIconByStreamcodeAndSoCode(datasetCode, true);
+		String icon = datasetMapper.selectDatasetIconByStreamcodeAndSoCode(datasetCode, true);
 
-		//checkIfFoundRecord(icon);
+		// checkIfFoundRecord(icon);
 
 		return Util.convertIconFromDBToByte(icon);
 	}
-
-
 
 	/**
 	 * 
 	 */
 	@Override
-	public ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser) throws BadRequestException, NotFoundException,
-			UnauthorizedException, Exception {
+	public ServiceResponse selectDatasets(String organizationCode, String tenantCodeManager, String sort, JwtUser authorizedUser)
+			throws BadRequestException, NotFoundException, UnauthorizedException, Exception {
 
 		checkAuthTenant(authorizedUser, tenantCodeManager);
 
@@ -887,9 +881,8 @@ public class DatasetServiceImpl implements DatasetService {
 					Status.INSTALLED.id(), dataSourceMapper);
 
 			// INSERT DATASET
-			ServiceUtil.insertDataset(
-					idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), 
-					DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper, sequenceMapper, postDatasetRequest.getIddataset());
+			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper,
+					sequenceMapper, postDatasetRequest.getIddataset());
 
 			// BINARY COMPONENT
 			insertBinaryComponents(idBinaryDataSource, componentMapper);
@@ -924,8 +917,8 @@ public class DatasetServiceImpl implements DatasetService {
 	 * @return
 	 * @throws Exception
 	 */
-	private PostDatasetResponse insertDatasetTransaction(DatasetRequest postDatasetRequest, 
-			JwtUser authorizedUser, Organization organization, Tenant tenant) throws Exception {
+	private PostDatasetResponse insertDatasetTransaction(DatasetRequest postDatasetRequest, JwtUser authorizedUser, Organization organization, Tenant tenant, Boolean publish)
+			throws Exception {
 
 		// insert subdomain
 		Integer idSubdomain = insertSubdomain(postDatasetRequest);
@@ -964,52 +957,48 @@ public class DatasetServiceImpl implements DatasetService {
 
 		PostDatasetResponse response = PostDatasetResponse.build(dataset.getIddataset());
 		// API
-		try {
-			CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
-			if (!postDatasetRequest.getUnpublished()) {
-				DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(dataset.getDatasetcode(), false);
+		if (publish == null || publish) {
+			try {
+				CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
+				if (!postDatasetRequest.getUnpublished()) {
+					DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDatasetByDatasetCode(dataset.getDatasetcode(), false);
 
-			String apiName = null;
-			
-			Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioDataset.getTenantCode());
-			
-			
-			apiMapper.insertApi(
-					Api.buildOutput(DATASOURCE_VERSION)
-					.apicode(dataset.getDatasetcode())
-					.apiname(dettaglioDataset.getDatasetname())
-					.apisubtype(API_SUBTYPE_ODATA)
-					.idDataSource(dettaglioDataset.getIdDataSource())
-					.entitynamespace( Api.ENTITY_NAMESPACE + dataset.getDatasetcode())
-					.maxOdataResultperpage( bundles!= null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE ));
-				// publisher
-				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
-				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
-				SolrDelegate.build().addDocument(dettaglioDataset);
+					String apiName = null;
 
-			} else {
-				logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + postDatasetRequest.getDatasetcode());
-				try {
-					String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(postDatasetRequest.getDatasetcode()));
-					logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+					Bundles bundles = bundlesMapper.selectBundlesByTenantCode(dettaglioDataset.getTenantCode());
 
-				} catch (Exception ex) {
-					logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
-				}				
-				try {
-					SolrDelegate.build().removeDocument(postDatasetRequest.getDatasetcode());
-					logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeDocument: " + postDatasetRequest.getDatasetcode());
-				} catch (Exception ex) {
-					logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeDocument ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
-				}	
+					apiMapper.insertApi(Api.buildOutput(DATASOURCE_VERSION).apicode(dataset.getDatasetcode()).apiname(dettaglioDataset.getDatasetname())
+							.apisubtype(API_SUBTYPE_ODATA).idDataSource(dettaglioDataset.getIdDataSource()).entitynamespace(Api.ENTITY_NAMESPACE + dataset.getDatasetcode())
+							.maxOdataResultperpage(bundles != null ? bundles.getMaxOdataResultperpage() : MAX_ODATA_RESULT_PER_PAGE));
+					// publisher
+					apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
+					PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+					SolrDelegate.build().addDocument(dettaglioDataset);
+
+				} else {
+					logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish datasetcode: " + postDatasetRequest.getDatasetcode());
+					try {
+						String removeApiResponse = PublisherDelegate.build().removeApi(httpclient, PublisherDelegate.createApiNameOData(postDatasetRequest.getDatasetcode()));
+						logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeApi: " + removeApiResponse);
+
+					} catch (Exception ex) {
+						logger.error("[DatasetServiceImpl::insertDatasetTransaction] unpublish removeApi ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
+					}
+					try {
+						SolrDelegate.build().removeDocument(postDatasetRequest.getDatasetcode());
+						logger.info("[DatasetServiceImpl::insertDatasetTransaction] - unpublish removeDocument: " + postDatasetRequest.getDatasetcode());
+					} catch (Exception ex) {
+						logger.error(
+								"[DatasetServiceImpl::insertDatasetTransaction] unpublish removeDocument ERROR" + postDatasetRequest.getDatasetcode() + " - " + ex.getMessage());
+					}
+				}
+			} catch (Exception e) {
+				logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - error " + e.getMessage());
+				e.printStackTrace();
+				response.addWarning(" An error occurred during the publication of the API, please try to save again");
+				throw new BadRequestException(Errors.INTERNAL_SERVER_ERROR, " An error occurred during the publication of the API, please try to save again");
 			}
-		} catch (Exception e) {
-			logger.error("[DatasetServiceImpl::insertDatasetTransaction] Publish API - error " + e.getMessage());
-			e.printStackTrace();
-			response.addWarning(" An error occurred during the publication of the API, please try to save again");
-			throw new BadRequestException(Errors.INTERNAL_SERVER_ERROR, " An error occurred during the publication of the API, please try to save again");
 		}
-		
 		response.setDatasetcode(dataset.getDatasetcode());
 		response.setDatasetname(dataset.getDatasetname());
 		return response;
@@ -1058,21 +1047,22 @@ public class DatasetServiceImpl implements DatasetService {
 			if (!info.isSkipColumn())
 				columnCount++;
 		}
-		logger.debug("[DatasetServiceImpl::checkComponentsSize] components.size:["+components.length+"], componentInfoRequestsCount:["+columnCount +"]");
-		if (columnCount != components.length || columnCount==0) {
+		logger.debug("[DatasetServiceImpl::checkComponentsSize] components.size:[" + components.length + "], componentInfoRequestsCount:[" + columnCount + "]");
+		if (columnCount != components.length || columnCount == 0) {
 			throw new BadRequestException(Errors.NOT_ACCEPTABLE);
 		}
 	}
 
 	@Override
-	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest,  JwtUser authorizedUser)
+	public ServiceResponse importMetadata(String organizationCode, ImportMetadataDatasetRequest importMetadataRequest, JwtUser authorizedUser)
 			throws BadRequestException, NotFoundException, Exception {
 
 		List<DettaglioDataset> existingMedatataList = datasetMapper.selectDatasetFromJdbc(importMetadataRequest.getJdbcHostname(), importMetadataRequest.getJdbcDbname(),
 				importMetadataRequest.getDbType(), importMetadataRequest.getTenantCode(), organizationCode, getTenantCodeListFromUser(authorizedUser));
-		
-		//DettaglioDataset dettaglioDataset = datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
 
+		// DettaglioDataset dettaglioDataset =
+		// datasetMapper.selectDettaglioDataset(tenantCodeManager, idDataset,
+		// organizationCode, getTenantCodeListFromUser(authorizedUser));
 
 		DatabaseReader databaseReader = new DatabaseReader(organizationCode, importMetadataRequest.getTenantCode(), importMetadataRequest.getDbType(),
 				importMetadataRequest.getJdbcHostname(), importMetadataRequest.getJdbcDbname(), importMetadataRequest.getJdbcUsername(), importMetadataRequest.getJdbcPassword(),
@@ -1082,11 +1072,11 @@ public class DatasetServiceImpl implements DatasetService {
 		return buildResponse(schema);
 	}
 
-	private void removeOdataApiAndSolrDocument(String datasetCode) throws Exception{
+	private void removeOdataApiAndSolrDocument(String datasetCode) throws Exception {
 		CloseableHttpClient httpclient = PublisherDelegate.build().registerToStoreInit();
 		removeOdataApiAndSolrDocument(httpclient, datasetCode);
 	}
-	
+
 	private void removeOdataApiAndSolrDocument(CloseableHttpClient httpclient, String datasetCode) {
 		logger.info("[DatasetServiceImpl::updateDatasetTransaction] - unpublish datasetcode: " + datasetCode);
 		try {
@@ -1103,5 +1093,5 @@ public class DatasetServiceImpl implements DatasetService {
 			logger.error("[DatasetServiceImpl::updateDatasetTransaction] unpublish removeDocument ERROR" + datasetCode + " - " + ex.getMessage());
 		}
 	}
-	
+
 }
