@@ -1111,16 +1111,26 @@ public class ServiceUtil {
 		// il campo license.idLicense
 		// Bisogna inserire i campi nei nomi corrispondenti.
 		// ----------------------------------------------------------------------------------
+		
+		Integer idLicense = licenseRequest.getIdLicense();
 		if (licenseRequest.getIdLicense() == null) {
-			License license = new License();
-			BeanUtils.copyProperties(licenseRequest, license);
-			if(license.getDescription() == null)
-				license.setDescription(licenseRequest.getLicensecode());
-			licenseMapper.insertLicense(license);
-			return license.getIdLicense();
+			
+			License loadedLicense = licenseMapper.selectLicenseByLicensecode(licenseRequest.getLicensecode());
+			if(loadedLicense!=null)
+				idLicense = loadedLicense.getIdLicense();
+			else {
+			
+				License license = new License();
+				BeanUtils.copyProperties(licenseRequest, license);
+				if(license.getDescription() == null)
+					license.setDescription(licenseRequest.getLicensecode());
+				licenseMapper.insertLicense(license);
+				idLicense = license.getIdLicense();
+
+			}
 		}
 
-		return licenseRequest.getIdLicense();
+		return idLicense;
 	}
 
 	/**
