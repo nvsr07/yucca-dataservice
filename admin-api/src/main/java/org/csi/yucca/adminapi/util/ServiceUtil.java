@@ -1114,6 +1114,8 @@ public class ServiceUtil {
 		if (licenseRequest.getIdLicense() == null) {
 			License license = new License();
 			BeanUtils.copyProperties(licenseRequest, license);
+			if(license.getDescription() == null)
+				license.setDescription(licenseRequest.getDescription());
 			licenseMapper.insertLicense(license);
 			return license.getIdLicense();
 		}
@@ -1322,7 +1324,7 @@ public class ServiceUtil {
 	public static void checkLicense(LicenseRequest licenseRequest) throws BadRequestException, NotFoundException {
 		if (licenseRequest != null && licenseRequest.getIdLicense() == null) {
 			ServiceUtil.checkMandatoryParameter(licenseRequest.getLicensecode(), "licensecode");
-			ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "license => description");
+			//ServiceUtil.checkMandatoryParameter(licenseRequest.getDescription(), "license => description");
 		}
 	}
 
