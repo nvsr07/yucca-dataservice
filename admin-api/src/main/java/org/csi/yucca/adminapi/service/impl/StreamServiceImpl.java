@@ -40,6 +40,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.PublisherDelegate;
 import org.csi.yucca.adminapi.delegate.SolrDelegate;
+import org.csi.yucca.adminapi.delegate.StoreDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotAcceptableException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
@@ -68,6 +69,7 @@ import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.Smartobject;
 import org.csi.yucca.adminapi.model.Stream;
 import org.csi.yucca.adminapi.model.StreamInternal;
@@ -92,6 +94,8 @@ import org.csi.yucca.adminapi.response.PostStreamResponse;
 import org.csi.yucca.adminapi.response.Response;
 import org.csi.yucca.adminapi.service.MailService;
 import org.csi.yucca.adminapi.service.StreamService;
+import org.csi.yucca.adminapi.store.response.Subs;
+import org.csi.yucca.adminapi.store.response.SubscriptionByUsernameResponse;
 import org.csi.yucca.adminapi.util.ApiUserType;
 import org.csi.yucca.adminapi.util.Constants;
 import org.csi.yucca.adminapi.util.DataOption;
@@ -110,6 +114,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -164,6 +171,8 @@ public class StreamServiceImpl implements StreamService {
 	
 	@Autowired
 	private MailService mailService;
+	
+	private ObjectMapper mapper = new ObjectMapper();
 	
 	/**
 	 * 
@@ -443,9 +452,11 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 			
 			String apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream);
 			PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+			updateStreamSubscriptionIntoStore(httpclient, dettaglioStream.getDataSourceVisibility(), dettaglioStream, apiName);
 			if(dettaglioStream.getSavedata()==1){
 				apiName = PublisherDelegate.build().addApi(httpclient, dettaglioStream, dataset.getDatasetcode());
 				PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+				updateStreamSubscriptionIntoStore(httpclient, dettaglioStream.getDataSourceVisibility(), dettaglioStream, apiName);
 			}
 			
 			SolrDelegate.build().addDocument(dettaglioStream, dettaglioSmartobject, dataset);
@@ -466,6 +477,50 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 			SolrDelegate.build().removeDocument(SolrDelegate.createIdForStream(dettaglioStream));
 		}
 	}
+	
+public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, String visibility, Stream streamNew, String apiName) {
+		
+		SubscriptionByUsernameResponse listOfApplication = null;
+		try {
+			listOfApplication = StoreDelegate.build().listSubscriptionByApiAndUserName(httpClient, apiName, "admin");
+			List<SharingTenantsJson> tenants = mapper.readValue(streamNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
+			SharingTenantsJson owner = new SharingTenantsJson();
+			owner.setTenantcode(streamNew.getTenantCode());
+			tenants.add(owner);
+			Subs[] subs = listOfApplication.getSubscriptions();
+			if (visibility.equals("public")) {
+				for (Subs appNames:subs) {
+					StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+				}
+			} else {
+				for (SharingTenantsJson newTenantSh : tenants) {
+						boolean foundInDesiderata = false;
+						for (Subs appNames:subs) {
+							if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
+								foundInDesiderata = true;
+							}
+						}
+						if (!foundInDesiderata)
+							StoreDelegate.build().subscribeApi(httpClient, apiName, "userportal_"+newTenantSh.getTenantcode());
+				}
+				
+				for (Subs appNames:subs) {
+					boolean notFound = true;
+					for (SharingTenantsJson newTenantSh : tenants) {
+						if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
+							notFound = false;
+						}
+					}
+					if (notFound)
+						StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 
 	/**
 	 * DA MANAGEMENT

@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
 import org.csi.yucca.adminapi.delegate.PublisherDelegate;
 import org.csi.yucca.adminapi.delegate.SolrDelegate;
+import org.csi.yucca.adminapi.delegate.StoreDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.NotFoundException;
 import org.csi.yucca.adminapi.exception.UnauthorizedException;
@@ -66,6 +67,7 @@ import org.csi.yucca.adminapi.model.DettaglioDataset;
 import org.csi.yucca.adminapi.model.DettaglioStream;
 import org.csi.yucca.adminapi.model.InternalDettaglioStream;
 import org.csi.yucca.adminapi.model.Organization;
+import org.csi.yucca.adminapi.model.SharingTenantsJson;
 import org.csi.yucca.adminapi.model.Subdomain;
 import org.csi.yucca.adminapi.model.Tenant;
 import org.csi.yucca.adminapi.model.User;
@@ -87,6 +89,8 @@ import org.csi.yucca.adminapi.response.PostDatasetResponse;
 import org.csi.yucca.adminapi.response.builder.AllineamentoScaricoDatasetResponseBuilder;
 import org.csi.yucca.adminapi.response.builder.IngestionConfigurationResponseBuilder;
 import org.csi.yucca.adminapi.service.DatasetService;
+import org.csi.yucca.adminapi.store.response.Subs;
+import org.csi.yucca.adminapi.store.response.SubscriptionByUsernameResponse;
 import org.csi.yucca.adminapi.util.DataOption;
 import org.csi.yucca.adminapi.util.DataType;
 import org.csi.yucca.adminapi.util.DatasetSubtype;
@@ -106,6 +110,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Service
 @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
 @Configuration
@@ -113,6 +120,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class DatasetServiceImpl implements DatasetService {
 
 	private static final Logger logger = Logger.getLogger(DatasetServiceImpl.class);
+	private ObjectMapper mapper = new ObjectMapper();
 
 	@Autowired
 	private DatasetMapper datasetMapper;
@@ -590,6 +598,7 @@ public class DatasetServiceImpl implements DatasetService {
 
 					logger.debug("publisher delegate publish api...");
 					PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+					updateDatasetSubscriptionIntoStore(httpclient, dettaglioDataset.getDataSourceVisibility(),dettaglioDataset, apiName);
 
 					logger.debug("solr delegate add document...");
 					SolrDelegate.build().addDocument(dettaglioDataset);
@@ -608,6 +617,50 @@ public class DatasetServiceImpl implements DatasetService {
 		logger.info("END [DatasetServiceImpl::updateDatasetTransaction]");
 
 	}
+	
+public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, String visibility, Dataset datasetNew, String apiName) {
+		
+		SubscriptionByUsernameResponse listOfApplication = null;
+		try {
+			listOfApplication = StoreDelegate.build().listSubscriptionByApiAndUserName(httpClient, apiName, "admin");
+			List<SharingTenantsJson> tenants = mapper.readValue(datasetNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
+			SharingTenantsJson owner = new SharingTenantsJson();
+			owner.setTenantcode(datasetNew.getTenantCode());
+			tenants.add(owner);
+			Subs[] subs = listOfApplication.getSubscriptions();
+			if (visibility.equals("public")) {
+				for (Subs appNames:subs) {
+					StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+				}
+			} else {
+				for (SharingTenantsJson newTenantSh : tenants) {
+						boolean foundInDesiderata = false;
+						for (Subs appNames:subs) {
+							if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
+								foundInDesiderata = true;
+							}
+						}
+						if (!foundInDesiderata)
+							StoreDelegate.build().subscribeApi(httpClient, apiName, "userportal_"+newTenantSh.getTenantcode());
+				}
+				
+				for (Subs appNames:subs) {
+					boolean notFound = true;
+					for (SharingTenantsJson newTenantSh : tenants) {
+						if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
+							notFound = false;
+						}
+					}
+					if (notFound)
+						StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+				}
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 
 	/**
 	 * 
@@ -973,6 +1026,7 @@ public class DatasetServiceImpl implements DatasetService {
 					// publisher
 					apiName = PublisherDelegate.build().addApi(httpclient, dettaglioDataset);
 					PublisherDelegate.build().publishApi(httpclient, "1.0", apiName, "admin");
+					updateDatasetSubscriptionIntoStore(httpclient, dettaglioDataset.getDataSourceVisibility(),dettaglioDataset, apiName);
 					SolrDelegate.build().addDocument(dettaglioDataset);
 
 				} else {
