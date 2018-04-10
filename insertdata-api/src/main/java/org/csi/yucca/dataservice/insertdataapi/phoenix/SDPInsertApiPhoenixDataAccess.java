@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
@@ -183,11 +184,23 @@ public class SDPInsertApiPhoenixDataAccess {
 					} else if ("datetime".equalsIgnoreCase(tipo)) {
 						if (null == value)
 							stmt.setNull(pos, java.sql.Types.TIMESTAMP);
-						stmt.setTimestamp(pos, new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
+						else {
+							Date date = DateUtil.multiParseDate(value.toString());
+							if (date == null)
+								stmt.setNull(pos, java.sql.Types.TIMESTAMP);
+							else
+								stmt.setTimestamp(pos, new Timestamp(date.getTime()));
+						}
 					} else if ("date".equalsIgnoreCase(tipo)) {
 						if (null == value)
 							stmt.setNull(pos, java.sql.Types.TIMESTAMP);
-						stmt.setTimestamp(pos, new Timestamp(DateUtil.multiParseDate(value.toString()).getTime()));
+						else {
+							Date date = DateUtil.multiParseDate(value.toString());
+							if (date == null)
+								stmt.setNull(pos, java.sql.Types.TIMESTAMP);
+							else
+								stmt.setTimestamp(pos, new Timestamp(date.getTime()));
+						}
 					} else if ("longitude".equalsIgnoreCase(tipo)) {
 						if (null == value || Double.isNaN(Double.parseDouble(value.toString())) || Double.isInfinite(Double.parseDouble(value.toString())))
 							stmt.setNull(pos, java.sql.Types.DOUBLE);
