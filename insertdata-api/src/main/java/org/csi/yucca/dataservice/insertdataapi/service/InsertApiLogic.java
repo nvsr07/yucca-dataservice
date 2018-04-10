@@ -7,12 +7,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
-
+import org.apache.log4j.Logger;
 import org.bson.types.ObjectId;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiBaseException;
 import org.csi.yucca.dataservice.insertdataapi.exception.InsertApiRuntimeException;
@@ -25,7 +21,6 @@ import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetDeleteOutput;
 import org.csi.yucca.dataservice.insertdataapi.model.output.DatasetInfo;
 import org.csi.yucca.dataservice.insertdataapi.model.output.FieldsDto;
 import org.csi.yucca.dataservice.insertdataapi.model.output.StreamInfo;
-import org.csi.yucca.dataservice.insertdataapi.model.output.TenantInfo;
 import org.csi.yucca.dataservice.insertdataapi.mongo.SDPInsertApiMongoDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.phoenix.SDPInsertApiPhoenixDataAccess;
 import org.csi.yucca.dataservice.insertdataapi.solr.SDPInsertApiSolrDataAccess;
@@ -33,6 +28,9 @@ import org.csi.yucca.dataservice.insertdataapi.util.SDPInsertApiConfig;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
+
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
 
 public class InsertApiLogic {
 	private static final Logger log = Logger.getLogger("org.csi.yucca.datainsert");
@@ -90,10 +88,10 @@ public class InsertApiLogic {
 				// int righeinserite=mongoAccess.insertBulk(tenant,
 				// curBulkToIns,indiceDaCReare);
 				Long startTimeX = System.currentTimeMillis();
-				log.finest("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
+				log.debug("[InsertApiLogic::insertManager] BEGIN phoenixInsert ...");
 				phoenixAccess.insertBulk(curBulkToIns.getCollectionConfDto().getPhoenixSchemaName(),
 						curBulkToIns.getCollectionConfDto().getPhoenixTableName(), curBulkToIns);
-				log.finest("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
+				log.debug("[InsertApiLogic::insertManager] END phoenixInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 
 				// TODO CONTROLLI
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_END_INS);
@@ -106,38 +104,39 @@ public class InsertApiLogic {
 						startTimeX = System.currentTimeMillis();
 						log.info("[InsertApiLogic::insertManager] BEGIN SOLRInsert ...");
 						solrInsertService.execute(solrInsertRunnable(curBulkToIns.getCollectionConfDto().getSolrCollectionName(), curBulkToIns));
-						log.finest("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
+						log.debug("[InsertApiLogic::insertManager] END SOLRInsert  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 					} catch (Exception e) {
-						log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
+						log.error( "[InsertApiLogic::insertManager] SOLR GenericException " ,e);
 					}
 				}
 			} catch (InsertApiRuntimeException e1) {
+				log.error( "[InsertApiLogic::insertManager] InsertApiRuntimeException ", e1);
 				throw e1;
 			} catch (InsertApiBaseException e) {
 
-				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] GenericException " + e);
-				log.log(Level.WARNING,
+				log.error( "[InsertApiLogic::insertManager] InsertApiBaseException ", e);
+				log.warn(
 						"[InsertApiLogic::insertManager] Fallito inserimento blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
 				curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INS);
 				try {
 					curBulkToIns.setStatus(DatasetBulkInsert.STATUS_KO_INS);
 
 				} catch (Exception k) {
-					log.log(Level.SEVERE, "[InsertApiLogic::insertManager] SOLR GenericException " + e);
-					log.log(Level.WARNING,
+					log.error( "[InsertApiLogic::insertManager] SOLR GenericException ", k);
+					log.warn(
 							"[InsertApiLogic::insertManager] Fallito indicizzazione blocco --> globalRequestId=" + idRequest + "    blockRequestId=" + curBulkToIns.getRequestId());
 
 				}
 
 			} catch (Throwable e2) {
-				log.log(Level.SEVERE, "[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
+				log.error( "[InsertApiLogic::insertManager] UnknownException, presume redelivery " + e2);
 				throw new InsertApiRuntimeException(e2);
 			}
 		}
 		long startTimeX = System.currentTimeMillis();
 		// mongoAccess.updateStatusRecordArray(tenant, idRequest, "end_ins",
 		// datiToIns);
-		log.finest("[InsertApiLogic::insertManager] END updateStatus  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
+		log.debug("[InsertApiLogic::insertManager] END updateStatus  Elapsed[" + (System.currentTimeMillis() - startTimeX) + "]");
 		return datiToIns;
 
 	}
@@ -172,10 +171,10 @@ public class InsertApiLogic {
 			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
 				jsonInput = "[" + jsonInput + "]";
 		} catch (PathNotFoundException e) {
-			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " ,e);
 			throw new InsertApiBaseException("E012");
 		} catch (IllegalArgumentException e) {
-			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> ", e);
 			throw new InsertApiBaseException("E012");
 		}
 
@@ -263,14 +262,14 @@ public class InsertApiLogic {
 				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) {
 					endArray = true;
 				} else {
-					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+					log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " ,e);
 					throw new InsertApiBaseException("E012");
 				}
 			} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> ",e);
 				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" + ex);
+				log.error( "[InsertApiLogic::parseJsonInputDataset] GenericEsxception" ,ex);
 				i++;
 				endArray = true;
 				throw ex;
@@ -299,10 +298,10 @@ public class InsertApiLogic {
 			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
 				jsonInput = "[" + jsonInput + "]";
 		} catch (PathNotFoundException e) {
-			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 			throw new InsertApiBaseException("E012");
 		} catch (IllegalArgumentException e) {
-			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 			throw new InsertApiBaseException("E012");
 		}
 
@@ -352,14 +351,14 @@ public class InsertApiLogic {
 				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) {
 					endArray = true;
 				} else {
-					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e);
+					log.error( "[InsertApiLogic::parseJsonInputStream] PathNotFoundException imprevisto --> ", e);
 					throw new InsertApiBaseException("E012");
 				}
 			} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputStream] GenericEsxception", ex);
+				log.error( "[InsertApiLogic::parseJsonInputStream] GenericEsxception", ex);
 				i++;
 				endArray = true;
 				throw ex;
@@ -454,10 +453,10 @@ public class InsertApiLogic {
 			if (JsonPath.read(jsonInput, "$[" + i + "]") == null)
 				jsonInput = "[" + jsonInput + "]";
 		} catch (PathNotFoundException e) {
-			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 			throw new InsertApiBaseException("E012");
 		} catch (IllegalArgumentException e) {
-			log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+			log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 			throw new InsertApiBaseException("E012");
 		}
 
@@ -506,14 +505,14 @@ public class InsertApiLogic {
 				if (e.getCause() instanceof java.lang.IndexOutOfBoundsException) {
 					endArray = true;
 				} else {
-					log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e);
+					log.error( "[InsertApiLogic::parseJsonInputMedia] PathNotFoundException imprevisto --> " + e);
 					throw new InsertApiBaseException("E012");
 				}
 			} catch (IllegalArgumentException e) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
+				log.error( "[InsertApiLogic::parseJsonInputDataset] PathNotFoundException imprevisto --> " + e);
 				throw new InsertApiBaseException("E012");
 			} catch (Exception ex) {
-				log.log(Level.SEVERE, "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex);
+				log.error( "[InsertApiLogic::parseJsonInputMedia] GenericEsxception" + ex);
 				i++;
 				endArray = true;
 				throw ex;
@@ -689,22 +688,22 @@ public class InsertApiLogic {
 			if (!campoMongo.validateValue(valore, true))
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_INVALID_DATA_VALUE, " - field " + jsonField + " (" + insStrConst + "): " + valore);
 
-			log.finest("[InsertApiLogic::parseCompnents] ---------------- campo : " + campoMongo.getFieldName());
-			log.finest("[InsertApiLogic::parseCompnents] campoMongoV1 is null: " + (campoMongoV1 == null));
-			log.finest("[InsertApiLogic::parseCompnents] valore: " + valore);
+			log.debug("[InsertApiLogic::parseCompnents] ---------------- campo : " + campoMongo.getFieldName());
+			log.debug("[InsertApiLogic::parseCompnents] campoMongoV1 is null: " + (campoMongoV1 == null));
+			log.debug("[InsertApiLogic::parseCompnents] valore: " + valore);
 			if (campoMongoV1 != null) {
-				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.versione=" + campoMongoV1.getDatasetVersion());
-				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.nome=" + campoMongoV1.getFieldName());
-				log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.gettype=" + campoMongoV1.getFieldType());
+				log.debug("[InsertApiLogic::parseCompnents] campoMongoV1.versione=" + campoMongoV1.getDatasetVersion());
+				log.debug("[InsertApiLogic::parseCompnents] campoMongoV1.nome=" + campoMongoV1.getFieldName());
+				log.debug("[InsertApiLogic::parseCompnents] campoMongoV1.gettype=" + campoMongoV1.getFieldType());
 				if (null != campoMongoV1) {
-					log.finest("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->" + campoMongoV1.validateValue(valore, isVerOneRequired));
+					log.debug("[InsertApiLogic::parseCompnents] campoMongoV1.validateValue(valore)-->" + campoMongoV1.validateValue(valore, isVerOneRequired));
 					numCampiInV1++;
 				}
 			}
-			log.finest("[InsertApiLogic::parseCompnents] .................");
-			log.finest("[InsertApiLogic::parseCompnents]          jsonField=" + jsonField);
-			log.finest("[InsertApiLogic::parseCompnents]          insStrConst=" + insStrConst);
-			log.finest("[InsertApiLogic::parseCompnents]          valore=" + valore);
+			log.debug("[InsertApiLogic::parseCompnents] .................");
+			log.debug("[InsertApiLogic::parseCompnents]          jsonField=" + jsonField);
+			log.debug("[InsertApiLogic::parseCompnents]          insStrConst=" + insStrConst);
+			log.debug("[InsertApiLogic::parseCompnents]          valore=" + valore);
 
 
 			(campiMongo.get(jsonField)).setSuccessChecked(true);
@@ -769,7 +768,7 @@ public class InsertApiLogic {
 
 		for (int i = 0; i < elencoStream.size(); i++) {
 
-			log.finest("[InsertApiLogic::parseMisura] nome stream, tipo stream: " + elencoStream.get(i).getStreamCode() + "," + elencoStream.get(i).getTipoStream());
+			log.debug("[InsertApiLogic::parseMisura] nome stream, tipo stream: " + elencoStream.get(i).getStreamCode() + "," + elencoStream.get(i).getTipoStream());
 
 			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_APPLICATION && application == null)
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_INPUT_SENSOR_MANCANTE, " application code expected, found sensor: "
@@ -784,7 +783,7 @@ public class InsertApiLogic {
 				throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_STREAM_NOT_FOUND,
 						" invalid virtual object tpye: data insert allowed only for sensors and applications ");
 
-			log.finest("[InsertApiLogic::parseMisura]      OK --------------");
+			log.debug("[InsertApiLogic::parseMisura]      OK --------------");
 
 			if (elencoStream.get(i).getTipoStream() == StreamInfo.STREAM_TYPE_TWEET) {
 				isVerOneRequired = false;
@@ -925,7 +924,7 @@ public class InsertApiLogic {
 		DatasetInfo infoDataset = metadataAccess.getInfoDataset(idDataset, datasetVersion, codTenant);
 		if (infoDataset == null)
 			throw new InsertApiBaseException(InsertApiBaseException.ERROR_CODE_DATASET_DATASETVERSION_INVALID);
-		log.finest("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
+		log.debug("[InsertApiLogic::deleteManager]     infoDataset " + infoDataset);
 
 
 		int numrowDeleted = phoenixAccess.deleteData(infoDataset, codTenant, idDataset, datasetVersion);
@@ -959,7 +958,7 @@ public class InsertApiLogic {
 			outData.setFileDeleted(responseStatus != null && responseStatus.startsWith("OK"));
 			outData.setFileDeletedMessage("HDFS response: " + responseStatus);
 		} catch (Exception e) {
-			log.warning("[InsertApi::dataDelete] Error on delete from HDFS: " + e.getMessage());
+			log.warn("[InsertApi::dataDelete] Error on delete from HDFS: " + e.getMessage(),e);
 			outData.setFileDeleted(false);
 			outData.setFileDeletedMessage("Error on delete HDFS: " + e.getMessage());
 		}
@@ -972,7 +971,7 @@ public class InsertApiLogic {
 			outData.setIndexDeletedMessage("Sorl response status: " + responseStatus);
 
 		} catch (Exception e) {
-			log.warning("[InsertApi::dataDelete] Error on delete from Solr: " + e.getMessage());
+			log.warn("[InsertApi::dataDelete] Error on delete from Solr: " + e.getMessage(), e);
 			outData.setIndexDeleted(false);
 			outData.setIndexDeletedMessage("Error on delete from Solr: " + e.getMessage());
 		}
