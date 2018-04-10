@@ -12,6 +12,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -121,6 +122,8 @@ public class HttpDelegate {
 			throw new HttpException("ERROR: Status code " + statusCode);
 		}
 	}
+	
+	
 
 	public static String explainParams(List<NameValuePair> params) {
 		String result = "";
@@ -130,4 +133,53 @@ public class HttpDelegate {
 			}
 		return result;
 	}
+
+//get
+
+public static String makeHttpGet(CloseableHttpClient httpclient, String url, List<NameValuePair> params) throws HttpException, IOException {
+	return makeHttpGet(httpclient, url, params, null, null, null, null);
 }
+
+public static String makeHttpGet(
+		CloseableHttpClient httpclient, 
+		String url, 
+		List<NameValuePair> params, 
+		String basicAuthUsername, 
+		String basicAuthPassword, 
+		String stringData) throws HttpException, IOException {
+	return makeHttpGet(httpclient, url, params, basicAuthUsername, basicAuthPassword, stringData, null);
+}
+
+public static String makeHttpGet(
+		
+		CloseableHttpClient httpclient, 
+		String url, 
+		List<NameValuePair> params, 
+		String basicAuthUsername, 
+		String basicAuthPassword, 
+		String stringData, ContentType contentType) throws HttpException, IOException {
+	
+	logger.debug("[HttpDelegate::makeHttpGet] url " + url + " params " + explainParams(params));
+
+	HttpGet getMethod = new HttpGet(url);
+
+
+	CloseableHttpResponse response = httpclient.execute(getMethod);
+	StatusLine statusLine = response.getStatusLine();
+	int statusCode = statusLine.getStatusCode();
+	if (statusCode == HttpStatus.SC_OK || statusCode == HttpStatus.SC_ACCEPTED) {
+		try {
+			HttpEntity entity = response.getEntity();
+			return EntityUtils.toString(entity);
+		} finally {
+			response.close();
+		}
+	} else {
+		logger.error("[HttpDelegate::makeHttpGet] ERROR Status code " + statusCode);
+		throw new HttpException("ERROR: Status code " + statusCode);
+	}
+}
+
+
+}
+

@@ -11,6 +11,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.store.response.GeneralResponse;
+import org.csi.yucca.adminapi.store.response.StoreResponse;
+import org.csi.yucca.adminapi.store.response.SubscriptionByUsernameResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -26,8 +28,10 @@ public class StoreDelegate {
 
 	private static StoreDelegate storeDelegate;
 
+	
 	@Value("${store.url}")
 	private String storeUrl;
+	private ObjectMapper mapper = new ObjectMapper();
 	
 	
 
@@ -134,6 +138,42 @@ public class StoreDelegate {
 		logger.debug("[StoreDelegate::subscribeApi] response " + response);
 		return response;
 	}
+	
+	public  String unSubscribeApi(CloseableHttpClient httpclient,String apiName,  String appName, int applicationId, String username) throws Exception {
+
+		logger.debug("[StoreDelegate::unsubscribeApi] appName: " + appName);
+		List<NameValuePair> subscribeAdminApiParams = new LinkedList<NameValuePair>();
+		
+		subscribeAdminApiParams.add(new BasicNameValuePair("action", "removeSubscription"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("apiname", apiName));
+		subscribeAdminApiParams.add(new BasicNameValuePair("apiversion", "1.0"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("provider", "admin"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("username", username));
+		subscribeAdminApiParams.add(new BasicNameValuePair("applicationId", Integer.toString(applicationId)));
+		
+		String url = storeUrl + "site/blocks/secure/subscription.jag";  
+		String response = HttpDelegate.makeHttpPost(httpclient, url, subscribeAdminApiParams);
+		logger.debug("[StoreDelegate::subscribeApi] response " + response);
+		return response;
+}
+	
+public  SubscriptionByUsernameResponse listSubscriptionByApiAndUserName(CloseableHttpClient httpclient, String apiname, String username) throws Exception {
+		
+		logger.debug("[StoreDelegate::listSubscription]"); 
+		List<NameValuePair> subscribeAdminApiParams = new LinkedList<NameValuePair>();
+		subscribeAdminApiParams.add(new BasicNameValuePair("action", "getAPISubscriptions"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("apiversion", "1.0"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("provider", "admin"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("apiname", apiname));
+		subscribeAdminApiParams.add(new BasicNameValuePair("username", username));
+		
+		String url = storeUrl + "site/blocks/secure/subscription.jag";
+		String response = HttpDelegate.makeHttpGet(httpclient, url, subscribeAdminApiParams);
+
+	
+		SubscriptionByUsernameResponse mySubscriptionResponse = mapper.readValue(response, SubscriptionByUsernameResponse.class);
+		return mySubscriptionResponse;
+} 
 	
 	public String logoutFromStore(CloseableHttpClient httpclient, String username, String password) throws Exception {
 		logger.debug("[StoreDelegate::logoutFromStore] username " + username);
