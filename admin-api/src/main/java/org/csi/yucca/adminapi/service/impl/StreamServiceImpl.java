@@ -487,6 +487,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 		List<SharingTenantsJson> tenants = new LinkedList<SharingTenantsJson>();
 		if (streamNew.getSharingTenant() != null)
 			tenants = mapper.readValue(streamNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
+		//Aggiungo TenantManager
 		SharingTenantsJson owner = new SharingTenantsJson();
 		owner.setTenantcode(streamNew.getTenantCode());
 		tenants.add(owner);
