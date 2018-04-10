@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.delegate;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -14,6 +15,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -136,7 +138,7 @@ public class HttpDelegate {
 
 //get
 
-public static String makeHttpGet(CloseableHttpClient httpclient, String url, List<NameValuePair> params) throws HttpException, IOException {
+public static String makeHttpGet(CloseableHttpClient httpclient, String url, List<NameValuePair> params) throws HttpException, IOException, Exception {
 	return makeHttpGet(httpclient, url, params, null, null, null, null);
 }
 
@@ -146,7 +148,7 @@ public static String makeHttpGet(
 		List<NameValuePair> params, 
 		String basicAuthUsername, 
 		String basicAuthPassword, 
-		String stringData) throws HttpException, IOException {
+		String stringData) throws HttpException, IOException, Exception {
 	return makeHttpGet(httpclient, url, params, basicAuthUsername, basicAuthPassword, stringData, null);
 }
 
@@ -157,11 +159,12 @@ public static String makeHttpGet(
 		List<NameValuePair> params, 
 		String basicAuthUsername, 
 		String basicAuthPassword, 
-		String stringData, ContentType contentType) throws HttpException, IOException {
+		String stringData, ContentType contentType) throws HttpException, IOException , Exception{
 	
 	logger.debug("[HttpDelegate::makeHttpGet] url " + url + " params " + explainParams(params));
 
-	HttpGet getMethod = new HttpGet(url);
+	URI uri = new URI( url + "?" + URLEncodedUtils.format( params, "utf-8"));
+	HttpGet getMethod = new HttpGet(uri);
 
 
 	CloseableHttpResponse response = httpclient.execute(getMethod);

@@ -33,6 +33,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.http.HttpStatus;
@@ -479,46 +480,49 @@ private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRe
 	
 public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, String visibility, Stream streamNew, String apiName) {
 		
-		SubscriptionByUsernameResponse listOfApplication = null;
-		try {
-			listOfApplication = StoreDelegate.build().listSubscriptionByApiAndUserName(httpClient, apiName, "admin");
-			List<SharingTenantsJson> tenants = mapper.readValue(streamNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
-			SharingTenantsJson owner = new SharingTenantsJson();
-			owner.setTenantcode(streamNew.getTenantCode());
-			tenants.add(owner);
-			Subs[] subs = listOfApplication.getSubscriptions();
-			if (visibility.equals("public")) {
-				for (Subs appNames:subs) {
-					StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
-				}
-			} else {
-				for (SharingTenantsJson newTenantSh : tenants) {
-						boolean foundInDesiderata = false;
-						for (Subs appNames:subs) {
-							if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
-								foundInDesiderata = true;
-							}
-						}
-						if (!foundInDesiderata)
-							StoreDelegate.build().subscribeApi(httpClient, apiName, "userportal_"+newTenantSh.getTenantcode());
-				}
-				
-				for (Subs appNames:subs) {
-					boolean notFound = true;
-					for (SharingTenantsJson newTenantSh : tenants) {
+	SubscriptionByUsernameResponse listOfApplication = null;
+	try {
+		listOfApplication = StoreDelegate.build().listSubscriptionByApiAndUserName(httpClient, apiName, "admin");
+		List<SharingTenantsJson> tenants = new LinkedList<SharingTenantsJson>();
+		if (streamNew.getSharingTenant() != null)
+			tenants = mapper.readValue(streamNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
+		//Aggiungo TenantManager
+		SharingTenantsJson owner = new SharingTenantsJson();
+		owner.setTenantcode(streamNew.getTenantCode());
+		tenants.add(owner);
+		Subs[] subs = listOfApplication.getSubscriptions();
+		if (visibility.equals("public")) {
+			for (Subs appNames:subs) {
+				StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+			}
+		} else {
+			for (SharingTenantsJson newTenantSh : tenants) {
+					boolean foundInDesiderata = false;
+					for (Subs appNames:subs) {
 						if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
-							notFound = false;
+							foundInDesiderata = true;
 						}
 					}
-					if (notFound)
-						StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
-				}
+					if (!foundInDesiderata)
+						StoreDelegate.build().subscribeApi(httpClient, apiName, "userportal_"+newTenantSh.getTenantcode());
 			}
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			
+			for (Subs appNames:subs) {
+				boolean notFound = true;
+				for (SharingTenantsJson newTenantSh : tenants) {
+					if (appNames.getApplication().equals("userportal_"+newTenantSh.getTenantcode())) {
+						notFound = false;
+					}
+				}
+				if (notFound)
+					StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+			}
 		}
+	} catch (Exception e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
 	}
+}
 
 
 	/**

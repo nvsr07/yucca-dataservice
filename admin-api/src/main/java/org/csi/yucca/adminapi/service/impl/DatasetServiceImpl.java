@@ -28,6 +28,7 @@ import static org.csi.yucca.adminapi.util.ServiceUtil.maximumLimitErrorsReached;
 import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -623,7 +624,9 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 		SubscriptionByUsernameResponse listOfApplication = null;
 		try {
 			listOfApplication = StoreDelegate.build().listSubscriptionByApiAndUserName(httpClient, apiName, "admin");
-			List<SharingTenantsJson> tenants = mapper.readValue(datasetNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
+			List<SharingTenantsJson> tenants = new LinkedList<SharingTenantsJson>();
+			if (datasetNew.getSharingTenant() != null)
+				tenants = mapper.readValue(datasetNew.getSharingTenant(), new TypeReference<List<SharingTenantsJson>>() {});
 			SharingTenantsJson owner = new SharingTenantsJson();
 			owner.setTenantcode(datasetNew.getTenantCode());
 			tenants.add(owner);
