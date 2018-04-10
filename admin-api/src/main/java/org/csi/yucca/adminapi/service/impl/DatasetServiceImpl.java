@@ -935,7 +935,7 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 
 			// INSERT DATASET
 			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper,
-					sequenceMapper, postDatasetRequest.getIddataset());
+					sequenceMapper, postDatasetRequest.getIddataset(),postDatasetRequest.getDatasetcode());
 
 			// BINARY COMPONENT
 			insertBinaryComponents(idBinaryDataSource, componentMapper);
@@ -992,7 +992,7 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 		// INSERT DATASET
 		Dataset dataset = ServiceUtil.insertDataset(idDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BULK.id(),
 				postDatasetRequest.getImportfiletype(), DATASOURCE_VERSION, idBinaryDataSource, postDatasetRequest.getJdbcdburl(), postDatasetRequest.getJdbcdbname(),
-				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), tenant, organization, datasetMapper, sequenceMapper, postDatasetRequest.getIddataset());
+				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), tenant, organization, datasetMapper, sequenceMapper, postDatasetRequest.getIddataset(), postDatasetRequest.getDatasetcode());
 
 		// TAGS
 		for (Integer idTag : postDatasetRequest.getTags()) {

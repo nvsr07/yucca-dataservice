@@ -80,7 +80,6 @@ import org.csi.yucca.adminapi.model.TenantDataSource;
 import org.csi.yucca.adminapi.model.join.DettaglioSmartobject;
 import org.csi.yucca.adminapi.request.ActionRequest;
 import org.csi.yucca.adminapi.request.ComponentRequest;
-import org.csi.yucca.adminapi.request.DatasetRequest;
 import org.csi.yucca.adminapi.request.InternalStreamRequest;
 import org.csi.yucca.adminapi.request.PostStreamRequest;
 import org.csi.yucca.adminapi.request.PostValidateSiddhiQueriesRequest;
@@ -810,7 +809,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 
 		insertStreamInternal(request, idDataSource);
 		Dataset dataset = insertDataset(request.getSavedata(), idDataSource, smartobject.getIdSoType(),
-				DATASOURCE_VERSION, request.getStreamcode(), tenant, organization, datasetMapper, sequenceMapper, request.getIdDataset());
+				DATASOURCE_VERSION, request.getStreamcode(), tenant, organization, datasetMapper, sequenceMapper, request.getIdDataset(), request.getDatasetcode());
 
 		insertApi(request, smartobject, dataset, idDataSource, request.getStreamcode(), DATASOURCE_VERSION);
 
@@ -1620,7 +1619,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 
 		return insertDataset(streamRequest.getSavedata(), streamToUpdate.getIdDataSource(), smartObject.getIdSoType(),
 				streamToUpdate.getDataSourceVersion(), streamToUpdate.getStreamCode(), 
-				tenant, organization, datasetMapper, sequenceMapper, streamRequest.getIdDataset());
+				tenant, organization, datasetMapper, sequenceMapper, streamRequest.getIdDataset(), streamRequest.getDatasetcode());
 	}
 
 	/**

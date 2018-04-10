@@ -31,6 +31,7 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	private String requestersurname;
 	private String externalreference;
 	private String multiSubdomain;
+	private String datasetcode;
 	
 	public Integer getIdStream() {
 		return idStream;
@@ -257,6 +258,14 @@ public class StreamRequest implements IVisibility, IDataSourceRequest {
 	public StreamRequest idSubdomain(Integer idSubdomain) {
 		setIdSubdomain(idSubdomain);
 		return this;
+	}
+
+	public String getDatasetcode() {
+		return datasetcode;
+	}
+
+	public void setDatasetcode(String datasetcode) {
+		this.datasetcode = datasetcode;
 	}
 	
 	
