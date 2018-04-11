@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.csi.yucca.adminapi.client.AdminApiClientException;
-import org.csi.yucca.adminapi.client.BackofficeDettaglioClient;
-import org.csi.yucca.adminapi.client.BackofficeListaClient;
+import org.csi.yucca.adminapi.client.db.BackofficeDettaglioClientDB;
+import org.csi.yucca.adminapi.client.db.BackofficeListaClientDB;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
@@ -47,13 +47,11 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 			Long idDataset, Long datasetVersion, boolean onlyInstalled) throws AdminApiClientException {
 		BackofficeDettaglioStreamDatasetResponse dettaglio =  null;
 		if (datasetVersion == null || datasetVersion == -1) {
-			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDataset(
-					SDPInsertApiConfig.getInstance().getAdminApiUrl(),
+			dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByIdDataset(
 					idDataset.intValue(),onlyInstalled, log.getName());
 		}
 		else {
-			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
-					SDPInsertApiConfig.getInstance().getAdminApiUrl(),
+			dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
 					idDataset.intValue(), datasetVersion.intValue(), log.getName());
 		}
 		return dettaglio;
@@ -62,13 +60,11 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 			String datasetCode, Long datasetVersion, boolean onlyInstalled) throws AdminApiClientException {
 		BackofficeDettaglioStreamDatasetResponse dettaglio =  null;
 		if (datasetVersion == null || datasetVersion == -1) {
-			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCode(
-					SDPInsertApiConfig.getInstance().getAdminApiUrl(),
+			dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByDatasetCode(
 					datasetCode, onlyInstalled, log.getName());
 		}
 		else {
-			dettaglio = BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
-					SDPInsertApiConfig.getInstance().getAdminApiUrl(),
+			dettaglio = BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
 					datasetCode, datasetVersion.intValue(), log.getName());
 		}
 		return dettaglio;
@@ -86,7 +82,7 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 	@Override
 	public Set<String> getTenantList() throws Exception { 
 		
-		List<TenantManagementResponse> tenants = BackofficeListaClient.getTenants(SDPInsertApiConfig.getInstance().getAdminApiUrl(), log.getName());
+		List<TenantManagementResponse> tenants = BackofficeListaClientDB.getTenants(log.getName());
 		
 		Set<String> tenantsCode = new HashSet<String>();
 		
@@ -100,8 +96,8 @@ public class SDPAdminApiAccess implements SDPInsertMetadataApiAccess {
 		 ArrayList<StreamInfo> infos = new ArrayList<>();
 		
 		try {
-			BackofficeDettaglioStreamDatasetResponse dettaglio = BackofficeDettaglioClient
-					.getBackofficeDettaglioStreamDatasetBySoCodeStreamCode(SDPInsertApiConfig.getInstance().getAdminApiUrl(),
+			BackofficeDettaglioStreamDatasetResponse dettaglio = BackofficeDettaglioClientDB
+					.getBackofficeDettaglioStreamDatasetBySoCodeStreamCode(//SDPInsertApiConfig.getInstance().getAdminApiUrl(),
 							sensor, streamApplication,true,  log.getName());
 			
 			dettaglio = checkTenantCanSendData(dettaglio, tenant);
