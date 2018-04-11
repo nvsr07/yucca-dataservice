@@ -103,8 +103,7 @@ public class Util {
 	public static List<ComponentInfoRequest> getComponentInfoRequests(String json) throws Exception {
 		if (json != null) {
 			ObjectMapper mapper = new ObjectMapper();
-			return mapper.readValue(json, new TypeReference<List<ComponentInfoRequest>>() {
-			});
+			return mapper.readValue(json, new TypeReference<List<ComponentInfoRequest>>() {});
 		}
 		return null;
 	}
