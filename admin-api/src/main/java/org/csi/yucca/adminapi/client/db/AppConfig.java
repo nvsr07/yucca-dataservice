@@ -39,7 +39,7 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {"org.csi.yucca.adminapi.service"})
 @MapperScan("org.csi.yucca.adminapi.mapper")
 @PropertySource(value = { "classpath:datasource.properties" })
-public class AppConfig extends WebMvcConfigurerAdapter {
+public class AppConfig {
 	
 	@Value("${driver.class.name}")
 	private String driverClassName;
@@ -59,12 +59,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	@Value("${max.active}")
 	private int maxActive;
 
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-//
-//		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-	}
+//	@Override
+//	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+////		registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+////
+////		registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+//	}
 
 	@Bean
 	public JavaMailSender getMailSender() {
@@ -102,24 +102,24 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 		return sessionFactory.getObject();
 	}
 
-	@Bean
-	public ViewResolver viewResolver() {
-		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-		viewResolver.setViewClass(JstlView.class);
-		viewResolver.setPrefix("/WEB-INF/views/");
-		viewResolver.setSuffix(".jsp");
-		return viewResolver;
-	}
-
-	@Override
-	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
-		configurer.enable();
-	}
-
-	@Bean
-	public MultipartResolver multipartResolver() {
-		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-		return resolver;
-	}
+//	@Bean
+//	public ViewResolver viewResolver() {
+//		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+//		viewResolver.setViewClass(JstlView.class);
+//		viewResolver.setPrefix("/WEB-INF/views/");
+//		viewResolver.setSuffix(".jsp");
+//		return viewResolver;
+//	}
+//
+//	@Override
+//	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
+//		configurer.enable();
+//	}
+//
+//	@Bean
+//	public MultipartResolver multipartResolver() {
+//		CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+//		return resolver;
+//	}
 
 }
