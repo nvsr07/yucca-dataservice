@@ -19,6 +19,7 @@
 		<version.hbase>1.1.2.2.6.0.3-8</version.hbase>
 		<version.phoenix>4.7.0.2.6.0.3-8</version.phoenix>
 		<version.solrj>5.5.4</version.solrj>
+		<org.springframework-version>4.3.0.RELEASE</org.springframework-version>
 
 		
 		<version.slf4j>1.5.6</version.slf4j><!--  should we upgrade to 1.7 ?  -->

@@ -375,7 +375,13 @@
 										<include>**/adminapi/util/**/*</include>
 										<include>**/adminapi/model/**/*</include>
 										<include>**/adminapi/client/**/*</include>
-										<include>**/adminapi/response/*</include>
+										<include>**/adminapi/response/**/*</include>
+										<include>**/adminapi/delegate/**/*</include>
+										<include>**/adminapi/exception/**/*</include>
+										<include>**/adminapi/mapper/**/*</include>
+										<include>**/adminapi/jwt/**/*</include>
+										<include>**/adminapi/service/**/*</include>
+										<include>**/adminapi/messaging/**/*</include>
 									</includes>
 								</configuration>
 							</execution>
