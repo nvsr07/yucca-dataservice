@@ -493,7 +493,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 		Subs[] subs = listOfApplication.getSubscriptions();
 		if (visibility.equals("public")) {
 			for (Subs appNames:subs) {
-				StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+				StoreDelegate.build().unSubscribeApiWithUsername(httpClient, apiName, null, appNames.getApplicationId(), "admin");
 			}
 		} else {
 			for (SharingTenantsJson newTenantSh : tenants) {
@@ -504,7 +504,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 						}
 					}
 					if (!foundInDesiderata)
-						StoreDelegate.build().subscribeApi(httpClient, apiName, "userportal_"+newTenantSh.getTenantcode());
+						StoreDelegate.build().subscribeApiWithUsername(httpClient, apiName, "userportal_"+newTenantSh.getTenantcode(), "admin");
 			}
 			
 			for (Subs appNames:subs) {
@@ -515,7 +515,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 					}
 				}
 				if (notFound)
-					StoreDelegate.build().unSubscribeApi(httpClient, apiName, null, appNames.getApplicationId(), "admin");
+					StoreDelegate.build().unSubscribeApiWithUsername(httpClient, apiName, null, appNames.getApplicationId(), "admin");
 			}
 		}
 	} catch (Exception e) {

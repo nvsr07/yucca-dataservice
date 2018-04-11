@@ -133,13 +133,37 @@ public class StoreDelegate {
 		subscribeAdminApiParams.add(new BasicNameValuePair("authorizedDomains", ""));
 		subscribeAdminApiParams.add(new BasicNameValuePair("validityTime", ""));
 
-		String url = storeUrl + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
+		//String url = storeUrl + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
+		String url = storeUrl + "site/blocks/secure/subscription.jag"; 
 		String response = HttpDelegate.makeHttpPost(httpclient, url, subscribeAdminApiParams);
 		logger.debug("[StoreDelegate::subscribeApi] response " + response);
 		return response;
 	}
 	
-	public  String unSubscribeApi(CloseableHttpClient httpclient,String apiName,  String appName, int applicationId, String username) throws Exception {
+	public String subscribeApiWithUsername(CloseableHttpClient httpclient,String apiName,  String appName, String username) throws Exception {
+		logger.debug("[StoreDelegate::subscribeApi] appName: " + appName);
+		List<NameValuePair> subscribeAdminApiParams = new LinkedList<NameValuePair>();
+		subscribeAdminApiParams.add(new BasicNameValuePair("action", "addAPISubscription"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("name",apiName));
+		subscribeAdminApiParams.add(new BasicNameValuePair("version", "1.0"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("tier", "Unlimited"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("applicationName", appName));
+		subscribeAdminApiParams.add(new BasicNameValuePair("application", ""));
+		subscribeAdminApiParams.add(new BasicNameValuePair("provider", "admin"));
+		subscribeAdminApiParams.add(new BasicNameValuePair("keytype", ""));
+		subscribeAdminApiParams.add(new BasicNameValuePair("callbackUrl", ""));
+		subscribeAdminApiParams.add(new BasicNameValuePair("authorizedDomains", ""));
+		subscribeAdminApiParams.add(new BasicNameValuePair("validityTime", ""));
+		subscribeAdminApiParams.add(new BasicNameValuePair("username", username));
+
+		//String url = storeUrl + "site/blocks/subscription/subscription-add/ajax/subscription-add.jag";
+		String url = storeUrl + "site/blocks/secure/subscription.jag"; 
+		String response = HttpDelegate.makeHttpPost(httpclient, url, subscribeAdminApiParams);
+		logger.debug("[StoreDelegate::subscribeApi] response " + response);
+		return response;
+	}
+	
+	public  String unSubscribeApiWithUsername(CloseableHttpClient httpclient,String apiName,  String appName, int applicationId, String username) throws Exception {
 
 		logger.debug("[StoreDelegate::unsubscribeApi] appName: " + appName);
 		List<NameValuePair> subscribeAdminApiParams = new LinkedList<NameValuePair>();
