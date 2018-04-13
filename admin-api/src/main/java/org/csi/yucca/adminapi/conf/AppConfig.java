@@ -30,14 +30,17 @@ import org.springframework.web.servlet.view.JstlView;
 //import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
-// @EnableSwagger2
 @EnableTransactionManagement
 @EnableWebMvc
+//@ComponentScan(basePackages = {
+//		"org.csi.yucca.adminapi.conf",
+//		"org.csi.yucca.adminapi.controller",
+//		"org.csi.yucca.adminapi.delegate",
+//		"org.csi.yucca.adminapi.jwt",
+//		"org.csi.yucca.adminapi.messaging",
+//		"org.csi.yucca.adminapi.service" 
+//		})
 @ComponentScan(basePackages = "org.csi.yucca.adminapi")
-// @ComponentScan(basePackages={"org.csi.yucca.adminapi"},
-// excludeFilters={
-// @ComponentScan.Filter(type= FilterType.ANNOTATION, value=EnableWebMvc.class)
-// })
 @MapperScan("org.csi.yucca.adminapi.mapper")
 @PropertySource(value = { "classpath:datasource.properties" })
 public class AppConfig extends WebMvcConfigurerAdapter {

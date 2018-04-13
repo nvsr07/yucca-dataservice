@@ -14,7 +14,7 @@ public class BackofficeDettaglioClientDB {
 //		String stop = "";
 //		try {
 //			
-//			BackofficeDettaglioApiResponse mresponse = getBackofficeDettaglioApi("ds_Stresstwt_11_241", "ds_TrFl_3");
+////			BackofficeDettaglioApiResponse mresponse = getBackofficeDettaglioApi("ds_Stresstwt_11_241", "ds_TrFl_3");
 //			
 //			stop = "";
 //			BackofficeDettaglioStreamDatasetResponse response = getBackofficeDettaglioStreamDatasetByIdStream(124,

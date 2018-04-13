@@ -2,6 +2,7 @@ package org.csi.yucca.adminapi.client.db;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.client.AdminApiClientException;
 import org.csi.yucca.adminapi.response.AllineamentoScaricoDatasetResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
@@ -19,6 +20,10 @@ public class BackofficeListaClientDB {
 			return (List<TenantManagementResponse>)AdminDBClientDelegate.getInstance().getTenantService().selectTenants(null).getObject();
 		} 
 		catch (Exception e) {
+			
+			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
+			log.error("Exception", e);
+			
 			throw new AdminApiClientException(e);
 		}
 		
@@ -33,6 +38,9 @@ public class BackofficeListaClientDB {
 					AdminDBClientDelegate.getInstance().getDatasetService().selectDatasetByOrganizationCode(organizationCode).getObject();
 		} 
 		catch (Exception e) {
+			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
+			log.error("Exception", e);
+
 			throw new AdminApiClientException(e);
 		}
 		
@@ -48,6 +56,9 @@ public class BackofficeListaClientDB {
 					AdminDBClientDelegate.getInstance().getClassificationService().selectOrganization().getObject();
 		} 
 		catch (Exception e) {
+			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
+			log.error("Exception", e);
+
 			throw new AdminApiClientException(e);
 		}		
 		
@@ -61,6 +72,9 @@ public class BackofficeListaClientDB {
 					AdminDBClientDelegate.getInstance().getDatasetService().selectAllineamentoScaricoDataset(idOrganization).getObject();
 		} 
 		catch (Exception e) {
+			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
+			log.error("Exception", e);
+
 			throw new AdminApiClientException(e);
 		}
 	}

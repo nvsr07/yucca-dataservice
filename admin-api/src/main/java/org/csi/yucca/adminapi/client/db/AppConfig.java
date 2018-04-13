@@ -15,14 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.multipart.MultipartResolver;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
 
 
 /***************************************************************
@@ -32,11 +24,16 @@ import org.springframework.web.servlet.view.JstlView;
  * @author gianfranco.stolfa
  *
  ****************************************************************/
-
 @Configuration
 @EnableTransactionManagement
-//@EnableWebMvc
 @ComponentScan(basePackages = {"org.csi.yucca.adminapi.service"})
+//@ComponentScan(basePackages = {
+//		"org.csi.yucca.adminapi.conf",
+//		"org.csi.yucca.adminapi.delegate",
+//		"org.csi.yucca.adminapi.jwt",
+//		"org.csi.yucca.adminapi.messaging",
+//		"org.csi.yucca.adminapi.service" 
+//		})
 @MapperScan("org.csi.yucca.adminapi.mapper")
 @PropertySource(value = { "classpath:datasource.properties" })
 public class AppConfig {
