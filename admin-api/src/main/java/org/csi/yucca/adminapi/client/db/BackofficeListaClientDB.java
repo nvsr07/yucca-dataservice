@@ -13,16 +13,19 @@ public class BackofficeListaClientDB {
 
 	
 	@SuppressWarnings("unchecked")
-	public static List<TenantManagementResponse> getTenants(String logger)
-			throws AdminApiClientException {
+	public static List<TenantManagementResponse> getTenants(String logger) throws AdminApiClientException {
+		
+		Logger log = Logger.getLogger(logger + ".BackofficeListaClientDB");
+		
+		log.info("==> BEGIN");
+		
 		try {
 			
 			return (List<TenantManagementResponse>)AdminDBClientDelegate.getInstance().getTenantService().selectTenants(null).getObject();
 		} 
 		catch (Exception e) {
 			
-			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
-			log.error("Exception", e);
+			log.error("Exception ===>> ", e);
 			
 			throw new AdminApiClientException(e);
 		}

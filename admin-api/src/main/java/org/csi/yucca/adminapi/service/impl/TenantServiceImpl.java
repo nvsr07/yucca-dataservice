@@ -1,12 +1,15 @@
 package org.csi.yucca.adminapi.service.impl;
 
-import static org.csi.yucca.adminapi.util.ServiceUtil.*;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkIdStatus;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
+import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.StoreDelegate;
 import org.csi.yucca.adminapi.exception.BadRequestException;
 import org.csi.yucca.adminapi.exception.ConflictException;
@@ -76,6 +79,8 @@ import org.springframework.transaction.annotation.Transactional;
 @PropertySources({ @PropertySource("classpath:ambiente_deployment.properties") })
 public class TenantServiceImpl implements TenantService {
 
+	private static final Logger logger = Logger.getLogger(TenantServiceImpl.class);
+	
 	@Value("${collprefix}")
 	private String collprefix;
 
@@ -248,11 +253,17 @@ public class TenantServiceImpl implements TenantService {
 	}
 
 	public ServiceResponse selectTenants(String sort) throws BadRequestException, NotFoundException, Exception {
-
+		
+		logger.info("selectTenants BEGIN"); 
+		
 		List<String> sortList = ServiceUtil.getSortList(sort, Tenant.class);
 
 		List<TenantManagement> tenantList = tenantMapper.selectAllTenant(sortList);
 
+		if (tenantList == null || tenantList.isEmpty()) {
+			logger.info("NESSUN TENANT TROVATO!!"); 
+		}
+		
 		ServiceUtil.checkList(tenantList);
 
 		List<TenantManagementResponse> responseList = new ArrayList<TenantManagementResponse>();
