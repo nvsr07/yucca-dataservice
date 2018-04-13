@@ -1,18 +1,5 @@
 package it.csi.smartdata.dataapi.adminapi;
 
-import it.csi.smartdata.dataapi.adminapi.edmprovider.LookupOdataProvider;
-import it.csi.smartdata.dataapi.adminapi.edmprovider.SchemaOdataProvider;
-import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
-import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
-import it.csi.smartdata.dataapi.dto.SDPDataResult;
-import it.csi.smartdata.dataapi.exception.SDPCustomQueryOptionException;
-import it.csi.smartdata.dataapi.exception.SDPOrderBySizeException;
-import it.csi.smartdata.dataapi.exception.SDPPageSizeException;
-import it.csi.smartdata.dataapi.odata.SDPOdataFilterExpression;
-import it.csi.smartdata.dataapi.odata.SDPPhoenixExpression;
-import it.csi.smartdata.dataapi.solr.CloudSolrSingleton;
-import it.csi.smartdata.dataapi.solr.KnoxSolrSingleton;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -46,9 +33,22 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.csi.yucca.adminapi.client.AdminApiClientException;
-import org.csi.yucca.adminapi.client.BackofficeDettaglioClient;
+import org.csi.yucca.adminapi.client.db.BackofficeDettaglioClientDB;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.ComponentResponse;
+
+import it.csi.smartdata.dataapi.adminapi.edmprovider.LookupOdataProvider;
+import it.csi.smartdata.dataapi.adminapi.edmprovider.SchemaOdataProvider;
+import it.csi.smartdata.dataapi.constants.SDPDataApiConfig;
+import it.csi.smartdata.dataapi.constants.SDPDataApiConstants;
+import it.csi.smartdata.dataapi.dto.SDPDataResult;
+import it.csi.smartdata.dataapi.exception.SDPCustomQueryOptionException;
+import it.csi.smartdata.dataapi.exception.SDPOrderBySizeException;
+import it.csi.smartdata.dataapi.exception.SDPPageSizeException;
+import it.csi.smartdata.dataapi.odata.SDPOdataFilterExpression;
+import it.csi.smartdata.dataapi.odata.SDPPhoenixExpression;
+import it.csi.smartdata.dataapi.solr.CloudSolrSingleton;
+import it.csi.smartdata.dataapi.solr.KnoxSolrSingleton;
 
 public class SDPAdminApiOdataCast {
 
@@ -81,8 +81,8 @@ public class SDPAdminApiOdataCast {
 			this.codiceApi = codiceApi;
 			try {
 				log.info("[SDPAdminApiOdataCast::initDbObject] Calling for codiceApi:"+codiceApi);
-				this.configObject = BackofficeDettaglioClient
-						.getBackofficeDettaglioApi(SDPDataApiConfig.getInstance().getAdminApiUrl(),  codiceApi, log.getName());
+//				this.configObject = BackofficeDettaglioClient.getBackofficeDettaglioApi(SDPDataApiConfig.getInstance().getAdminApiUrl(),  codiceApi, log.getName());
+				this.configObject = BackofficeDettaglioClientDB.getBackofficeDettaglioApi(codiceApi, log.getName());
 				log.info("[SDPAdminApiOdataCast::initDbObject] Calling for codiceApi:"+codiceApi+"..done!");
 			} catch (AdminApiClientException e) {
 				log.error("[SDPAdminApiOdataCast::initDbObject] Error", e);
