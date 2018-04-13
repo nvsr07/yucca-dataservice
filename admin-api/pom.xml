@@ -382,6 +382,7 @@
 										<include>**/adminapi/jwt/**/*</include>
 										<include>**/adminapi/service/**/*</include>
 										<include>**/adminapi/messaging/**/*</include>
+										<include>**/adminapi/request/**/*</include>
 									</includes>
 								</configuration>
 							</execution>
