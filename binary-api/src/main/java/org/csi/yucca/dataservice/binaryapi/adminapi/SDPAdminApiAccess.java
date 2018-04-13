@@ -2,24 +2,19 @@ package org.csi.yucca.dataservice.binaryapi.adminapi;
 
 import java.util.List;
 
-import org.csi.yucca.adminapi.client.BackofficeDettaglioClient;
+import org.csi.yucca.adminapi.client.db.BackofficeDettaglioClientDB;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioApiResponse;
 import org.csi.yucca.adminapi.response.BackofficeDettaglioStreamDatasetResponse;
 import org.csi.yucca.adminapi.response.TenantResponse;
-import org.csi.yucca.dataservice.binaryapi.util.BinaryConfig;
 
 public class SDPAdminApiAccess  {
 	private static final org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger("org.csi.yucca.binaryapi");
-
-	
-	
-	
 	
 	public static BackofficeDettaglioApiResponse getInfoDatasetByApi(String apiCode) throws Exception {
 		log.info("[SDPAdminApiAccess::getInfoDatasetByApi] BEGIN apiCode: " + apiCode );
 		BackofficeDettaglioApiResponse dettaglio = 
-				BackofficeDettaglioClient.getBackofficeDettaglioApi(
-						BinaryConfig.getInstance().getApiAdminServicesUrl(), apiCode, log.getName());
+//				BackofficeDettaglioClient.getBackofficeDettaglioApi(BinaryConfig.getInstance().getApiAdminServicesUrl(), apiCode, log.getName());
+				BackofficeDettaglioClientDB.getBackofficeDettaglioApi(apiCode, log.getName());
 		log.info("[SDPAdminApiAccess::getInfoDatasetByApi] END");
 		return dettaglio;
 	}
@@ -27,8 +22,10 @@ public class SDPAdminApiAccess  {
 	public static BackofficeDettaglioStreamDatasetResponse getInfoDatasetByIdDatasetDatasetVersion(Integer idDataset, Integer datasetVersion) throws Exception {
 		log.info("[SDPAdminApiAccess::getInfoDatasetByIdDatasetDatasetVersion] BEGIN idDataset, datasetVersion: " + idDataset +","+datasetVersion);
 		BackofficeDettaglioStreamDatasetResponse dettaglio = 
-				BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
-						BinaryConfig.getInstance().getApiAdminServicesUrl(), idDataset, datasetVersion, log.getName());
+//				BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
+//						BinaryConfig.getInstance().getApiAdminServicesUrl(), idDataset, datasetVersion, log.getName());
+				BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByIdDatasetDatasetVersion(
+						idDataset, datasetVersion, log.getName());
 		log.info("[SDPAdminApiAccess::getInfoDatasetByIdDatasetDatasetVersion] END");
 		return dettaglio;
 	}
@@ -37,8 +34,10 @@ public class SDPAdminApiAccess  {
 		log.info("[SDPAdminApiAccess::getInfoDatasetByDatasetCodeDatasetVersion] BEGIN datasetCode, datasetVersion: " + datasetCode +","+datasetVersion);
 		
 		BackofficeDettaglioStreamDatasetResponse dettaglio = 
-				BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
-						BinaryConfig.getInstance().getApiAdminServicesUrl(), datasetCode, datasetVersion, log.getName());
+//				BackofficeDettaglioClient.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
+//						BinaryConfig.getInstance().getApiAdminServicesUrl(), datasetCode, datasetVersion, log.getName());
+				BackofficeDettaglioClientDB.getBackofficeDettaglioStreamDatasetByDatasetCodeDatasetVersion(
+						datasetCode, datasetVersion, log.getName());
 		log.info("[SDPAdminApiAccess::getInfoDatasetByIdDatasetDatasetVersion] END");
 		
 		return dettaglio;
