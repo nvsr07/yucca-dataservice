@@ -24,7 +24,7 @@ public interface DatasetService {
 	
 	ServiceResponse deleteDatasetData(String organizationCode, Integer idDataset, String tenantCodeManager, Integer version, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 
-	ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
+	ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, Boolean publish, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception;
 	
 	ServiceResponse selectDatasetByOrganizationCode(String organizationCode) throws BadRequestException, NotFoundException, Exception;
 	

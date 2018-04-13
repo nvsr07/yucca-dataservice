@@ -282,7 +282,7 @@ public class DatasetServiceImpl implements DatasetService {
 	}
 
 	@Override
-	public ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
+	public ServiceResponse uninstallingDatasets(String organizationCode, Integer idDataset, Boolean publish, JwtUser authorizedUser) throws BadRequestException, NotFoundException, Exception {
 
 		DettaglioDataset dataset = datasetMapper.selectDettaglioDataset(null, idDataset, organizationCode, getTenantCodeListFromUser(authorizedUser));
 
@@ -293,7 +293,8 @@ public class DatasetServiceImpl implements DatasetService {
 		ServiceUtil.updateDataSourceStatusAllVersion(Status.UNINSTALLATION.id(), dataset.getIdDataSource(), dataSourceMapper);
 
 		// spubblicazione delle api odata e la cancellazione del documento Solr
-		removeOdataApiAndSolrDocument(dataset.getDatasetcode());
+		if(publish == null || publish)
+			removeOdataApiAndSolrDocument(dataset.getDatasetcode());
 
 		return ServiceResponse.build().NO_CONTENT();
 	}

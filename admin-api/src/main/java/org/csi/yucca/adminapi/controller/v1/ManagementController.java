@@ -108,13 +108,14 @@ public class ManagementController extends YuccaController {
 	public ResponseEntity<Object> uninstallingDatasets(
 			@PathVariable final String organizationCode, 
 			@PathVariable final Integer idDataset,
+			@RequestParam(required = false) final Boolean publish,
 			final HttpServletRequest request) {
 		
 		logger.info("uninstallingDatasets");
 
 		return run(new ApiCallable() {
 			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
-				return datasetService.uninstallingDatasets(organizationCode, idDataset, getAuthorizedUser(request));
+				return datasetService.uninstallingDatasets(organizationCode, idDataset, publish,  getAuthorizedUser(request));
 			}
 		}, logger);
 	}
