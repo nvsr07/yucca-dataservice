@@ -20,12 +20,11 @@ public class BackofficeListaClientDB {
 		log.info("==> BEGIN");
 		
 		try {
-			
 			return (List<TenantManagementResponse>)AdminDBClientDelegate.getInstance().getTenantService().selectTenants(null).getObject();
 		} 
 		catch (Exception e) {
 			
-			log.error("Exception ===>> ", e);
+			log.error("Exception ===>>>> ", e);
 			
 			throw new AdminApiClientException(e);
 		}
