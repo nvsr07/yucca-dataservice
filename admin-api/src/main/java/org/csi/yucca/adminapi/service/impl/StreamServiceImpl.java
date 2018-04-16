@@ -1336,20 +1336,6 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 							+ request.getOpendata().getOpendataupdatedate());
 		}
 	}
-
-	/**
-	 * 
-	 * @param idSubdomain
-	 * @return
-	 * @throws NotFoundException
-	 * @throws BadRequestException
-	 */
-	private Subdomain checkSubdomain(Integer idSubdomain) throws NotFoundException, BadRequestException {
-		checkMandatoryParameter(idSubdomain, "idSubdomain");
-		Subdomain subdomain = subdomainMapper.selectSubdomainByIdSubdomain(idSubdomain);
-		checkIfFoundRecord(subdomain, "subdomain not found idSubdomain [" + idSubdomain + "] ");
-		return subdomain;
-	}
 	
 	private Subdomain checkSubdomain(PostStreamRequest request) throws NotFoundException, BadRequestException {
 		Subdomain subdomain = null;
@@ -1746,7 +1732,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 	@Override
 	public ServiceResponse selectStreamByIdStream(Integer idStream, boolean onlyInstalled)
 			throws BadRequestException, NotFoundException, Exception {
-
+		
 		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, onlyInstalled);
 		checkIfFoundRecord(dettaglioStream);
 		DettaglioSmartobject dettaglioSmartobject = smartobjectMapper

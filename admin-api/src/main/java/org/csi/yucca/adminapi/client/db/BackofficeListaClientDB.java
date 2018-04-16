@@ -10,9 +10,14 @@ import org.csi.yucca.adminapi.response.OrganizationResponse;
 import org.csi.yucca.adminapi.response.TenantManagementResponse;
 
 public class BackofficeListaClientDB {
-
 	
-	@SuppressWarnings("unchecked")
+	
+	/**
+	 * 
+	 * @param logger
+	 * @return
+	 * @throws AdminApiClientException
+	 */
 	public static List<TenantManagementResponse> getTenants(String logger) throws AdminApiClientException {
 		
 		Logger log = Logger.getLogger(logger + ".BackofficeListaClientDB");
@@ -20,24 +25,26 @@ public class BackofficeListaClientDB {
 		log.info("==> BEGIN");
 		
 		try {
-			return (List<TenantManagementResponse>)AdminDBClientDelegate.getInstance().getTenantService().selectTenants(null).getObject();
+			return CacheUtilDB.getTenants(new KeyCacheDB());
 		} 
 		catch (Exception e) {
-			
 			log.error("Exception ===>>>> ", e);
-			
 			throw new AdminApiClientException(e);
 		}
-		
 	}
-	
-	@SuppressWarnings("unchecked")
+
+	/**
+	 * 
+	 * @param organizationCode
+	 * @param logger
+	 * @return
+	 * @throws AdminApiClientException
+	 */
 	public static List<BackofficeDettaglioStreamDatasetResponse> getListStreamDataset(
 			String organizationCode, String logger) throws AdminApiClientException {
 
 		try {
-			return (List<BackofficeDettaglioStreamDatasetResponse>)
-					AdminDBClientDelegate.getInstance().getDatasetService().selectDatasetByOrganizationCode(organizationCode).getObject();
+			return CacheUtilDB.getListStreamDataset(new KeyCacheDB().organizationCode(organizationCode));
 		} 
 		catch (Exception e) {
 			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
@@ -45,17 +52,39 @@ public class BackofficeListaClientDB {
 
 			throw new AdminApiClientException(e);
 		}
-		
 	}
 	
-	@SuppressWarnings("unchecked")
+	/**
+	 * 
+	 * @param idOrganization
+	 * @param logger
+	 * @return
+	 * @throws AdminApiClientException
+	 */
+	public static List<AllineamentoScaricoDatasetResponse> getAllineamentoByIdOrganization(
+			Integer idOrganization, String logger) throws AdminApiClientException {
+		try {
+			return CacheUtilDB.getAllineamento(new KeyCacheDB().idOrganization(idOrganization));
+		} 
+		catch (Exception e) {
+			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
+			log.error("Exception", e);
+
+			throw new AdminApiClientException(e);
+		}
+	}
+	
+	/**
+	 * 
+	 * @param logger
+	 * @return
+	 * @throws AdminApiClientException
+	 */
 	public static List<OrganizationResponse> getOrganizations(String logger)
 			throws AdminApiClientException {
 		
 		try {
-			
-			return (List<OrganizationResponse>)
-					AdminDBClientDelegate.getInstance().getClassificationService().selectOrganization().getObject();
+			return CacheUtilDB.getOrganizations(new KeyCacheDB());
 		} 
 		catch (Exception e) {
 			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
@@ -66,19 +95,5 @@ public class BackofficeListaClientDB {
 		
 	}
 	
-	@SuppressWarnings("unchecked")
-	public static List<AllineamentoScaricoDatasetResponse> getAllineamentoByIdOrganization(
-			Integer idOrganization, String logger) throws AdminApiClientException {
-		try {
-			return (List<AllineamentoScaricoDatasetResponse>)
-					AdminDBClientDelegate.getInstance().getDatasetService().selectAllineamentoScaricoDataset(idOrganization).getObject();
-		} 
-		catch (Exception e) {
-			Logger log = Logger.getLogger(logger + ".AdminDBClientDelegate");
-			log.error("Exception", e);
-
-			throw new AdminApiClientException(e);
-		}
-	}
 
 }

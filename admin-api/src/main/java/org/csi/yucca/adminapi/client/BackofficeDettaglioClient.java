@@ -23,7 +23,8 @@ public class BackofficeDettaglioClient {
 		} catch (InvalidCacheLoadException exception) {
 			return null;
 		} catch (Exception e) {
-			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);throw new AdminApiClientException(e);
+			Logger log = Logger.getLogger(logger+".AdminApiClientDelegate");log.error("[Cache2k] Exception",e);
+			throw new AdminApiClientException(e);
 		}
 	}
 
