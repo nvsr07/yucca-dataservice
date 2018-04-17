@@ -126,6 +126,9 @@ public class ApiDoc {
 	public static final String BO_UPDATE_TENANT_STATUS = "UPDATE TENANT STATUS";
 	public static final String BO_UPDATE_TENANT_STATUS_NOTES = "Update Tenant Status.";
 
+	public static final String BO_UPDATE_STREAM_STATUS = "UPDATE STREAM STATUS";
+	public static final String BO_UPDATE_STREAM_STATUS_NOTES = "Update Stream Status.";
+
 	public static final String BO_ACTION_ON_STREAM = "ACTION ON STREAM";
 	public static final String BO_ACTION_ON_STREAM_NOTES = "Action on Stream.";
 

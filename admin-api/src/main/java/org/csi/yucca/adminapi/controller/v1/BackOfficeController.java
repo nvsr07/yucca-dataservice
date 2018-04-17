@@ -93,6 +93,22 @@ public class BackOfficeController extends YuccaController {
 	@Autowired
 	private ApiService apiService;
 	
+	@ApiOperation(value = BO_UPDATE_STREAM_STATUS, notes = BO_UPDATE_STREAM_STATUS_NOTES, response = ServiceResponse.class)
+	@PutMapping("/streams/{idStream}/status/{idStatus}")
+	public ResponseEntity<Object> updateStreamStatus(
+			@PathVariable final Integer idStatus, 
+			@PathVariable final Integer idStream) {
+		
+		logger.info("updateStreamStatus");
+
+		return run(new ApiCallable() {
+			public ServiceResponse call() throws BadRequestException, NotFoundException, Exception {
+				return streamService.updateStreamStatus(idStatus, idStream);
+			}
+		}, logger);
+		
+	}
+	
 	@ApiOperation(value = BO_UPDATE_TENANT_STATUS, notes = BO_UPDATE_TENANT_STATUS_NOTES, response = ServiceResponse.class)
 	@PutMapping("/tenants/{tenantcode}/status/{idStatus}")
 	public ResponseEntity<Object> updateTenantStatus(

@@ -2,34 +2,7 @@ package org.csi.yucca.adminapi.service.impl;
 
 import static org.csi.yucca.adminapi.util.Constants.API_NAMESPACE_BASE;
 import static org.csi.yucca.adminapi.util.Constants.MAX_ODATA_RESULT_PER_PAGE;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_MQTT;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_CODE_PREFIX_WEBSOCKET;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_MQTT;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_ODATA;
-import static org.csi.yucca.adminapi.util.ServiceUtil.API_SUBTYPE_WEBSOCKET;
-import static org.csi.yucca.adminapi.util.ServiceUtil.DATASOURCE_VERSION;
-import static org.csi.yucca.adminapi.util.ServiceUtil.MULTI_SUBDOMAIN_ID_DOMAIN;
-import static org.csi.yucca.adminapi.util.ServiceUtil.SINCE_VERSION;
-import static org.csi.yucca.adminapi.util.ServiceUtil.buildResponse;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkAuthTenant;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkCode;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkComponents;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkIfFoundRecord;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkTenant;
-import static org.csi.yucca.adminapi.util.ServiceUtil.checkVisibility;
-import static org.csi.yucca.adminapi.util.ServiceUtil.getFaultString;
-import static org.csi.yucca.adminapi.util.ServiceUtil.getSortList;
-import static org.csi.yucca.adminapi.util.ServiceUtil.getTenantCodeListFromUser;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertDataset;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertDcat;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertLicense;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertTags;
-import static org.csi.yucca.adminapi.util.ServiceUtil.insertTenantDataSource;
-import static org.csi.yucca.adminapi.util.ServiceUtil.sendMessage;
-import static org.csi.yucca.adminapi.util.ServiceUtil.updateDataSource;
-import static org.csi.yucca.adminapi.util.ServiceUtil.updateTagDataSource;
+import static org.csi.yucca.adminapi.util.ServiceUtil.*;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -173,6 +146,39 @@ public class StreamServiceImpl implements StreamService {
 	private MailService mailService;
 	
 	private ObjectMapper mapper = new ObjectMapper();
+
+	/**
+	 * 
+	 */
+	@Override
+	public ServiceResponse updateStreamStatus(Integer idStatus, Integer idStream)
+			throws BadRequestException, NotFoundException, Exception {
+
+		logger.info("updateStreamStatus: idStream [ " + idStream + " ], idStatus [ " + idStatus + " ]");
+		
+		checkIdStatus(idStatus);
+		
+		DettaglioStream dettaglioStream = streamMapper.selectStreamByIdStream(idStream, false);
+
+		checkIfFoundRecord(dettaglioStream);
+	    
+		if(Status.UNINSTALLATION.id().equals(idStatus) || Status.UNINSTALLATION.id().equals(dettaglioStream.getIdStatus())){
+			ServiceUtil.updateDataSourceStatusAllVersion(
+					idStatus, 
+					dettaglioStream.getIdDataSource(), 
+					dataSourceMapper);
+		}
+		else{
+			
+			dataSourceMapper.updateDataSourceStatus(
+					idStatus, 
+					dettaglioStream.getIdDataSource(),
+					dettaglioStream.getDatasourceversion());
+		}
+		
+		return ServiceResponse.build().NO_CONTENT();
+	}
+	
 	
 	/**
 	 * 
@@ -386,7 +392,8 @@ public class StreamServiceImpl implements StreamService {
  * @throws NotFoundException
  * @throws Exception
  */
-private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, ActionRequest actionRequest,
+private ServiceResponse actionOnStream(DettaglioStream dettaglioStream, 
+		ActionRequest actionRequest,
 		ApiUserType apiUserType) throws BadRequestException, NotFoundException, Exception {
 
 	boolean hasBeenValidated = false;
@@ -1780,6 +1787,5 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 					listInternalStream));
 		}
 	}
-
 
 }
