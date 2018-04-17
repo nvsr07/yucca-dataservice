@@ -21,6 +21,7 @@ public class DataSource {
 	private String externalreference;
 	private String opendataauthor;
 	private Timestamp opendataupdatedate;
+	private String opendataupdatefrequency;
 	private String opendatalanguage;
 	private String lastupdate;
 	private Integer unpublished;
@@ -249,5 +250,15 @@ public class DataSource {
 	public void setIdStatus(Integer idStatus) {
 		this.idStatus = idStatus;
 	}
+
+	public String getOpendataupdatefrequency() {
+		return opendataupdatefrequency;
+	}
+
+	public void setOpendataupdatefrequency(String opendataupdatefrequency) {
+		this.opendataupdatefrequency = opendataupdatefrequency;
+	}
+	
+	
 
 }

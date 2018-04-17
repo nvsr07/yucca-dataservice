@@ -7,6 +7,7 @@ public class OpenDataRequest {
     private String opendatalanguage;
     private String lastupdate;
     private String fabriccontrolleroutcome;
+    private String opendataupdatefrequency;
     
 	public String getOpendataupdatedate() {
 		return opendataupdatedate;
@@ -38,6 +39,13 @@ public class OpenDataRequest {
 	public void setFabriccontrolleroutcome(String fabriccontrolleroutcome) {
 		this.fabriccontrolleroutcome = fabriccontrolleroutcome;
 	}
+	public String getOpendataupdatefrequency() {
+		return opendataupdatefrequency;
+	}
+	public void setOpendataupdatefrequency(String opendataupdatefrequency) {
+		this.opendataupdatefrequency = opendataupdatefrequency;
+	}
+	
     
 
 }

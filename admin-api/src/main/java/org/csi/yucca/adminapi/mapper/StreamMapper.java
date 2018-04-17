@@ -352,8 +352,9 @@ public interface StreamMapper {
 			" yucca_data_source.isopendata data_source_isopendata, "
 			+ "yucca_data_source.externalreference data_source_external_reference, "
 			+ "yucca_data_source.opendataauthor data_source_open_data_author, "
-			+ "yucca_data_source.opendataupdatedate data_source_open_data_update_date, " + 
-			" yucca_data_source.opendatalanguage data_source_open_data_language, "
+			+ "yucca_data_source.opendataupdatedate data_source_open_data_update_date, " 
+			+ "yucca_data_source.opendataupdatefrequency data_source_open_data_update_frequency, " 
+			+" yucca_data_source.opendatalanguage data_source_open_data_language, "
 			+ "yucca_data_source.lastupdate data_source_last_update, "
 			+ "yucca_data_source.disclaimer data_source_disclaimer, "
 			+ "yucca_data_source.requestername data_source_requester_name, "
@@ -521,6 +522,7 @@ public interface StreamMapper {
 		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
 		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
 		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
+		@Result(property = "dataSourceOpenDataUpdateFrequency", column = "data_source_open_data_update_frequency"),
 		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
 		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"),
 		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"),	
@@ -617,6 +619,7 @@ public interface StreamMapper {
 		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
 		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
 		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
+		@Result(property = "dataSourceOpenDataUpdateFrequency", column = "data_source_open_data_update_frequency"),
 		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
 		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"),
 		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"),	
@@ -947,6 +950,7 @@ public interface StreamMapper {
 		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
 		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
 		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
+		@Result(property = "dataSourceOpenDataUpdateFrequency", column = "data_source_open_data_update_frequency"),
 		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
 		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"),
 		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"),	
@@ -1027,6 +1031,7 @@ public interface StreamMapper {
 		@Result(property = "dataSourceExternalReference", column = "data_source_external_reference"),		
 		@Result(property = "dataSourceOpenDataAuthor", column = "data_source_open_data_author"),
 		@Result(property = "dataSourceOpenDataUpdateDate", column = "data_source_open_data_update_date"),
+		@Result(property = "dataSourceOpenDataUpdateFrequency", column = "data_source_open_data_update_frequency"),
 		@Result(property = "dataSourceOpenDataLanguage", column = "data_source_open_data_language"),
 		@Result(property = "dataSourceLastUpdate", column = "data_source_last_update"),
 		@Result(property = "dataSourceDisclaimer", column = "data_source_disclaimer"),	

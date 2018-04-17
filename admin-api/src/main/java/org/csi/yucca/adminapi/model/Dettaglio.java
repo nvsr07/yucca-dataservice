@@ -42,6 +42,7 @@ public class Dettaglio {
 	private String dataSourceExternalReference;
 	private String dataSourceOpenDataAuthor;
 	private Timestamp dataSourceOpenDataUpdateDate;
+	private String dataSourceOpenDataUpdateFrequency;
 	private String dataSourceOpenDataLanguage;
 	private String dataSourceLastUpdate;
 	private String dataSourceDisclaimer;
@@ -400,6 +401,8 @@ public class Dettaglio {
 	public void setTags(String tags) {
 		this.tags = tags;
 	}
+	
+	
 
 	// public Component[] deserializeComponents() throws JsonParseException,
 	// JsonMappingException, IOException {
@@ -414,6 +417,14 @@ public class Dettaglio {
 	// return deserializedComponents;
 	//
 	// }
+
+	public String getDataSourceOpenDataUpdateFrequency() {
+		return dataSourceOpenDataUpdateFrequency;
+	}
+
+	public void setDataSourceOpenDataUpdateFrequency(String dataSourceOpenDataUpdateFrequency) {
+		this.dataSourceOpenDataUpdateFrequency = dataSourceOpenDataUpdateFrequency;
+	}
 
 	public static String generateNameSpace(String tenantCode, String datasetcode) {
 		return Constants.API_NAMESPACE_BASE + "." + tenantCode + "." + datasetcode;

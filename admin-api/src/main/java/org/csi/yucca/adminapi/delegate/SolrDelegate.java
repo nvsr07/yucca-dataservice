@@ -366,6 +366,7 @@ public class SolrDelegate {
 			// doc.addField("opendataMetaUpdateDate",
 			// dataset.opendataMetaUpdateDate );//FIXME manca il campo
 			doc.addField("opendataUpdateDate", dataset.getDataSourceOpenDataUpdateDate());
+			doc.addField("opendataUpdateFrequency", dataset.getDataSourceOpenDataUpdateFrequency());
 			doc.addField("isOpendata", true);
 		}
 

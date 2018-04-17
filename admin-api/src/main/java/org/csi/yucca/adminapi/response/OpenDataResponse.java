@@ -16,6 +16,7 @@ public class OpenDataResponse extends Response {
 	private String opendatalanguage;
 	private String lastupdate;
 	private Boolean isOpenData;
+	private String opendataupdatefrequency;
 	
 	public OpenDataResponse(DettaglioStream dettaglioStream) {
 		super();
@@ -24,6 +25,7 @@ public class OpenDataResponse extends Response {
 		this.opendatalanguage = dettaglioStream.getDataSourceOpenDataLanguage();
 		this.lastupdate = dettaglioStream.getDataSourceLastUpdate();
 		this.isOpenData = Util.intToBoolean(dettaglioStream.getDataSourceIsopendata());
+		this.opendataupdatefrequency = dettaglioStream.getDataSourceOpenDataUpdateFrequency();
 	}
 
 	public OpenDataResponse(DettaglioDataset dettaglioDataset) {
@@ -33,6 +35,7 @@ public class OpenDataResponse extends Response {
 		this.opendatalanguage = dettaglioDataset.getDataSourceOpenDataLanguage();
 		this.lastupdate = dettaglioDataset.getDataSourceLastUpdate();
 		this.isOpenData = Util.intToBoolean(dettaglioDataset.getDataSourceIsopendata());
+		this.opendataupdatefrequency = dettaglioDataset.getDataSourceOpenDataUpdateFrequency();
 	}
 
 	public OpenDataResponse() {
@@ -79,6 +82,15 @@ public class OpenDataResponse extends Response {
 	public void setIsOpenData(Boolean isOpenData) {
 		this.isOpenData = isOpenData;
 	}
+
+	public String getOpendataupdatefrequency() {
+		return opendataupdatefrequency;
+	}
+
+	public void setOpendataupdatefrequency(String opendataupdatefrequency) {
+		this.opendataupdatefrequency = opendataupdatefrequency;
+	}
+	
 	
 	
 

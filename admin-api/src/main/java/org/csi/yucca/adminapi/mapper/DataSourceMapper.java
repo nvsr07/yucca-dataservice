@@ -44,13 +44,13 @@ public interface DataSourceMapper {
 		" id_data_source, datasourceversion, iscurrent, name, visibility, " + 
 		" copyright, disclaimer, registrationdate, requestername, requestersurname, " + 
 		" requestermail, privacyacceptance, icon, isopendata, externalreference, " + 
-		" opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, " + 
+		" opendataauthor, opendataupdatedate, opendataupdatefrequency, opendatalanguage, lastupdate, " + 
 		" unpublished, fabriccontrolleroutcome, fbcoperationfeedback, id_organization, " + 
 		" id_subdomain, id_dcat, id_license, id_status) " +
 	" SELECT id_data_source, #{newDataSourceVersion}, iscurrent, name, visibility, " + 
 		" copyright, disclaimer, registrationdate, requestername, requestersurname, " + 
 		" requestermail, privacyacceptance, icon, isopendata, externalreference, " + 
-		" opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, " + 
+		" opendataauthor, opendataupdatedate, opendataupdatefrequency, opendatalanguage, lastupdate, " + 
 		" unpublished, fabriccontrolleroutcome, fbcoperationfeedback, id_organization, " + 
 		" id_subdomain, id_dcat, id_license, id_status " +
 	" FROM " +  DATA_SOURCE_TABLE +       
@@ -68,13 +68,13 @@ public interface DataSourceMapper {
 		" id_data_source, datasourceversion, iscurrent, name, visibility, " + 
 		" copyright, disclaimer, registrationdate, requestername, requestersurname, " + 
 		" requestermail, privacyacceptance, icon, isopendata, externalreference, " + 
-		" opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, " + 
+		" opendataauthor, opendataupdatedate, opendataupdatefrequency, opendatalanguage, lastupdate, " + 
 		" unpublished, fabriccontrolleroutcome, fbcoperationfeedback, id_organization, " + 
 		" id_subdomain, id_dcat, id_license, id_status) " +
 	" SELECT id_data_source, #{newDataSourceVersion}, iscurrent, name, visibility, " + 
 		" copyright, disclaimer, registrationdate, requestername, requestersurname, " + 
 		" requestermail, privacyacceptance, icon, isopendata, externalreference, " + 
-		" opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, " + 
+		" opendataauthor, opendataupdatedate, opendataupdatefrequency, opendatalanguage, lastupdate, " + 
 		" unpublished, fabriccontrolleroutcome, fbcoperationfeedback, id_organization, " + 
 		" id_subdomain, id_dcat, id_license, #{idStatus} " +
 	" FROM " +  DATA_SOURCE_TABLE +       
@@ -92,11 +92,11 @@ public interface DataSourceMapper {
 	public static final String INSERT_DATA_SOURCE = 
 	" INSERT INTO " + DATA_SOURCE_TABLE + "( datasourceversion, iscurrent, name, visibility, copyright, disclaimer, "
 			+ "registrationdate, requestername, requestersurname, requestermail, privacyacceptance, icon, isopendata, "
-			+ "externalreference, opendataauthor, opendataupdatedate, opendatalanguage, lastupdate, unpublished, "
+			+ "externalreference, opendataauthor, opendataupdatedate, opendataupdatefrequency, opendatalanguage, lastupdate, unpublished, "
 			+ "fabriccontrolleroutcome, fbcoperationfeedback, id_organization, id_subdomain, id_dcat, id_license, id_status) "
 	+ "VALUES (#{datasourceversion}, #{iscurrent}, #{name}, #{visibility}, #{copyright}, #{disclaimer}, "
 			+ "#{registrationdate}, #{requestername}, #{requestersurname}, #{requestermail}, #{privacyacceptance}, #{icon}, #{isopendata}, "
-			+ "#{externalreference}, #{opendataauthor}, #{opendataupdatedate}, #{opendatalanguage}, #{lastupdate}, #{unpublished}, "
+			+ "#{externalreference}, #{opendataauthor}, #{opendataupdatedate}, #{opendataupdatefrequency}, #{opendatalanguage}, #{lastupdate}, #{unpublished}, "
 			+ "#{fabriccontrolleroutcome}, #{fbcoperationfeedback}, #{idOrganization}, #{idSubdomain}, #{idDcat}, #{idLicense}, #{idStatus})";
 	@Insert(INSERT_DATA_SOURCE)
 	@Options(useGeneratedKeys=true, keyProperty="idDataSource", keyColumn="id_data_source")
@@ -117,6 +117,7 @@ public interface DataSourceMapper {
 			" externalreference=#{externalreference}, " +
 			" opendataauthor=#{opendataauthor}, " +
 			" opendataupdatedate=#{opendataupdatedate}, " +
+			" opendataupdatefrequency=#{opendataupdatefrequency}, " +
 			" opendatalanguage=#{opendatalanguage}, " +
 			" lastupdate=#{lastupdate}, " +
 			" id_dcat=#{idDcat}, " +

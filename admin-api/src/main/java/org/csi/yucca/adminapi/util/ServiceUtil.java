@@ -347,6 +347,7 @@ public class ServiceUtil {
 			dataSource.setOpendataupdatedate(
 					Util.dateStringToTimestamp(streamRequest.getOpendata().getOpendataupdatedate()));
 			dataSource.setOpendatalanguage(streamRequest.getOpendata().getOpendatalanguage());
+			dataSource.setOpendataupdatefrequency(streamRequest.getOpendata().getOpendataupdatefrequency());
 			dataSource.setLastupdate(streamRequest.getOpendata().getLastupdate());
 		}
 		dataSource.setIdDcat(idDcat);
@@ -1183,6 +1184,7 @@ public class ServiceUtil {
 				? Util.dateStringToTimestamp(request.getOpendata().getOpendataupdatedate()) : null);
 		dataSource.setOpendatalanguage(
 				request.getOpendata() != null ? request.getOpendata().getOpendatalanguage() : null);
+		dataSource.setOpendataupdatefrequency(request.getOpendata() != null ? request.getOpendata().getOpendataupdatefrequency(): null);
 		dataSource.setLastupdate(request.getOpendata() != null ? request.getOpendata().getLastupdate() : null);
 		dataSource.setIdOrganization(idOrganization);
 		dataSource.setIdSubdomain(request.getIdSubdomain());
