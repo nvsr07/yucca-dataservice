@@ -498,6 +498,51 @@
 			</properties>
 		</profile>
 		<profile>
+			<id>prod</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-scm-plugin</artifactId>
+						<version>1.9.5</version>
+						<configuration>
+							<connectionType>connection</connectionType>
+						</configuration>
+						<executions>
+							<execution>
+								<id>1</id>
+								<phase>validate</phase>
+								<goals>
+									<goal>checkout</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+				<resources>
+					<resource>
+						<directory>${project.build.directory}/checkout/adminapi/resources/prod</directory>
+					</resource>
+					<resource>
+						<directory>conf</directory>
+						<targetPath>.</targetPath>
+					</resource>
+					<resource>
+						<directory>src/main/webapp/img</directory>
+						<targetPath>.</targetPath>
+					</resource>
+				</resources>
+				<testResources>
+					<testResource>
+						<directory>${project.build.directory}/checkout/adminapi/test/prod</directory>
+					</testResource>
+				</testResources>
+			</build>
+			<properties>
+				<webXmlPath>${project.build.directory}/checkout/adminapi/resources/prod/</webXmlPath>
+			</properties>
+		</profile>
+		<profile>
 			<id>local2</id>
 			<build>
 				<plugins>
