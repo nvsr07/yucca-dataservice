@@ -57,6 +57,16 @@ public enum DataType {
 		return result;
 	}
 	
+//	public static String getHiveTypeFromId(Integer idDataType){
+//		org.csi.yucca.adminapi.model.DataType result = null;
+//		for (DataType dt : DataType.values()) {
+//			if(idDataType == dt.id()){
+//				result = new org.csi.yucca.adminapi.model.DataType(dt.id(), dt.code(), dt.description());
+//			}
+//		}
+//		return result;
+//	}
+	
 	
 	
 }

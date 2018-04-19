@@ -61,8 +61,30 @@ public class PostgreSQLConfiguration extends DatabaseConfiguration {
 		typesMap.put("txid_snapshot", Constants.ADMINAPI_DATA_TYPE_STRING);
 		typesMap.put("uuid", Constants.ADMINAPI_DATA_TYPE_STRING);
 		typesMap.put("xml", Constants.ADMINAPI_DATA_TYPE_STRING);
-
-
+		
+		hiveTypesMap.put("BIGINT",                  "BIGINT");
+		hiveTypesMap.put("BIGSERIAL",               "BIGINT");
+		hiveTypesMap.put("BIT",                     "BINARY");
+		hiveTypesMap.put("BIT VARYING",             "BINARY");
+		hiveTypesMap.put("BYTEA",                   "BINARY");
+		hiveTypesMap.put("BOOLEAN",                 "BOOLEAN");
+		hiveTypesMap.put("CHARACTER",               "CHAR");
+		hiveTypesMap.put("CHAR",                    "CHAR");
+		hiveTypesMap.put("DATE",                    "DATE");
+		hiveTypesMap.put("DOUBLE PRECISION",        "DOUBLE");
+		hiveTypesMap.put("REAL",                    "FLOAT");
+		hiveTypesMap.put("INTEGER",                 "INT");
+		hiveTypesMap.put("SERIAL",                  "INT");
+		hiveTypesMap.put("NUMERIC",                 "DECIMAL");
+		hiveTypesMap.put("SMALLINT",                "SMALLINT");
+		hiveTypesMap.put("CHARACTER VARYING",       "CHAR");
+		hiveTypesMap.put("TEXT",                    "STRING");
+		hiveTypesMap.put("XML",                     "STRING");
+		hiveTypesMap.put("TIMESTAMP",               "TIMESTAMP");
+		hiveTypesMap.put("TIME WITH TIMEZONE",      "TIMESTAMP");
+		hiveTypesMap.put("TIMESTAMP WITH TIMEZONE", "TIMESTAMP");
+		hiveTypesMap.put("TIME",                    "TIMESTAMP");
+		hiveTypesMap.put("VARCHAR",                 "VARCHAR");
 	}
 
 	@Override

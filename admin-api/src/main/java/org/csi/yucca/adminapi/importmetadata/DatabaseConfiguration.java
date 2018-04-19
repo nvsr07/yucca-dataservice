@@ -18,6 +18,12 @@ public abstract class DatabaseConfiguration {
 	protected String dbDriver;
 	protected Map<String, Integer> typesMap = new HashMap<String, Integer>();
 
+	protected Map<String, String> hiveTypesMap = new HashMap<String, String>();
+
+	public String getHiveType(String jdbcType){
+		return hiveTypesMap.get(jdbcType);
+	}
+	
 	public DatabaseConfiguration() {
 		super();
 		initTypesMap();

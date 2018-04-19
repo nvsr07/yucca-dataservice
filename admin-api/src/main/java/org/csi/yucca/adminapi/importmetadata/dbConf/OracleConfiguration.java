@@ -29,6 +29,19 @@ public class OracleConfiguration extends DatabaseConfiguration {
 		typesMap.put("NCLOB", Constants.ADMINAPI_DATA_TYPE_STRING);
 		typesMap.put("BLOB", Constants.ADMINAPI_DATA_TYPE_STRING);
 		typesMap.put("BFILE", Constants.ADMINAPI_DATA_TYPE_STRING);
+		
+		hiveTypesMap.put("NUMBER_INT",     "INT");
+		hiveTypesMap.put("NUMBER_BIGINT",  "BIGINT");
+		hiveTypesMap.put("NUMBER_DECIMAL", "DECIMAL");
+		hiveTypesMap.put("BINARY_DOUBLE",  "DOUBLE");
+		hiveTypesMap.put("BINARY_FLOAT",   "FLOAT");
+		hiveTypesMap.put("CHAR",           "CHAR");
+		hiveTypesMap.put("NCHAR",          "CHAR");
+		hiveTypesMap.put("VARCHAR2",       "VARCHAR");
+		hiveTypesMap.put("NVARCHAR2",      "VARCHAR");
+		hiveTypesMap.put("DATE",           "TIMESTAMP");
+		hiveTypesMap.put("TIMESTAMP",      "TIMESTAMP");
+		hiveTypesMap.put("RAW",            "BINARY");
 
 	}
 

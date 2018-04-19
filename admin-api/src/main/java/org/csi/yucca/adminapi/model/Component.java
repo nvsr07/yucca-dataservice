@@ -2,6 +2,8 @@ package org.csi.yucca.adminapi.model;
 
 public class Component {
 
+	private String jdbcNativeType;
+	private String hiveType;
 	private Integer idComponent;
 	private String name;
 	private String alias;
@@ -239,6 +241,22 @@ public class Component {
 
 	public void required(Boolean required) {
 		this.required = required==null? 0: (required?1:0);
+	}
+
+	public String getJdbcNativeType() {
+		return jdbcNativeType;
+	}
+
+	public void setJdbcNativeType(String jdbcNativeType) {
+		this.jdbcNativeType = jdbcNativeType;
+	}
+
+	public String getHiveType() {
+		return hiveType;
+	}
+
+	public void setHiveType(String hiveType) {
+		this.hiveType = hiveType;
 	}
 
 

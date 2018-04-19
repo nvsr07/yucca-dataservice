@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ComponentJson {
 
+	private String jdbcNativeType;
+	private String hiveType;
 	private Integer id_component;
 	private String name;
 	private String alias;
@@ -241,6 +243,22 @@ public class ComponentJson {
 
 	public void setDatatypedescription(String datatypedescription) {
 		this.datatypedescription = datatypedescription;
+	}
+
+	public String getJdbcNativeType() {
+		return jdbcNativeType;
+	}
+
+	public void setJdbcNativeType(String jdbcNativeType) {
+		this.jdbcNativeType = jdbcNativeType;
+	}
+
+	public String getHiveType() {
+		return hiveType;
+	}
+
+	public void setHiveType(String hiveType) {
+		this.hiveType = hiveType;
 	}
 
 	public void setDataType(DataType dataType) {
