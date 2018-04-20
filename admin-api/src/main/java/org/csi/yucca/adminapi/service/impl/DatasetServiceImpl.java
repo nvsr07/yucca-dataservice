@@ -701,7 +701,8 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 		checkIfFoundRecord(organization, "Not found organization code: " + organizationCode);
 
 		// check tag list:
-		checkList(datasetRequest.getTags(), "tags");
+		// provvisoriamente viene commentato
+//		checkList(datasetRequest.getTags(), "tags");
 
 		// datasetname
 		checkMandatoryParameter(datasetRequest.getDatasetname(), "datasetname");

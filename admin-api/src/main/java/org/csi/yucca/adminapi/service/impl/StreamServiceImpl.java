@@ -1030,6 +1030,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 
 		checkAuthTenant(authorizedUser, tenant.getTenantcode());
 
+		// è stato commentato provvisoriamente il check sulla lista dei tag passati in request
 		checkMandatories(request);
 
 		checkSubdomain(request);
@@ -1100,7 +1101,7 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 		checkMandatoryParameter(request.getRequestername(), "requestername");
 		checkMandatoryParameter(request.getRequestersurname(), "requestersurname");
 		checkMandatoryParameter(request.getRequestermail(), "requestermail");
-		checkList(request.getTags(), "tags");
+//		checkList(request.getTags(), "tags"); // commentato provvisoriamwente
 
 		checkDcat(request);
 
@@ -1439,7 +1440,8 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 
 		checkDcat(streamRequest);
 
-		checkList(streamRequest.getTags(), "tags");
+		// commentato provvisoriamente
+//		checkList(streamRequest.getTags(), "tags");
 
 		checkMandatoryParameter(streamRequest.getStreamname(), "streamName");
 		checkMandatoryParameter(streamRequest.getName(), "name");

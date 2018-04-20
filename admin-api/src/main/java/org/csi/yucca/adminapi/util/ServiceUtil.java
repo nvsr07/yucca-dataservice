@@ -295,9 +295,13 @@ public class ServiceUtil {
 	 */
 	public static void insertTags(List<Integer> idTagList, Integer idDataSource, Integer dataSourceVersion,
 			DataSourceMapper dataSourceMapper) {
-		for (Integer idTag : idTagList) {
-			dataSourceMapper.insertTagDataSource(idDataSource, dataSourceVersion, idTag);
+		
+		if (idTagList != null) {
+			for (Integer idTag : idTagList) {
+				dataSourceMapper.insertTagDataSource(idDataSource, dataSourceVersion, idTag);
+			}			
 		}
+
 	}
 
 	/**
@@ -313,9 +317,12 @@ public class ServiceUtil {
 
 		dataSourceMapper.deleteTagDataSource(idDataSource, dataSourceVersion);
 
-		for (Integer idTag : listTags) {
-			dataSourceMapper.insertTagDataSource(idDataSource, dataSourceVersion, idTag);
+		if (listTags != null) {
+			for (Integer idTag : listTags) {
+				dataSourceMapper.insertTagDataSource(idDataSource, dataSourceVersion, idTag);
+			}			
 		}
+
 	}
 
 	/**
