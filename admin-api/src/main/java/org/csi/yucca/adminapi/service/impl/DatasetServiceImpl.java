@@ -201,9 +201,9 @@ public class DatasetServiceImpl implements DatasetService {
 		for (IngestionConfiguration model : list) {
 			listCsvRow.add(new IngestionConfigurationResponseBuilder(model).build(dateformat));
 		}
-
+		
 		ServiceUtil.downloadCsv(listCsvRow, "ingestionConf.csv", separator.charAt(0), httpServletResponse, "table", "column", "comments", "datasetCode", "domain", "subdomain",
-				"visibility", "opendata", "registrationDate", "dbName", "dbSchema", "dbUrl", "columnIndex");
+				"visibility", "opendata", "registrationDate", "dbName", "dbSchema", "dbUrl", "columnIndex", "jdbcNativeType", "hiveType");
 
 		return buildResponse("Downloaded CSV file with " + list.size() + "records.");
 	}
