@@ -8,6 +8,8 @@ import org.csi.yucca.adminapi.response.IngestionConfigurationResponse;
 
 public class IngestionConfigurationResponseBuilder{
 	
+	private String jdbcNativeType;
+	private String hiveType;
 	private String table;
 	private String column;
 	private String comments;
@@ -22,6 +24,14 @@ public class IngestionConfigurationResponseBuilder{
 	private String dbUrl;
 	private Integer columnIndex;
 
+	public IngestionConfigurationResponseBuilder jdbcNativeType(String jdbcNativeType){
+		this.jdbcNativeType = jdbcNativeType;
+		return this;
+	}
+	public IngestionConfigurationResponseBuilder hiveType(String hiveType){
+		this.hiveType = hiveType;
+		return this;
+	}
 	public IngestionConfigurationResponseBuilder table(String table){
 		this.table = table;
 		return this;
@@ -102,6 +112,8 @@ public class IngestionConfigurationResponseBuilder{
 		this.dbSchema = model.getDbSchema();
 		this.dbUrl = model.getDbUrl();
 		this.columnIndex = model.getColumnIndex();
+		this.hiveType = model.getHiveType();
+		this.jdbcNativeType = model.getJdbcNativeType();
 	}
 
 	public IngestionConfigurationResponse build(String dateformat){
@@ -121,7 +133,9 @@ public class IngestionConfigurationResponseBuilder{
 		response.setDbSchema(dbSchema != null ? dbSchema : "");
 		response.setDbUrl(dbUrl != null ? dbUrl : "");
 		response.setColumnIndex(columnIndex != null ? columnIndex : 0);
-		
+		response.setJdbcNativeType(jdbcNativeType);
+		response.setHiveType(hiveType);
+
 		return response;
 	}
 

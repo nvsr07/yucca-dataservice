@@ -27,10 +27,10 @@ public interface ComponentMapper {
 	 * ***********************************************************************/
 	public static final String CLONE_COMPONENT = 
 			" INSERT INTO " + COMPONENT_TABLE + "( " +
-				" name, alias, inorder, tolerance, since_version, " + 
+				" jdbcNativeType, hiveType, name, alias, inorder, tolerance, since_version, " + 
 				" id_phenomenon, id_data_type, id_measure_unit, id_data_source, " + 
 				" datasourceversion, iskey, sourcecolumn, sourcecolumnname, required, foreignkey) " +
-			" SELECT name, alias, inorder, tolerance, since_version, " + 
+			" SELECT jdbcNativeType, hiveType, name, alias, inorder, tolerance, since_version, " + 
 				" id_phenomenon, id_data_type, id_measure_unit, id_data_source, " + 
 				" #{newDataSourceVersion}, iskey, sourcecolumn, sourcecolumnname, required, foreignkey " +
 			" FROM " + COMPONENT_TABLE + " WHERE id_component in ( " +
@@ -89,7 +89,7 @@ public interface ComponentMapper {
 	 * 					SELECT COMPONENT BY DATA SOURCE AND VERSION
 	 * ***********************************************************************/
 	public static final String SELECT_COMPONENT_BY_DATA_SOURCE_AND_VERSION =
-			"SELECT id_component, name, alias, inorder, tolerance, since_version, "
+			"SELECT jdbcNativeType, hiveType, id_component, name, alias, inorder, tolerance, since_version, "
 			+ "id_phenomenon, id_data_type, id_measure_unit, id_data_source, "
 			+ "datasourceversion, iskey, sourcecolumn, sourcecolumnname, required, foreignkey "
 			+ "from " + COMPONENT_TABLE + "  where id_data_source  = #{idDataSource} and "
@@ -110,10 +110,10 @@ public interface ComponentMapper {
 	 * 					INSERT COMPONENT
 	 * ***********************************************************************/
 	public static final String INSERT_COMPONENT = 
-	" INSERT INTO " + COMPONENT_TABLE + "( name, alias, inorder, tolerance, since_version, "
+	" INSERT INTO " + COMPONENT_TABLE + "( jdbcNativeType, hiveType, name, alias, inorder, tolerance, since_version, "
 	+ "id_phenomenon, id_data_type, id_measure_unit, id_data_source, datasourceversion, iskey, "
 	+ "sourcecolumn, sourcecolumnname, required, foreignkey)"
-	+ "VALUES (#{name}, #{alias}, #{inorder}, #{tolerance}, #{sinceVersion}, #{idPhenomenon}, "
+	+ "VALUES (#{jdbcNativeType}, #{hiveType}, #{name}, #{alias}, #{inorder}, #{tolerance}, #{sinceVersion}, #{idPhenomenon}, "
 	+ "#{idDataType}, #{idMeasureUnit}, #{idDataSource}, #{datasourceversion}, #{iskey}, #{sourcecolumn}, "
 	+ "#{sourcecolumnname}, #{required}, #{foreignkey})";
 	@Insert(INSERT_COMPONENT)

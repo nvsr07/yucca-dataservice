@@ -16,7 +16,25 @@ public class ComponentRequest {
 	private Integer sourcecolumn;
 	private String sourcecolumnname;
 	private String foreignkey;
+	private String jdbcNativeType;
+	private String hiveType;
 	
+	public String getJdbcNativeType() {
+		return jdbcNativeType;
+	}
+
+	public void setJdbcNativeType(String jdbcNativeType) {
+		this.jdbcNativeType = jdbcNativeType;
+	}
+
+	public String getHiveType() {
+		return hiveType;
+	}
+
+	public void setHiveType(String hiveType) {
+		this.hiveType = hiveType;
+	}
+
 	public String getForeignkey() {
 		return foreignkey;
 	}

@@ -4,6 +4,9 @@ import java.sql.Timestamp;
 
 public class IngestionConfiguration {
 	
+	
+	private String jdbcNativeType;
+	private String hiveType;
 	private String table;
 	private String column;
 	private String comments;
@@ -95,6 +98,18 @@ public class IngestionConfiguration {
 	}
 	public void setColumnIndex(Integer columnIndex) {
 		this.columnIndex = columnIndex;
+	}
+	public String getJdbcNativeType() {
+		return jdbcNativeType;
+	}
+	public void setJdbcNativeType(String jdbcNativeType) {
+		this.jdbcNativeType = jdbcNativeType;
+	}
+	public String getHiveType() {
+		return hiveType;
+	}
+	public void setHiveType(String hiveType) {
+		this.hiveType = hiveType;
 	}
 
 	
