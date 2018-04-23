@@ -751,6 +751,9 @@ public class ServiceUtil {
 				component.setSinceVersion(sinceVersion);
 				component.setIdDataSource(idDataSource);
 				component.setDatasourceversion(datasourceVersion);
+				component.setHiveType(componentRequest.getHiveType());
+				component.setJdbcNativeType(componentRequest.getJdbcNativeType());
+				
 				componentMapper.insertComponent(component);
 			}
 		}

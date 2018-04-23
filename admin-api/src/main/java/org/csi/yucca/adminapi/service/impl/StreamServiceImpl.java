@@ -1509,6 +1509,8 @@ public  void updateStreamSubscriptionIntoStore(CloseableHttpClient httpClient, S
 				component.setIdMeasureUnit(componentRequest.getIdMeasureUnit());
 				component.setRequired(true);
 				component.setIskey(false);
+				component.setHiveType(componentRequest.getHiveType());
+				component.setJdbcNativeType(componentRequest.getJdbcNativeType());
 				componentMapper.insertComponent(component);
 			}
 		}

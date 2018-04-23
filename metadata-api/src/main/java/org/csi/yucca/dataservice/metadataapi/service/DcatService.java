@@ -71,8 +71,8 @@ public class DcatService extends AbstractService {
 			linkedData = false;
 		
 		DCatCatalog catalog = new DCatCatalog();
-		catalog.setDescription_it(new I18NString("it", "Catalogo Smart Data Piemonte"));
-		catalog.setTitle_it(new I18NString("it", "CATALOGO SMART DATA"));
+		catalog.setDescription_it(new I18NString("it", "Catalogo Open Data Piemonte"));
+		catalog.setTitle_it(new I18NString("it", "CATALOGO OPEN DATA PIEMONTE"));
 		// catalog.setDescription_en(new I18NString("en",
 		// "Smart Data Piemonte Catalog"));
 		// catalog.setTitle_en(new I18NString("en", "SMART DATA CATALOG"));
@@ -318,7 +318,7 @@ public class DcatService extends AbstractService {
 
 						
 						if (metadataST.getLicense().startsWith("CC BY") || metadataST.getLicense().startsWith("CC-BY")) {
-							licenseDistribution.setName("CC BY");
+							licenseDistribution.setName("CC-BY 2.5 IT");
 							String version = metadataST.getLicense().substring(5).trim();
 							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/Attribution"));
 							licenseDistribution.setVersion(version);

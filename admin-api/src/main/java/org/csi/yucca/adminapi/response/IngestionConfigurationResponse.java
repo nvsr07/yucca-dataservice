@@ -15,7 +15,21 @@ public class IngestionConfigurationResponse {
 	private String dbSchema;
 	private String dbUrl;
 	private Integer columnIndex;
+	private String jdbcNativeType;
+	private String hiveType;
 	
+	public String getJdbcNativeType() {
+		return jdbcNativeType;
+	}
+	public void setJdbcNativeType(String jdbcNativeType) {
+		this.jdbcNativeType = jdbcNativeType;
+	}
+	public String getHiveType() {
+		return hiveType;
+	}
+	public void setHiveType(String hiveType) {
+		this.hiveType = hiveType;
+	}
 	public String getTable() {
 		return table;
 	}

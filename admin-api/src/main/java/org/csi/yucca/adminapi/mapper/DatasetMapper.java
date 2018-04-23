@@ -32,6 +32,8 @@ public interface DatasetMapper {
 				" COMPONENT.sourcecolumn, " +   
 				" COMPONENT.sourcecolumnname, " +   
 				" COMPONENT.alias, " +   
+				" COMPONENT.jdbcNativeType, " +   
+				" COMPONENT.hiveType, " +   
 
 				" DATASET.jdbcdbschema, " +   
 				" DATASET.jdbcdburl, " +   
