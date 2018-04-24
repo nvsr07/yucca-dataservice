@@ -680,6 +680,7 @@ public class Metadata {
 			// opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setAuthor(searchEngineItem.getOpendataAuthor());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
+			opendata.setUpdateFrequency(searchEngineItem.getOpendataUpdateFrequency());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
 

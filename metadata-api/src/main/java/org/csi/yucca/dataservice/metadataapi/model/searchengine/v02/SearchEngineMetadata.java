@@ -83,6 +83,7 @@ public class SearchEngineMetadata {
 	private String opendataUpdateDate;
 	private String opendataMetaUpdateDate;
 	private String opendataLanguage;
+	private String opendataUpdateFrequency;
 	private List<String> soFps;
 	private List<String> soCategory;
 	private String registrationDate;
@@ -768,4 +769,16 @@ public class SearchEngineMetadata {
 	public void setSoType(String soType) {
 		this.soType = soType;
 	}
+
+
+	public String getOpendataUpdateFrequency() {
+		return opendataUpdateFrequency;
+	}
+
+
+	public void setOpendataUpdateFrequency(String opendataUpdateFrequency) {
+		this.opendataUpdateFrequency = opendataUpdateFrequency;
+	}
+	
+	
 }
