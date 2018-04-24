@@ -64,7 +64,7 @@ public class CkanService extends AbstractService {
 						listCom.append(", " + c.getDatatype());
 					}
 					packageIds.add(metadata.getCkanPackageId()+"_comp type: " + listCom.toString());
-					// da togliere end
+					// da togliere end.
 				}
 				Gson gson = JSonHelper.getInstance();
 				result = gson.toJson(packageIds);
