@@ -355,6 +355,18 @@ public class DcatService extends AbstractService {
 					} else
 						dsDCAT.addDistribution(distribution);
 
+					
+					// ------------------------------------------------
+					// add binary DISTRIBUTION
+					// ------------------------------------------------
+					addBinaryDistribution(dsDCAT, metadataST, cfg);
+					
+					
+					
+					
+					
+					
+					
 //###########################################################àà					
 // AGGIUNGO IL DATA SET AL CATALOGO
 //###########################################################àà					
@@ -420,7 +432,28 @@ public class DcatService extends AbstractService {
 			return Response.ok(json,"application/ld+json; charset=UTF-8").build();
 		}
 	}
+	
+	private void addBinaryDistribution(DCatDataset dsDCAT, Metadata metadataST, Config cfg){
+		
+//		if (metadataST.isBinary()) {
+			DCatDistribution distribution = new DCatDistribution();
+			
+//			Config.getInstance().getExposedApiBaseUrl() + getDataset().getCode();
+//			String url = exposedApiBaseUrl + "/Binaries?";
 
+			
+//			distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
+//					+ metadataST.getDataset().getCode()));
+//			distribution.setDownloadURL(new IdString(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/"
+//					+ metadataST.getDataset().getDatasetId() + "/all"));
+
+			distribution.setDownloadURL(new IdString(cfg.getExposedApiBaseUrl() + metadataST.getDataset().getCode() + "/Binaries?"));
+			distribution.setId(metadataST.getDataset().getDatasetId()+"");
+			
+			dsDCAT.addDistribution(distribution);
+//		}
+		
+	}
 	
 	private String convertToTurtle(String json) {
 		com.hp.hpl.jena.rdf.model.Model model = com.hp.hpl.jena.rdf.model.ModelFactory.createDefaultModel();

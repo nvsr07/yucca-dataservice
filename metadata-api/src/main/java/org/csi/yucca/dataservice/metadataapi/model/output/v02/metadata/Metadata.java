@@ -427,11 +427,11 @@ public class Metadata {
 		ckanDataset.addResource(resource);
 	}
 	
-	public void addResourceBinaryComponentUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
+	private void addResourceBinaryComponentUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
 		if (isBinary()) {
 			Resource resource = new Resource();
 			resource.setDescription("Binary component url");
-			resource.setFormat("ZIP");
+			resource.setFormat("BINARY");
 			
 			String url = exposedApiBaseUrl + "/Binaries?";
 			
@@ -440,13 +440,12 @@ public class Metadata {
 		}
 	}
 
-	private boolean isBinary(){
+	public boolean isBinary(){
         for(Component component : components){
           if(METADATA_SUBTYPE_BINARY.equals(component.getDatatype())){
         	  return true;
           }
         }
-		
 		return false;
 	}
 	
