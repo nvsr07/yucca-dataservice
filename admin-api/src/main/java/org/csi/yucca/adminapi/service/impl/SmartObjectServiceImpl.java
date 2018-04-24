@@ -455,9 +455,10 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		if (isType(Type.DEVICE, smartobjectRequest)) {
 
 			// se è device id codice deve avere il pattern uuid
-			if (!ServiceUtil.matchUUIDPattern(smartobjectRequest.getSocode())) {
-				throw new BadRequestException(Errors.INCORRECT_VALUE, "For device type the socode must have UUID pattern [ "+ smartobjectRequest.getSocode() + " ] .");
-			}
+			// DISABILITATO PER MIGRAZIONE
+//			if (!ServiceUtil.matchUUIDPattern(smartobjectRequest.getSocode())) {
+//				throw new BadRequestException(Errors.INCORRECT_VALUE, "For device type the socode must have UUID pattern [ "+ smartobjectRequest.getSocode() + " ] .");
+//			}
 
 			// se è device tipo esposizione obbligatorio (iterno/esterno)
 			checkMandatoryParameter(smartobjectRequest.getIdExposureType(), "idExposureType");
