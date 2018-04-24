@@ -1,6 +1,7 @@
 package org.csi.yucca.adminapi.service.impl;
 
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkCode;
+import static org.csi.yucca.adminapi.util.ServiceUtil.checkSlugCode;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkList;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkMandatoryParameter;
 import static org.csi.yucca.adminapi.util.ServiceUtil.checkWhitespace;
@@ -492,7 +493,7 @@ public class SmartObjectServiceImpl implements SmartObjectService {
 		 * verifica che slug non sia null o stringa vuota verifica sintassi slug
 		 * --> regex ^[a-zA-Z0-9]*$
 		 ******************************************************************************************************************************************/
-		checkCode(smartobjectRequest.getSlug(), "slug");
+		checkSlugCode(smartobjectRequest.getSlug(), "slug");
 
 		/******************************************************************************************************************************************
 		 * categoria obbligatoria (se non è di tipo tweet)
