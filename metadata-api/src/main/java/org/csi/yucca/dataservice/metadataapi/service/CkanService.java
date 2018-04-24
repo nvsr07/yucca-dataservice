@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.csi.yucca.dataservice.metadataapi.delegate.v02.metadata.MetadataDelegate;
 import org.csi.yucca.dataservice.metadataapi.exception.UserWebServiceException;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.Result;
+import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Component;
 import org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata.Metadata;
 import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
@@ -56,7 +57,14 @@ public class CkanService extends AbstractService {
 				List<String> packageIds = new LinkedList<String>();
 				for (Metadata metadata : searchResult.getMetadata()) {
 //					packageIds.add(metadata.getCkanPackageId());
-					packageIds.add(metadata.getCkanPackageId()+"_subtype: " + metadata.getSubtype());
+					
+					// da togliere begin
+					StringBuffer listCom=new StringBuffer();
+					for(Component c : metadata.getComponents()){
+						listCom.append(", " + c.getDatatype());
+					}
+					packageIds.add(metadata.getCkanPackageId()+"_comp type: " + listCom.toString());
+					// da togliere end
 				}
 				Gson gson = JSonHelper.getInstance();
 				result = gson.toJson(packageIds);
