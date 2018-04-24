@@ -9,6 +9,7 @@ public class Opendata{
 	private Long dataUpdateDateMillis;
 	private Date metadaUpdateDate;
 	private Long metadaUpdateDateMillis;
+	private List<String> updateFrequency;
 	
 	private String language;
 
@@ -75,6 +76,7 @@ public class Opendata{
 	public void setMetadaCreateDate(Date metadaCreateDate) {
 		this.metadaCreateDate = metadaCreateDate;
 	}
+	
 
 	public Long getMetadaUpdateDateMillis() {
 		return metadaUpdateDateMillis;
@@ -90,6 +92,14 @@ public class Opendata{
 
 	public void setDataUpdateDateMillis(Long dataUpdateDateMillis) {
 		this.dataUpdateDateMillis = dataUpdateDateMillis;
+	}
+	
+	public List<String> getUpdateFrequency() {
+		return updateFrequency;
+	}
+
+	public void setUpdateFrequency(List<String> updateFrequency) {
+		this.updateFrequency = updateFrequency;
 	}
 
 }
