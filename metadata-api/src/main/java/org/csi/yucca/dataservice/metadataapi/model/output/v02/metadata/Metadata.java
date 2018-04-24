@@ -611,7 +611,8 @@ public class Metadata {
 		}
 
 		metadata.setType(searchEngineItem.getEntityType());
-		metadata.setSubtype(metadata.getSubtype());
+//		metadata.setSubtype(metadata.getSubtype());
+		metadata.setSubtype(searchEngineItem.getDatasetSubtype());
 
 		String detailUrl = Config.getInstance().getMetadataapiBaseUrl() + "v02/detail/";
 		String iconUrl = Config.getInstance().getMetadataapiBaseUrl() + "resource/icon/" + searchEngineItem.getTenantCode() + "/";
