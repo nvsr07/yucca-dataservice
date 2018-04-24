@@ -680,6 +680,7 @@ public class Metadata {
 			// opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setAuthor(searchEngineItem.getOpendataAuthor());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
+			opendata.setUpdateFrequency(searchEngineItem.getOpendataUpdateFrequency());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
 
@@ -838,7 +839,6 @@ public class Metadata {
 				opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDateMillis());
 				opendatav1.setLanguage(getOpendata().getLanguage());
 				opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
-				opendatav1.setUpdateFrequency(getOpendata().getUpdateFrequency());
 				metadatav1.setOpendata(opendatav1);
 			}
 
