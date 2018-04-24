@@ -68,7 +68,7 @@ public class ServiceUtil {
 	private static final String DESC_CHAR = "-";
 	public static final String MULTI_SUBDOMAIN_PATTERN = "^[\\S]*$";
 	public static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
-	public static final String NOT_DEVICE_PATTERN = "^[a-zA-Z0-9_-]{5,100}$"; // AGGIUNTO UNDERSCORE PER MIGRAZIONE
+	public static final String NOT_DEVICE_PATTERN = "^[a-zA-Z0-9_-]{1,100}$"; // AGGIUNTO UNDERSCORE PER MIGRAZIONE e minimo 1 "^[a-zA-Z0-9_-]{5,100}$"; // 
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
 	public static final String ALPHANUMERICOrUnderscore_PATTERN = "^[a-zA-Z0-9_]*$";
 	public static final String ALPHANUMERICOrUnderscoreOrMinus_PATTERN = "^[a-zA-Z0-9_-]*$"; // AGGIUNTO MENO PER MIGRAZIONE
@@ -1757,6 +1757,18 @@ public class ServiceUtil {
 		checkMandatoryParameter(s, parameterName);
 		checkWhitespace(s, parameterName);
 		checkAphanumericAndUnderscore(s, parameterName);
+	}
+	
+	/**
+	 * 
+	 * @param s
+	 * @param parameterName
+	 * @throws BadRequestException
+	 */
+	public static void checkSlugCode(String s, String parameterName) throws BadRequestException {
+		checkMandatoryParameter(s, parameterName);
+		checkWhitespace(s, parameterName);
+		checkAphanumericAndUnderscoreAndMinus(s, parameterName);
 	}
 
 	/**
