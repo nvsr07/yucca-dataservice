@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata;
 
 import java.util.Date;
+import java.util.List;
 
 
 public class Opendata{
@@ -10,7 +11,7 @@ public class Opendata{
 	private Date metadaUpdateDate;
 	private Long metadaUpdateDateMillis;
 	private String language;
-	private String updateFrequency;
+	private List<String> updateFrequency;
 	
 
 	private boolean isOpendata;
@@ -93,13 +94,15 @@ public class Opendata{
 		this.dataUpdateDateMillis = dataUpdateDateMillis;
 	}
 
-	public String getUpdateFrequency() {
+	public List<String> getUpdateFrequency() {
 		return updateFrequency;
 	}
 
-	public void setUpdateFrequency(String updateFrequency) {
+	public void setUpdateFrequency(List<String> updateFrequency) {
 		this.updateFrequency = updateFrequency;
 	}
+
+
 	
 	
 
