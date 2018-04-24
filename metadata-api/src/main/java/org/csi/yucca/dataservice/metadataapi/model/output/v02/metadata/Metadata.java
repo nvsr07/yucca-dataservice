@@ -427,18 +427,27 @@ public class Metadata {
 		ckanDataset.addResource(resource);
 	}
 	
-	private void addResourceBinaryComponentUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
+	public void addResourceBinaryComponentUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
+		if (isBinary()) {
+			Resource resource = new Resource();
+			resource.setDescription("Binary component url");
+			resource.setFormat("ZIP");
+			
+			String url = exposedApiBaseUrl + "/Binaries?";
+			
+			resource.setUrl(url);
+			ckanDataset.addResource(resource);
+		}
+	}
+
+	private boolean isBinary(){
+        for(Component component : components){
+          if(METADATA_SUBTYPE_BINARY.equals(component.getDatatype())){
+        	  return true;
+          }
+        }
 		
-		Resource resource = new Resource();
-//		resource.setDescription("Binary component url");
-		resource.setDescription("Subtype: " + getSubtype());
-		resource.setFormat("ZIP");
-		
-		String url = exposedApiBaseUrl + "/Binaries?";
-		
-		resource.setUrl(url);
-		ckanDataset.addResource(resource);
-		
+		return false;
 	}
 	
 	public String toCkan() {
@@ -468,10 +477,6 @@ public class Metadata {
 		
 		// da aggiungere qua il resource binary component
 		addResourceBinaryComponentUrl(ckanDataset, exposedApiBaseUrlDatasetCode);
-		
-		
-		
-		
 		
 		ExtraV2 extras = new ExtraV2();
 		if (getDomain() != null) {
