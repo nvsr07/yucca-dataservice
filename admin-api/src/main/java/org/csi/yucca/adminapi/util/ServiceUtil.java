@@ -68,10 +68,10 @@ public class ServiceUtil {
 	private static final String DESC_CHAR = "-";
 	public static final String MULTI_SUBDOMAIN_PATTERN = "^[\\S]*$";
 	public static final String UUID_PATTERN = "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
-	public static final String NOT_DEVICE_PATTERN = "^[a-zA-Z0-9-]{5,100}$";
+	public static final String NOT_DEVICE_PATTERN = "^[a-zA-Z0-9_-]{5,100}$"; // AGGIUNTO UNDERSCORE PER MIGRAZIONE
 	public static final String ALPHANUMERIC_PATTERN = "^[a-zA-Z0-9]*$";
 	public static final String ALPHANUMERICOrUnderscore_PATTERN = "^[a-zA-Z0-9_]*$";
-	public static final String ALPHANUMERICOrUnderscoreOrMinus_PATTERN = "^[a-zA-Z0-9_-]*$";
+	public static final String ALPHANUMERICOrUnderscoreOrMinus_PATTERN = "^[a-zA-Z0-9_-]*$"; // AGGIUNTO MENO PER MIGRAZIONE
 	public static final String COMPONENT_NAME_PATTERN = "(.)*[\u00C0-\u00F6\u00F8-\u00FF\u0020]+(.)*|^[0-9]*$";
 
 	public static final String MULTI_SUBDOMAIN_LANG_EN = "";
