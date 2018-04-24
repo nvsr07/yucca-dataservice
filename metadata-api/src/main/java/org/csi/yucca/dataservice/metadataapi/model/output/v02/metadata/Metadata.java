@@ -430,7 +430,8 @@ public class Metadata {
 	private void addResourceBinaryComponentUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
 		
 		Resource resource = new Resource();
-		resource.setDescription("Binary component url");
+//		resource.setDescription("Binary component url");
+		resource.setDescription("Subtype: " + getSubtype());
 		resource.setFormat("ZIP");
 		
 		String url = exposedApiBaseUrl + "/Binaries?";
@@ -467,6 +468,10 @@ public class Metadata {
 		
 		// da aggiungere qua il resource binary component
 		addResourceBinaryComponentUrl(ckanDataset, exposedApiBaseUrlDatasetCode);
+		
+		
+		
+		
 		
 		ExtraV2 extras = new ExtraV2();
 		if (getDomain() != null) {
