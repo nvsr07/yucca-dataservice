@@ -400,6 +400,47 @@ public class Metadata {
 
 	}
 
+	private void addResourceApiOdataUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
+		Resource resource = new Resource();
+		resource.setDescription("Api Odata");
+		resource.setFormat("ODATA");
+		resource.setUrl(exposedApiBaseUrl);
+		ckanDataset.addResource(resource);
+	}
+	
+	private void addResourceCsvDownloadUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset,
+			String exposedApiBaseUrl){
+		
+		Resource resource = new Resource();
+		resource.setDescription("Csv download url");
+		resource.setFormat("CSV");
+		String url = exposedApiBaseUrl + "/download/" + getDataset().getDatasetId() + "/";
+		
+		if (getType().contains("stream")) {
+			url += "current";
+		} 
+		else {
+			url += "all";
+		}
+		
+		resource.setUrl(url);
+		ckanDataset.addResource(resource);
+	}
+	
+	private void addResourceBinaryComponentUrl(org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset, String exposedApiBaseUrl){
+		
+		Resource resource = new Resource();
+//		resource.setDescription("Binary component url");
+		resource.setDescription("Subtype: " + getSubtype());
+		resource.setFormat("ZIP");
+		
+		String url = exposedApiBaseUrl + "/Binaries?";
+		
+		resource.setUrl(url);
+		ckanDataset.addResource(resource);
+		
+	}
+	
 	public String toCkan() {
 		org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset ckanDataset = new org.csi.yucca.dataservice.metadataapi.model.ckan.Dataset();
 		ckanDataset.setId(getCkanPackageId());
@@ -417,28 +458,21 @@ public class Metadata {
 
 		ckanDataset.setUrl(metadataUrl);
 
-		Resource resourceApiOdata = new Resource();
-		resourceApiOdata.setDescription("Api Odata");
-		resourceApiOdata.setFormat("ODATA");
-		String exposedApiBaseUrl = Config.getInstance().getExposedApiBaseUrl();
-		String apiOdataUrl = exposedApiBaseUrl + getDataset().getCode();
-		resourceApiOdata.setUrl(apiOdataUrl);
-		ckanDataset.addResource(resourceApiOdata);
-
-		Resource resourceDownload = new Resource();
-		resourceDownload.setDescription("Csv download url");
-		resourceDownload.setFormat("CSV");
-
-		String downloadCsvUrl = exposedApiBaseUrl + getDataset().getCode() + "/download/" + getDataset().getDatasetId() + "/";
-
-		if (getType().contains("stream")) {
-			downloadCsvUrl += "current";
-		} else {
-			downloadCsvUrl += "all";
-		}
-
-		resourceDownload.setUrl(downloadCsvUrl);
-		ckanDataset.addResource(resourceDownload);
+		String exposedApiBaseUrlDatasetCode = Config.getInstance().getExposedApiBaseUrl() + getDataset().getCode();
+		
+		// resources API ODATA
+		addResourceApiOdataUrl(ckanDataset, exposedApiBaseUrlDatasetCode);
+		
+		// Resources Csv download url
+		addResourceCsvDownloadUrl(ckanDataset, exposedApiBaseUrlDatasetCode);		
+		
+		// da aggiungere qua il resource binary component
+		addResourceBinaryComponentUrl(ckanDataset, exposedApiBaseUrlDatasetCode);
+		
+		
+		
+		
+		
 		ExtraV2 extras = new ExtraV2();
 		if (getDomain() != null) {
 			extras.setTopic(getDomain());
@@ -680,6 +714,7 @@ public class Metadata {
 			// opendata.setMetadaUpdateDate(searchEngineItem.parseOpendataUpdateDate());
 			opendata.setAuthor(searchEngineItem.getOpendataAuthor());
 			opendata.setLanguage(searchEngineItem.getOpendataLanguage());
+			opendata.setUpdateFrequency(searchEngineItem.getOpendataUpdateFrequency());
 			opendata.setOpendata(true);
 			metadata.setOpendata(opendata);
 

@@ -11,6 +11,7 @@ public class Opendata{
 	private Long metadaUpdateDateMillis;
 	
 	private String language;
+	private String updateFrequency;
 
 	private boolean isOpendata;
 	private String sourceId;
@@ -91,5 +92,15 @@ public class Opendata{
 	public void setDataUpdateDateMillis(Long dataUpdateDateMillis) {
 		this.dataUpdateDateMillis = dataUpdateDateMillis;
 	}
+
+	public String getUpdateFrequency() {
+		return updateFrequency;
+	}
+
+	public void setUpdateFrequency(String updateFrequency) {
+		this.updateFrequency = updateFrequency;
+	}
+	
+	
 
 }
