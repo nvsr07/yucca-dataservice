@@ -838,6 +838,7 @@ public class Metadata {
 				opendatav1.setDataUpdateDate(getOpendata().getDataUpdateDateMillis());
 				opendatav1.setLanguage(getOpendata().getLanguage());
 				opendatav1.setMetadaUpdateDate(getOpendata().getMetadaUpdateDate());
+				opendatav1.setUpdateFrequency(getOpendata().getOpendataUpdateFrequency());
 				metadatav1.setOpendata(opendatav1);
 			}
 
