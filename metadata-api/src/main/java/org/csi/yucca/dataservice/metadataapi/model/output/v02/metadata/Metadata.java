@@ -562,6 +562,7 @@ public class Metadata {
 	public static Metadata createFromSearchEngineItem(SearchEngineMetadata searchEngineItem, String lang) {
 		Gson gson = JSonHelper.getInstance();
 
+		
 		Metadata metadata = new Metadata();
 
 		metadata.setVersion(searchEngineItem.getVersion());
