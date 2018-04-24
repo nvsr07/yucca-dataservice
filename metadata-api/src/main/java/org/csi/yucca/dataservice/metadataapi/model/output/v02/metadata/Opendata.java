@@ -9,9 +9,9 @@ public class Opendata{
 	private Long dataUpdateDateMillis;
 	private Date metadaUpdateDate;
 	private Long metadaUpdateDateMillis;
-	
 	private String language;
 	private String updateFrequency;
+	
 
 	private boolean isOpendata;
 	private String sourceId;
