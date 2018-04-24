@@ -55,7 +55,8 @@ public class CkanService extends AbstractService {
 			{
 				List<String> packageIds = new LinkedList<String>();
 				for (Metadata metadata : searchResult.getMetadata()) {
-					packageIds.add(metadata.getCkanPackageId());
+//					packageIds.add(metadata.getCkanPackageId());
+					packageIds.add(metadata.getCkanPackageId()+"_subtype: " + metadata.getSubtype());
 				}
 				Gson gson = JSonHelper.getInstance();
 				result = gson.toJson(packageIds);
