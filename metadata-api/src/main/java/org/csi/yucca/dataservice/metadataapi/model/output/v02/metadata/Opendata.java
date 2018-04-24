@@ -1,6 +1,7 @@
 package org.csi.yucca.dataservice.metadataapi.model.output.v02.metadata;
 
 import java.util.Date;
+import java.util.List;
 
 
 public class Opendata{
