@@ -24,7 +24,6 @@ import org.csi.yucca.dataservice.metadataapi.service.response.ErrorResponse;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.bind.MapTypeAdapterFactory;
 
 @Path("/ckan")
 public class CkanService extends AbstractService {
@@ -56,10 +55,7 @@ public class CkanService extends AbstractService {
 			{
 				List<String> packageIds = new LinkedList<String>();
 				for (Metadata metadata : searchResult.getMetadata()) {
-					
-					String prova = metadata.isBinary() ? " ==>> isBinary" : "";
-					
-					packageIds.add(metadata.getCkanPackageId() + prova);
+					packageIds.add(metadata.getCkanPackageId());
 				}
 				Gson gson = JSonHelper.getInstance();
 				result = gson.toJson(packageIds);

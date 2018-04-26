@@ -435,7 +435,7 @@ public class DcatService extends AbstractService {
 	
 	private void addBinaryDistribution(DCatDataset dsDCAT, Metadata metadataST, Config cfg){
 		
-//		if (metadataST.isBinary()) {
+		if (metadataST.isBinary()) {
 			DCatDistribution distribution = new DCatDistribution();
 			
 //			Config.getInstance().getExposedApiBaseUrl() + getDataset().getCode();
@@ -451,7 +451,7 @@ public class DcatService extends AbstractService {
 			distribution.setId(metadataST.getDataset().getDatasetId()+"");
 			
 			dsDCAT.addDistribution(distribution);
-//		}
+		}
 		
 	}
 	
