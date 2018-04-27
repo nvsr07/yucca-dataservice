@@ -442,13 +442,16 @@ public class Metadata {
 	}
 
 	
-	@JsonIgnoreProperties
 	public boolean isBinary(){
-        for(Component component : components){
-          if(METADATA_SUBTYPE_BINARY.equals(component.getDatatype())){
-        	  return true;
-          }
-        }
+		
+		if (components != null) {
+	        for(Component component : components){
+	            if(METADATA_SUBTYPE_BINARY.equals(component.getDatatype())){
+	          	  return true;
+	            }
+	          }
+		}
+        
 		return false;
 	}
 	
