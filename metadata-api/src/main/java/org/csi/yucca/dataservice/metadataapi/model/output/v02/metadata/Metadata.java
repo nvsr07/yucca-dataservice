@@ -25,6 +25,7 @@ import org.csi.yucca.dataservice.metadataapi.util.Constants;
 import org.csi.yucca.dataservice.metadataapi.util.Util;
 import org.csi.yucca.dataservice.metadataapi.util.json.JSonHelper;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.gson.Gson;
 
 public class Metadata {
@@ -440,6 +441,8 @@ public class Metadata {
 		}
 	}
 
+	
+	@JsonIgnoreProperties
 	public boolean isBinary(){
         for(Component component : components){
           if(METADATA_SUBTYPE_BINARY.equals(component.getDatatype())){
