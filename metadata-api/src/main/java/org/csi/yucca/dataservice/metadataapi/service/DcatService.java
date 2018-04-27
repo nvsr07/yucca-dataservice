@@ -449,11 +449,19 @@ public class DcatService extends AbstractService {
 		return null;
 	}
 	
-	
+
+	/**
+	 * 
+	 * @param dsDCAT
+	 * @param metadataST
+	 * @param cfg
+	 * @param linkedData
+	 * @param objectsMap
+	 * @param licenseDistribution
+	 */
 	private void addBinaryDistribution(DCatDataset dsDCAT, Metadata metadataST, 
 			Config cfg, boolean linkedData, Map<String, DCatObject> objectsMap , DCatLicenseType licenseDistribution){
-		
-//		if (metadataST.isBinary()) {
+		if (metadataST.isBinary()) {
 			DCatDistribution distribution = new DCatDistribution();
 			
 			distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
@@ -476,8 +484,7 @@ public class DcatService extends AbstractService {
 				dsDCAT.addDistribution(empty);
 			} else
 				dsDCAT.addDistribution(distribution);
-//		}
-		
+		}
 	}
 	
 	private String convertToTurtle(String json) {
@@ -487,7 +494,6 @@ public class DcatService extends AbstractService {
 		ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
 		
 		RDFDataMgr.write(arrayOutputStream, model, Lang.TURTLE);
-		
 		
 		return arrayOutputStream.toString();
 	}
