@@ -313,35 +313,8 @@ public class DcatService extends AbstractService {
 					
 					// https://int-api.smartdatanet.it/api/Inputdataond_567/download/567/all
 					// distr.getLicense().setName(metadataST.getLicense());
-					DCatLicenseType licenseDistribution = new DCatLicenseType();
-					if (metadataST.getLicense() != null) {
-
-						
-						if (metadataST.getLicense().startsWith("CC BY") || metadataST.getLicense().startsWith("CC-BY")) {
-							licenseDistribution.setName("CC-BY 2.5 IT");
-							String version = metadataST.getLicense().substring(5).trim();
-							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/Attribution"));
-							licenseDistribution.setVersion(version);
-						} else if (metadataST.getLicense().startsWith("CC 0")) {
-							licenseDistribution.setName("CC 0");
-							String version = metadataST.getLicense().substring(4).trim();
-							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/PublicDomain"));
-							licenseDistribution.setVersion(version);
-						} else {
-							licenseDistribution.setName(metadataST.getLicense());
-							licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/UnknownIPR"));
-						}
-						licenseDistribution.setId(licenseDistribution.getName());
-						
-						if (linkedData) {
-							if (!objectsMap.containsKey(licenseDistribution.getId()))
-								objectsMap.put(licenseDistribution.getId(), licenseDistribution);
-							DCatLicenseType empty = new DCatLicenseType();
-							empty.cloneId(licenseDistribution.getId(), true);
-							distribution.setLicense(empty);
-						} else
-							distribution.setLicense(licenseDistribution);
-					}
+					DCatLicenseType licenseDistribution = getLicenseDistribution(metadataST, linkedData, objectsMap);
+					distribution.setLicense(licenseDistribution);
 
 					// distr.setIssued(new
 					// DcatDate(metadataST.getRegistrationDate()));
@@ -354,16 +327,11 @@ public class DcatService extends AbstractService {
 						dsDCAT.addDistribution(empty);
 					} else
 						dsDCAT.addDistribution(distribution);
-
 					
 					// ------------------------------------------------
 					// add binary DISTRIBUTION
 					// ------------------------------------------------
-					addBinaryDistribution(dsDCAT, metadataST, cfg);
-					
-					
-					
-					
+					addBinaryDistribution(dsDCAT, metadataST, cfg, linkedData, objectsMap, licenseDistribution);
 					
 					
 					
@@ -433,24 +401,81 @@ public class DcatService extends AbstractService {
 		}
 	}
 	
-	private void addBinaryDistribution(DCatDataset dsDCAT, Metadata metadataST, Config cfg){
+	/**
+	 * 
+	 * @param metadataST
+	 * @param linkedData
+	 * @param objectsMap
+	 * @return
+	 */
+	private DCatLicenseType getLicenseDistribution(Metadata metadataST, Boolean linkedData, Map<String, DCatObject> objectsMap){
+		
+		if (metadataST.getLicense() != null) {
+		
+			DCatLicenseType licenseDistribution = new DCatLicenseType();
+			
+			if (metadataST.getLicense().startsWith("CC BY") || metadataST.getLicense().startsWith("CC-BY")) {
+				licenseDistribution.setName("CC-BY 2.5 IT");
+				String version = metadataST.getLicense().substring(5).trim();
+				licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/Attribution"));
+				licenseDistribution.setVersion(version);
+			} 
+			else if (metadataST.getLicense().startsWith("CC 0")) {
+				licenseDistribution.setName("CC 0");
+				String version = metadataST.getLicense().substring(4).trim();
+				licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/PublicDomain"));
+				licenseDistribution.setVersion(version);
+			}
+			else {
+				licenseDistribution.setName(metadataST.getLicense());
+				licenseDistribution.setDcterms_type(new IdString("http://purl.org/adms/licencetype/UnknownIPR"));
+			}
+
+			licenseDistribution.setId(licenseDistribution.getName());
+			
+			if (linkedData) {
+				if (!objectsMap.containsKey(licenseDistribution.getId())){
+					objectsMap.put(licenseDistribution.getId(), licenseDistribution);
+				}
+				DCatLicenseType empty = new DCatLicenseType();
+				empty.cloneId(licenseDistribution.getId(), true);
+				return empty;
+			} 
+			else{
+				return licenseDistribution;
+			}
+		}
+
+		return null;
+	}
+	
+	
+	private void addBinaryDistribution(DCatDataset dsDCAT, Metadata metadataST, 
+			Config cfg, boolean linkedData, Map<String, DCatObject> objectsMap , DCatLicenseType licenseDistribution){
 		
 //		if (metadataST.isBinary()) {
 			DCatDistribution distribution = new DCatDistribution();
 			
-//			Config.getInstance().getExposedApiBaseUrl() + getDataset().getCode();
-//			String url = exposedApiBaseUrl + "/Binaries?";
-
-			
-//			distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
-//					+ metadataST.getDataset().getCode()));
-//			distribution.setDownloadURL(new IdString(cfg.getOauthBaseUrl() + "api/" + metadataST.getDataset().getCode() + "/download/"
-//					+ metadataST.getDataset().getDatasetId() + "/all"));
+			distribution.setAccessURL(new IdString(cfg.getUserportalBaseUrl() + "#/dataexplorer/detail/" + metadataST.getTenantCode() + "/"
+					+ metadataST.getDataset().getCode()));
 
 			distribution.setDownloadURL(new IdString(cfg.getExposedApiBaseUrl() + metadataST.getDataset().getCode() + "/Binaries?"));
-			distribution.setId(metadataST.getDataset().getDatasetId()+"");
+
+			distribution.setId(metadataST.getDataset().getDatasetId()+"", "binary");
 			
-			dsDCAT.addDistribution(distribution);
+			distribution.setLicense(licenseDistribution);
+			
+			distribution.setJsonFormat();
+			
+			if (linkedData) {
+				if (!objectsMap.containsKey(distribution.getId()))
+					objectsMap.put(distribution.getId(), distribution);
+				DCatDistribution empty = new DCatDistribution();
+				empty.setFormat(null);
+				empty.cloneId(distribution.getId(), true);
+				dsDCAT.addDistribution(empty);
+			} else
+				dsDCAT.addDistribution(distribution);
 //		}
 		
 	}

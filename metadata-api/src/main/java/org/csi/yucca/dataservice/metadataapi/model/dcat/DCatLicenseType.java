@@ -17,7 +17,7 @@ public class DCatLicenseType extends DCatObject {
 	public void setId(String id) {
 		this.id = BASE_ID + "license/" + DCatSdpHelper.cleanForId(id);
 	}
-
+	
 	public DCatLicenseType() {
 		this.addType("dcterms:LicenseDocument");
 		this.addType("dcatapit:LicenseDocument");

@@ -51,8 +51,21 @@ public class DCatDistribution extends DCatObject{
 		addType("dcatapit:Distribution");
 	}
 
+	public void setJsonFormat(){
+		format = new IdString("http://publications.europa.eu/resource/authority/file-type/JSON");
+	}
+	
 	public void setId(String id) {
-		this.id = BASE_ID + "distribution/" + DCatSdpHelper.cleanForId(id);
+		setId(id, null);
+	}
+
+	public void setId(String id, String distributionType) {
+		if (distributionType != null) {
+			this.id = BASE_ID + "distribution_" + distributionType + "/" + DCatSdpHelper.cleanForId(id);	
+		}
+		else{
+			this.id = BASE_ID + "distribution/" + DCatSdpHelper.cleanForId(id);
+		}
 	}
 
 	public List<String> getTypes() {
