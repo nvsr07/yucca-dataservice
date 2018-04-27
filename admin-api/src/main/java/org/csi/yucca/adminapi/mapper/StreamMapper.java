@@ -69,7 +69,7 @@ public interface StreamMapper {
 	 * 
 	 * ***********************************************************************/
 	public static final String DELETE_STREAM_INTERNAL =
-			"DELETE from " + STREAM_INTERNAL_TABLE + " WHERE id_data_source = #{idDataSource} and datasourceversion =#{dataSourceVersion}";
+			"DELETE from " + STREAM_INTERNAL_TABLE + " WHERE id_data_sourceinternal = #{idDataSource} and datasourceversioninternal =#{dataSourceVersion}";
 	@Delete(DELETE_STREAM_INTERNAL)
 	int deleteStreamInternal(@Param("idDataSource") Integer idDataSource, @Param("dataSourceVersion") Integer dataSourceVersion);	
 	
