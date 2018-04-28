@@ -913,7 +913,10 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 		}
 
 		checkIfFoundRecord(organization, "Not found organization code: " + organizationCode);
-		checkList(datasetRequest.getTags(), "tags");
+		
+		// commentato provvisoriamente per migrazione
+//		checkList(datasetRequest.getTags(), "tags");
+		
 		checkTenant(datasetRequest.getIdTenant(), organizationCode, tenantMapper);
 		checkAuthTenant(authorizedUser, datasetRequest.getIdTenant(), tenantMapper);
 		checkMandatoryParameter(datasetRequest.getDatasetname(), "datasetname");
@@ -1000,9 +1003,7 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 				postDatasetRequest.getJdbcdbtype(), postDatasetRequest.getJdbctablename(), tenant, organization, datasetMapper, sequenceMapper, postDatasetRequest.getIddataset(), postDatasetRequest.getDatasetcode());
 
 		// TAGS
-		for (Integer idTag : postDatasetRequest.getTags()) {
-			dataSourceMapper.insertTagDataSource(idDataSource, DATASOURCE_VERSION, idTag);
-		}
+		insertTags(postDatasetRequest.getTags(), idDataSource, DATASOURCE_VERSION, dataSourceMapper);
 
 		// COMPONENT
 		insertComponents(postDatasetRequest.getComponents(), idDataSource, ServiceUtil.DATASOURCE_VERSION, ServiceUtil.DATASOURCE_VERSION, componentMapper);
