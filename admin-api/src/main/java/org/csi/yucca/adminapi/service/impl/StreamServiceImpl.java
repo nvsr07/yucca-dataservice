@@ -356,7 +356,7 @@ public class StreamServiceImpl implements StreamService {
 		// datasource/datasourceversion di interesse ma mettendo nuova
 		// datasourceversion
 		streamMapper.cloneStreamInternal(newVersion, dettaglioStream.getDatasourceversion(),
-				dettaglioStream.getIdstream());
+				dettaglioStream.getIdDataSource());
 
 		// se presente, duplicare il record yucca_dataset relativo al
 		// datasource/datasourceversion di interesse ma mettendo nuova

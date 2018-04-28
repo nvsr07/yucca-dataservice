@@ -595,22 +595,23 @@ public class ServiceUtil {
 				}
 
 			}
-		}
-
-		/**
-		 * ALREADY_PRESENT Verificare che tutti i campi name estratti dalla
-		 * query siano presenti nei campi name degli ALREADY_PRESENT_req. In
-		 * caso contrario RITORNARE: Errore: You can't remove components from
-		 * previous version.
-		 */
-		if (alreadyPresentComponentsPreviousVersion != null) {
-			for (Component prevcomponent : alreadyPresentComponentsPreviousVersion) {
-				if (doesNotContainComponent(listComponentRequest, prevcomponent.getName())) {
-					throw new BadRequestException(Errors.NOT_ACCEPTABLE,
-							" You can't remove components from previous version.");
+			/**
+			 * ALREADY_PRESENT Verificare che tutti i campi name estratti dalla
+			 * query siano presenti nei campi name degli ALREADY_PRESENT_req. In
+			 * caso contrario RITORNARE: Errore: You can't remove components from
+			 * previous version.
+			 */
+			if (alreadyPresentComponentsPreviousVersion != null) {
+				for (Component prevcomponent : alreadyPresentComponentsPreviousVersion) {
+					if (doesNotContainComponent(listComponentRequest, prevcomponent.getName())) {
+						throw new BadRequestException(Errors.NOT_ACCEPTABLE,
+								" You can't remove components from previous version.");
+					}
 				}
 			}
 		}
+
+
 	}
 
 	/**

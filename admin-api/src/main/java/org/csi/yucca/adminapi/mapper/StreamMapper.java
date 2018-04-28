@@ -33,11 +33,11 @@ public interface StreamMapper {
 	" SELECT id_data_sourceinternal, #{newDataSourceVersion}, idstream, " + 
             " stream_alias " +
 	" FROM " +  STREAM_INTERNAL_TABLE +       
-	" WHERE idstream = #{idStream} and datasourceversioninternal=#{currentDataSourceVersion}";
+	" WHERE id_data_sourceinternal = #{idDataSource} and datasourceversioninternal=#{currentDataSourceVersion}";
 	@Insert(CLONE_STREAM_INTERNAL)
 	int cloneStreamInternal(@Param("newDataSourceVersion") Integer newDataSourceVersion,
 			@Param("currentDataSourceVersion") Integer currentDataSourceVersion, 
-			@Param("idStream") Integer idStream);
+			@Param("idDataSource") Integer idDataSource);
 
 	
 	/*************************************************************************
