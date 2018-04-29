@@ -560,9 +560,9 @@ public class ServiceUtil {
 //										|| notEqual(component.getTolerance(), cmp.getTolerance())
 //										|| notEqual(component.getIdPhenomenon(), cmp.getIdPhenomenon())
 										|| notEqual(component.getIdDataType(), cmp.getIdDataType())
-										|| notEqual(component.getIskey(), Util.intToBoolean(cmp.getIskey()))
-										|| notEqual(component.getSourcecolumn(), cmp.getSourcecolumn())
-										|| notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname())
+//										|| notEqual(component.getIskey(), Util.intToBoolean(cmp.getIskey()))
+//										|| notEqual(component.getSourcecolumn(), cmp.getSourcecolumn())
+//										|| notEqual(component.getSourcecolumnname(), cmp.getSourcecolumnname())
 										|| notEqual(component.getRequired(), Util.intToBoolean(cmp.getRequired())))) {
 							throw new BadRequestException(Errors.NOT_ACCEPTABLE,
 									"The only field you can modify are: alias, inorder, tolerance, phenomenon and idMeasureUnit");
