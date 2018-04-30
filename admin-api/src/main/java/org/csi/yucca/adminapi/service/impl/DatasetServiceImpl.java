@@ -33,6 +33,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.csi.yucca.adminapi.delegate.HttpDelegate;
@@ -941,9 +942,16 @@ public  void updateDatasetSubscriptionIntoStore(CloseableHttpClient httpClient, 
 			idBinaryDataSource = insertDataSource(new DatasetRequest().datasetname(postDatasetRequest.getDatasetname()).idSubdomain(idSubdomain), organization.getIdOrganization(),
 					Status.INSTALLED.id(), dataSourceMapper);
 
+			Integer idBinary = null;
+			// Quando viene passato l'idDattaset il binary viene generato con un id-1 
+			if (postDatasetRequest.getIddataset()!=null)
+			{
+				idBinary = new Integer(postDatasetRequest.getIddataset()-1);
+			}
+			
 			// INSERT DATASET
 			ServiceUtil.insertDataset(idBinaryDataSource, DATASOURCE_VERSION, postDatasetRequest.getDatasetname(), DatasetSubtype.BINARY.id(), tenant, organization, datasetMapper,
-					sequenceMapper, postDatasetRequest.getIddataset(),postDatasetRequest.getDatasetcode());
+					sequenceMapper, idBinary,null);
 
 			// BINARY COMPONENT
 			insertBinaryComponents(idBinaryDataSource, componentMapper);
